@@ -62,8 +62,9 @@ function PAS.Spawn(ply, type, ent, toolgun)
 	if not toolgun then
 
 		if CurTime() < ply.d_time then
-			if !ply:IsAdmin() and !tobool(PAS.Settings["noantiadmin"]) then
 
+			if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
+			else
 				timer.Create(ply:Nick().."_propcooldown", 10, 1, function()
 					ply.props = 0
 				end)
@@ -155,8 +156,8 @@ function firedToolGun(ply, tr, tool)
 
 		if CurTime() < ply.tool_d_time then
 
-			if !ply:IsAdmin() and !tobool(PAS.Settings["noantiadmin"]) then
-
+			if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
+			else
 				timer.Create(ply:Nick().."_toolcooldown", 10, 1, function()
 					ply.tools = 0
 				end)
