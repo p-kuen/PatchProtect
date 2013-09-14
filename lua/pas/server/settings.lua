@@ -45,6 +45,8 @@ function PAS.ApplySettings(ply, cmd, args)
 	if(!ply:IsAdmin()) then
 		return
 	end
+
+	--We should delete this
 	--[[
 	local use = GetConVarNumber("_PAS_ANTISPAM_use")
 	local cooldown = GetConVarNumber("_PAS_ANTISPAM_cooldown")
