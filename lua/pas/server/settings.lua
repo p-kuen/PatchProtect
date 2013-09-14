@@ -11,8 +11,10 @@ function PAS.SetupSettings()
 	)
 
 	if sql.TableExists("patchantispam") then
+		print("test")
+		--local testquery = sql.Query("SELECT a" .. tostring(table.GetLastKey(PAS.ConVars.PAS_ANTISPAM)) .. " from patchantispam")
+		local testquery = sql.Query("SELECT stoolprotection from patchantispam")
 
-		local testquery = sql.Query("SELECT " .. tostring(table.GetLastKey(PAS.ConVars.PAS_ANTISPAM) .. "from patchantispam")
 
 		if testquery == false then
 
@@ -29,7 +31,7 @@ function PAS.SetupSettings()
 	end
 
 	if ( !sql.TableExists("patchantispam") ) then
-
+		--[[
 		local values = {}
 		--local keys = {}
 		--local types = {}
@@ -41,38 +43,39 @@ function PAS.SetupSettings()
 
 				if Option != "spamcount" then
 
-					table.insert(sqlvars, tostring(Option) .. " " .. tostring(type(Option))
+					table.insert(sqlvars, tostring(Option) .. " " .. tostring(type(Option)))
 
 				else
 
-					table.insert(sqlvars, tostring(Option) .. " " .. tostring(type(Option) .. " NOT NULL")
+					table.insert(sqlvars, tostring(Option) .. " " .. tostring(type(Option) .. " NOT NULL"))
+					local test = 1
+					print("vartype")
+					print(type(test))
 
 				end
 
 				table.insert(values, value)
 
-				--[[
-				table.insert(keys, Option)
-				if Option != "spamcount" then
-					table.insert(types, type(Option))
-				else
-					table.insert(types, type(Option) .. " NOT NULL")
-				end
-				]]
+				--table.insert(keys, Option)
+				--if Option != "spamcount" then
+				--	table.insert(types, type(Option))
+				--else
+				--	table.insert(types, type(Option) .. " NOT NULL")
+				--end
+				
 			end
 		end
-		--[[
-		for i = 1, table.Count(keys) do
-			table.insert(sqlvars, tostring(keys[i]) .. " " .. tostring(types[i]))
-		end
-		]]
+		--for i = 1, table.Count(keys) do
+		--	table.insert(sqlvars, tostring(keys[i]) .. " " .. tostring(types[i]))
+		--end
 		print("sqlvars: ")
 		PrintTable(sqlvars)
+]]
+		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(use INTEGER, cooldown DOUBLE NOT NULL, noantiadmin INTEGER, spamcount INTEGER NOT NULL, spamaction INTEGER, bantime DOUBLE, concommand varchar(255), toolprotection INTEGER);")
+		--sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(" .. table.concat( sqlvars, ", " ) .. ");")
 
-		--sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(use INTEGER, cooldown DOUBLE NOT NULL, noantiadmin INTEGER, spamcount INTEGER NOT NULL, spamaction INTEGER, bantime DOUBLE, concommand varchar(255), toolprotection INTEGER);")
-		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(" .. table.concat( sqlvars, ", " ) .. ");")
-
-		sql.Query("INSERT INTO patchantispam(use, cooldown, noantiadmin, spamcount, spamaction, bantime, 'concommand', toolprotection) VALUES(" .. table.concat( values, ", " ) .. ")") --1, 3, 1, 20, 0, 10, '', 1
+		--sql.Query("INSERT INTO patchantispam(use, cooldown, noantiadmin, spamcount, spamaction, bantime, 'concommand', toolprotection) VALUES(" .. table.concat( values, ", " ) .. ")") --
+		sql.Query("INSERT INTO patchantispam(use, cooldown, noantiadmin, spamcount, spamaction, bantime, 'concommand', toolprotection) VALUES(1, 3, 1, 20, 0, 10, '', 1)")
 		MsgC(
 			Color(0, 240, 100),
 			"==================================================\n",
