@@ -5,7 +5,12 @@ function PAS.SetupSettings()
 
 	MsgC(
 		Color(0,235,200),
-		"[PatchAntiSpam] Successfully loaded\n"
+		"[PatchAntiSpam]"
+	)
+
+	MsgC(
+		Color(255,255,255),
+		" Successfully loaded (Coded by Patcher56 & Ted894)\n",
 	)
 
 	if sql.TableExists("patchantispam") then
@@ -18,7 +23,7 @@ function PAS.SetupSettings()
 			sql.Query("DROP TABLE patchantispam")
 			MsgC(
 				Color(235, 0, 0), 
-				"[PatchAntiSpam] Deleted the old settings-table\n"
+				"[PatchAntiSpam] Deleted the old Settings - Table\n"
 				)
 
 		end
@@ -72,7 +77,7 @@ function PAS.SetupSettings()
 		
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchAntiSpam] Created new settings-table\n"
+			"[PatchAntiSpam] Created new Settings - Table\n"
 			)
 
 	end
