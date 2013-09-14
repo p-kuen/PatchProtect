@@ -2,15 +2,20 @@ PAS = PAS or {}
 local savecount = 0
 
 function PAS.SetupSettings()
+
 	MsgC(
 		Color(0,235,200),
 		"==================================================\n",
 		"[PatchAntiSpam] Successfully loaded\n",
 		"==================================================\n"
 	)
+
 	if sql.TableExists("patchantispam") then
+
 		local testquery = sql.Query("SELECT " .. tostring(table.GetLastKey(PAS.ConVars.PAS_ANTISPAM) .. "from patchantispam")
+
 		if testquery == false then
+
 			sql.Query("DROP TABLE patchantispam")
 			MsgC(
 				Color(235, 0, 0), 
@@ -18,12 +23,56 @@ function PAS.SetupSettings()
 				"[PatchAntiSpam] Deleted the old settings-table\n",
 				"==================================================\n"
 				)
+
 		end
+
 	end
-	
-	if(!sql.TableExists("patchantispam")) then
-		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(use INTEGER, cooldown DOUBLE NOT NULL, noantiadmin INTEGER, spamcount INTEGER NOT NULL, spamaction INTEGER, bantime DOUBLE, concommand varchar(255), toolprotection INTEGER);")
-		sql.Query("INSERT INTO patchantispam(use, cooldown, noantiadmin, spamcount, spamaction, bantime, 'concommand', toolprotection) VALUES(" .. table.concat( PAS.ConVars.PAS_ANTISPAM, ", " ) .. ")") --1, 3, 1, 20, 0, 10, '', 1
+
+	if ( !sql.TableExists("patchantispam") ) then
+
+		local values = {}
+		--local keys = {}
+		--local types = {}
+		local sqlvars = {}
+
+		for Protection, ConVars in pairs(PAS.ConVars) do
+
+			for Option, value in pairs(ConVars) do
+
+				if Option != "spamcount" then
+
+					table.insert(sqlvars, tostring(Option) .. " " .. tostring(type(Option))
+
+				else
+
+					table.insert(sqlvars, tostring(Option) .. " " .. tostring(type(Option) .. " NOT NULL")
+
+				end
+
+				table.insert(values, value)
+
+				--[[
+				table.insert(keys, Option)
+				if Option != "spamcount" then
+					table.insert(types, type(Option))
+				else
+					table.insert(types, type(Option) .. " NOT NULL")
+				end
+				]]
+			end
+		end
+		--[[
+		for i = 1, table.Count(keys) do
+			table.insert(sqlvars, tostring(keys[i]) .. " " .. tostring(types[i]))
+		end
+		]]
+		print("sqlvars: ")
+		PrintTable(sqlvars)
+
+		--sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(use INTEGER, cooldown DOUBLE NOT NULL, noantiadmin INTEGER, spamcount INTEGER NOT NULL, spamaction INTEGER, bantime DOUBLE, concommand varchar(255), toolprotection INTEGER);")
+		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(" .. table.concat( sqlvars, ", " ) .. ");")
+
+		sql.Query("INSERT INTO patchantispam(use, cooldown, noantiadmin, spamcount, spamaction, bantime, 'concommand', toolprotection) VALUES(" .. table.concat( values, ", " ) .. ")") --1, 3, 1, 20, 0, 10, '', 1
 		MsgC(
 			Color(0, 240, 100),
 			"==================================================\n",
@@ -35,14 +84,19 @@ function PAS.SetupSettings()
 	
 	return sql.QueryRow("SELECT * FROM patchantispam LIMIT 1")
 end
+
 PAS.Settings = PAS.SetupSettings()
+
+print("settings: ")
 PrintTable(PAS.Settings)
+
 function PAS.ApplySettings(ply, cmd, args)
 	
 	if !ply then
 		PAS.InfoNotify(ply, "This command can only be run in-game!")
 	end
-	if(!ply:IsAdmin()) then
+
+	if (!ply:IsAdmin()) then
 		return
 	end
 
@@ -63,7 +117,9 @@ function PAS.ApplySettings(ply, cmd, args)
 	--print("saving: " .. args[1] .. " value: " .. GetConVarNumber("_PAS_ANTISPAM_"..args[1]))
 	
 	if args[1] != nil then
+
 		local number = GetConVar("_PAS_ANTISPAM_"..args[1]):GetFloat()
+
 		local text = GetConVar("_PAS_ANTISPAM_"..args[1]):GetString()
 
 		if text != 0 and number == 0 then
@@ -78,30 +134,35 @@ function PAS.ApplySettings(ply, cmd, args)
 			sql.Query("UPDATE patchantispam SET " .. args[1] .. " = " .. GetConVarNumber("_PAS_ANTISPAM_"..args[1]))
 		end
 		]]
+
 	end
 	
 	--print("Anzahl: "..sql.QueryValue( "SELECT count(*) from patchantispam LIMIT 1" ))
 
 end
+
 concommand.Add("PAS_SetSettings", PAS.ApplySettings)
 
 function PAS.CCV(ply, cmd, args)
 	
-	RunConsoleCommand("_PAS_ANTISPAM_" ..args[1], args[2])
+	RunConsoleCommand("_PAS_ANTISPAM_" .. args[1], args[2])
 	
 	RunConsoleCommand("PAS_SetSettings", args[1])
 	
-
 	savecount = savecount + 1
+
 	if savecount == table.Count(PAS.Settings) then
+
 		savecount = 0
 		timer.Simple(0.1, function()
 			PAS.Settings = sql.QueryRow("SELECT * FROM patchantispam LIMIT 1")
 			PAS.InfoNotify(ply, "Settings saved!")
 			
 		end)
+
 	end
 end
+
 concommand.Add("PAS_ChangeConVar", PAS.CCV)
 
 function PAS.InfoNotify(ply, text)
@@ -109,11 +170,13 @@ function PAS.InfoNotify(ply, text)
 		umsg.String(text)
 	umsg.End()
 end
+
 function PAS.AdminNotify(text)
 	umsg.Start("PAS_AdminNotify")
 		umsg.String(text)
 	umsg.End()
 end
+
 function PAS.Notify(ply, text)
 	umsg.Start("PAS_Notify", ply)
 		umsg.String(text)

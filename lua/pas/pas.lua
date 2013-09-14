@@ -45,51 +45,84 @@ function spamaction(ply)
 end
 
 function PAS.Spawn(ply, type, ent, toolgun)
-	if tobool(PAS.Settings["use"]) == false then return end
-	local phy = ent:GetPhysicsObject()
-	if !phy:IsValid() then return end
-	local class = ent:GetClass()
 
+	--If AntiSpam is deactivated
+	if tobool(PAS.Settings["use"]) == false then return end
+
+	--Set Physics Object
+	local phy = ent:GetPhysicsObject()
+
+	--If Entity is not Valid
+	if !phy:IsValid() then return end
+
+	--Get Class of the Entity
+	--local class = ent:GetClass()
+
+	--Removing Entity
 	if not toolgun then
+
 		if CurTime() < ply.d_time then
-			if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
-			else
+			if !ply:IsAdmin() and !tobool(PAS.Settings["noantiadmin"]) then
+
 				timer.Create(ply:Nick().."_propcooldown", 10, 1, function()
 					ply.props = 0
 				end)
+
 				ply.props = ply.props + 1
 		
 				if ply.props >= tonumber(PAS.Settings["spamcount"]) then
+
 					PAS.AdminNotify("Player "..ply:Nick().." is spamming!")
 					ply.props = 0
 					spamaction(ply)
+
 				end
+
 				ply.r_time = ply.d_time - CurTime()
-				PAS.Notify(ply, "Wait: "..math.Round(ply.r_time,1).."s")
+				PAS.Notify(ply, "Wait: ".. math.Round(ply.r_time,1) .."s")
+
+				--Remove Entity
 				ent:Remove()
-				ply.propspawning = false
+
+				--ply.propspawning = false
+
 				return
+
 			end
 		end
+
 		ply.d_time = CurTime() + tonumber(PAS.Settings["cooldown"])
-		ply.propspawning = false
+
+		--ply.propspawning = false
+
 	else
+
 		ply.count = ply.count + 1
 		ply.toolprops[ply.count] = ent
+
 	end
+
 end
 
 local function removeent(ply)
-	for i=1, table.Count(ply.toolprops) do
+	for i = 1, table.Count(ply.toolprops) do
+
 		if ply.toolprops[i]:IsValid() then ply.toolprops[i]:Remove() end
 		
 	end
+
 	ply.toolprops = {}
+
 end
 
 function firedToolGun(ply, tr, tool)
+
 	ply.usingtoolgun = true
+
+	--If Tool Restriction is deactivated
 	if tobool(PAS.Settings["use"]) == false or tobool(PAS.Settings["toolprotection"]) == false then return end
+
+	--If activated
 	ply.toolprops = {}
 	--[[
 	if not ply.blocktool then return end
@@ -114,13 +147,16 @@ function firedToolGun(ply, tr, tool)
 	]]
 	
 	if table.Count(ply.toolprops) == 0 then return end
+
 	timer.Simple(0.00001, function()
+
 		ply.usingtoolgun = false
 		ply.count = 0
 
 		if CurTime() < ply.tool_d_time then
-			if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
-			else
+
+			if !ply:IsAdmin() and !tobool(PAS.Settings["noantiadmin"]) then
+
 				timer.Create(ply:Nick().."_toolcooldown", 10, 1, function()
 					ply.tools = 0
 				end)
@@ -134,11 +170,15 @@ function firedToolGun(ply, tr, tool)
 				PAS.Notify(ply, "Wait: "..math.Round(ply.tool_r_time,1).."s")
 				removeent(ply)
 				return
+
 			end
+
 		end
 
 		ply.tool_d_time = CurTime() + tonumber(PAS.Settings["cooldown"])
+
 	end)
+
 end
 hook.Add( "CanTool", "FiredToolGun", firedToolGun )
 
@@ -150,15 +190,18 @@ if cleanup then
 				NADMOD.PlayerMakePropOwner(ply, ent)
 			end
 		end
-		ply.propspawning = true
 
-		if Type ~= "duplicates" and !ply.usingtoolgun then
+		--ply.propspawning = true
+
+		if Type != "duplicates" and !ply.usingtoolgun then
+
 			PAS.Spawn(ply, Type, ent, false)
+
 		elseif ply.usingtoolgun then
+
 			PAS.Spawn(ply, Type, ent, true)
+
 		end
 	end
 
 end
-
-

@@ -26,3 +26,4 @@ for Protection, ConVars in pairs(PAS.ConVars) do
 	end
 end
 
+array = {"test1", 2, 3}
