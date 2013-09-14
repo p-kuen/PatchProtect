@@ -1,0 +1,11 @@
+{
+	"title"		:	"PatchAntiSpam (PAS)",
+	"type"		:	"tool",
+	"tags"		:	[ "build" ],
+	"ignore"	:
+	[
+		"*.git*",
+		"*.bat",
+		"*.jpg"
+	]
+}
