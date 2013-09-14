@@ -137,9 +137,7 @@ function firedToolGun(ply, tr, tool)
 		if CurTime() < ply.toolcooldown then
 
 			if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
-
 				--Do nothing ...
-
 			else
 
 				ply.tools = ply.tools + 1
