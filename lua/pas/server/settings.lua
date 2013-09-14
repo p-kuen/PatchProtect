@@ -44,12 +44,13 @@ function PAS.SetupSettings()
 			for Option, value in pairs(ConVars) do
 
 				local Type = type(PAS.ConVars.PAS_ANTISPAM[Option])
-				
 
 				if Type == "number" then
+
 					local isDecimal
 					if tonumber(value) > math.floor(tonumber(value)) then isDecimal = true else isDecimal = false end
 					if  not isDecimal then Type = string.gsub(Type, "number", "INTEGER") else Type = string.gsub(Type, "number", "DOUBLE") end
+					
 				end
 
 				Type = string.gsub(Type, "string", "VARCHAR(255)")
