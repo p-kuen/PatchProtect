@@ -62,11 +62,6 @@ function PAS.Spawn(ply, type, ent, toolgun)
 				--Do nothing...
 			else
 
-
-				timer.Create(ply:Nick() .. "_propcooldown", 10, 1, function()
-					ply.props = 0
-				)
-
 				--Add One Prop to the Warning List
 				ply.props = ply.props + 1
 
@@ -83,7 +78,6 @@ function PAS.Spawn(ply, type, ent, toolgun)
 				PAS.Notify( ply, "Wait: " .. math.Round( CurTime() - ply.cooldown, 1))
 
 				--Remove Entity
-				print("removed prop")
 				ent:Remove()
 
 				return
@@ -93,7 +87,7 @@ function PAS.Spawn(ply, type, ent, toolgun)
 		else
 
 			--Set Cooldown
-			print("added cooldown")
+			ply.props = 0
 			ply.cooldown = CurTime() + tonumber(PAS.Settings["cooldown"])
 
 		end

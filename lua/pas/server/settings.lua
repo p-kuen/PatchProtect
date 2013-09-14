@@ -11,9 +11,8 @@ function PAS.SetupSettings()
 	)
 
 	if sql.TableExists("patchantispam") then
-		print("test")
 		--local testquery = sql.Query("SELECT a" .. tostring(table.GetLastKey(PAS.ConVars.PAS_ANTISPAM)) .. " from patchantispam")
-		local testquery = sql.Query("SELECT stoolprotection from patchantispam")
+		local testquery = sql.Query("SELECT toolprotection from patchantispam")
 
 
 		if testquery == false then
@@ -31,51 +30,47 @@ function PAS.SetupSettings()
 	end
 
 	if ( !sql.TableExists("patchantispam") ) then
-		--[[
+		
 		local values = {}
-		--local keys = {}
-		--local types = {}
 		local sqlvars = {}
 
 		for Protection, ConVars in pairs(PAS.ConVars) do
 
 			for Option, value in pairs(ConVars) do
 
-				if Option != "spamcount" then
+				local Type = type(PAS.ConVars.PAS_ANTISPAM[Option])
+				
 
-					table.insert(sqlvars, tostring(Option) .. " " .. tostring(type(Option)))
-
-				else
-
-					table.insert(sqlvars, tostring(Option) .. " " .. tostring(type(Option) .. " NOT NULL"))
-					local test = 1
-					print("vartype")
-					print(type(test))
-
+				if Type == "number" then
+					local isDecimal
+					if tonumber(value) > math.floor(tonumber(value)) then isDecimal = true else isDecimal = false end
+					if  not isDecimal then Type = string.gsub(Type, "number", "INTEGER") else Type = string.gsub(Type, "number", "DOUBLE") end
 				end
 
-				table.insert(values, value)
+				Type = string.gsub(Type, "string", "VARCHAR(255)")
 
-				--table.insert(keys, Option)
-				--if Option != "spamcount" then
-				--	table.insert(types, type(Option))
-				--else
-				--	table.insert(types, type(Option) .. " NOT NULL")
-				--end
+				if Option == "spamcount" or Option == "cooldown" then
+
+					table.insert(sqlvars, tostring(Option) .. " " .. Type)
+
+				else
+					table.insert(sqlvars, tostring(Option) .. " " .. Type)
+					
+
+				end
+				if value == "" then
+					table.insert(values, "''")
+				else
+					table.insert(values, value)
+				end
 				
 			end
 		end
-		--for i = 1, table.Count(keys) do
-		--	table.insert(sqlvars, tostring(keys[i]) .. " " .. tostring(types[i]))
-		--end
-		print("sqlvars: ")
-		PrintTable(sqlvars)
-]]
-		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(use INTEGER, cooldown DOUBLE NOT NULL, noantiadmin INTEGER, spamcount INTEGER NOT NULL, spamaction INTEGER, bantime DOUBLE, concommand varchar(255), toolprotection INTEGER);")
-		--sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(" .. table.concat( sqlvars, ", " ) .. ");")
 
-		--sql.Query("INSERT INTO patchantispam(use, cooldown, noantiadmin, spamcount, spamaction, bantime, 'concommand', toolprotection) VALUES(" .. table.concat( values, ", " ) .. ")") --
-		sql.Query("INSERT INTO patchantispam(use, cooldown, noantiadmin, spamcount, spamaction, bantime, 'concommand', toolprotection) VALUES(1, 3, 1, 20, 0, 10, '', 1)")
+		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(" .. table.concat( sqlvars, ", " ) .. ");")
+
+		sql.Query("INSERT INTO patchantispam(use, cooldown, noantiadmin, spamcount, spamaction, bantime, 'concommand', toolprotection) VALUES(" .. table.concat( values, ", " ) .. ")") --
+		
 		MsgC(
 			Color(0, 240, 100),
 			"==================================================\n",
@@ -89,9 +84,6 @@ function PAS.SetupSettings()
 end
 
 PAS.Settings = PAS.SetupSettings()
-
-print("settings: ")
-PrintTable(PAS.Settings)
 
 function PAS.ApplySettings(ply, cmd, args)
 	

@@ -10,11 +10,11 @@ PAS.ConVars = {}
 
 PAS.ConVars.PAS_ANTISPAM = {
 	use = 1,
-	cooldown = 3,
+	cooldown = 3.5,
 	noantiadmin = 1,
 	spamcount = 20,
 	spamaction = 0,
-	bantime = 10,
+	bantime = 10.5,
 	concommand = "",
 	toolprotection = 1
 }
@@ -25,5 +25,3 @@ for Protection, ConVars in pairs(PAS.ConVars) do
 		CreateConVar( "_"..Protection.."_"..Option, value, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
 	end
 end
-
-array = {"test1", 2, 3}
