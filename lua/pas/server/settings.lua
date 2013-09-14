@@ -9,7 +9,7 @@ function PAS.SetupSettings()
 		"==================================================\n"
 	)
 	if sql.TableExists("patchantispam") then
-		local testquery = sql.Query("SELECT toolprotection from patchantispam")
+		local testquery = sql.Query("SELECT " .. tostring(table.GetLastKey(PAS.ConVars.PAS_ANTISPAM) .. "from patchantispam")
 		if testquery == false then
 			sql.Query("DROP TABLE patchantispam")
 			MsgC(
@@ -23,7 +23,7 @@ function PAS.SetupSettings()
 	
 	if(!sql.TableExists("patchantispam")) then
 		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(use INTEGER, cooldown DOUBLE NOT NULL, noantiadmin INTEGER, spamcount INTEGER NOT NULL, spamaction INTEGER, bantime DOUBLE, concommand varchar(255), toolprotection INTEGER);")
-		sql.Query("INSERT INTO patchantispam(use, cooldown, noantiadmin, spamcount, spamaction, bantime, 'concommand', toolprotection) VALUES(1, 3, 1, 20, 0, 10, '', 1)")
+		sql.Query("INSERT INTO patchantispam(use, cooldown, noantiadmin, spamcount, spamaction, bantime, 'concommand', toolprotection) VALUES(" .. table.concat( PAS.ConVars.PAS_ANTISPAM, ", " ) .. ")") --1, 3, 1, 20, 0, 10, '', 1
 		MsgC(
 			Color(0, 240, 100),
 			"==================================================\n",
@@ -36,7 +36,7 @@ function PAS.SetupSettings()
 	return sql.QueryRow("SELECT * FROM patchantispam LIMIT 1")
 end
 PAS.Settings = PAS.SetupSettings()
-
+PrintTable(PAS.Settings)
 function PAS.ApplySettings(ply, cmd, args)
 	
 	if !ply then
