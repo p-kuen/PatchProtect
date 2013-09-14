@@ -52,7 +52,7 @@ usermessage.Hook("PAS_Notify", function(u) PAS.AddNotify(u:ReadString()) end)
 
 local function DrawInfoNotice( self, k, v, i )
 	local text = v.text
-	surface.SetFont("MenuLarge")
+	surface.SetFont("DermaDefaultBold")
 	local tsW, tsH = surface.GetTextSize(text)
 	
 	local w = tsW+20
@@ -66,12 +66,12 @@ local function DrawInfoNotice( self, k, v, i )
 	local coltext = Color(0, 0, 0, 255)
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
-	draw.SimpleText( text, "MenuLarge", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	draw.SimpleText( text, "DermaDefaultBold", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 end
 
 local function DrawAdminNotice( self, k, v, i )
 	local text = v.text
-	surface.SetFont("MenuLarge")
+	surface.SetFont("DermaDefaultBold")
 	local tsW, tsH = surface.GetTextSize(text)
 	
 	local w = tsW+20
@@ -85,12 +85,12 @@ local function DrawAdminNotice( self, k, v, i )
 	local coltext = Color(0, 0, 0, 255)
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
-	draw.SimpleText( text, "MenuLarge", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	draw.SimpleText( text, "DermaDefaultBold", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 end
 
 local function DrawNotice( self, k, v, i )
 	local text = v.text
-	surface.SetFont("MenuLarge")
+	surface.SetFont("DermaDefaultBold")
 	local tsW, tsH = surface.GetTextSize(text)
 	local w = tsW+20
 	local h = tsH+15
@@ -103,7 +103,7 @@ local function DrawNotice( self, k, v, i )
 	local coltext = Color(0, 0, 0, 255)
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
-	draw.SimpleText( text, "MenuLarge", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	draw.SimpleText( text, "DermaDefaultBold", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 end
 
 local function Paint()
