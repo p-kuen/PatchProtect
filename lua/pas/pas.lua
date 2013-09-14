@@ -3,11 +3,15 @@ PAS = PAS or {}
 
 --==============================DO NOT EDIT BELOW THIS POINT===================================
 function PAS.Setup(ply)
+
+	ply.cooldown = 0
+	ply.props = 0
+
 	--Prop
 	ply.d_time = 0
 	ply.r_time = 0
 	ply.t_time = 0
-	ply.props = 0
+	--ply.props = 0
 	ply.lastprop = "none"
 	ply.spawnspecial = false
 
@@ -17,7 +21,7 @@ function PAS.Setup(ply)
 	ply.tool_t_time = 0
 	ply.tools = 0
 
-	ply.propspawning = false
+	--ply.propspawning = false
 	ply.usingtoolgun = false
 	ply.blocktool = false
 	ply.count = 0
@@ -49,15 +53,54 @@ function PAS.Spawn(ply, type, ent, toolgun)
 	--If AntiSpam is deactivated
 	if tobool(PAS.Settings["use"]) == false then return end
 
-	--Set Physics Object
-	local phy = ent:GetPhysicsObject()
+	--Dev:
+	if !toolgun then
 
-	--If Entity is not Valid
-	if !phy:IsValid() then return end
+		if CurTime() < ply.cooldown then
 
-	--Get Class of the Entity
-	--local class = ent:GetClass()
+			if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
+				--Do nothing...
+			else
 
+
+				timer.Create(ply:Nick() .. "_propcooldown", 10, 1, function()
+					ply.props = 0
+				)
+
+				--Add One Prop to the Warning List
+				ply.props = ply.props + 1
+
+				--Notify to Admin about spamming
+				if ply.props > tonumber(PAS.Settings["spamcount"]) then
+
+					PAS.AdminNotify("Player "..ply:Nick().." is spamming!")
+					ply.props = 0
+					spamaction( ply )
+
+				end
+
+				--Notify Client about Wait-Time
+				PAS.Notify( ply, "Wait: " .. math.Round( CurTime() - ply.cooldown, 1))
+
+				--Remove Entity
+				print("removed prop")
+				ent:Remove()
+
+				return
+
+			end
+
+		else
+
+			--Set Cooldown
+			print("added cooldown")
+			ply.cooldown = CurTime() + tonumber(PAS.Settings["cooldown"])
+
+		end
+
+	end
+
+--[[
 	--Removing Entity
 	if not toolgun then
 
@@ -102,7 +145,7 @@ function PAS.Spawn(ply, type, ent, toolgun)
 		ply.toolprops[ply.count] = ent
 
 	end
-
+]]
 end
 
 local function removeent(ply)
