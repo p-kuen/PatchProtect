@@ -161,15 +161,19 @@ function firedToolGun(ply, tr, tool)
 end
 hook.Add( "CanTool", "FiredToolGun", firedToolGun )
 
+--Run Anti Spam Functions
 if cleanup then
 
 	function cleanup.Add(ply, Type, ent)
+
+		--Set Prop Owner
 		if IsValid(ent) and ply:IsPlayer() then
 			if NADMOD then
 				NADMOD.PlayerMakePropOwner(ply, ent)
 			end
 		end
 
+		--If Toolgun is not used
 		if Type != "duplicates" and !ply.usingtoolgun then
 
 			PAS.Spawn(ply, Type, ent, false)

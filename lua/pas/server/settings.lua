@@ -1,4 +1,5 @@
 PAS = PAS or {}
+
 local savecount = 0
 
 function PAS.SetupSettings()
@@ -14,17 +15,19 @@ function PAS.SetupSettings()
 	)
 
 	if sql.TableExists("patchantispam") then
-		--local testquery = sql.Query("SELECT a" .. tostring(table.GetLastKey(PAS.ConVars.PAS_ANTISPAM)) .. " from patchantispam")
-		local testquery = sql.Query("SELECT toolprotection from patchantispam")
 
+		--Automated Table Check
+		local checkstring = table.ToString(PAS.ConVars.PAS_ANTISPAM)
+		local lastentry = checkstring:sub(2, checkstring:find("=") - 1)
+		local checktable = sql.Query("SELECT " .. lastentry .. " from patchantispam")
 
-		if testquery == false then
+		if checktable == false then
 
 			sql.Query("DROP TABLE patchantispam")
 			MsgC(
 				Color(235, 0, 0), 
 				"[PatchAntiSpam] Deleted the old Settings - Table\n"
-				)
+			)
 
 		end
 
