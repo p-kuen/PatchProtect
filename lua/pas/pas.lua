@@ -59,7 +59,7 @@ function PAS.Spawn(ply, type, ent, toolgun)
 	if tobool(PAS.Settings["use"]) == false then return end
 
 	--Dev:
-	if !toolgun then
+	if not toolgun then
 
 		if CurTime() < ply.cooldown then
 
@@ -97,6 +97,9 @@ function PAS.Spawn(ply, type, ent, toolgun)
 
 		end
 
+	else
+		ply.count = ply.count + 1
+		ply.toolprops[ply.count] = ent
 	end
 
 end
@@ -114,18 +117,18 @@ local function removeent(ply)
 end
 
 function firedToolGun(ply, tr, tool)
-
 	ply.usingtoolgun = true
 
 	--If Tool Restriction is deactivated
 	if tobool(PAS.Settings["use"]) == false or tobool(PAS.Settings["toolprotection"]) == false then return end
-
 	--If activated
 	ply.toolprops = {}
 	
-	if table.Count(ply.toolprops) == 0 then return end
+
 
 	timer.Simple(0.00001, function()
+
+		if table.Count(ply.toolprops) == 0 then return end
 
 		ply.usingtoolgun = false
 		ply.count = 0
@@ -151,7 +154,6 @@ function firedToolGun(ply, tr, tool)
 			end
 
 		end
-
 		ply.tool_d_time = CurTime() + tonumber(PAS.Settings["cooldown"])
 
 	end)
