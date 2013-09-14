@@ -59,6 +59,7 @@ function PAS.SetupSettings()
 					table.insert(sqlvars, tostring(Option) .. " " .. Type)
 
 				else
+
 					table.insert(sqlvars, tostring(Option) .. " " .. Type)
 					
 
@@ -73,7 +74,6 @@ function PAS.SetupSettings()
 				
 			end
 		end
-
 		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(" .. table.concat( sqlvars, ", " ) .. ");")
 
 		sql.Query("INSERT INTO patchantispam(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")") --

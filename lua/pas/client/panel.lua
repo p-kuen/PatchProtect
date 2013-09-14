@@ -2,9 +2,12 @@ PAS = PAS or {}
 PAS.AdminPanel = nil
 
 local combo_a_selected
+local checks = {}
+local sliders = {}
 function PAS.AdminMenu(Panel)
 	Panel:ClearControls()
-	
+	checks = {}
+	sliders = {}
 	
 	
 	if(!PAS.AdminCPanel) then
@@ -45,15 +48,30 @@ function PAS.AdminMenu(Panel)
 		return cat, pan
 	end
 
-	local function addchkantispam()
-		chk_as = vgui.Create("DCheckBoxLabel")
-		chk_as:SetText("Use AntiSpam")
-		chk_as:SetValue(tobool(GetConVarNumber("_PAS_ANTISPAM_use")))
-		chk_as:SetDark(true)
-		
-		Panel:AddItem(chk_as)
+	local function addchk(plist, text, var)
+		local chk = vgui.Create("DCheckBoxLabel")
+		table.insert(checks, chk)
+		chk:SetText(text)
+		chk:SetChecked(tobool(GetConVarNumber("_PAS_ANTISPAM_" .. var)))
+		chk:SetDark(true)
+
+		plist:AddItem(chk)
 	end
 	
+	local function addsldr(plist, min, max, text, var, decimals)
+		local sldr = vgui.Create("DNumSlider")
+		table.insert(sliders, sldr)
+		sldr:SetMin(min)
+		sldr:SetMax(max)
+		decimals = decimals or 1
+		sldr:SetDecimals(decimals)
+		sldr:SetText(text)
+		sldr:SetDark(true)
+		sldr:SetValue(GetConVarNumber("_PAS_ANTISPAM_" .. var))
+
+		plist:AddItem(sldr)
+	end
+
 		--Create-functions
 	local function addlbl(text, plist)
 		local lbl = plist:Add("DLabel")
@@ -82,24 +100,6 @@ function PAS.AdminMenu(Panel)
 		sldr_s:SetValue(GetConVarNumber("_PAS_ANTISPAM_spamcount"))
 		Panel:AddItem(sldr_s)
 	end
-	
-	local function addchkantiadmin()
-		chk_aa = vgui.Create("DCheckBoxLabel")
-		chk_aa:SetText("No AntiSpam for Admins")
-		chk_aa:SetValue(tobool(GetConVarNumber("_PAS_ANTISPAM_noantiadmin")))
-		chk_aa:SetDark(true)
-		
-		Panel:AddItem(chk_aa)
-	end
-
-	local function addchktoolprotect()
-		chk_tp = vgui.Create("DCheckBoxLabel")
-		chk_tp:SetText("Use Tool-Protection")
-		chk_tp:SetValue(tobool(GetConVarNumber("_PAS_ANTISPAM_toolprotection")))
-		chk_tp:SetDark(true)
-		
-		Panel:AddItem(chk_tp)
-	end
 
 	local function addbtn(saves, text, plist)
 		btn = vgui.Create("DButton")
@@ -108,11 +108,10 @@ function PAS.AdminMenu(Panel)
 		btn:SetText(text)
 		btn:SetDark(true)
 		function btn:OnMousePressed()
-			local as_checked = chk_as:GetChecked() and 1 or 0
-			local aa_checked = chk_aa:GetChecked() and 1 or 0
-			local tp_checked = chk_tp:GetChecked() and 1 or 0
 			local sa_bantime = 0
 			local sa_concommand = ""
+
+			PrintTable(checks)
 
 			if combo_a_selected == nil and GetConVarNumber("_PAS_ANTISPAM_spamaction") != nil then
 				combo_a_selected = GetConVarNumber("_PAS_ANTISPAM_spamaction")
@@ -124,16 +123,21 @@ function PAS.AdminMenu(Panel)
 			if tentry_c != nil and tentry_c:IsValid() then sa_concommand =  tentry_c:GetValue() else sa_concommand = GetConVarString("_PAS_ANTISPAM_concommand")end
 
 			savevalues = {
-				as_checked,
-				sldr_c:GetValue(),
-				aa_checked,
-				sldr_s:GetValue(),
 				combo_a_selected,
 				sa_bantime,
 				sa_concommand,
-				tp_checked
 			}
 
+			--Add checks
+			for i = 1, table.Count(checks) do
+				table.insert(savevalues, checks[i])
+			end
+
+			--Add sliders
+			for i = 1, table.Count(sliders) do
+				table.insert(savevalues, sliders[i])
+			end
+			
 			for i=1, table.Count(savevalues) do
 				changeConVar(saves[i], savevalues[i])
 			end
@@ -195,20 +199,23 @@ function PAS.AdminMenu(Panel)
 	end
 	
 	--Build the menu
-	addchkantispam()
-	addchktoolprotect()
-	addsldrcooldown()
-	addsldrspamcount()
-	addchkantiadmin()
+	addchk(Panel, "Use AntiSpam", "use")
+	addchk(Panel, "Use Tool-Protection", "toolprotection")
+	addsldr(Panel, 0, 10, "Cooldown (Seconds)", "cooldown")
+	addsldr(Panel, 0, 40, "Props until Admin-Message", "spamcount")
+	addchk(Panel, "No AntiSpam for Admins", "noantiadmin")
+	
 	SpamActionCat, saCat = MakeCategory("Spam Action")
 	addbtn({"use", "cooldown", "noantiadmin", "spamcount", "spamaction", "bantime", "concommand", "toolprotection"}, "Save Settings", Panel)
 	
 
 	
 	addlbl("Spam Action:", saCat)
-	addcomboaction(saCat, false)
-	if GetConVarNumber("_PAS_ANTISPAM_spamaction") == 4 then addsldrban(saCat) end
-	if GetConVarNumber("_PAS_ANTISPAM_spamaction") == 5 then
+	--addcomboaction(saCat, false)
+	local spamactionnumber = GetConVarNumber("_PAS_ANTISPAM_spamaction")
+	if spamactionnumber == 4 then
+		addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
+	elseif spamactionnumber == 5 then
 		addtextcommand(saCat)
 		addlbl("Use <player> for the Spammer", saCat)
 	end
@@ -224,5 +231,6 @@ local function UpdateMenus()
 	if(PAS.AdminCPanel) then
 		PAS.AdminMenu(PAS.AdminCPanel)
 	end
+	print(checks[1])
 end
 hook.Add("SpawnMenuOpen", "PASMenus", UpdateMenus)
