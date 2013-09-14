@@ -5,12 +5,12 @@ function PAS.SetupSettings()
 
 	MsgC(
 		Color(0,235,200),
-		"[PatchAntiSpam]"
+		"\n[PatchAntiSpam]"
 	)
 
 	MsgC(
 		Color(255,255,255),
-		" Successfully loaded (Coded by Patcher56 & Ted894)\n",
+		" Successfully loaded (Coded by Patcher56 & Ted894)\n\n"
 	)
 
 	if sql.TableExists("patchantispam") then

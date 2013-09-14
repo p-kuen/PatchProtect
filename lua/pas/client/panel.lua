@@ -94,7 +94,7 @@ function PAS.AdminMenu(Panel)
 
 	local function addchktoolprotect()
 		chk_tp = vgui.Create("DCheckBoxLabel")
-		chk_tp:SetText("Tool Protection")
+		chk_tp:SetText("Use Tool-Protection")
 		chk_tp:SetValue(tobool(GetConVarNumber("_PAS_ANTISPAM_toolprotection")))
 		chk_tp:SetDark(true)
 		
@@ -196,10 +196,10 @@ function PAS.AdminMenu(Panel)
 	
 	--Build the menu
 	addchkantispam()
+	addchktoolprotect()
 	addsldrcooldown()
 	addsldrspamcount()
 	addchkantiadmin()
-	addchktoolprotect()
 	SpamActionCat, saCat = MakeCategory("Spam Action")
 	addbtn({"use", "cooldown", "noantiadmin", "spamcount", "spamaction", "bantime", "concommand", "toolprotection"}, "Save Settings", Panel)
 	
