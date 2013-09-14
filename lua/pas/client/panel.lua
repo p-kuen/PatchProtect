@@ -1,5 +1,3 @@
-
-
 PAS = PAS or {}
 PAS.AdminPanel = nil
 
@@ -219,7 +217,7 @@ end
 local function makeMenus()
 	spawnmenu.AddToolMenuOption("Utilities", "PAS", "PASAdmin", "Settings", "", "", PAS.AdminMenu)
 end
-hook.Add("PopulateToolMenu", "PASMenus", makeMenus)
+hook.Add("PopulateToolMenu", "PASmakeMenus", makeMenus)
 
 local function UpdateMenus()
 	

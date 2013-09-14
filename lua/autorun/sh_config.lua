@@ -19,10 +19,10 @@ PAS.ConVars.PAS_ANTISPAM = {
 	toolprotection = 1
 }
 
+--Create ConVars
 for Protection, ConVars in pairs(PAS.ConVars) do
 	for Option, value in pairs(ConVars) do
 		CreateConVar( "_"..Protection.."_"..Option, value, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
-		--CreateClientConVar("_"..Protection.."_"..Option, value, true, true)
 	end
 end
 
