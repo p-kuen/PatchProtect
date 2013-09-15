@@ -87,7 +87,7 @@ function PAS.AdminMenu(Panel)
 			addlbl("Use <player> for the Spammer", saCat)
 		end
 	end
-	hook.Add("spamaction", "showSA", showSpamAction)
+	hook.Add("combo_spamaction", "showSA", showSpamAction)
 
 	local updating = false
 	local sel = 0
@@ -109,7 +109,7 @@ function PAS.AdminMenu(Panel)
 		function combo:OnSelect(index, value, data)
 			sel = index
 			updating = true
-			hook.Run(var, index)
+			hook.Run("combo_" .. var, index)
 		end
 	end
 
@@ -120,7 +120,10 @@ function PAS.AdminMenu(Panel)
 		lbl:SetDark(true)
 	end
 
-	local function addbtn(saves, text, plist)
+	local function savethevalues()
+
+	end
+	local function addbtn(plist, text, args)
 		btn = vgui.Create("DButton")
 		btn:SetSize(150,30)
 		btn:Center()
@@ -150,23 +153,29 @@ function PAS.AdminMenu(Panel)
 
 			end
 
-			if savevalues[table.KeyFromValue(saves, "bantime")] == nil then
-				savevalues[table.KeyFromValue(saves, "bantime")] = GetConVarNumber("_PAS_ANTISPAM_bantime")
+			if savevalues[table.KeyFromValue(args, "bantime")] == nil then
+				savevalues[table.KeyFromValue(args, "bantime")] = GetConVarNumber("_PAS_ANTISPAM_bantime")
 			end
 
 			--Add texts
 			for i = 1, table.Count(texts) do
+				if table.Count(texts) >= 1 then
+					print(i)
+					PrintTable(texts)
+					if texts[i] ~= 0 then
+						table.insert(savevalues, texts[i]:GetValue())
+					end
 
-				if texts[i]:IsValid() then table.insert(savevalues, texts[i]:GetValue()) end
+				end
 
 			end
 
-			if savevalues[table.KeyFromValue(saves, "concommand")] == nil or type(savevalues[table.KeyFromValue(saves, "concommand")]) ~= "string" then
-				savevalues[table.KeyFromValue(saves, "concommand")] = GetConVarString("_PAS_ANTISPAM_concommand")
+			if savevalues[table.KeyFromValue(args, "concommand")] == nil or type(savevalues[table.KeyFromValue(args, "concommand")]) ~= "string" then
+				savevalues[table.KeyFromValue(args, "concommand")] = GetConVarString("_PAS_ANTISPAM_concommand")
 			end
 
 			for i = 1, table.Count(savevalues) do
-				changeConVar(saves[i], savevalues[i])
+				changeConVar(args[i], savevalues[i])
 			end
 			
 		end
@@ -187,7 +196,7 @@ function PAS.AdminMenu(Panel)
 	addchk(Panel, "No AntiSpam for Admins", "noantiadmin")
 	
 	SpamActionCat, saCat = MakeCategory("Spam Action")
-	addbtn({"spamaction", "use", "toolprotection", "noantiadmin", "cooldown", "spamcount", "bantime", "concommand"}, "Save Settings", Panel)
+	addbtn(Panel, "Save Settings", {"spamaction", "use", "toolprotection", "noantiadmin", "cooldown", "spamcount", "bantime", "concommand"})
 	
 
 	
