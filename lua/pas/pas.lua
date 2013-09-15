@@ -3,7 +3,7 @@ PAS = PAS or {}
 
 --Blocked Tools:
 
-local BlockedTools = {"dynamite", "thruster"}
+local BlockedTools = {} --{"dynamite", "thruster"}
 
 
 --Settings Variables:

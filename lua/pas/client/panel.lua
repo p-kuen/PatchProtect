@@ -1,11 +1,27 @@
 PAS = PAS or {}
 PAS.AdminPanel = nil
 
+ToolList = {}
 
 local checks = {}
 local sliders = {}
 local combos = {}
 local texts = {}
+
+function searchTools()
+
+	for _, wep in pairs( weapons.GetList() ) do
+		if wep.ClassName == "gmod_tool" then 
+			local t = wep.Tool
+			for name, tool in pairs( t ) do
+				t[ name ].ClassName = name
+				table.insert(BlockedTools, tostring(name))
+				print(name)
+			end
+		end
+	end
+
+end
 
 function PAS.AdminMenu(Panel)
 	Panel:ClearControls()
@@ -177,7 +193,7 @@ function PAS.AdminMenu(Panel)
 			for i = 1, table.Count(savevalues) do
 				changeConVar(args[i], savevalues[i])
 			end
-			
+
 		end
 		plist:AddItem(btn)
 	end
