@@ -81,14 +81,9 @@ function PAS.Spawn(ply, mdl)
 				--Add One Prop to the Warning List
 				ply.props = ply.props + 1
 
-				--Some Dev. Messages:
-				print(ply.props)
-				RunConsoleCommand("say", tostring(ply.props))
-				RunConsoleCommand("say", "plyprops: " .. tostring(PAS.Settings["spamcount"]))
-
 				--Notify to Admin about spamming
 				if ply.props >= tonumber(PAS.Settings["spamcount"]) then
-					RunConsoleCommand("say", "MESSAGE")
+					
 					PAS.AdminNotify(ply:Nick() .. " is spamming!")
 					ply.props = 0
 
