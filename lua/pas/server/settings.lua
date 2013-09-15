@@ -120,7 +120,6 @@ end
 concommand.Add("PAS_SetSettings", PAS.ApplySettings)
 
 function PAS.CCV(ply, cmd, args)
-	
 	RunConsoleCommand("_PAS_ANTISPAM_" .. args[1], args[2])
 	
 	RunConsoleCommand("PAS_SetSettings", args[1])

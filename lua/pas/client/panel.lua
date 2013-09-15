@@ -1,13 +1,18 @@
 PAS = PAS or {}
 PAS.AdminPanel = nil
 
-local combo_a_selected
+
 local checks = {}
 local sliders = {}
+local combos = {}
+local texts = {}
+
 function PAS.AdminMenu(Panel)
 	Panel:ClearControls()
 	checks = {}
 	sliders = {}
+	combos = {}
+	texts = {}
 	
 	
 	if(!PAS.AdminCPanel) then
@@ -20,16 +25,9 @@ function PAS.AdminMenu(Panel)
 		return
 	end
 	
-	local sldr_c
-	local sldr_s
-	local sldr_b = nil
-	local chk_aa
-	local chk_as
-	local chk_tp
-	local combo_a
 	local btn
-	local tentry_c = nil
 	local SpamActionCat, saCat
+	local combo_sa
 
 	local function changeConVar(convar, value)
 		if value != nil then
@@ -59,7 +57,12 @@ function PAS.AdminMenu(Panel)
 	end
 	
 	local function addsldr(plist, min, max, text, var, decimals)
-		local sldr = vgui.Create("DNumSlider")
+		local sldr
+		if plist == Panel then
+			sldr = vgui.Create("DNumSlider")
+		else
+			sldr = plist:Add("DNumSlider")
+		end
 		table.insert(sliders, sldr)
 		sldr:SetMin(min)
 		sldr:SetMax(max)
@@ -69,36 +72,52 @@ function PAS.AdminMenu(Panel)
 		sldr:SetDark(true)
 		sldr:SetValue(GetConVarNumber("_PAS_ANTISPAM_" .. var))
 
-		plist:AddItem(sldr)
+		if plist == Panel then plist:AddItem(sldr) end
+	end
+
+	local function showSpamAction(idx)
+		saCat:Clear()
+		addlbl("Spam Action:", saCat)
+		addcombo(saCat, "spamaction", {"Nothing", "CleanUp", "Kick", "Ban", "Console Command"})
+		combo_sa = idx
+		if idx == 4 then
+			addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
+		elseif idx == 5 then
+			addtext(saCat, "concommand")
+			addlbl("Use <player> for the Spammer", saCat)
+		end
+	end
+	hook.Add("spamaction", "showSA", showSpamAction)
+
+	local updating = false
+	local sel = 0
+	function addcombo(plist, var, choices)
+		local combo = plist:Add("DComboBox")
+		
+		local convar = GetConVarNumber("_PAS_ANTISPAM_" .. var)
+		table.insert(combos, combo)
+		for i = 1, table.Count(choices) do
+			combo:AddChoice(choices[i])
+		end
+
+		if convar ~= 0 and updating == false then
+			combo:ChooseOptionID(convar)
+		elseif convar ~= 0 and updating == true then
+			combo:ChooseOptionID(sel)
+		end
+
+		function combo:OnSelect(index, value, data)
+			sel = index
+			updating = true
+			hook.Run(var, index)
+		end
 	end
 
 		--Create-functions
-	local function addlbl(text, plist)
+	function addlbl(text, plist)
 		local lbl = plist:Add("DLabel")
 		lbl:SetText(text)
 		lbl:SetDark(true)
-	end
-	
-	local function addsldrcooldown()
-		sldr_c = vgui.Create("DNumSlider")
-		sldr_c:SetMin(0)
-		sldr_c:SetMax(10)
-		sldr_c:SetDecimals(1)
-		sldr_c:SetText("Cooldown (Seconds)")
-		sldr_c:SetDark(true)
-		sldr_c:SetValue(GetConVarNumber("_PAS_ANTISPAM_cooldown"))
-		Panel:AddItem(sldr_c)
-	end
-
-	local function addsldrspamcount()
-		sldr_s = vgui.Create("DNumSlider")
-		sldr_s:SetMin(0)
-		sldr_s:SetMax(40)
-		sldr_s:SetDecimals(0)
-		sldr_s:SetText("Props until Admin-Message")
-		sldr_s:SetDark(true)
-		sldr_s:SetValue(GetConVarNumber("_PAS_ANTISPAM_spamcount"))
-		Panel:AddItem(sldr_s)
 	end
 
 	local function addbtn(saves, text, plist)
@@ -111,34 +130,42 @@ function PAS.AdminMenu(Panel)
 			local sa_bantime = 0
 			local sa_concommand = ""
 
-			PrintTable(checks)
+			if combo_sa == nil then combo_sa = GetConVarNumber("_PAS_ANTISPAM_spamaction") end
 
-			if combo_a_selected == nil and GetConVarNumber("_PAS_ANTISPAM_spamaction") != nil then
-				combo_a_selected = GetConVarNumber("_PAS_ANTISPAM_spamaction")
-			elseif combo_a_selected == nil then
-				combo_a_selected = 1
-			end
-
-			if sldr_b != nil and sldr_b:IsValid() then sa_bantime = sldr_b:GetValue() else sa_bantime = GetConVarNumber("_PAS_ANTISPAM_bantime") end
-			if tentry_c != nil and tentry_c:IsValid() then sa_concommand =  tentry_c:GetValue() else sa_concommand = GetConVarString("_PAS_ANTISPAM_concommand")end
+			if texts[1] == nil then texts[1] = GetConVarNumber("_PAS_ANTISPAM_concommand") end
 
 			savevalues = {
-				combo_a_selected,
-				sa_bantime,
-				sa_concommand,
+				combo_sa,
 			}
 
 			--Add checks
 			for i = 1, table.Count(checks) do
-				table.insert(savevalues, checks[i])
+				table.insert(savevalues, checks[i]:GetChecked() and 1 or 0 )
 			end
 
 			--Add sliders
 			for i = 1, table.Count(sliders) do
-				table.insert(savevalues, sliders[i])
+
+				if sliders[i]:IsValid() then table.insert(savevalues, sliders[i]:GetValue()) end
+
 			end
-			
-			for i=1, table.Count(savevalues) do
+
+			if savevalues[table.KeyFromValue(saves, "bantime")] == nil then
+				savevalues[table.KeyFromValue(saves, "bantime")] = GetConVarNumber("_PAS_ANTISPAM_bantime")
+			end
+
+			--Add texts
+			for i = 1, table.Count(texts) do
+
+				if texts[i]:IsValid() then table.insert(savevalues, texts[i]:GetValue()) end
+
+			end
+
+			if savevalues[table.KeyFromValue(saves, "concommand")] == nil or type(savevalues[table.KeyFromValue(saves, "concommand")]) ~= "string" then
+				savevalues[table.KeyFromValue(saves, "concommand")] = GetConVarString("_PAS_ANTISPAM_concommand")
+			end
+
+			for i = 1, table.Count(savevalues) do
 				changeConVar(saves[i], savevalues[i])
 			end
 			
@@ -146,56 +173,10 @@ function PAS.AdminMenu(Panel)
 		plist:AddItem(btn)
 	end
 
-	local function showbanframe()
-		frame = vgui.Create( "Frame" )
-		frame:SetSize( ScrW()*0.25, ScrH()*0.25 )
-		frame:Center()
-		frame:SetVisible( true )
-		frame:MakePopup()
-
-	end
-
-	local function addcomboaction(plist, updating)
-		combo_a = plist:Add("DComboBox")
-		combo_a:AddChoice("Nothing")
-		combo_a:AddChoice("CleanUp")
-		combo_a:AddChoice("Kick")
-		combo_a:AddChoice("Ban")
-		combo_a:AddChoice("Console Command")
-		if GetConVarNumber("_PAS_ANTISPAM_spamaction") != 0 and updating == false then
-			combo_a:ChooseOptionID(GetConVarNumber("_PAS_ANTISPAM_spamaction"))
-		end
-		if updating == true then
-			combo_a:ChooseOptionID(combo_a_selected)
-		end
-
-		combo_a.OnSelect = function(panel, index, value, data)
-			combo_a_selected = index
-			saCat:Clear()
-			addlbl("Spam Action:", saCat)
-			addcomboaction(saCat, true)
-			if index == 4 then
-				addsldrban(saCat)
-			elseif index == 5 then
-				addtextcommand(saCat)
-				addlbl("Use <player> for the Spammer", saCat)
-			end
-		end
-	end
-
-	function addsldrban(plist)
-		sldr_b = plist:Add("DNumSlider")
-		sldr_b:SetMin(0)
-		sldr_b:SetMax(60)
-		sldr_b:SetDecimals(0)
-		sldr_b:SetText("Ban Time (minutes)")
-		sldr_b:SetDark(true)
-		sldr_b:SetValue(GetConVarNumber("_PAS_ANTISPAM_bantime"))
-	end
-
-	function addtextcommand(plist)
-		tentry_c = plist:Add( "DTextEntry")
-		tentry_c:SetText(GetConVarString("_PAS_ANTISPAM_concommand"))
+	function addtext(plist, var)
+		local tentry = plist:Add( "DTextEntry")
+		table.insert(texts, tentry)
+		tentry:SetText(GetConVarString("_PAS_ANTISPAM_" .. var))
 	end
 	
 	--Build the menu
@@ -206,17 +187,17 @@ function PAS.AdminMenu(Panel)
 	addchk(Panel, "No AntiSpam for Admins", "noantiadmin")
 	
 	SpamActionCat, saCat = MakeCategory("Spam Action")
-	addbtn({"use", "cooldown", "noantiadmin", "spamcount", "spamaction", "bantime", "concommand", "toolprotection"}, "Save Settings", Panel)
+	addbtn({"spamaction", "use", "toolprotection", "noantiadmin", "cooldown", "spamcount", "bantime", "concommand"}, "Save Settings", Panel)
 	
 
 	
 	addlbl("Spam Action:", saCat)
-	--addcomboaction(saCat, false)
+	addcombo(saCat, "spamaction", {"Nothing", "CleanUp", "Kick", "Ban", "Console Command"})
 	local spamactionnumber = GetConVarNumber("_PAS_ANTISPAM_spamaction")
 	if spamactionnumber == 4 then
 		addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
 	elseif spamactionnumber == 5 then
-		addtextcommand(saCat)
+		addtext(saCat, "concommand")
 		addlbl("Use <player> for the Spammer", saCat)
 	end
 end
@@ -231,6 +212,5 @@ local function UpdateMenus()
 	if(PAS.AdminCPanel) then
 		PAS.AdminMenu(PAS.AdminCPanel)
 	end
-	print(checks[1])
 end
 hook.Add("SpawnMenuOpen", "PASMenus", UpdateMenus)
