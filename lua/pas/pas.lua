@@ -1,5 +1,13 @@
 PAS = PAS or {}
 
+
+--Blocked Tools:
+
+local BlockedTools = {"dynamite"}
+
+
+--Settings Variables:
+
 function PAS.Setup(ply)
 
 	--Props
@@ -11,12 +19,12 @@ function PAS.Setup(ply)
 	--Tools
 	ply.toolcooldown = 0
 	ply.tools = 0
-	ply.usingtoolgun = false
-	ply.count = 0
-	ply.toolprops = {}
 
 end
 hook.Add( "PlayerInitialSpawn", "Setup_PropSpawn", PAS.Setup )
+
+
+--Spam Action:
 
 function spamaction(ply)
 
@@ -55,14 +63,15 @@ function spamaction(ply)
 
 end
 
---Anti Spam Function ## PROPS ##
-function PAS.Spawn(ply, type, ent, toolgun)
 
-	--If AntiSpam is deactivated
+--Prop Anti Spam:
+
+function PAS.Spawn(ply, mdl)
+
+	--Check if PAS is enabled
 	if tobool(PAS.Settings["use"]) == false then return end
 
-	if not toolgun then
-
+		--Checking Coodown
 		if CurTime() < ply.cooldown then
 
 			if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
@@ -71,25 +80,25 @@ function PAS.Spawn(ply, type, ent, toolgun)
 				
 				--Add One Prop to the Warning List
 				ply.props = ply.props + 1
+
+				--Some Dev. Messages:
 				print(ply.props)
 				RunConsoleCommand("say", tostring(ply.props))
 				RunConsoleCommand("say", "plyprops: " .. tostring(PAS.Settings["spamcount"]))
+
 				--Notify to Admin about spamming
 				if ply.props >= tonumber(PAS.Settings["spamcount"]) then
 					RunConsoleCommand("say", "MESSAGE")
 					PAS.AdminNotify(ply:Nick() .. " is spamming!")
 					ply.props = 0
-					spamaction( ply )
 
 				end
 
 				--Notify Client about Wait-Time
 				PAS.Notify( ply, "Wait: " .. math.Round( ply.cooldown - CurTime(), 1))
 
-				--Remove Entity
-				ent:Remove()
-
-				return
+				--Block entity
+				return false
 
 			end
 
@@ -101,106 +110,57 @@ function PAS.Spawn(ply, type, ent, toolgun)
 
 		end
 
-	else
-
-		ply.count = ply.count + 1
-		ply.toolprops[ply.count] = ent
-
-	end
-
 end
+hook.Add("PlayerSpawnProp", "SpawnedProp", PAS.Spawn)
 
 
+--Tool Anti Spam:
 
-
-
-
---Anti Spam Function ## TOOLS ##
-function firedToolGun(ply, tr, tool)
-
-	ply.usingtoolgun = true
-
-	--If Tool Restriction is deactivated OR whole AntiSpam
+function PAS.Tool ( ply, trace, mode )
+	
+	--Check, if PAS is enabled and also the Tool Restriction
 	if tobool(PAS.Settings["use"]) == false or tobool(PAS.Settings["toolprotection"]) == false then return end
 
-	--Reset Tool Entities
-	ply.toolprops = {}
-	
-	--Start Timer
-	timer.Simple(0.00001, function()
+	--Check, what tool the player uses
+	for k, v in pairs( BlockedTools ) do
 
-		if table.Count(ply.toolprops) == 0 then return end
+		if mode == v then
 
-		ply.usingtoolgun = false
-		ply.count = 0
+			--Set AntiSpam:
+			if CurTime() < ply.toolcooldown then
 
-		if CurTime() < ply.toolcooldown then
+				if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
+					--Do nothing...
+				else
 
-			if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
-				--Do nothing ...
+					ply.tools = ply.tools + 1
+
+					--Notify Admin about spamming
+					if ply.tools >= tonumber(PAS.Settings["spamcount"]) then
+
+						PAS.AdminNotify(ply:Nick() .. " is spamming with " .. tostring(mode) .. "'s!")
+						ply.tools = 0
+
+					end
+
+					--Notify Client about Wait-Time
+					PAS.Notify( ply, "Wait: " .. math.Round( ply.toolcooldown - CurTime(), 1))
+
+					--Block Tool
+					return false
+
+				end
+
 			else
 
-				ply.tools = ply.tools + 1
-
-				if ply.tools >= tonumber(PAS.Settings["spamcount"]) then
-
-					PAS.AdminNotify(ply:Nick() .. " is spamming with " .. tool .. "'s")
-					ply.tools = 0
-
-				end
-
-				ply.tool_r_time = 
-				PAS.Notify( ply, "Wait: ".. math.Round( ply.toolcooldown - CurTime(), 1 ) )
-				
-				--Remove Toolgun-Entities
-				for i = 1, table.Count(ply.toolprops) do
-					ply.toolprops[i]:Remove()
-				end
-				ply.toolprops = {}
-
-				return
+				ply.tools = 0
+				ply.toolcooldown = CurTime() + tonumber(PAS.Settings["cooldown"])
 
 			end
 
-		else
-
-			ply.tools = 0
-			ply.toolcooldown = CurTime() + tonumber(PAS.Settings["cooldown"])
-
 		end
 
-	end)
-
-end
-hook.Add( "CanTool", "FiredToolGun", firedToolGun )
-
-
-
-
-
-
---Anti Spam Function ## RUN FUNCTIONS ##
-if cleanup then
-
-	function cleanup.Add(ply, Type, ent)
-
-		--Set Prop's Owner
-		if IsValid(ent) and ply:IsPlayer() then
-			if NADMOD then
-				NADMOD.PlayerMakePropOwner(ply, ent)
-			end
-		end
-
-		--If Toolgun is not used
-		if Type != "duplicates" and !ply.usingtoolgun then
-
-			PAS.Spawn(ply, Type, ent, false)
-
-		elseif ply.usingtoolgun then
-
-			PAS.Spawn(ply, Type, ent, true)
-
-		end
 	end
-
+	
 end
+hook.Add("CanTool", "LimitToolGuns", PAS.Tool)
