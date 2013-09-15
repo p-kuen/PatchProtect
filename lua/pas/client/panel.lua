@@ -204,6 +204,26 @@ function PAS.AdminMenu(Panel)
 		tentry:SetText(GetConVarString("_PAS_ANTISPAM_" .. var))
 	end
 	
+	function addframe(width, height, text, dragable, closebutton)
+		local pframe = vgui.Create("DFrame")
+		pframe:SetPos( surface.ScreenWidth() / 2 - (width / 2), surface.ScreenHeight() / 2 - (height / 2) )
+		pframe:SetSize( width, height )
+		pframe:SetTitle( text )
+		pframe:SetVisible( true )
+		pframe:SetDraggable( dragable )
+		pframe:ShowCloseButton( closebutton )
+		pframe:SetBackgroundBlur( true )
+		pframe:MakePopup()
+	end
+
+	function addchkframe(width, height, text)
+		local chkframe = vgui.Create( "DCheckBoxLabel", pframe)
+		chkframe:SetPos( width, height )
+		chkframe:SetText(text)
+		chkframe:SetDark(true)
+		chkframe:SizeToContents()
+	end
+
 	--Build the menu
 	addchk(Panel, "Use AntiSpam", "use")
 	addchk(Panel, "Use Tool-Protection", "toolprotection")
