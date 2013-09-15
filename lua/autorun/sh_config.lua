@@ -21,7 +21,9 @@ PAS.ConVars.PAS_ANTISPAM = {
 
 --Create ConVars
 for Protection, ConVars in pairs(PAS.ConVars) do
+
 	for Option, value in pairs(ConVars) do
-		CreateConVar( "_"..Protection.."_"..Option, value, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
+		CreateConVar( "_" .. Protection .. "_" .. Option, value, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
 	end
+	
 end

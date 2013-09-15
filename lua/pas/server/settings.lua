@@ -101,9 +101,9 @@ function PAS.ApplySettings(ply, cmd, args)
 	
 	if args[1] != nil then
 
-		local number = GetConVar("_PAS_ANTISPAM_"..args[1]):GetFloat()
+		local number = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetFloat()
 
-		local text = GetConVar("_PAS_ANTISPAM_"..args[1]):GetString()
+		local text = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetString()
 
 		if text != 0 and number == 0 then
 			sql.Query("UPDATE patchantispam SET '" .. args[1] .. "' = '" .. text .. "'")
