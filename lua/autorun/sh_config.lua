@@ -1,13 +1,13 @@
--- These are the default settings. Don't mind changing these.
 PAS = PAS or {}
 
--- Don't reset the settings when they're already there
 if PAS.ConVars then
 	return
 end
 
+--Create ConVars-Table
 PAS.ConVars = {}
 
+--Put all Variables into the ConVar-Table
 PAS.ConVars.PAS_ANTISPAM = {
 	use = 1,
 	cooldown = 3.5,

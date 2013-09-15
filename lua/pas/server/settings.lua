@@ -24,7 +24,7 @@ function PAS.SetupSettings()
 			sql.Query("DROP TABLE patchantispam")
 			MsgC(
 				Color(235, 0, 0), 
-				"[PatchAntiSpam] Deleted the old Settings - Table\n"
+				"[PatchAntiSpam] Deleted the old Settings-Table\n"
 			)
 
 		end
@@ -79,7 +79,7 @@ function PAS.SetupSettings()
 		
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchAntiSpam] Created new Settings - Table\n"
+			"[PatchAntiSpam] Created new Settings-Table\n"
 			)
 
 	end
