@@ -3,7 +3,7 @@ PAS = PAS or {}
 
 --Blocked Tools:
 
-local BlockedTools = {"dynamite"}
+local BlockedTools = {"dynamite", "thruster"}
 
 
 --Settings Variables:
@@ -13,15 +13,13 @@ function PAS.Setup(ply)
 	--Props
 	ply.cooldown = 0
 	ply.props = 0
-	ply.lastprop = "none"
-	ply.spawnspecial = false
 
 	--Tools
 	ply.toolcooldown = 0
 	ply.tools = 0
 
 end
-hook.Add( "PlayerInitialSpawn", "Setup_PropSpawn", PAS.Setup )
+hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", PAS.Setup )
 
 
 --Spam Action:
@@ -42,14 +40,14 @@ function spamaction(ply)
 	elseif action == 3 then
 
 		ply:Kick("Kicked by PAS: Spammer")
-		PAS.AdminNotify(ply:Nick() .. " kicked from the server cause of spamming!")
+		PAS.AdminNotify(ply:Nick() .. " kicked from the server, cause of spamming!")
 
 	--Ban
 	elseif action == 4 then
 
 		local banminutes = tonumber(PAS.Settings["bantime"])
 		ply:Ban(banminutes, "Banned by PAS: Spammer")
-		PAS.AdminNotify(ply:Nick() .. " banned from the server for " .. banminutes .. " minutes cause of spamming!")
+		PAS.AdminNotify(ply:Nick() .. " banned from the server for " .. banminutes .. " minutes, cause of spamming!")
 
 	--ConCommand
 	elseif action == 5 then

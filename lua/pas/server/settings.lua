@@ -16,10 +16,8 @@ function PAS.SetupSettings()
 
 	if sql.TableExists("patchantispam") then
 
-		--Automated Table Check
-		local checkstring = table.ToString(PAS.ConVars.PAS_ANTISPAM)
-		local lastentry = checkstring:sub(2, checkstring:find("=") - 1)
-		local checktable = sql.Query("SELECT " .. lastentry .. " from patchantispam")
+		--Check Table
+		local checktable = sql.Query("SELECT toolprotection from patchantispam")
 
 		if checktable == false then
 
