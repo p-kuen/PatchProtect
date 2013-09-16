@@ -22,6 +22,7 @@ function PAS.SetupSettings()
 		if checktable == false then
 
 			sql.Query("DROP TABLE patchantispam")
+
 			MsgC(
 				Color(235, 0, 0), 
 				"[PatchAntiSpam] Deleted the old Settings-Table\n"
@@ -64,29 +65,34 @@ function PAS.SetupSettings()
 
 				end
 				if value == "" then
+
 					table.insert(values, "''")
 					table.insert(options, "'" .. Option .. "'")
+
 				else
+
 					table.insert(values, value)
 					table.insert(options, Option)
+
 				end
 				
 			end
-		end
-		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(" .. table.concat( sqlvars, ", " ) .. ");")
 
+		end
+
+		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(" .. table.concat( sqlvars, ", " ) .. ");")
 		sql.Query("INSERT INTO patchantispam(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")") --
 		
 		MsgC(
 			Color(0, 240, 100),
 			"[PatchAntiSpam] Created new Settings-Table\n"
-			)
+		)
 
 	end
 	
 	return sql.QueryRow("SELECT * FROM patchantispam LIMIT 1")
-end
 
+end
 PAS.Settings = PAS.SetupSettings()
 
 function PAS.ApplySettings(ply, cmd, args)
@@ -94,15 +100,14 @@ function PAS.ApplySettings(ply, cmd, args)
 	if !ply then
 		PAS.InfoNotify(ply, "This command can only be run in-game!")
 	end
-
+--[[ NOT WORKING AT THE MOMENT! - Not needed? A Non-Admin can't press the Save-Button
 	if (!ply:IsAdmin()) then
 		return
 	end
-	
+]]	
 	if args[1] != nil then
 
 		local number = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetFloat()
-
 		local text = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetString()
 
 		if text != 0 and number == 0 then
@@ -114,29 +119,29 @@ function PAS.ApplySettings(ply, cmd, args)
 	end
 
 end
-
 concommand.Add("PAS_SetSettings", PAS.ApplySettings)
 
 function PAS.CCV(ply, cmd, args)
+
 	RunConsoleCommand("_PAS_ANTISPAM_" .. args[1], args[2])
-	
 	RunConsoleCommand("PAS_SetSettings", args[1])
 	
 	savecount = savecount + 1
-
 	if savecount == table.Count(PAS.Settings) then
 
 		savecount = 0
 		timer.Simple(0.1, function()
 			PAS.Settings = sql.QueryRow("SELECT * FROM patchantispam LIMIT 1")
 			PAS.InfoNotify(ply, "Settings saved!")
-			
 		end)
 
 	end
-end
 
+end
 concommand.Add("PAS_ChangeConVar", PAS.CCV)
+
+
+--Notification Functions
 
 function PAS.InfoNotify(ply, text)
 	umsg.Start("PAS_InfoNotify", ply)

@@ -176,8 +176,8 @@ function PAS.AdminMenu(Panel)
 			--Add texts
 			for i = 1, table.Count(texts) do
 				if table.Count(texts) >= 1 then
-					print(i)
-					PrintTable(texts)
+					--print(i)
+					--PrintTable(texts)
 					if texts[i] ~= 0 then
 						table.insert(savevalues, texts[i]:GetValue())
 					end
