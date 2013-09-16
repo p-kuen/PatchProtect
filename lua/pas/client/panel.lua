@@ -1,8 +1,6 @@
 PAS = PAS or {}
 PAS.AdminPanel = nil
 
-ToolList = {}
-
 local checks = {}
 local sliders = {}
 local combos = {}
@@ -10,16 +8,21 @@ local texts = {}
 
 function searchTools()
 
+	ToolList = {}
+
 	for _, wep in pairs( weapons.GetList() ) do
 		if wep.ClassName == "gmod_tool" then 
 			local t = wep.Tool
 			for name, tool in pairs( t ) do
 				t[ name ].ClassName = name
-				table.insert(BlockedTools, tostring(name))
+				table.insert(ToolList, tostring(name))
 				print(name)
 			end
 		end
 	end
+	print("count: " .. table.Count(ToolList))
+	print(table.concat(ToolList, ","))
+	--CreateConVar( "_PAS_ToolList", value, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
 
 end
 
@@ -205,6 +208,8 @@ function PAS.AdminMenu(Panel)
 	end
 	
 	function addframe(width, height, text, dragable, closebutton)
+
+		--Create frame
 		local pframe = vgui.Create("DFrame")
 		pframe:SetPos( surface.ScreenWidth() / 2 - (width / 2), surface.ScreenHeight() / 2 - (height / 2) )
 		pframe:SetSize( width, height )
@@ -214,6 +219,27 @@ function PAS.AdminMenu(Panel)
 		pframe:ShowCloseButton( closebutton )
 		pframe:SetBackgroundBlur( true )
 		pframe:MakePopup()
+
+		--Create Category
+		pflist = vgui.Create( "DPanelList", pframe )
+		pflist:SetPos( 10, 30 )
+		pflist:SetSize( width - 20, height - 40 )
+		pflist:SetSpacing( 5 )
+		pflist:EnableHorizontal( false )
+		pflist:EnableVerticalScrollbar( true )
+
+		searchTools()
+
+		for a = 1, table.Count(ToolList) do
+
+			local fcatchk = vgui.Create( "DCheckBoxLabel" )
+    		fcatchk:SetText( ToolList[a] )
+    		--fcatchk:SetConVar( "sbox_godmode" )
+    		fcatchk:SetValue( 1 )
+    		fcatchk:SizeToContents()
+			pflist:AddItem( fcatchk )
+
+		end
 	end
 
 	function addchkframe(width, height, text)
@@ -227,14 +253,23 @@ function PAS.AdminMenu(Panel)
 	--Build the menu
 	addchk(Panel, "Use AntiSpam", "use")
 	addchk(Panel, "Use Tool-Protection", "toolprotection")
+
+	btn2 = vgui.Create("DButton")
+	btn2:SetSize(150,25)
+	btn2:Center()
+	btn2:SetText("Set Tools")
+	btn2:SetDark(true)
+	Panel:AddItem(btn2)
+	function btn2:OnMousePressed()
+		addframe(250, 250, "Set blocked Tools:", true, true)
+	end
+
 	addsldr(Panel, 0, 10, "Cooldown (Seconds)", "cooldown")
 	addsldr(Panel, 0, 40, "Props until Admin-Message", "spamcount")
 	addchk(Panel, "No AntiSpam for Admins", "noantiadmin")
 	
 	SpamActionCat, saCat = MakeCategory("Spam Action")
 	addbtn(Panel, "Save Settings", {"spamaction", "use", "toolprotection", "noantiadmin", "cooldown", "spamcount", "bantime", "concommand"})
-	
-
 	
 	addlbl("Spam Action:", saCat)
 	addcombo(saCat, "spamaction", {"Nothing", "CleanUp", "Kick", "Ban", "Console Command"})
