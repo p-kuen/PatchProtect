@@ -14,6 +14,7 @@ function PAS.SetupSettings()
 		" Successfully loaded (Coded by Patcher56 & Ted894)\n\n"
 	)
 
+	--TODO rename patchantispam to patchprotect_general, add a table patchprotect_tools with all tools
 	if sql.TableExists("patchantispam") then
 
 		--Check Table

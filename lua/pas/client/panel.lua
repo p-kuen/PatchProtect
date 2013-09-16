@@ -6,26 +6,6 @@ local sliders = {}
 local combos = {}
 local texts = {}
 
-function searchTools()
-
-	ToolList = {}
-
-	for _, wep in pairs( weapons.GetList() ) do
-		if wep.ClassName == "gmod_tool" then 
-			local t = wep.Tool
-			for name, tool in pairs( t ) do
-				t[ name ].ClassName = name
-				table.insert(ToolList, tostring(name))
-				print(name)
-			end
-		end
-	end
-	print("count: " .. table.Count(ToolList))
-	print(table.concat(ToolList, ","))
-	--CreateConVar( "_PAS_ToolList", value, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
-
-end
-
 function PAS.AdminMenu(Panel)
 	Panel:ClearControls()
 	checks = {}
@@ -65,12 +45,18 @@ function PAS.AdminMenu(Panel)
 		return cat, pan
 	end
 
-	local function addchk(plist, text, var)
+	local function addchk(plist, text, typ, var)
 		local chk = vgui.Create("DCheckBoxLabel")
-		table.insert(checks, chk)
 		chk:SetText(text)
-		chk:SetChecked(tobool(GetConVarNumber("_PAS_ANTISPAM_" .. var)))
-		chk:SetDark(true)
+
+		if typ == "convar" then
+			table.insert(checks, chk)
+			chk:SetChecked(tobool(GetConVarNumber("_PAS_ANTISPAM_" .. var)))
+			chk:SetDark(true)
+		elseif typ == "toolConVar" then
+			chk:SetConVar("_PAS_ANTISPAM_" .. var)
+			chk:SetDark(false)
+		end
 
 		plist:AddItem(chk)
 	end
@@ -139,7 +125,39 @@ function PAS.AdminMenu(Panel)
 		lbl:SetDark(true)
 	end
 
-	function addframe(width, height, text, dragable, closebutton)
+	function searchTools()
+
+		local ToolList = {}
+
+		for _, wep in pairs( weapons.GetList() ) do
+			if wep.ClassName == "gmod_tool" then 
+				local t = wep.Tool
+				for name, tool in pairs( t ) do
+					t[ name ].ClassName = name
+					table.insert(ToolList, tostring(name))
+					CreateClientConVar("_PAS_ANTISPAM_tools_" .. name, 0, false, false)
+				end
+			end
+		end
+
+		return ToolList
+		--CreateConVar( "_PAS_ToolList", value, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
+
+	end
+
+	local function setToolChk(args)
+		local tools = searchTools()
+
+		for a = 1, table.Count(tools) do
+
+			addchk(list, tools[a], "toolConVar", "tools_" .. tools[a])
+			--addchk(list, tools[a], "tools", 1)
+
+		end
+	end
+	hook.Add("frm_tools", "SetToolsCheckboxes", setToolChk)
+
+	function addframe(width, height, text, draggable, closebutton, type, args)
 
 		--Create frame
 		local frm = vgui.Create("DFrame")
@@ -147,31 +165,21 @@ function PAS.AdminMenu(Panel)
 		frm:SetSize( width, height )
 		frm:SetTitle( text )
 		frm:SetVisible( true )
-		frm:SetDraggable( dragable )
+		frm:SetDraggable( draggable )
 		frm:ShowCloseButton( closebutton )
 		frm:SetBackgroundBlur( true )
 		frm:MakePopup()
 
 		--Create Category
-		pflist = vgui.Create( "DPanelList", frm )
-		pflist:SetPos( 10, 30 )
-		pflist:SetSize( width - 20, height - 40 )
-		pflist:SetSpacing( 5 )
-		pflist:EnableHorizontal( false )
-		pflist:EnableVerticalScrollbar( true )
+		list = vgui.Create( "DPanelList", frm )
+		list:SetPos( 10, 30 )
+		list:SetSize( width - 20, height - 40 )
+		list:SetSpacing( 5 )
+		list:EnableHorizontal( false )
+		list:EnableVerticalScrollbar( true )
 
-		searchTools()
-
-		for a = 1, table.Count(ToolList) do
-
-			local fcatchk = vgui.Create( "DCheckBoxLabel" )
-    		fcatchk:SetText( ToolList[a] )
-    		--fcatchk:SetConVar( "sbox_godmode" )
-    		fcatchk:SetValue( 1 )
-    		fcatchk:SizeToContents()
-			pflist:AddItem( fcatchk )
-
-		end
+		hook.Run("frm_" .. type, args)
+		
 	end
 
 	local function saveValues(args)
@@ -217,23 +225,32 @@ function PAS.AdminMenu(Panel)
 			for i = 1, table.Count(savevalues) do
 				changeConVar(args[i], savevalues[i])
 			end
+
+			local tools = searchTools()
+			local toolsarray = {}
+			for i=1, table.Count(tools) do
+				table.insert(toolsarray, GetConVarNumber("_PAS_ANTISPAM_tools_" .. tools[i]))
+			end
+			PrintTable(toolsarray)
 	end
 	hook.Add("btn_save", "SaveBtnFunction", saveValues)
 
 	local function setTools(args)
-		addframe(250, 250, "Set blocked Tools:", true, true)
+		addframe(250, 250, "Set blocked Tools:", true, true, "tools")
 	end
 	hook.Add("btn_tools", "SetToolsFunction", setTools)
 
 	local function addbtn(plist, text, type, args)
 		btn = vgui.Create("DButton")
-		if type == "save" then btn:SetSize(150,30) else btn:SetSize(150,15) end
+		if type == "save" then btn:SetSize(150,30) else btn:SetSize(150,20) end
 		btn:Center()
 		btn:SetText(text)
 		btn:SetDark(true)
+
 		function btn:OnMousePressed()
 			hook.Run("btn_" .. type, args)
 		end
+
 		plist:AddItem(btn)
 	end
 
@@ -243,21 +260,13 @@ function PAS.AdminMenu(Panel)
 		tentry:SetText(GetConVarString("_PAS_ANTISPAM_" .. var))
 	end
 
-	function addchkframe(width, height, text)
-		local chkframe = vgui.Create( "DCheckBoxLabel", frm)
-		chkframe:SetPos( width, height )
-		chkframe:SetText(text)
-		chkframe:SetDark(true)
-		chkframe:SizeToContents()
-	end
-
 	--Build the menu
-	addchk(Panel, "Use AntiSpam", "use")
-	addchk(Panel, "Use Tool-Protection", "toolprotection")
+	addchk(Panel, "Use AntiSpam", "convar", "use")
+	addchk(Panel, "Use Tool-Protection", "convar", "toolprotection")
 	addbtn(Panel, "Set Tools", "tools")
 	addsldr(Panel, 0, 10, "Cooldown (Seconds)", "cooldown")
 	addsldr(Panel, 0, 40, "Props until Admin-Message", "spamcount")
-	addchk(Panel, "No AntiSpam for Admins", "noantiadmin")
+	addchk(Panel, "No AntiSpam for Admins", "convar", "noantiadmin")
 	
 	SpamActionCat, saCat = MakeCategory("Spam Action")
 	addbtn(Panel, "Save Settings", "save", {"spamaction", "use", "toolprotection", "noantiadmin", "cooldown", "spamcount", "bantime", "concommand"})
