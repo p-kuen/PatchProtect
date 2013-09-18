@@ -55,7 +55,7 @@ function PAS.AdminMenu(Panel)
 			chk:SetDark(true)
 		elseif typ == "toolConVar" then
 			chk:SetConVar("_PAS_ANTISPAM_" .. var)
-			chk:SetDark(false)
+			chk:SetDark(true)
 		end
 
 		plist:AddItem(chk)
@@ -137,6 +137,11 @@ function PAS.AdminMenu(Panel)
 		frm:ShowCloseButton( closebutton )
 		frm:SetBackgroundBlur( true )
 		frm:MakePopup()
+		frm.Paint = function()
+			draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 88, 144, 222, 255 ) )
+			draw.RoundedBox( 0, 3, 3, frm:GetWide() - 6, frm:GetTall() - 6, Color( 220, 220, 220, 255 ) )
+			draw.RoundedBox( 2, 3, 3, frm:GetWide() - 6, 22, Color( 88, 144, 222, 255 ) )
+		end
 
 		--Create Category
 		list = vgui.Create( "DPanelList", frm )
