@@ -1,13 +1,20 @@
 PAS = PAS or {}
 
+
+--Return if Table esists
+
 if PAS.ConVars then
 	return
 end
 
+
 --Create ConVars-Table
+
 PAS.ConVars = {}
 
+
 --Put all Variables into the ConVar-Table
+
 PAS.ConVars.PAS_ANTISPAM = {
 	use = 1,
 	cooldown = 3.5,
@@ -19,11 +26,13 @@ PAS.ConVars.PAS_ANTISPAM = {
 	toolprotection = 1
 }
 
---Create ConVars
-for Protection, ConVars in pairs(PAS.ConVars) do
 
-	for Option, value in pairs(ConVars) do
-		CreateConVar( "_" .. Protection .. "_" .. Option, value, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
+--Create ConVars
+
+for p, c in pairs(PAS.ConVars) do
+
+	for k, v in pairs(ConVars) do
+		CreateConVar( "_" .. p .. "_" .. k, v, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
 	end
 	
 end

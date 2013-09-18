@@ -11,7 +11,7 @@ local BlockedTools = {} --{"dynamite", "thruster"}
 function PAS.Setup(ply)
 
 	--Props
-	ply.cooldown = 0
+	ply.propcooldown = 0
 	ply.props = 0
 
 	--Tools
@@ -70,7 +70,7 @@ function PAS.Spawn(ply, mdl)
 	if tobool(PAS.Settings["use"]) == false then return end
 
 		--Checking Coodown
-		if CurTime() < ply.cooldown then
+		if CurTime() < ply.propcooldown then
 
 			if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
 				--Do nothing...
@@ -88,7 +88,7 @@ function PAS.Spawn(ply, mdl)
 				end
 
 				--Notify Client about Wait-Time
-				PAS.Notify( ply, "Wait: " .. math.Round( ply.cooldown - CurTime(), 1))
+				PAS.Notify( ply, "Wait: " .. math.Round( ply.propcooldown - CurTime(), 1))
 
 				--Block entity
 				return false
@@ -99,7 +99,7 @@ function PAS.Spawn(ply, mdl)
 
 			--Set Cooldown
 			ply.props = 0
-			ply.cooldown = CurTime() + tonumber(PAS.Settings["cooldown"])
+			ply.propcooldown = CurTime() + tonumber(PAS.Settings["cooldown"])
 
 		end
 
