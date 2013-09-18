@@ -125,38 +125,6 @@ function PAS.AdminMenu(Panel)
 		lbl:SetDark(true)
 	end
 
-	function searchTools()
-
-		local ToolList = {}
-
-		for _, wep in pairs( weapons.GetList() ) do
-			if wep.ClassName == "gmod_tool" then 
-				local t = wep.Tool
-				for name, tool in pairs( t ) do
-					t[ name ].ClassName = name
-					table.insert(ToolList, tostring(name))
-					CreateClientConVar("_PAS_ANTISPAM_tools_" .. name, 0, false, false)
-				end
-			end
-		end
-
-		return ToolList
-		--CreateConVar( "_PAS_ToolList", value, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
-
-	end
-
-	local function setToolChk(args)
-		local tools = searchTools()
-
-		for a = 1, table.Count(tools) do
-
-			addchk(list, tools[a], "toolConVar", "tools_" .. tools[a])
-			--addchk(list, tools[a], "tools", 1)
-
-		end
-	end
-	hook.Add("frm_tools", "SetToolsCheckboxes", setToolChk)
-
 	function addframe(width, height, text, draggable, closebutton, type, args)
 
 		--Create frame
@@ -177,8 +145,6 @@ function PAS.AdminMenu(Panel)
 		list:SetSpacing( 5 )
 		list:EnableHorizontal( false )
 		list:EnableVerticalScrollbar( true )
-
-		hook.Run("frm_" .. type, args)
 		
 	end
 
@@ -237,6 +203,26 @@ function PAS.AdminMenu(Panel)
 
 	local function setTools(args)
 		addframe(250, 250, "Set blocked Tools:", true, true, "tools")
+
+		local ToolList = {}
+
+		for _, wep in pairs( weapons.GetList() ) do
+			if wep.ClassName == "gmod_tool" then 
+				local t = wep.Tool
+				for name, tool in pairs( t ) do
+					t[ name ].ClassName = name
+					table.insert(ToolList, tostring(name))
+					CreateClientConVar("_PAS_ANTISPAM_tools_" .. name, 0, false, false)
+				end
+			end
+		end
+
+		for a = 1, table.Count(ToolList) do
+
+			addchk(list, ToolList[a], "toolConVar", "tools_" .. ToolList[a])
+			--addchk(list, tools[a], "tools", 1)
+
+		end
 	end
 	hook.Add("btn_tools", "SetToolsFunction", setTools)
 
