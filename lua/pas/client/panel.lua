@@ -1,5 +1,5 @@
 PAS = PAS or {}
-PAS.AdminPanel = nil
+--PAS.AdminPanel = nil
 
 local checks = {}
 local sliders = {}
@@ -7,32 +7,49 @@ local combos = {}
 local texts = {}
 
 function PAS.AdminMenu(Panel)
+
+
+	--Define Variables
+
 	Panel:ClearControls()
 	checks = {}
 	sliders = {}
 	combos = {}
 	texts = {}
 	
-	
+
+	--Set Panel
+
 	if(!PAS.AdminCPanel) then
 		PAS.AdminCPanel = Panel
 	end
-		
+
+
 	--Check if superadmin, else show a error label
+
 	if !LocalPlayer():IsAdmin() then
 		Panel:AddControl("Label", {Text = "You are not an admin"})
 		return
 	end
 	
+
+	--More Variable Definitions
+
 	local btn
 	local SpamActionCat, saCat
 	local combo_sa
+
+
+	--
 
 	local function changeConVar(convar, value)
 		if value != nil then
 			RunConsoleCommand("PAS_ChangeConVar", convar, value)
 		end
 	end
+
+
+	--Create a Category
 
 	local function MakeCategory(Name)
 		local cat = vgui.Create( "DCollapsibleCategory")
@@ -44,6 +61,9 @@ function PAS.AdminMenu(Panel)
 		Panel:AddItem(cat)
 		return cat, pan
 	end
+
+
+	--Add a Checkbox
 
 	local function addchk(plist, text, typ, var)
 		local chk = vgui.Create("DCheckBoxLabel")
@@ -61,6 +81,9 @@ function PAS.AdminMenu(Panel)
 		plist:AddItem(chk)
 	end
 	
+
+	--Add a Slider
+
 	local function addsldr(plist, min, max, text, var, decimals)
 		local sldr
 		if plist == Panel then
@@ -80,6 +103,9 @@ function PAS.AdminMenu(Panel)
 		if plist == Panel then plist:AddItem(sldr) end
 	end
 
+
+	--Show SpamAction DropDown-Menu
+
 	local function showSpamAction(idx)
 		saCat:Clear()
 		addlbl("Spam Action:", saCat)
@@ -94,8 +120,15 @@ function PAS.AdminMenu(Panel)
 	end
 	hook.Add("combo_spamaction", "showSA", showSpamAction)
 
+
+	--More Variables
+
 	local updating = false
 	local sel = 0
+
+
+	--Add a Combobox
+
 	function addcombo(plist, var, choices)
 		local combo = plist:Add("DComboBox")
 		
@@ -118,16 +151,21 @@ function PAS.AdminMenu(Panel)
 		end
 	end
 
-		--Create-functions
+
+	--Add a Label
+
 	function addlbl(text, plist)
 		local lbl = plist:Add("DLabel")
 		lbl:SetText(text)
 		lbl:SetDark(true)
 	end
 
+
+	--Add a Frame
+
 	function addframe(width, height, text, draggable, closebutton, type, args)
 
-		--Create frame
+		--Main Frame
 		local frm = vgui.Create("DFrame")
 		frm:SetPos( surface.ScreenWidth() / 2 - (width / 2), surface.ScreenHeight() / 2 - (height / 2) )
 		frm:SetSize( width, height )
@@ -143,7 +181,7 @@ function PAS.AdminMenu(Panel)
 			draw.RoundedBox( 2, 3, 3, frm:GetWide() - 6, 22, Color( 88, 144, 222, 255 ) )
 		end
 
-		--Create Category
+		--Frame-Category
 		list = vgui.Create( "DPanelList", frm )
 		list:SetPos( 10, 30 )
 		list:SetSize( width - 20, height - 40 )
@@ -152,6 +190,9 @@ function PAS.AdminMenu(Panel)
 		list:EnableVerticalScrollbar( true )
 		
 	end
+
+
+	--Saving all Values by pressing the 'Save' Button
 
 	local function saveValues(args)
 		if combo_sa == nil then combo_sa = GetConVarNumber("_PAS_ANTISPAM_spamaction") end
@@ -162,12 +203,12 @@ function PAS.AdminMenu(Panel)
 				combo_sa,
 			}
 
-			--Add checks
+			--Save checks
 			for i = 1, table.Count(checks) do
 				table.insert(savevalues, checks[i]:GetChecked() and 1 or 0 )
 			end
 
-			--Add sliders
+			--Save sliders
 			for i = 1, table.Count(sliders) do
 
 				if sliders[i]:IsValid() then table.insert(savevalues, sliders[i]:GetValue()) end
@@ -178,7 +219,7 @@ function PAS.AdminMenu(Panel)
 				savevalues[table.KeyFromValue(args, "bantime")] = GetConVarNumber("_PAS_ANTISPAM_bantime")
 			end
 
-			--Add texts
+			--Save texts
 			for i = 1, table.Count(texts) do
 				if table.Count(texts) >= 1 then
 					if texts[i] ~= 0 then
@@ -206,6 +247,9 @@ function PAS.AdminMenu(Panel)
 	end
 	hook.Add("btn_save", "SaveBtnFunction", saveValues)
 
+
+	--Set all Tools
+
 	local function setTools(args)
 		addframe(250, 250, "Set blocked Tools:", true, true, "tools")
 
@@ -231,6 +275,9 @@ function PAS.AdminMenu(Panel)
 	end
 	hook.Add("btn_tools", "SetToolsFunction", setTools)
 
+
+	--Add a Button
+
 	local function addbtn(plist, text, type, args)
 		btn = vgui.Create("DButton")
 		if type == "save" then btn:SetSize(150,30) else btn:SetSize(150,20) end
@@ -245,13 +292,18 @@ function PAS.AdminMenu(Panel)
 		plist:AddItem(btn)
 	end
 
+
+	--Add a Textbox
+
 	function addtext(plist, var)
 		local tentry = plist:Add( "DTextEntry")
 		table.insert(texts, tentry)
 		tentry:SetText(GetConVarString("_PAS_ANTISPAM_" .. var))
 	end
 
-	--Build the menu
+
+	--Build the AntiSpam - Menu
+
 	addchk(Panel, "Use AntiSpam", "convar", "use")
 	addchk(Panel, "Use Tool-Protection", "convar", "toolprotection")
 	addbtn(Panel, "Set Tools", "tools")
@@ -267,6 +319,7 @@ function PAS.AdminMenu(Panel)
 
 
 	--Add Spam-Action Elements if selected
+
 	local spamactionnumber = GetConVarNumber("_PAS_ANTISPAM_spamaction")
 	if spamactionnumber == 4 then
 		addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
@@ -277,15 +330,43 @@ function PAS.AdminMenu(Panel)
 
 end
 
+
+--Make the Menues
+
 local function makeMenus()
-	spawnmenu.AddToolMenuOption("Utilities", "PAS", "PASAdmin", "Settings", "", "", PAS.AdminMenu)
+	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPAdmin", "AntiSpam", "", "", PAS.AdminMenu)
+	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPPropProtection", "PropProtection", "", "", PAS.ProtectionMenu)
 end
 hook.Add("PopulateToolMenu", "PASmakeMenus", makeMenus)
 
+function PAS.ProtectionMenu(Panel2)
+
+	function addchkpp(text, cvar)
+		local chk = vgui.Create("DCheckBoxLabel")
+		chk:SetText(text)
+		chk:SetDark(true)
+		--chk:SetChecked(tobool(GetConVarNumber("_PatchProtect_PropProtection_" .. cvar)))
+		--chk:SetConVar("_PatchProtect_PropProtection_" .. cvar)
+		Panel2:AddItem(chk)
+	end
+
+	addchkpp("Use PropProtection", "UsePP")
+	addchkpp("Allow Property to Non-Admins", "AllowProperty")
+end
+
+--Update the Menues
+
 local function UpdateMenus()
 	
-	if(PAS.AdminCPanel) then
+	--AntiSpam Menu
+	if PAS.AdminCPanel then
 		PAS.AdminMenu(PAS.AdminCPanel)
 	end
+
+	--PropProtection Menu
+	if PAS.AdminCPanel2 then
+		PAS.ProtectionMenu(PAS.AdminCPanel2)
+	end
+
 end
 hook.Add("SpawnMenuOpen", "PASMenus", UpdateMenus)

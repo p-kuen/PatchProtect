@@ -31,8 +31,9 @@ PAS.ConVars.PAS_ANTISPAM = {
 
 for p, c in pairs(PAS.ConVars) do
 
-	for k, v in pairs(ConVars) do
+	for k, v in pairs(c) do
 		CreateConVar( "_" .. p .. "_" .. k, v, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
 	end
 	
 end
+--CreateConVar( "_PatchProtect_PropProtection_" .. "UsePP", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
