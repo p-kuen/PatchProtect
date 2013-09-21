@@ -1,32 +1,58 @@
---Set PropProtection for Props and Tools (Quite Simple at the moment!)
+--Set PropProtection for Props
 
 function CheckPlayer(ply, ent)
 
 	--print(tobool(GetConVarNumber("_PatchProtect_PropProtection_UsePP")))
-	if ent.name != nil then
+	if ent.name == ply:GetName() and ent.name != nil then
+			
+ 			return true
 
-		if ent.name == ply:GetName() then
+ 	elseif ent.name != ply:GetName() and ent.name != nil then
 
-			return true
+ 		PAS.Notify( ply, "You are not allowed to do this!" )
+ 		return false
 
-		else
+ 	elseif ent.name == nil then
 
-			PAS.Notify( ply, "You are not allowed to do this!" )
-			return false
+ 		ent.name = ply:GetName()
+ 		return true
 
-		end
-
-	else
-
-		ent.name = ply:GetName()
-		return true
-
-	end
+ 	end
 	
 end
 
 hook.Add( "PhysgunPickup", "Allow Player Pickup", CheckPlayer )
---hook.Add( "CanTool", "Allow Player Tool-Useage", CheckPlayer )
+
+
+--Set PropProtection for Tools
+
+function CanTool(ply, trace, tool)
+
+	if IsValid( trace.Entity ) then
+		
+		ent = trace.Entity
+
+		if ent.name == ply:GetName() and ent.name != nil then
+
+ 			return true
+
+ 		elseif ent.name != ply:GetName() and ent.name != nil then
+
+ 			PAS.Notify( ply, "You are not allowed to do this!" )
+ 			return false
+
+ 		elseif ent.name == nil then
+
+ 			ent.name = ply:GetName()
+ 			return true
+
+ 		end
+
+ 	end
+ 	
+end
+
+hook.Add( "CanTool", "Allow Player Tool-Useage", CanTool )
 
 
 --Add a Non-Admin Restriction for Property things
