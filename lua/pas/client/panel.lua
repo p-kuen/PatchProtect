@@ -350,8 +350,23 @@ function PAS.ProtectionMenu(Panel2)
 		Panel2:AddItem(chk)
 	end
 
+	function addbtnpp(type, text)
+		local btn = vgui.Create("DButton")
+		if type == "save" then btn:SetSize(150,30) else btn:SetSize(150,20) end
+		btn:Center()
+		btn:SetText(text)
+		btn:SetDark(true)
+
+		function btn:OnMousePressed()
+			print("test")
+		end
+		
+		Panel2:AddItem(btn)
+	end
+
 	addchkpp("Use PropProtection", "UsePP")
 	addchkpp("Allow Property to Non-Admins", "AllowProperty")
+	addbtnpp("save", "Save Settings")
 end
 
 --Update the Menues
