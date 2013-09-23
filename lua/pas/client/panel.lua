@@ -1,18 +1,28 @@
 PAS = PAS or {}
---PAS.AdminPanel = nil
 
-local checks = {}
+PAS.Settings = PAS.Settings or {}
+PAS.AdminPanel = nil
+
+cl_PPP.checks_general = {}
+cl_PPP.checks_tools = {}
+
 local sliders = {}
 local combos = {}
 local texts = {}
+local frm
 
+cl_PPP.sqlTools = {}
+cl_PPP.toolNames = {}
 function PAS.AdminMenu(Panel)
 
 
 	--Define Variables
 
 	Panel:ClearControls()
-	checks = {}
+
+	cl_PPP.checks_general = {}
+	cl_PPP.checks_tools = {}
+
 	sliders = {}
 	combos = {}
 	texts = {}
@@ -39,12 +49,19 @@ function PAS.AdminMenu(Panel)
 	local SpamActionCat, saCat
 	local combo_sa
 
+	local function changeConVar(convar, value, onlysave)
 
-	--
-
-	local function changeConVar(convar, value)
 		if value != nil then
-			RunConsoleCommand("PAS_ChangeConVar", convar, value)
+
+			onlysave = onlysave or false
+			local zahl = 0
+			if onlysave == true then
+				zahl = 1
+			else
+				zahl = 0
+			end
+
+			RunConsoleCommand("PAS_ChangeConVar", convar, value, zahl)
 		end
 	end
 
@@ -70,13 +87,22 @@ function PAS.AdminMenu(Panel)
 		chk:SetText(text)
 
 		if typ == "convar" then
-			table.insert(checks, chk)
+			var_checks = "general"
+			table.insert(cl_PPP.checks_general, chk)
 			chk:SetChecked(tobool(GetConVarNumber("_PAS_ANTISPAM_" .. var)))
 			chk:SetDark(true)
+
 		elseif typ == "toolConVar" then
-			chk:SetConVar("_PAS_ANTISPAM_" .. var)
+			table.insert(cl_PPP.checks_tools, chk)
+
+			--chk:SetConVar("_PAS_ANTISPAM_" .. var)
+			chk:SetChecked(tobool(tonumber(cl_PPP.sqlTools[table.KeyFromValue(cl_PPP.toolNames, string.sub(var, 7))])))
+			
 			chk:SetDark(true)
+
 		end
+
+		
 
 		plist:AddItem(chk)
 	end
@@ -160,6 +186,28 @@ function PAS.AdminMenu(Panel)
 		lbl:SetDark(true)
 	end
 
+	function saveTools()
+		local saves = {}
+
+		--timer.Simple(0.1, function()
+			print("checks:")
+			PrintTable(cl_PPP.checks_tools)
+		--end)
+		
+		
+		--Add tool checks
+		if cl_PPP.checks_tools[1] ~= nil then
+			for i = 1, table.Count(cl_PPP.checks_tools) do
+				--table.insert(savevalues,  )
+			end
+
+			for i = 1, table.Count(cl_PPP.toolNames) do
+				changeConVar("tools_" .. cl_PPP.toolNames[i], cl_PPP.checks_tools[i]:GetChecked() and 1 or 0, true)
+			end
+
+		end
+	end
+	hook.Add("btn_savetools", "SaveTlsFunction", saveTools)
 
 	--Add a Frame
 
@@ -178,100 +226,97 @@ function PAS.AdminMenu(Panel)
 		frm.Paint = function()
 			draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 88, 144, 222, 255 ) )
 			draw.RoundedBox( 0, 3, 3, frm:GetWide() - 6, frm:GetTall() - 6, Color( 220, 220, 220, 255 ) )
-			draw.RoundedBox( 2, 3, 3, frm:GetWide() - 6, 22, Color( 88, 144, 222, 255 ) )
+			draw.RoundedBox( 0, 3, 3, frm:GetWide() - 6, 22, Color( 88, 144, 222, 255 ) )
 		end
 
 		--Frame-Category
 		list = vgui.Create( "DPanelList", frm )
 		list:SetPos( 10, 30 )
-		list:SetSize( width - 20, height - 40 )
+		list:SetSize( width - 20, height - 40 - 40)
 		list:SetSpacing( 5 )
 		list:EnableHorizontal( false )
 		list:EnableVerticalScrollbar( true )
-		
-	end
 
+		--Button
+		local btn = vgui.Create("DButton", frm)
+		btn:SetPos( width - 60 - 15, height  - 30 - 15)
+		btn:SetSize(60,30)
+		btn:SetText("Save Tools")
+
+		function btn:OnMousePressed()
+			hook.Run("btn_savetools")
+		end
+
+	end
 
 	--Saving all Values by pressing the 'Save' Button
 
 	local function saveValues(args)
 		if combo_sa == nil then combo_sa = GetConVarNumber("_PAS_ANTISPAM_spamaction") end
 
-			if texts[1] == nil then texts[1] = GetConVarNumber("_PAS_ANTISPAM_concommand") end
+		if texts[1] == nil then texts[1] = GetConVarNumber("_PAS_ANTISPAM_concommand") end
 
-			savevalues = {
-				combo_sa,
-			}
+		savevalues = {
+			combo_sa,
+		}
 
-			--Save checks
-			for i = 1, table.Count(checks) do
-				table.insert(savevalues, checks[i]:GetChecked() and 1 or 0 )
-			end
+		--Add general checks
+		for i = 1, table.Count(cl_PPP.checks_general) do
+			table.insert(savevalues, cl_PPP.checks_general[i]:GetChecked() and 1 or 0 )
+		end
 
-			--Save sliders
-			for i = 1, table.Count(sliders) do
+		--Add sliders
+		for i = 1, table.Count(sliders) do
 
-				if sliders[i]:IsValid() then table.insert(savevalues, sliders[i]:GetValue()) end
+			if sliders[i]:IsValid() then table.insert(savevalues, sliders[i]:GetValue()) end
 
-			end
+		end
 
-			if savevalues[table.KeyFromValue(args, "bantime")] == nil then
-				savevalues[table.KeyFromValue(args, "bantime")] = GetConVarNumber("_PAS_ANTISPAM_bantime")
-			end
+		if savevalues[table.KeyFromValue(args, "bantime")] == nil then
+			savevalues[table.KeyFromValue(args, "bantime")] = GetConVarNumber("_PAS_ANTISPAM_bantime")
+		end
 
-			--Save texts
-			for i = 1, table.Count(texts) do
-				if table.Count(texts) >= 1 then
-					if texts[i] ~= 0 then
-						table.insert(savevalues, texts[i]:GetValue())
-					end
-
+		--Add texts
+		for i = 1, table.Count(texts) do
+			if table.Count(texts) >= 1 then
+				if texts[i] ~= 0 then
+					table.insert(savevalues, texts[i]:GetValue())
 				end
 
 			end
 
-			if savevalues[table.KeyFromValue(args, "concommand")] == nil or type(savevalues[table.KeyFromValue(args, "concommand")]) ~= "string" then
-				savevalues[table.KeyFromValue(args, "concommand")] = GetConVarString("_PAS_ANTISPAM_concommand")
-			end
+		end
 
-			for i = 1, table.Count(savevalues) do
-				changeConVar(args[i], savevalues[i])
-			end
+		if savevalues[table.KeyFromValue(args, "concommand")] == nil or type(savevalues[table.KeyFromValue(args, "concommand")]) ~= "string" then
+			savevalues[table.KeyFromValue(args, "concommand")] = GetConVarString("_PAS_ANTISPAM_concommand")
+		end
 
-			local tools = searchTools()
-			local toolsarray = {}
-			for i=1, table.Count(tools) do
-				table.insert(toolsarray, GetConVarNumber("_PAS_ANTISPAM_tools_" .. tools[i]))
-			end
-			PrintTable(toolsarray)
+		for i = 1, table.Count(savevalues) do
+			changeConVar(args[i], savevalues[i])
+		end
+
 	end
 	hook.Add("btn_save", "SaveBtnFunction", saveValues)
 
-
-	--Set all Tools
-
 	local function setTools(args)
-		addframe(250, 250, "Set blocked Tools:", true, true, "tools")
 
-		local ToolList = {}
+		addframe(250, 350, "Set blocked Tools:", true, true, "tools")
 
-		for _, wep in pairs( weapons.GetList() ) do
-			if wep.ClassName == "gmod_tool" then 
-				local t = wep.Tool
-				for name, tool in pairs( t ) do
-					t[ name ].ClassName = name
-					table.insert(ToolList, tostring(name))
-					CreateClientConVar("_PAS_ANTISPAM_tools_" .. name, 0, false, false)
-				end
-			end
-		end
+		for a = 1, table.Count(cl_PPP.toolNames) do
 
-		for a = 1, table.Count(ToolList) do
-
-			addchk(list, ToolList[a], "toolConVar", "tools_" .. ToolList[a])
+			--if cl_PPP.sqlTools[1] ~= nil then RunConsoleCommand("_PAS_ANTISPAM_tools_" .. cl_PPP.toolNames[a], cl_PPP.sqlTools[a]) end
+			--RunConsoleCommand("_PAS_ANTISPAM_tools_" .. PAS.tool_list[a], "1")
+			--print()
+			
+			--
+			timer.Simple(0.1, function()
+				addchk(list, cl_PPP.toolNames[a], "toolConVar", "tools_" .. cl_PPP.toolNames[a])
+			end)
+			
 			--addchk(list, tools[a], "tools", 1)
 
 		end
+
 	end
 	hook.Add("btn_tools", "SetToolsFunction", setTools)
 
@@ -385,3 +430,15 @@ local function UpdateMenus()
 
 end
 hook.Add("SpawnMenuOpen", "PASMenus", UpdateMenus)
+
+local function getToolTable()
+	local rowtable = net.ReadTable()
+	cl_PPP.sqlTools = table.ClearKeys(rowtable) -- Here, we read the string that was sent from the server
+	toolList = table.foreach( rowtable, function( key, value )
+ 		table.insert(cl_PPP.toolNames, key)
+	end )
+	print("Saved Tools: ")
+	PrintTable(cl_PPP.sqlTools)
+end
+
+net.Receive( "toolTable", getToolTable )

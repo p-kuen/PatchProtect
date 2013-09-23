@@ -1,8 +1,9 @@
 PAS = PAS or {}
+PAS.Settings = PAS.Settings or {}
 
 local savecount = 0
 
-function PAS.SetupSettings()
+function PAS.SetupGeneralSettings()
 
 	MsgC(
 		Color(0,235,200),
@@ -14,26 +15,28 @@ function PAS.SetupSettings()
 		" Successfully loaded (Coded by Patcher56 & Ted894)\n\n"
 	)
 
-	--TODO rename patchantispam to patchprotect_general, add a table patchprotect_tools with all tools
-	if sql.TableExists("patchantispam") then
+	--Networks
+	util.AddNetworkString( "toolTable" ) -- Cache the net message.
+
+	if sql.TableExists("pprotect_antispam_general") then
 
 		--Check Table
-		local checktable = sql.Query("SELECT toolprotection from patchantispam")
+		local checktable = sql.Query("SELECT toolprotection from pprotect_antispam_general")
 
 		if checktable == false then
 
-			sql.Query("DROP TABLE patchantispam")
+			sql.Query("DROP TABLE pprotect_antispam_general")
 
 			MsgC(
 				Color(235, 0, 0), 
-				"[PatchAntiSpam] Deleted the old Settings-Table\n"
+				"[PatchAntiSpam] Deleted the old General-Settings-Table\n"
 			)
 
 		end
 
 	end
 
-	if ( !sql.TableExists("patchantispam") ) then
+	if ( !sql.TableExists("pprotect_antispam_general") ) then
 		
 		local options = {}
 		local values = {}
@@ -81,20 +84,62 @@ function PAS.SetupSettings()
 
 		end
 
-		sql.Query("CREATE TABLE IF NOT EXISTS patchantispam(" .. table.concat( sqlvars, ", " ) .. ");")
-		sql.Query("INSERT INTO patchantispam(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")") --
+		sql.Query("CREATE TABLE IF NOT EXISTS pprotect_antispam_general(" .. table.concat( sqlvars, ", " ) .. ");")
+		sql.Query("INSERT INTO pprotect_antispam_general(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")") --
 		
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchAntiSpam] Created new Settings-Table\n"
+			"[PatchAntiSpam] Created new General-Settings-Table\n"
 		)
 
 	end
 	
-	return sql.QueryRow("SELECT * FROM patchantispam LIMIT 1")
+	return sql.QueryRow("SELECT * FROM pprotect_antispam_general LIMIT 1")
 
 end
-PAS.Settings = PAS.SetupSettings()
+
+function PAS.SetupToolsSettings()
+	timer.Simple(0.1, function()
+		sv_PPP.createToolTable()
+	end)
+	
+
+	if !sql.TableExists("pprotect_antispam_tools") then
+		local values = {}
+		local vars = {}
+
+		for p, cvars in pairs(PAS.ConVars) do
+			if p == "PAS_ANTISPAM_tools" then
+
+				for k, v in pairs(cvars) do
+
+					table.insert(vars, v)
+					table.insert(values, 0)
+				
+				end
+
+			end
+
+		end
+		sql.Query("CREATE TABLE IF NOT EXISTS pprotect_antispam_tools(" .. table.concat( vars, ", " ) .. ");")
+		sql.Query("INSERT INTO pprotect_antispam_tools(" .. table.concat( vars, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")")
+		
+		MsgC(
+			Color(0, 240, 100),
+			"[PatchAntiSpam] Created snew Tools-Settings-Table!\n"
+		)
+
+	end
+	
+	return sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
+
+end
+
+PAS.Settings.General = PAS.SetupGeneralSettings()
+PAS.Settings.Tools = PAS.SetupToolsSettings()
+
+--Networking libraries
+
 
 function PAS.ApplySettings(ply, cmd, args)
 	
@@ -108,15 +153,26 @@ function PAS.ApplySettings(ply, cmd, args)
 ]]	
 	if args[1] != nil then
 
-		local number = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetFloat()
-		local text = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetString()
+		local mode = string.Explode("_", args[1])
 
-		if text != 0 and number == 0 then
-			sql.Query("UPDATE patchantispam SET '" .. args[1] .. "' = '" .. text .. "'")
+		if mode[1] == "tools" then
+
+			local name = string.sub(args[1], 7)
+			--print("name:" .. name .. " args[1]: " .. args[1] .. "wert: " .. args[2])
+			sql.Query("UPDATE pprotect_antispam_tools SET " .. name .. " = " .. args[2])
+
 		else
-			sql.Query("UPDATE patchantispam SET " .. args[1] .. " = " .. number)
-		end
 
+			local number = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetFloat()
+			local text = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetString()
+
+			if text != 0 and number == 0 then
+				sql.Query("UPDATE pprotect_antispam_general SET '" .. args[1] .. "' = '" .. text .. "'")
+			else
+				sql.Query("UPDATE pprotect_antispam_general SET " .. args[1] .. " = " .. number)
+			end
+
+		end
 	end
 
 end
@@ -124,15 +180,26 @@ concommand.Add("PAS_SetSettings", PAS.ApplySettings)
 
 function PAS.CCV(ply, cmd, args)
 
-	RunConsoleCommand("_PAS_ANTISPAM_" .. args[1], args[2])
-	RunConsoleCommand("PAS_SetSettings", args[1])
-	
+	if args[3] == 0 then
+		RunConsoleCommand("_PAS_ANTISPAM_" .. args[1], args[2])
+	end
+
+	RunConsoleCommand("PAS_SetSettings", args)
+
 	savecount = savecount + 1
-	if savecount == table.Count(PAS.Settings) then
+
+	local condition
+	if args[3] == 1 then condition = table.Count(PAS.Settings.Tools) else condition = table.Count(PAS.Settings.General) end
+	if savecount == condition  then
 
 		savecount = 0
 		timer.Simple(0.1, function()
-			PAS.Settings = sql.QueryRow("SELECT * FROM patchantispam LIMIT 1")
+
+				PAS.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
+				PAS.Settings.General = sql.QueryRow("SELECT * FROM pprotect_antispam_general LIMIT 1")
+
+				--toolTableMessage(ply)
+			
 			PAS.InfoNotify(ply, "Settings saved!")
 		end)
 
@@ -161,3 +228,10 @@ function PAS.Notify(ply, text)
 		umsg.String(text)
 	umsg.End()
 end
+
+function toolTableMessage( ply )
+	net.Start( "toolTable" )
+		net.WriteTable( PAS.Settings.Tools )
+	net.Send( ply )
+end
+hook.Add( "PlayerInitialSpawn", "ToolTableMessage", toolTableMessage )

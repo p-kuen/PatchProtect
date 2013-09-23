@@ -26,7 +26,7 @@ hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", PAS.Setup )
 
 function spamaction(ply)
 
-	local action = tonumber(PAS.Settings["spamaction"])
+	local action = tonumber(PAS.Settings.General["spamaction"])
 
 	--Cleanup
 	if action == 2 then
@@ -45,14 +45,14 @@ function spamaction(ply)
 	--Ban
 	elseif action == 4 then
 
-		local banminutes = tonumber(PAS.Settings["bantime"])
+		local banminutes = tonumber(PAS.Settings.General["bantime"])
 		ply:Ban(banminutes, "Banned by PAS: Spammer")
 		PAS.AdminNotify(ply:Nick() .. " banned from the server for " .. banminutes .. " minutes, cause of spamming!")
 
 	--ConCommand
 	elseif action == 5 then
 
-		local concommand = tostring(PAS.Settings["concommand"])
+		local concommand = tostring(PAS.Settings.General["concommand"])
 		concommand = string.Replace(concommand, "<player>", ply:Nick())
 		local commands = string.Explode(" ", concommand)
 		RunConsoleCommand(commands[1], unpack(commands, 2))
@@ -67,12 +67,12 @@ end
 function PAS.Spawn(ply, mdl)
 
 	--Check if PAS is enabled
-	if tobool(PAS.Settings["use"]) == false then return end
+	if tobool(PAS.Settings.General["use"]) == false then return end
 
 		--Checking Coodown
 		if CurTime() < ply.propcooldown then
 
-			if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
+			if ply:IsAdmin() and tobool(PAS.Settings.General["noantiadmin"]) then
 				--Do nothing...
 			else
 				
@@ -80,7 +80,7 @@ function PAS.Spawn(ply, mdl)
 				ply.props = ply.props + 1
 
 				--Notify to Admin about spamming
-				if ply.props >= tonumber(PAS.Settings["spamcount"]) then
+				if ply.props >= tonumber(PAS.Settings.General["spamcount"]) then
 					
 					PAS.AdminNotify(ply:Nick() .. " is spamming!")
 					ply.props = 0
@@ -99,7 +99,7 @@ function PAS.Spawn(ply, mdl)
 
 			--Set Cooldown
 			ply.props = 0
-			ply.propcooldown = CurTime() + tonumber(PAS.Settings["cooldown"])
+			ply.propcooldown = CurTime() + tonumber(PAS.Settings.General["cooldown"])
 
 		end
 
@@ -112,7 +112,7 @@ hook.Add("PlayerSpawnProp", "SpawnedProp", PAS.Spawn)
 function PAS.Tool ( ply, trace, mode )
 	
 	--Check, if PAS is enabled and also the Tool Restriction
-	if tobool(PAS.Settings["use"]) == false or tobool(PAS.Settings["toolprotection"]) == false then return end
+	if tobool(PAS.Settings.General["use"]) == false or tobool(PAS.Settings.General["toolprotection"]) == false then return end
 
 	--Check, what tool the player uses
 	for k, v in pairs( BlockedTools ) do
@@ -122,14 +122,14 @@ function PAS.Tool ( ply, trace, mode )
 			--Set AntiSpam:
 			if CurTime() < ply.toolcooldown then
 
-				if ply:IsAdmin() and tobool(PAS.Settings["noantiadmin"]) then
+				if ply:IsAdmin() and tobool(PAS.Settings.General["noantiadmin"]) then
 					--Do nothing...
 				else
 
 					ply.tools = ply.tools + 1
 
 					--Notify Admin about spamming
-					if ply.tools >= tonumber(PAS.Settings["spamcount"]) then
+					if ply.tools >= tonumber(PAS.Settings.General["spamcount"]) then
 
 						PAS.AdminNotify(ply:Nick() .. " is spamming with " .. tostring(mode) .. "'s!")
 						ply.tools = 0
@@ -147,7 +147,7 @@ function PAS.Tool ( ply, trace, mode )
 			else
 
 				ply.tools = 0
-				ply.toolcooldown = CurTime() + tonumber(PAS.Settings["cooldown"])
+				ply.toolcooldown = CurTime() + tonumber(PAS.Settings.General["cooldown"])
 
 			end
 
