@@ -43,7 +43,6 @@ function sv_PP.createToolTable()
 			local t = wep.Tool
 			for name, tool in pairs( t ) do
 				table.insert(PAS.ConVars.PAS_ANTISPAM_tools, tostring(name))
-				print("insert")
 			end
 		end
 	end

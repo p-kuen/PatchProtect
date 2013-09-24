@@ -99,9 +99,8 @@ function PAS.SetupGeneralSettings()
 end
 
 function PAS.SetupToolsSettings()
-	timer.Simple(0.1, function()
-		sv_PP.createToolTable()
-	end)
+	
+	sv_PP.createToolTable()
 	
 	if !sql.TableExists("pprotect_antispam_tools") then
 		local values = {}

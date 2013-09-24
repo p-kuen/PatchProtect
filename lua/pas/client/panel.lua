@@ -156,7 +156,7 @@ function PAS.AdminMenu(Panel)
 	local function saveValues(args)
 		if combo_sa == nil then combo_sa = GetConVarNumber("_PAS_ANTISPAM_spamaction") end
 
-		if texts[1] == nil then texts[1] = GetConVarNumber("_PAS_ANTISPAM_concommand") end
+		if cl_PP.texts[1] == nil then cl_PP.texts[1] = GetConVarNumber("_PAS_ANTISPAM_concommand") end
 
 		savevalues = {
 			combo_sa,
