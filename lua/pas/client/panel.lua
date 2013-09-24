@@ -56,6 +56,7 @@ function PAS.AdminMenu(Panel)
 		if value != nil then
 
 			onlysave = onlysave or false
+
 			local zahl = 0
 			if onlysave == true then
 				zahl = 1
@@ -64,23 +65,34 @@ function PAS.AdminMenu(Panel)
 			end
 
 			RunConsoleCommand("PAS_ChangeConVar", convar, value, zahl)
+
 		end
+
 	end
 
 
 	--Show SpamAction DropDown-Menu
 
 	local function showSpamAction(idx)
+
 		saCat:Clear()
+
 		cl_PP.addlbl("Spam Action:", saCat)
 		addcombo(saCat, "spamaction", {"Nothing", "CleanUp", "Kick", "Ban", "Console Command"})
+
 		combo_sa = idx
+
 		if idx == 4 then
+
 			cl_PP.addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
+
 		elseif idx == 5 then
+
 			cl_PP.addtext(saCat, "concommand")
 			cl_PP.addlbl("Use <player> for the Spammer", saCat)
+
 		end
+
 	end
 	hook.Add("combo_spamaction", "showSA", showSpamAction)
 
@@ -258,6 +270,13 @@ function PAS.ProtectionMenu(Panel2)
 
 	Panel2:ClearControls()
 
+	--Check if superadmin, else show a error label
+
+	if !LocalPlayer():IsAdmin() then
+		Panel:AddControl("Label", {Text = "You are not an admin!"})
+		return
+	end
+
 	--Refresh Panels
 
 	if(!PAS.AdminCPanel2) then
@@ -277,6 +296,13 @@ function PAS.CleanupMenu(Panel3)
 
 	Panel3:ClearControls()
 
+	--Check if superadmin, else show a error label
+
+	if !LocalPlayer():IsAdmin() then
+		Panel:AddControl("Label", {Text = "You are not an admin!"})
+		return
+	end
+
 	--Refresh Panels
 
 	if(!PAS.AdminCPanel3) then
@@ -285,11 +311,8 @@ function PAS.CleanupMenu(Panel3)
 
 	--Set Content
 
-	--cl_PP.addlbl(Panel3, "Cleanup Panel:")
-
-	--cl_PP.addlbl(Panel3, "Click on the Buttons to cleanup Props:")
-
 	--Cleanup everything
+	cl_PP.addlbl(Panel3, "Cleanup everything:")
 	local count = 0
 	for i = 1, table.Count(player.GetAll( )) do
 		local plys = player.GetAll()[i]
@@ -298,7 +321,7 @@ function PAS.CleanupMenu(Panel3)
 	cl_PP.addbtn(Panel3, "Cleanup everything  (" .. tostring(count) .. " Props)")
 
 	--Claenup Player's Props
-	cl_PP.addlbl(Panel3, "Click here to cleanup Props from a special player:")
+	cl_PP.addlbl(Panel3, "Cleanup Props from a special player:")
 	for i = 1, table.Count(player.GetAll( )) do
 		local plys = player.GetAll()[i]
 		cl_PP.addbtn(Panel3, "Cleanup " .. plys:GetName() .. "  (" .. tostring(plys:GetCount( "props" )) .. " Props)", "", "")
