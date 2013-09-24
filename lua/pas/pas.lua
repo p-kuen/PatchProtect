@@ -79,6 +79,7 @@ function PAS.Spawn(ply, mdl)
 					
 					PAS.AdminNotify(ply:Nick() .. " is spamming!")
 					ply.props = 0
+					spamaction(ply)
 
 				end
 
@@ -125,6 +126,7 @@ function PAS.Tool( ply, trace, mode )
 
 					PAS.AdminNotify(ply:Nick() .. " is spamming with " .. tostring(mode) .. "s!")
 					ply.tools = 0
+					spamaction(ply)
 
 				end
 
@@ -155,49 +157,5 @@ function PAS.Tool( ply, trace, mode )
 	if delete then
 		return false
 	end
-	--[[
-	
-
-	--Check, what tool the player uses
-	for k, v in pairs( PAS.BlockedTools ) do
-		print(mode)
-		if mode == v then
-
-			--Set AntiSpam:
-			if CurTime() < ply.toolcooldown then
-
-				if ply:IsAdmin() and tobool(PAS.Settings.General["noantiadmin"]) then
-					--Do nothing...
-				else
-
-					ply.tools = ply.tools + 1
-
-					--Notify Admin about spamming
-					if ply.tools >= tonumber(PAS.Settings.General["spamcount"]) then
-
-						PAS.AdminNotify(ply:Nick() .. " is spamming with " .. tostring(mode) .. "'s!")
-						ply.tools = 0
-
-					end
-
-					--Notify Client about Wait-Time
-					PAS.Notify( ply, "Wait: " .. math.Round( ply.toolcooldown - CurTime(), 1))
-
-					--Block Tool
-					return false
-
-				end
-
-			else
-
-				ply.tools = 0
-				ply.toolcooldown = CurTime() + tonumber(PAS.Settings.General["cooldown"])
-
-			end
-
-		end
-		
-	end
-	]]
 end
 hook.Add("CanTool", "LimitToolGuns", PAS.Tool)

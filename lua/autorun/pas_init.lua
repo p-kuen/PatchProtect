@@ -1,9 +1,10 @@
-sh_PPP = {}
-sv_PPP = {}
-cl_PPP = {}
+sh_PP = {}
+sv_PP = {}
+cl_PP = {}
 
 AddCSLuaFile() -- Make the client download this file.
 AddCSLuaFile("pas/client/hud.lua")
+AddCSLuaFile("pas/client/panel_functions.lua")
 AddCSLuaFile("pas/client/panel.lua")
 
 if SERVER then
@@ -12,5 +13,6 @@ if SERVER then
 	include( "pas/propprotection.lua" )
 else
 	include( "pas/client/hud.lua" )
+	include( "pas/client/panel_functions.lua" )
 	include( "pas/client/panel.lua" )
 end

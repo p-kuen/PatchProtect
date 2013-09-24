@@ -98,7 +98,7 @@ end
 
 function PAS.SetupToolsSettings()
 	timer.Simple(0.1, function()
-		sv_PPP.createToolTable()
+		sv_PP.createToolTable()
 	end)
 	
 
@@ -197,8 +197,6 @@ function PAS.CCV(ply, cmd, args)
 			PAS.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
 			PAS.Settings.General = sql.QueryRow("SELECT * FROM pprotect_antispam_general LIMIT 1")
 			PAS.setBlockedTools()
-
-			PrintTable(PAS.Settings.General)
 
 			toolTableMessage(ply)
 			
