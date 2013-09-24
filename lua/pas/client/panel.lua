@@ -19,6 +19,7 @@ cl_PP.toolNames = {}
 
 function PAS.AdminMenu(Panel)
 
+
 	--Define Variables
 
 	Panel:ClearControls()
@@ -31,6 +32,7 @@ function PAS.AdminMenu(Panel)
 	cl_PP.texts = {}
 
 	cl_PP.combos = {}
+
 
 	--Set Panel
 
@@ -48,6 +50,7 @@ function PAS.AdminMenu(Panel)
 	
 
 	--More Variable Definitions
+
 	local combo_sa
 
 	local function changeConVar(convar, value, onlysave)
@@ -65,6 +68,7 @@ function PAS.AdminMenu(Panel)
 			RunConsoleCommand("PAS_ChangeConVar", convar, value, zahl)
 		end
 	end
+
 
 	--Show SpamAction DropDown-Menu
 
@@ -92,9 +96,11 @@ function PAS.AdminMenu(Panel)
 	--Add a Combobox
 
 	function addcombo(plist, var, choices)
+
 		local combo = plist:Add("DComboBox")
 		
 		local convar = GetConVarNumber("_PAS_ANTISPAM_" .. var)
+
 		table.insert(cl_PP.combos, combo)
 
 		table.foreach(choices, function(key, value)
@@ -102,9 +108,13 @@ function PAS.AdminMenu(Panel)
 		end)
 
 		if convar ~= 0 and updating == false then
+
 			combo:ChooseOptionID(convar)
+
 		elseif convar ~= 0 and updating == true then
+
 			combo:ChooseOptionID(sel)
+
 		end
 
 		function combo:OnSelect(index, value, data)
@@ -112,25 +122,34 @@ function PAS.AdminMenu(Panel)
 			updating = true
 			hook.Run("combo_" .. var, index)
 		end
+
 	end
 
+
+	--Save Tools
+
 	function saveTools()
+
 		local saves = {}
-		
 		
 		--Add tool checks
 		if cl_PP.checks_tools[1] ~= nil then
-			for i = 1, table.Count(cl_PP.checks_tools) do
-				--table.insert(savevalues,  )
-			end
 
-			for i = 1, table.Count(cl_PP.toolNames) do
-				changeConVar("tools_" .. cl_PP.toolNames[i], cl_PP.checks_tools[i]:GetChecked() and 1 or 0, true)
-			end
+			--[[
+			table.foreach(clPP.checks_tools, function (key, value)
+				table.insert(savevalues,  )
+			end)
+			]]
+
+			table.foreach(cl_PP.toolNames, function(key, value)
+				changeConVar("tools_" .. value, cl_PP.checks_tools[key]:GetChecked() and 1 or 0, true)
+			end)
 
 		end
+
 	end
 	hook.Add("btn_savetools", "SaveTlsFunction", saveTools)
+
 
 	--Saving all Values by pressing the 'Save' Button
 
@@ -165,13 +184,15 @@ function PAS.AdminMenu(Panel)
 			savevalues[table.KeyFromValue(args, "concommand")] = GetConVarString("_PAS_ANTISPAM_concommand")
 		end
 
-
 		table.foreach(savevalues, function(key, value)
 			changeConVar(args[i], value)
 		end)
 
 	end
 	hook.Add("btn_save", "SaveBtnFunction", saveValues)
+
+
+	--Set Tools
 
 	local function setTools(args)
 
@@ -187,6 +208,9 @@ function PAS.AdminMenu(Panel)
 
 	end
 	hook.Add("btn_tools", "SetToolsFunction", setTools)
+
+
+	--Build The Menu
 
 	--[[
 	Available Functions:
@@ -219,14 +243,22 @@ function PAS.AdminMenu(Panel)
 	--Add Spam-Action Elements if selected
 
 	local spamactionnumber = GetConVarNumber("_PAS_ANTISPAM_spamaction")
+
 	if spamactionnumber == 4 then
+
 		cl_PP.addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
+
 	elseif spamactionnumber == 5 then
 		cl_PP.addlbl(saCat, "Write a command. Use <player> for the Spammer")
+
 		cl_PP.addtext(saCat, GetConVarString("_PAS_ANTISPAM_concommand"))
+
 	end
 
 end
+
+
+--Prop Protection Menu
 
 function PAS.ProtectionMenu(Panel2)
 

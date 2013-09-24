@@ -40,6 +40,8 @@ function PAS.SetupGeneralSettings()
 		local values = {}
 		local sqlvars = {}
 
+		PrintTable(PAS.ConVars)
+
 		for Protection, ConVars in pairs(PAS.ConVars) do
 
 			for Option, value in pairs(ConVars) do
@@ -101,7 +103,6 @@ function PAS.SetupToolsSettings()
 		sv_PP.createToolTable()
 	end)
 	
-
 	if !sql.TableExists("pprotect_antispam_tools") then
 		local values = {}
 		local vars = {}
@@ -124,7 +125,7 @@ function PAS.SetupToolsSettings()
 		
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchAntiSpam] Created snew Tools-Settings-Table!\n"
+			"[PatchAntiSpam] Created new Tools-Settings-Table!\n"
 		)
 
 	end

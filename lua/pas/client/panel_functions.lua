@@ -1,3 +1,5 @@
+--FRAME
+
 function cl_PP.addframe(width, height, title, draggable, closeable, var, btntext)
 
 	btntext = btntext or "Save"
@@ -39,8 +41,11 @@ function cl_PP.addframe(width, height, title, draggable, closeable, var, btntext
 	return list
 end
 
+
 --CATEGORY
+
 function cl_PP.makeCategory(plist, name)
+
 	local cat = vgui.Create( "DCollapsibleCategory")
 	cat:SetLabel(name)
 
@@ -48,21 +53,28 @@ function cl_PP.makeCategory(plist, name)
 	cat:SetContents(pan)
 
 	plist:AddItem(cat)
+
 	return cat, pan
+
 end
 
+
 --CHECKBOX
+
 function cl_PP.addchk(plist, text, typ, var)
+
 	local chk = vgui.Create("DCheckBoxLabel")
 	chk:SetText(text)
 
 	if typ == "convar" then
+
 		var_checks = "general"
 		table.insert(cl_PP.checks_general, chk)
 		chk:SetChecked(tobool(GetConVarNumber("_PAS_ANTISPAM_" .. var)))
 		chk:SetDark(true)
 
 	elseif typ == "toolConVar" then
+
 		table.insert(cl_PP.checks_tools, chk)
 
 		--chk:SetConVar("_PAS_ANTISPAM_" .. var)
@@ -73,17 +85,20 @@ function cl_PP.addchk(plist, text, typ, var)
 	end
 
 	plist:AddItem(chk)
+
 end
 
+
 --SLIDER
+
 function cl_PP.addsldr(plist, min, max, text, var, decimals)
+
 	local sldr
-	if var ~= "bantime" then
-		sldr = vgui.Create("DNumSlider")
-	else
-		sldr = plist:AddItem("DNumSlider")
-	end
+
+	if var ~= "bantime" then sldr = vgui.Create("DNumSlider") else sldr = plist:AddItem("DNumSlider") end
+
 	table.insert(cl_PP.sliders, sldr)
+
 	sldr:SetMin(min)
 	sldr:SetMax(max)
 	decimals = decimals or 1
@@ -93,19 +108,30 @@ function cl_PP.addsldr(plist, min, max, text, var, decimals)
 	sldr:SetValue(GetConVarNumber("_PAS_ANTISPAM_" .. var))
 
 	if var ~= "bantime" then plist:AddItem(sldr) end
+
 end
+
 
 --LABEL
+
 function cl_PP.addlbl(plist, text)
+
 	local lbl = plist:Add("DLabel")
+
 	lbl:SetText(text)
 	lbl:SetDark(true)
+
 end
 
+
 --BUTTON
+
 function cl_PP.addbtn(plist, text, type, args)
+
 	btn = vgui.Create("DButton")
+
 	if type == "save" then btn:SetSize(150,30) else btn:SetSize(150,20) end
+
 	btn:Center()
 	btn:SetText(text)
 	btn:SetDark(true)
@@ -117,7 +143,9 @@ function cl_PP.addbtn(plist, text, type, args)
 	plist:AddItem(btn)
 end
 
+
 --TEXTBOX
+
 function cl_PP.addtext(plist, text)
 		local tentry = plist:Add( "DTextEntry")
 		table.insert(cl_PP.texts, tentry)

@@ -38,10 +38,12 @@ function sv_PP.createToolTable()
 	end
 
 	for _, wep in pairs( weapons.GetList() ) do
+
 		if wep.ClassName == "gmod_tool" then 
 			local t = wep.Tool
 			for name, tool in pairs( t ) do
 				table.insert(PAS.ConVars.PAS_ANTISPAM_tools, tostring(name))
+				print("insert")
 			end
 		end
 	end
