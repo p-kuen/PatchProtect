@@ -12,13 +12,13 @@ cl_PP.texts = {}
 
 cl_PP.combos = {}
 
-local frm
-
 cl_PP.sqlTools = {}
 cl_PP.toolNames = {}
 
-function PAS.AdminMenu(Panel)
 
+--ANTISPAM MENU
+
+function PAS.AdminMenu(Panel)
 
 	--Define Variables
 
@@ -33,14 +33,6 @@ function PAS.AdminMenu(Panel)
 
 	cl_PP.combos = {}
 
-
-	--Set Panel
-
-	if(!PAS.AdminCPanel) then
-		PAS.AdminCPanel = Panel
-	end
-
-
 	--Check if superadmin, else show a error label
 
 	if !LocalPlayer():IsAdmin() then
@@ -48,6 +40,12 @@ function PAS.AdminMenu(Panel)
 		return
 	end
 	
+	--Update Panel
+
+	if(!PAS.AdminCPanel) then
+		PAS.AdminCPanel = Panel
+	end
+
 
 	--More Variable Definitions
 
@@ -126,7 +124,9 @@ function PAS.AdminMenu(Panel)
 	end
 
 
-	--Save Tools
+	--SAVING
+
+	--Tools
 
 	function saveTools()
 
@@ -134,12 +134,6 @@ function PAS.AdminMenu(Panel)
 		
 		--Add tool checks
 		if cl_PP.checks_tools[1] ~= nil then
-
-			--[[
-			table.foreach(clPP.checks_tools, function (key, value)
-				table.insert(savevalues,  )
-			end)
-			]]
 
 			table.foreach(cl_PP.toolNames, function(key, value)
 				changeConVar("tools_" .. value, cl_PP.checks_tools[key]:GetChecked() and 1 or 0, true)
@@ -150,10 +144,10 @@ function PAS.AdminMenu(Panel)
 	end
 	hook.Add("btn_savetools", "SaveTlsFunction", saveTools)
 
-
-	--Saving all Values by pressing the 'Save' Button
+	--Values
 
 	local function saveValues(args)
+
 		if combo_sa == nil then combo_sa = GetConVarNumber("_PAS_ANTISPAM_spamaction") end
 
 		if cl_PP.texts[1] == nil then cl_PP.texts[1] = GetConVarNumber("_PAS_ANTISPAM_concommand") end
@@ -162,7 +156,7 @@ function PAS.AdminMenu(Panel)
 			combo_sa,
 		}
 
-		--Add Elements
+		--Add Controls
 
 		local function saves_value(key, value)
 			table.insert(savevalues, value:GetValue())
@@ -201,7 +195,7 @@ function PAS.AdminMenu(Panel)
 		for a = 1, table.Count(cl_PP.toolNames) do
 
 			timer.Simple(0.1, function()
-				cl_PP.addchk(tlsFrm, cl_PP.toolNames[a], "toolConVar", "tools_" .. cl_PP.toolNames[a])
+				cl_PP.addchk(tlsFrm, cl_PP.toolNames[a], "table", "tools_" .. cl_PP.toolNames[a])
 			end)
 
 		end
@@ -210,7 +204,7 @@ function PAS.AdminMenu(Panel)
 	hook.Add("btn_tools", "SetToolsFunction", setTools)
 
 
-	--Build The Menu
+	--Set Content
 
 	--[[
 	Available Functions:
@@ -240,7 +234,7 @@ function PAS.AdminMenu(Panel)
 	addcombo(saCat, "spamaction", {"Nothing", "CleanUp", "Kick", "Ban", "Console Command"})
 
 
-	--Add Spam-Action Elements if selected
+	--Add Spam-Action Elements if needed
 
 	local spamactionnumber = GetConVarNumber("_PAS_ANTISPAM_spamaction")
 
@@ -258,47 +252,66 @@ function PAS.AdminMenu(Panel)
 end
 
 
---Prop Protection Menu
+--PROP PROTECTION MENU
 
 function PAS.ProtectionMenu(Panel2)
 
-	function addchkpp(text, cvar)
-		local chk = vgui.Create("DCheckBoxLabel")
-		chk:SetText(text)
-		chk:SetDark(true)
-		--chk:SetChecked(tobool(GetConVarNumber("_PatchProtect_PropProtection_" .. cvar)))
-		--chk:SetConVar("_PatchProtect_PropProtection_" .. cvar)
-		Panel2:AddItem(chk)
-	end
+	--Set Content
 
-	function addbtnpp(type, text)
-		local btn = vgui.Create("DButton")
-		if type == "save" then btn:SetSize(150,30) else btn:SetSize(150,20) end
-		btn:Center()
-		btn:SetText(text)
-		btn:SetDark(true)
+	cl_PP.addchk(Panel2, "Use PropProtection", "test", "")
+	cl_PP.addchk(Panel2, "Allow Property to Non-Admins", "test", "")
 
-		function btn:OnMousePressed()
-			print("test")
-		end
-		
-		Panel2:AddItem(btn)
-	end
-
-	addchkpp("Use PropProtection", "UsePP")
-	addchkpp("Allow Property to Non-Admins", "AllowProperty")
-	addbtnpp("save", "Save Settings")
 end
 
---Make the Menues
+--CLEANUP MENU
+
+function PAS.CleanupMenu(Panel3)
+
+	Panel3:ClearControls()
+
+	--Refresh Panels
+
+	if(!PAS.AdminCPanel3) then
+		PAS.AdminCPanel3 = Panel3
+		
+	end
+
+	--Set Content
+
+	--cl_PP.addlbl(Panel3, "Cleanup Panel:")
+
+	--cl_PP.addlbl(Panel3, "Click on the Buttons to cleanup Props:")
+
+	--Cleanup everything
+	local count = 0
+	for i = 1, table.Count(player.GetAll( )) do
+		local plys = player.GetAll()[i]
+		count = count + plys:GetCount( "props" )
+	end
+	cl_PP.addbtn(Panel3, "Cleanup everything  (" .. tostring(count) .. " Props)")
+
+	--Claenup Player's Props
+	cl_PP.addlbl(Panel3, "Click here to cleanup Props from a special player:")
+	for i = 1, table.Count(player.GetAll( )) do
+		local plys = player.GetAll()[i]
+		cl_PP.addbtn(Panel3, "Cleanup " .. plys:GetName() .. "  (" .. tostring(plys:GetCount( "props" )) .. " Props)", "", "")
+	end
+
+end
+
+--CREATE MENUS
 
 local function makeMenus()
+
 	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPAdmin", "AntiSpam", "", "", PAS.AdminMenu)
 	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPPropProtection", "PropProtection", "", "", PAS.ProtectionMenu)
+	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPClientCleanup", "Cleanup", "", "", PAS.CleanupMenu)
+
 end
 hook.Add("PopulateToolMenu", "PASmakeMenus", makeMenus)
 
---Update the Menues
+
+--UPDATE MENUS
 
 local function UpdateMenus()
 	
@@ -311,8 +324,17 @@ local function UpdateMenus()
 	if PAS.AdminCPanel2 then
 		PAS.ProtectionMenu(PAS.AdminCPanel2)
 	end
+
+	--Cleanup Menu
+	if PAS.AdminCPanel3 then
+		PAS.CleanupMenu(PAS.AdminCPanel3)
+	end
+
 end
 hook.Add("SpawnMenuOpen", "PASMenus", UpdateMenus)
+
+
+--RECEIVE TOOL DATA
 
 local function getToolTable()
 	cl_PP.sqlTools = {}
@@ -323,5 +345,4 @@ local function getToolTable()
  		table.insert(cl_PP.toolNames, key)
 	end )
 end
-
 net.Receive( "toolTable", getToolTable )

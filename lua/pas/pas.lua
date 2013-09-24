@@ -60,7 +60,7 @@ end
 --Prop Anti Spam:
 
 function PAS.Spawn(ply, mdl)
-
+	
 	--Check if PAS is enabled
 	if tobool(PAS.Settings.General["use"]) == false then return end
 

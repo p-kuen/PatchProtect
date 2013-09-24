@@ -73,13 +73,17 @@ function cl_PP.addchk(plist, text, typ, var)
 		chk:SetChecked(tobool(GetConVarNumber("_PAS_ANTISPAM_" .. var)))
 		chk:SetDark(true)
 
-	elseif typ == "toolConVar" then
+	elseif typ == "table" then
 
 		table.insert(cl_PP.checks_tools, chk)
 
 		--chk:SetConVar("_PAS_ANTISPAM_" .. var)
 		chk:SetChecked(tobool(tonumber(cl_PP.sqlTools[table.KeyFromValue(cl_PP.toolNames, string.sub(var, 7))])))
 			
+		chk:SetDark(true)
+
+	elseif typ == "test" then
+
 		chk:SetDark(true)
 
 	end
@@ -116,28 +120,29 @@ end
 
 function cl_PP.addlbl(plist, text)
 
-	local lbl = plist:Add("DLabel")
+	local lbl = vgui.Create("DLabel")
 
 	lbl:SetText(text)
 	lbl:SetDark(true)
 
+	plist:AddItem(lbl)
 end
 
 
 --BUTTON
 
-function cl_PP.addbtn(plist, text, type, args)
+function cl_PP.addbtn(plist, text, typ, args)
 
 	btn = vgui.Create("DButton")
 
-	if type == "save" then btn:SetSize(150,30) else btn:SetSize(150,20) end
+	if typ == "save" then btn:SetSize(150,30) else btn:SetSize(150,20) end
 
 	btn:Center()
 	btn:SetText(text)
 	btn:SetDark(true)
 
 	function btn:OnMousePressed()
-		hook.Run("btn_" .. type, args)
+		hook.Run("btn_" .. typ, args)
 	end
 
 	plist:AddItem(btn)
