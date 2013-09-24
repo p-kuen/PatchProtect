@@ -1,8 +1,6 @@
 PAS = PAS or {}
 PAS.Settings = PAS.Settings or {}
 
-local savecount = 0
-
 function PAS.SetupGeneralSettings()
 
 	MsgC(
@@ -138,8 +136,9 @@ end
 PAS.Settings.General = PAS.SetupGeneralSettings()
 PAS.Settings.Tools = PAS.SetupToolsSettings()
 
---Networking libraries
-
+timer.Simple(0.1, function()
+	PAS.setBlockedTools()
+end)
 
 function PAS.ApplySettings(ply, cmd, args)
 	
@@ -162,7 +161,6 @@ function PAS.ApplySettings(ply, cmd, args)
 			sql.Query("UPDATE pprotect_antispam_tools SET " .. name .. " = " .. args[2])
 
 		else
-
 			local number = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetFloat()
 			local text = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetString()
 
@@ -178,27 +176,31 @@ function PAS.ApplySettings(ply, cmd, args)
 end
 concommand.Add("PAS_SetSettings", PAS.ApplySettings)
 
+local savecount = 0
 function PAS.CCV(ply, cmd, args)
 
-	if args[3] == 0 then
+	if tonumber(args[3]) == 0 then
 		RunConsoleCommand("_PAS_ANTISPAM_" .. args[1], args[2])
 	end
 
-	RunConsoleCommand("PAS_SetSettings", args)
+	RunConsoleCommand("PAS_SetSettings", args[1], args[2], args[3])
 
 	savecount = savecount + 1
 
-	local condition
-	if args[3] == 1 then condition = table.Count(PAS.Settings.Tools) else condition = table.Count(PAS.Settings.General) end
-	if savecount == condition  then
+	local condition = 0
 
+	if tonumber(args[3]) == 1 then condition = table.Count(PAS.Settings.Tools) else condition = table.Count(PAS.Settings.General) end
+	if savecount >= condition then
 		savecount = 0
 		timer.Simple(0.1, function()
 
-				PAS.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
-				PAS.Settings.General = sql.QueryRow("SELECT * FROM pprotect_antispam_general LIMIT 1")
+			PAS.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
+			PAS.Settings.General = sql.QueryRow("SELECT * FROM pprotect_antispam_general LIMIT 1")
+			PAS.setBlockedTools()
 
-				--toolTableMessage(ply)
+			PrintTable(PAS.Settings.General)
+
+			toolTableMessage(ply)
 			
 			PAS.InfoNotify(ply, "Settings saved!")
 		end)
@@ -229,6 +231,17 @@ function PAS.Notify(ply, text)
 	umsg.End()
 end
 
+function PAS.setBlockedTools()
+	PAS.BlockedTools = {}
+
+	table.foreach( PAS.Settings.Tools, function( key, value )
+		if tonumber(value) == 1 then
+			table.insert(PAS.BlockedTools, key)
+		end
+	end )
+end
+
+--Networking
 function toolTableMessage( ply )
 	net.Start( "toolTable" )
 		net.WriteTable( PAS.Settings.Tools )

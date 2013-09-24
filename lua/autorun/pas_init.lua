@@ -7,7 +7,6 @@ AddCSLuaFile("pas/client/hud.lua")
 AddCSLuaFile("pas/client/panel.lua")
 
 if SERVER then
-	include( "pas/test.lua" ) -- Run the serverside "pas/test.lua" file.
 	include( "pas/server/settings.lua" )
 	include( "pas/pas.lua" )
 	include( "pas/propprotection.lua" )

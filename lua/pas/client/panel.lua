@@ -186,29 +186,6 @@ function PAS.AdminMenu(Panel)
 		lbl:SetDark(true)
 	end
 
-	function saveTools()
-		local saves = {}
-
-		--timer.Simple(0.1, function()
-			print("checks:")
-			PrintTable(cl_PPP.checks_tools)
-		--end)
-		
-		
-		--Add tool checks
-		if cl_PPP.checks_tools[1] ~= nil then
-			for i = 1, table.Count(cl_PPP.checks_tools) do
-				--table.insert(savevalues,  )
-			end
-
-			for i = 1, table.Count(cl_PPP.toolNames) do
-				changeConVar("tools_" .. cl_PPP.toolNames[i], cl_PPP.checks_tools[i]:GetChecked() and 1 or 0, true)
-			end
-
-		end
-	end
-	hook.Add("btn_savetools", "SaveTlsFunction", saveTools)
-
 	--Add a Frame
 
 	function addframe(width, height, text, draggable, closebutton, type, args)
@@ -248,6 +225,24 @@ function PAS.AdminMenu(Panel)
 		end
 
 	end
+
+	function saveTools()
+		local saves = {}
+		
+		
+		--Add tool checks
+		if cl_PPP.checks_tools[1] ~= nil then
+			for i = 1, table.Count(cl_PPP.checks_tools) do
+				--table.insert(savevalues,  )
+			end
+
+			for i = 1, table.Count(cl_PPP.toolNames) do
+				changeConVar("tools_" .. cl_PPP.toolNames[i], cl_PPP.checks_tools[i]:GetChecked() and 1 or 0, true)
+			end
+
+		end
+	end
+	hook.Add("btn_savetools", "SaveTlsFunction", saveTools)
 
 	--Saving all Values by pressing the 'Save' Button
 
@@ -292,6 +287,7 @@ function PAS.AdminMenu(Panel)
 		end
 
 		for i = 1, table.Count(savevalues) do
+			print("saving " .. args[i] .. " value: " .. savevalues[i])
 			changeConVar(args[i], savevalues[i])
 		end
 
@@ -304,16 +300,9 @@ function PAS.AdminMenu(Panel)
 
 		for a = 1, table.Count(cl_PPP.toolNames) do
 
-			--if cl_PPP.sqlTools[1] ~= nil then RunConsoleCommand("_PAS_ANTISPAM_tools_" .. cl_PPP.toolNames[a], cl_PPP.sqlTools[a]) end
-			--RunConsoleCommand("_PAS_ANTISPAM_tools_" .. PAS.tool_list[a], "1")
-			--print()
-			
-			--
 			timer.Simple(0.1, function()
 				addchk(list, cl_PPP.toolNames[a], "toolConVar", "tools_" .. cl_PPP.toolNames[a])
 			end)
-			
-			--addchk(list, tools[a], "tools", 1)
 
 		end
 
@@ -432,13 +421,14 @@ end
 hook.Add("SpawnMenuOpen", "PASMenus", UpdateMenus)
 
 local function getToolTable()
+	cl_PPP.sqlTools = {}
+	cl_PPP.toolNames = {}
+	print("got message")
 	local rowtable = net.ReadTable()
 	cl_PPP.sqlTools = table.ClearKeys(rowtable) -- Here, we read the string that was sent from the server
-	toolList = table.foreach( rowtable, function( key, value )
+	table.foreach( rowtable, function( key, value )
  		table.insert(cl_PPP.toolNames, key)
 	end )
-	print("Saved Tools: ")
-	PrintTable(cl_PPP.sqlTools)
 end
 
 net.Receive( "toolTable", getToolTable )

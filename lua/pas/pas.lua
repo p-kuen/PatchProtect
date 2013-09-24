@@ -1,11 +1,6 @@
 PAS = PAS or {}
 
 
---Blocked Tools:
-
-local BlockedTools = {} --{"dynamite", "thruster"}
-
-
 --Settings Variables:
 
 function PAS.Setup(ply)
@@ -109,14 +104,63 @@ hook.Add("PlayerSpawnProp", "SpawnedProp", PAS.Spawn)
 
 --Tool Anti Spam:
 
-function PAS.Tool ( ply, trace, mode )
-	
+function PAS.Tool( ply, trace, mode )
+
 	--Check, if PAS is enabled and also the Tool Restriction
 	if tobool(PAS.Settings.General["use"]) == false or tobool(PAS.Settings.General["toolprotection"]) == false then return end
 
-	--Check, what tool the player uses
-	for k, v in pairs( BlockedTools ) do
+	local delete = false
 
+	local function blockedtool()
+		--Set AntiSpam:
+		if CurTime() < ply.toolcooldown then
+
+			if ply:IsAdmin() and tobool(PAS.Settings.General["noantiadmin"]) then
+			else
+
+				ply.tools = ply.tools + 1
+
+				--Notify Admin about spamming
+				if ply.tools >= tonumber(PAS.Settings.General["spamcount"]) then
+
+					PAS.AdminNotify(ply:Nick() .. " is spamming with " .. tostring(mode) .. "s!")
+					ply.tools = 0
+
+				end
+
+				--Notify Client about Wait-Time
+				PAS.Notify( ply, "Wait: " .. math.Round( ply.toolcooldown - CurTime(), 1))
+
+				--Block Tool
+				delete = true
+				return false
+
+				end
+
+			else
+
+				delete = false
+				ply.tools = 0
+				ply.toolcooldown = CurTime() + tonumber(PAS.Settings.General["cooldown"])
+
+			end
+	end
+
+	table.foreach( PAS.BlockedTools, function( key, value )
+ 		if value == mode then
+ 			blockedtool()
+ 		end
+	end )
+
+	if delete then
+		return false
+	end
+	--[[
+	
+
+	--Check, what tool the player uses
+	for k, v in pairs( PAS.BlockedTools ) do
+		print(mode)
 		if mode == v then
 
 			--Set AntiSpam:
@@ -152,8 +196,8 @@ function PAS.Tool ( ply, trace, mode )
 			end
 
 		end
-
+		
 	end
-	
+	]]
 end
 hook.Add("CanTool", "LimitToolGuns", PAS.Tool)
