@@ -1,17 +1,20 @@
 PAS = PAS or {}
 
+--Settings
 PAS.Settings = PAS.Settings or {}
-PAS.AdminPanel = nil
 
+--[[
+--Panel
+PAS.AdminPanel = nil
+]]
+--Constrols
 cl_PP.checks_general = {}
 cl_PP.checks_tools = {}
-
 cl_PP.sliders = {}
-
 cl_PP.texts = {}
-
 cl_PP.combos = {}
 
+--Tools
 cl_PP.sqlTools = {}
 cl_PP.toolNames = {}
 
@@ -20,18 +23,21 @@ cl_PP.toolNames = {}
 
 function PAS.AdminMenu(Panel)
 
-	--Define Variables
+	--Delete Controls
 
 	Panel:ClearControls()
 
+	--Clear Control-Tables
+
 	cl_PP.checks_general = {}
 	cl_PP.checks_tools = {}
-
 	cl_PP.sliders = {}
-
 	cl_PP.texts = {}
-
 	cl_PP.combos = {}
+
+	local combo_sa
+	local updating = false
+	local sel = 0
 
 	--Check if superadmin, else show a error label
 
@@ -46,10 +52,7 @@ function PAS.AdminMenu(Panel)
 		PAS.AdminCPanel = Panel
 	end
 
-
-	--More Variable Definitions
-
-	local combo_sa
+	--Changed ConVar
 
 	local function changeConVar(convar, value, onlysave)
 
@@ -70,7 +73,6 @@ function PAS.AdminMenu(Panel)
 
 	end
 
-
 	--Show SpamAction DropDown-Menu
 
 	local function showSpamAction(idx)
@@ -83,32 +85,20 @@ function PAS.AdminMenu(Panel)
 		combo_sa = idx
 
 		if idx == 4 then
-
 			cl_PP.addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
-
 		elseif idx == 5 then
-
 			cl_PP.addtext(saCat, "concommand")
 			cl_PP.addlbl("Use <player> for the Spammer", saCat)
-
 		end
 
 	end
 	hook.Add("combo_spamaction", "showSA", showSpamAction)
-
-
-	--More Variables
-
-	local updating = false
-	local sel = 0
-
 
 	--Add a Combobox
 
 	function addcombo(plist, var, choices)
 
 		local combo = plist:Add("DComboBox")
-		
 		local convar = GetConVarNumber("_PAS_ANTISPAM_" .. var)
 
 		table.insert(cl_PP.combos, combo)
@@ -118,13 +108,9 @@ function PAS.AdminMenu(Panel)
 		end)
 
 		if convar ~= 0 and updating == false then
-
 			combo:ChooseOptionID(convar)
-
 		elseif convar ~= 0 and updating == true then
-
 			combo:ChooseOptionID(sel)
-
 		end
 
 		function combo:OnSelect(index, value, data)
@@ -204,13 +190,13 @@ function PAS.AdminMenu(Panel)
 
 		tlsFrm = cl_PP.addframe(250, 350, "Set blocked Tools:", true, true, "savetools", "Save Tools")
 
-		for a = 1, table.Count(cl_PP.toolNames) do
+		table.foreach(cl_PP.toolNames, function()
 
 			timer.Simple(0.1, function()
 				cl_PP.addchk(tlsFrm, cl_PP.toolNames[a], "table", "tools_" .. cl_PP.toolNames[a])
 			end)
 
-		end
+		end)
 
 	end
 	hook.Add("btn_tools", "SetToolsFunction", setTools)
@@ -268,6 +254,8 @@ end
 
 function PAS.ProtectionMenu(Panel2)
 
+	--Delete Controls
+
 	Panel2:ClearControls()
 
 	--Check if superadmin, else show a error label
@@ -294,6 +282,8 @@ end
 
 function PAS.CleanupMenu(Panel3)
 
+	--Delete Controls
+
 	Panel3:ClearControls()
 
 	--Check if superadmin, else show a error label
@@ -312,30 +302,32 @@ function PAS.CleanupMenu(Panel3)
 	--Set Content
 
 	--Cleanup everything
-	cl_PP.addlbl(Panel3, "Cleanup everything:")
 	local count = 0
-	for i = 1, table.Count(player.GetAll( )) do
+
+	table.foreach(player.GetAll(), function()
 		local plys = player.GetAll()[i]
 		count = count + plys:GetCount( "props" )
-	end
+	end)
+
+	cl_PP.addlbl(Panel3, "Cleanup everything:")
 	cl_PP.addbtn(Panel3, "Cleanup everything  (" .. tostring(count) .. " Props)")
+	cl_PP.addlbl(Panel3, "Cleanup Props from a special player:")
 
 	--Claenup Player's Props
-	cl_PP.addlbl(Panel3, "Cleanup Props from a special player:")
-	for i = 1, table.Count(player.GetAll( )) do
+	table.foreach(player.GetAll(), function()
 		local plys = player.GetAll()[i]
 		cl_PP.addbtn(Panel3, "Cleanup " .. plys:GetName() .. "  (" .. tostring(plys:GetCount( "props" )) .. " Props)", "", "")
-	end
-
+	end)
+	
 end
 
 --CREATE MENUS
 
 local function makeMenus()
 
-	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPAdmin", "AntiSpam", "", "", PAS.AdminMenu)
-	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPPropProtection", "PropProtection", "", "", PAS.ProtectionMenu)
-	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPClientCleanup", "Cleanup", "", "", PAS.CleanupMenu)
+	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPAdmin", "PatchProtect - AntiSpam", "", "", PAS.AdminMenu)
+	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPPropProtection", "PatchProtect - PropProtection", "", "", PAS.ProtectionMenu)
+	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPClientCleanup", "PatchProtect - Cleanup", "", "", PAS.CleanupMenu)
 
 end
 hook.Add("PopulateToolMenu", "PASmakeMenus", makeMenus)
