@@ -28,7 +28,7 @@ PAS.ConVars.PAS_ANTISPAM = {
 PAS.ConVars.PAS_ANTISPAM_tools = {}
 
 function sv_PP.createToolTable()
-
+	
 	if not PAS.ConVars then
 		PAS.ConVars = {}
 	end

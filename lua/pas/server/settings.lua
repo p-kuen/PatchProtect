@@ -40,8 +40,6 @@ function PAS.SetupGeneralSettings()
 		local values = {}
 		local sqlvars = {}
 
-		PrintTable(PAS.ConVars)
-
 		for Protection, ConVars in pairs(PAS.ConVars) do
 
 			for Option, value in pairs(ConVars) do
@@ -98,9 +96,10 @@ function PAS.SetupGeneralSettings()
 
 end
 
-function PAS.SetupToolsSettings()
+function PAS.SetupToolsSettings() 
 	
 	sv_PP.createToolTable()
+	
 	
 	if !sql.TableExists("pprotect_antispam_tools") then
 		local values = {}
@@ -134,9 +133,11 @@ function PAS.SetupToolsSettings()
 end
 
 PAS.Settings.General = PAS.SetupGeneralSettings()
-PAS.Settings.Tools = PAS.SetupToolsSettings()
-
 timer.Simple(0.1, function()
+	PAS.Settings.Tools = PAS.SetupToolsSettings()
+end)
+
+timer.Simple(0.2, function()
 	PAS.setBlockedTools()
 end)
 
@@ -157,7 +158,7 @@ function PAS.ApplySettings(ply, cmd, args)
 		if mode[1] == "tools" then
 
 			local name = string.sub(args[1], 7)
-			--print("name:" .. name .. " args[1]: " .. args[1] .. "wert: " .. args[2])
+
 			sql.Query("UPDATE pprotect_antispam_tools SET " .. name .. " = " .. args[2])
 
 		else
