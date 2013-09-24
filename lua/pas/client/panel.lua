@@ -256,6 +256,14 @@ end
 
 function PAS.ProtectionMenu(Panel2)
 
+	Panel2:ClearControls()
+
+	--Refresh Panels
+
+	if(!PAS.AdminCPanel2) then
+		PAS.AdminCPanel2 = Panel2
+	end
+
 	--Set Content
 
 	cl_PP.addchk(Panel2, "Use PropProtection", "test", "")
@@ -273,7 +281,6 @@ function PAS.CleanupMenu(Panel3)
 
 	if(!PAS.AdminCPanel3) then
 		PAS.AdminCPanel3 = Panel3
-		
 	end
 
 	--Set Content
