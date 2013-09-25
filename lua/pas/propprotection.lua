@@ -2,7 +2,7 @@
 
 function CheckPlayer(ply, ent)
 
-	if !Entity:IsWorld() or ply:IsAdmin() then
+	if !ent:IsWorld() or ply:IsAdmin() then
 
 		if ent.name == ply:Nick() and ent.name != nil then
 			
