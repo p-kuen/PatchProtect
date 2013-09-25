@@ -15,7 +15,7 @@ local HUDNotes = {}
 surface.CreateFont( "PatchProtectFont", {
 	font 		= "DermaDefault",
 	size 		= 15,
-	weight 		= 1000,
+	weight 		= 750,
 	blursize 	= 0,
 	scanlines 	= 0,
 	antialias 	= true,
@@ -27,15 +27,15 @@ surface.CreateFont( "PatchProtectFont", {
 
 function PAS.ShowOwner()
 
-	if(!LocalPlayer() or !LocalPlayer():IsValid()) then
+	if !LocalPlayer() or !LocalPlayer():IsValid() then
 		return
 	end
 
 	local PlyTrace = LocalPlayer():GetEyeTraceNoCursor()
 
-	if(PlyTrace.HitNonWorld) then
+	if PlyTrace.HitNonWorld then
 
-		if(PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle()) then
+		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and isstring(PlyTrace.Entity:GetNetworkedEntity("Owner", false)) then
 
 			local POwner = "Owner: " .. PlyTrace.Entity:GetNetworkedEntity("Owner", false)
 
@@ -45,8 +45,9 @@ function PAS.ShowOwner()
 			OW = OW + 15
 			OH = OH + 15
 
-			draw.RoundedBox(2, ScrW() - OW - 10, ScrH() / 2, OW, OH, Color(88, 144, 222, 200))
-			draw.SimpleText(POwner, "PatchProtectFont", ScrW() - (OW / 2) - 10, ScrH() / 2 + (OH / 2), Color(255, 255, 255, 255), 1, 1)
+			draw.RoundedBox(2, ScrW() - OW - 10, ScrH() - OH - 10, OW, OH, Color(88, 144, 222, 200))
+			draw.SimpleText(POwner, "PatchProtectFont", ScrW() - (OW / 2) - 10, ScrH() - (OH / 2) - 10, Color(0,0,0, 255), 1, 1)
+		
 		end
 
 	end
@@ -77,8 +78,8 @@ usermessage.Hook("PAS_InfoNotify", function(u) PAS.AddInfoNotify(u:ReadString())
 function PAS.AddAdminNotify( str )
 
 	local tab = {}
-	tab.text 	= str
-	tab.recv 	= SysTime()
+	tab.text = str
+	tab.recv = SysTime()
 
 	if (LocalPlayer():IsAdmin()) then
 
@@ -90,7 +91,7 @@ function PAS.AddAdminNotify( str )
 	LocalPlayer():EmitSound("npc/turret_floor/click1.wav", 10, 100)
 
 end
-usermessage.Hook("PAS_AdminNotify", function(u) PAS.AddAdminNotify(u:ReadString()) end)
+usermessage.Hook( "PAS_AdminNotify", function( u ) PAS.AddAdminNotify( u:ReadString() ) end )
 
 
 --Default Messages:
@@ -98,8 +99,8 @@ usermessage.Hook("PAS_AdminNotify", function(u) PAS.AddAdminNotify(u:ReadString(
 function PAS.AddNotify( str )
 
 	local tab = {}
-	tab.text 	= str
-	tab.recv 	= SysTime()
+	tab.text = str
+	tab.recv = SysTime()
 
 	table.insert( HUDNotes, tab )
 	HUDNote_c = HUDNote_c + 1
@@ -115,18 +116,18 @@ usermessage.Hook("PAS_Notify", function(u) PAS.AddNotify(u:ReadString()) end)
 local function DrawInfoNotice( self, k, v, i )
 
 	local text = v.text
-	surface.SetFont("PatchProtectFont")
-	local tsW, tsH = surface.GetTextSize(text)
+	surface.SetFont( "PatchProtectFont" )
+	local tsW, tsH = surface.GetTextSize( text )
 	
-	local w = tsW+20
-	local h = tsH+15
-	local x = ScrW()-w-15
-	local y = ScrH()-h-85
-	local col = Color(128, 255, 0, 200)
+	local w = tsW + 20
+	local h = tsH + 15
+	local x = ScrW() - w - 15
+	local y = ScrH() - h - 85
+	local col = Color( 128, 255, 0, 200 )
 	
-	local xtext = (x+w-10)
-	local ytext = (y+(h/2))
-	local coltext = Color(0, 0, 0, 255)
+	local xtext = ( x + w - 10 )
+	local ytext = ( y + ( h / 2 ) )
+	local coltext = Color( 0, 0, 0, 255 )
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
 	draw.SimpleText( text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
@@ -142,15 +143,15 @@ local function DrawAdminNotice( self, k, v, i )
 	surface.SetFont("PatchProtectFont")
 	local tsW, tsH = surface.GetTextSize(text)
 	
-	local w = tsW+20
-	local h = tsH+15
-	local x = ScrW()-w-15
-	local y = ScrH()-h-50
-	local col = Color(176, 0, 0, 200)
+	local w = tsW + 20
+	local h = tsH + 15
+	local x = ScrW() - w - 15
+	local y = ScrH() - h - 50
+	local col = Color( 176, 0, 0, 200 )
 	
-	local xtext = (x+w-10)
-	local ytext = (y+(h/2))
-	local coltext = Color(0, 0, 0, 255)
+	local xtext = ( x + w - 10)
+	local ytext = ( y + ( h / 2 ) )
+	local coltext = Color( 0, 0, 0, 255 )
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
 	draw.SimpleText( text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
@@ -166,15 +167,15 @@ local function DrawNotice( self, k, v, i )
 	surface.SetFont("PatchProtectFont")
 	local tsW, tsH = surface.GetTextSize(text)
 
-	local w = tsW+20
-	local h = tsH+15
-	local x = ScrW()-w-15
-	local y = ScrH()-h-15
-	local col = Color(88, 144, 222, 200)
+	local w = tsW + 20
+	local h = tsH + 15
+	local x = ScrW() - w - 15
+	local y = ScrH() - h - 15
+	local col = Color( 88, 144, 222, 200 )
 	
-	local xtext = (x+w-10)
-	local ytext = (y+(h/2))
-	local coltext = Color(0, 0, 0, 255)
+	local xtext = ( x + w - 10)
+	local ytext = ( y + ( h / 2 ) )
+	local coltext = Color( 0, 0, 0, 255 )
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
 	draw.SimpleText( text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
@@ -220,9 +221,7 @@ local function Paint()
 			HUDNotes[ k ] = 0
 
 			if HUDNote_c > 0 then
-
 				HUDNote_c = HUDNote_c - 1
-
 			end
 
 			if (HUDNote_c < 1) then HUDNotes = {} end
@@ -230,11 +229,9 @@ local function Paint()
 		end
 
 		if HUDNote_c > 1 then
-
 			HUDNotes[ 1 ] = 0
 			table.remove(HUDNotes, 1)
 			HUDNote_c = 1
-
 		end
 
 	end
@@ -249,10 +246,8 @@ local function Paint()
 	for k, v in pairs(HUDInfoNotes) do
 
 		if v ~= 0 then
-
 			a_i = a_i + 1
 			DrawInfoNotice( self, k, v, i)
-
 		end
 
 	end
@@ -275,9 +270,7 @@ local function Paint()
 			HUDInfoNotes[ k ] = 0
 
 			if HUDInfoNote_c > 0 then
-
 				HUDInfoNote_c = HUDInfoNote_c - 1
-
 			end
 
 			if (HUDInfoNote_c < 1) then HUDInfoNotes = {} end
@@ -285,11 +278,9 @@ local function Paint()
 		end
 
 		if HUDInfoNote_c > 1 then
-
 			HUDInfoNotes[ 1 ] = 0
 			table.remove(HUDInfoNotes, 1)
 			HUDInfoNote_c = 1
-
 		end
 
 	end
@@ -304,10 +295,8 @@ local function Paint()
 	for k, v in pairs(HUDAdminNotes) do
 
 		if v ~= 0 then
-
 			a_i = a_i + 1
 			DrawAdminNotice( self, k, v, i)
-
 		end
 
 	end
@@ -330,9 +319,7 @@ local function Paint()
 			HUDAdminNotes[ k ] = 0
 
 			if HUDAdminNote_c > 0 then
-
 				HUDAdminNote_c = HUDAdminNote_c - 1
-
 			end
 
 			if (HUDAdminNote_c < 1) then HUDAdminNotes = {} end

@@ -6,6 +6,7 @@ function cl_PP.addframe(width, height, title, draggable, closeable, var, btntext
 
 	--Main Frame
 	local frm = vgui.Create("DFrame")
+
 	frm:SetPos( surface.ScreenWidth() / 2 - (width / 2), surface.ScreenHeight() / 2 - (height / 2) )
 	frm:SetSize( width, height )
 	frm:SetTitle( title )
@@ -14,6 +15,7 @@ function cl_PP.addframe(width, height, title, draggable, closeable, var, btntext
 	frm:ShowCloseButton( closeable )
 	frm:SetBackgroundBlur( true )
 	frm:MakePopup()
+
 	frm.Paint = function()
 		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 88, 144, 222, 255 ) )
 		draw.RoundedBox( 0, 3, 3, frm:GetWide() - 6, frm:GetTall() - 6, Color( 220, 220, 220, 255 ) )
@@ -22,6 +24,7 @@ function cl_PP.addframe(width, height, title, draggable, closeable, var, btntext
 
 	--Frame-Category
 	local list = vgui.Create( "DPanelList", frm )
+
 	list:SetPos( 10, 30 )
 	list:SetSize( width - 20, height - 40 - 40)
 	list:SetSpacing( 5 )
@@ -30,8 +33,9 @@ function cl_PP.addframe(width, height, title, draggable, closeable, var, btntext
 
 	--Button
 	local btn = vgui.Create("DButton", frm)
+
 	btn:SetPos( width - 60 - 15, height  - 30 - 15)
-	btn:SetSize(60,30)
+	btn:SetSize(60, 30)
 	btn:SetText(btntext)
 
 	function btn:OnMousePressed()
