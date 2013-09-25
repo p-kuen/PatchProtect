@@ -2,29 +2,22 @@
 
 function CheckPlayer(ply, ent)
 
-	--if GetConVarNumber("_PatchProtect_PropProtection_UsePP") == 1 then
+	--if  then
 
-		--print(tobool(GetConVarNumber("_PatchProtect_PropProtection_UsePP")))
-		if ent.name == ply:GetName() and ent.name != nil then
+		if ent.name == ply:Nick() and ent.name != nil then
 			
  			return true
 
- 		elseif ent.name != ply:GetName() and ent.name != nil then
+ 		elseif ent.name != ply:Nick() and ent.name != nil then
 
  			PAS.Notify( ply, "You are not allowed to do this!" )
  			return false
-
- 		elseif ent.name == nil then
-
- 			ent.name = ply:GetName()
- 			return true
 
  		end
 
  	--end
 	
 end
-
 hook.Add( "PhysgunPickup", "Allow Player Pickup", CheckPlayer )
 
 
@@ -32,24 +25,24 @@ hook.Add( "PhysgunPickup", "Allow Player Pickup", CheckPlayer )
 
 function CanTool(ply, trace, tool)
 
-	--if GetConVarNumber("_PatchProtect_PropProtection_UsePP") == 1 then
+	--if  then
 
 		if IsValid( trace.Entity ) then
 		
 			ent = trace.Entity
 
-			if ent.name == ply:GetName() and ent.name != nil then
+			if ent.name == ply:Nick() and ent.name != nil then
 
  				return true
 
- 			elseif ent.name != ply:GetName() and ent.name != nil then
+ 			elseif ent.name != ply:Nick() and ent.name != nil then
 
  				PAS.Notify( ply, "You are not allowed to do this!" )
  				return false
 
  			elseif ent.name == nil then
 
- 				ent.name = ply:GetName()
+ 				ent.name = ply:Nick()
  				return true
 
  			end
@@ -59,7 +52,6 @@ function CanTool(ply, trace, tool)
  	--end
  	
 end
-
 hook.Add( "CanTool", "Allow Player Tool-Useage", CanTool )
 
 
@@ -75,5 +67,4 @@ function PlayerProperty(ply, string, ent)
 	end
 
 end
-
 hook.Add( "CanProperty", "Allow Player Property", PlayerProperty )

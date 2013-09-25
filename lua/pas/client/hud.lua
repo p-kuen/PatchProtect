@@ -10,7 +10,52 @@ local HUDNote_c = 0
 local HUDNotes = {}
 
 
---Info Messages:
+--CREATE FONT
+
+surface.CreateFont( "PatchProtectFont", {
+	font 		= "DermaDefault",
+	size 		= 15,
+	weight 		= 1000,
+	blursize 	= 0,
+	scanlines 	= 0,
+	antialias 	= true,
+	shadow 		= false
+} )
+
+
+--SHOW PROP OWNER
+
+function PAS.ShowOwner()
+
+	if(!LocalPlayer() or !LocalPlayer():IsValid()) then
+		return
+	end
+
+	local PlyTrace = LocalPlayer():GetEyeTraceNoCursor()
+
+	if(PlyTrace.HitNonWorld) then
+
+		if(PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle()) then
+
+			local POwner = "Owner: " .. PlyTrace.Entity:GetNetworkedEntity("Owner", false)
+
+			surface.SetFont("PatchProtectFont")
+
+			local OW, OH = surface.GetTextSize(POwner)
+			OW = OW + 15
+			OH = OH + 15
+
+			draw.RoundedBox(2, ScrW() - OW - 10, ScrH() / 2, OW, OH, Color(88, 144, 222, 200))
+			draw.SimpleText(POwner, "PatchProtectFont", ScrW() - (OW / 2) - 10, ScrH() / 2 + (OH / 2), Color(255, 255, 255, 255), 1, 1)
+		end
+
+	end
+
+end
+hook.Add("HUDPaint", "ShowingOwner", PAS.ShowOwner)
+
+
+--INFO MESSAGES
 
 function PAS.AddInfoNotify( str )
 
@@ -70,7 +115,7 @@ usermessage.Hook("PAS_Notify", function(u) PAS.AddNotify(u:ReadString()) end)
 local function DrawInfoNotice( self, k, v, i )
 
 	local text = v.text
-	surface.SetFont("DermaDefaultBold")
+	surface.SetFont("PatchProtectFont")
 	local tsW, tsH = surface.GetTextSize(text)
 	
 	local w = tsW+20
@@ -84,7 +129,7 @@ local function DrawInfoNotice( self, k, v, i )
 	local coltext = Color(0, 0, 0, 255)
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
-	draw.SimpleText( text, "DermaDefaultBold", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	draw.SimpleText( text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
 
@@ -94,7 +139,7 @@ end
 local function DrawAdminNotice( self, k, v, i )
 
 	local text = v.text
-	surface.SetFont("DermaDefaultBold")
+	surface.SetFont("PatchProtectFont")
 	local tsW, tsH = surface.GetTextSize(text)
 	
 	local w = tsW+20
@@ -108,7 +153,7 @@ local function DrawAdminNotice( self, k, v, i )
 	local coltext = Color(0, 0, 0, 255)
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
-	draw.SimpleText( text, "DermaDefaultBold", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	draw.SimpleText( text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
 
@@ -118,7 +163,7 @@ end
 local function DrawNotice( self, k, v, i )
 
 	local text = v.text
-	surface.SetFont("DermaDefaultBold")
+	surface.SetFont("PatchProtectFont")
 	local tsW, tsH = surface.GetTextSize(text)
 
 	local w = tsW+20
@@ -132,7 +177,7 @@ local function DrawNotice( self, k, v, i )
 	local coltext = Color(0, 0, 0, 255)
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
-	draw.SimpleText( text, "DermaDefaultBold", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	draw.SimpleText( text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
 

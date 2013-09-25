@@ -126,6 +126,7 @@ function cl_PP.addlbl(plist, text)
 	lbl:SetDark(true)
 
 	plist:AddItem(lbl)
+	
 end
 
 

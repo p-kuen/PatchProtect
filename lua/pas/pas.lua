@@ -100,7 +100,30 @@ function PAS.Spawn(ply, mdl)
 		end
 
 end
-hook.Add("PlayerSpawnProp", "SpawnedProp", PAS.Spawn)
+hook.Add("PlayerSpawnProp", "SpawningProp", PAS.Spawn)
+hook.Add("PlayerSpawnEffect", "SpawningEffect", PAS.Spawn)
+hook.Add("PlayerSpawnNPC", "SpawningNPC", PAS.Spawn)
+hook.Add("PlayerSpawnRagdoll", "SpawningRagdoll", PAS.Spawn)
+hook.Add("PlayerSpawnSENT", "SpawningSENT", PAS.Spawn)
+hook.Add("PlayerSpawnSWEP", "SpawningSWEP", PAS.Spawn)
+hook.Add("PlayerSpawnVehicle", "SpawningVehicle", PAS.Spawn)
+
+
+--Set Prop-Owner
+
+function PAS.Spawned( ply, mdl, ent )
+
+	ent.name = ply:Nick()
+	ent:SetNetworkedString("Owner", ply:Nick())
+
+end
+hook.Add("PlayerSpawnedProp", "SpawnedProp", PAS.Spawned)
+hook.Add("PlayerSpawnedEffect", "SpawnedEffect", PAS.Spawned)
+hook.Add("PlayerSpawnedNPC", "SpawnedNPC", PAS.Spawned)
+hook.Add("PlayerSpawnedRagdoll", "SpawnedRagdoll", PAS.Spawned)
+hook.Add("PlayerSpawnedSENT", "SpawnedSENT", PAS.Spawned)
+hook.Add("PlayerSpawnedSWEP", "SpawnedSWEP", PAS.Spawned)
+hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", PAS.Spawned)
 
 
 --Tool Anti Spam:
@@ -113,15 +136,17 @@ function PAS.Tool( ply, trace, mode )
 	local delete = false
 
 	local function blockedtool()
-		--Set AntiSpam:
+
+		--Checking Cooldown
 		if CurTime() < ply.toolcooldown then
 
 			if ply:IsAdmin() and tobool(PAS.Settings.General["noantiadmin"]) then
+				--Do nothing...
 			else
 
 				ply.tools = ply.tools + 1
 
-				--Notify Admin about spamming
+				--Notify Admin about Spam
 				if ply.tools >= tonumber(PAS.Settings.General["spamcount"]) then
 
 					PAS.AdminNotify(ply:Nick() .. " is spamming with " .. tostring(mode) .. "s!")
@@ -137,15 +162,16 @@ function PAS.Tool( ply, trace, mode )
 				delete = true
 				return false
 
-				end
+			end
 
-			else
+		else
 
 				delete = false
 				ply.tools = 0
 				ply.toolcooldown = CurTime() + tonumber(PAS.Settings.General["cooldown"])
 
-			end
+		end
+
 	end
 
 	table.foreach( PAS.BlockedTools, function( key, value )
@@ -157,5 +183,6 @@ function PAS.Tool( ply, trace, mode )
 	if delete then
 		return false
 	end
+	
 end
 hook.Add("CanTool", "LimitToolGuns", PAS.Tool)
