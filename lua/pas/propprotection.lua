@@ -2,7 +2,7 @@
 
 function CheckPlayer(ply, ent)
 
-	--if  then
+	if !Entity:IsWorld or ply:IsAdmin() then
 
 		if ent.name == ply:Nick() and ent.name != nil then
 			
@@ -15,7 +15,11 @@ function CheckPlayer(ply, ent)
 
  		end
 
- 	--end
+ 	else
+
+ 		return false
+
+ 	end
 	
 end
 hook.Add( "PhysgunPickup", "Allow Player Pickup", CheckPlayer )
@@ -25,7 +29,7 @@ hook.Add( "PhysgunPickup", "Allow Player Pickup", CheckPlayer )
 
 function CanTool(ply, trace, tool)
 
-	--if  then
+	if trace.HitNonWorld or ply:IsAdmin() then
 
 		if IsValid( trace.Entity ) then
 		
@@ -49,7 +53,12 @@ function CanTool(ply, trace, tool)
 
  		end
 
- 	--end
+ 	else
+
+ 		PAS.Notify( ply, "You are not allowed to do somethign with world props!" )
+ 		return false
+
+ 	end
  	
 end
 hook.Add( "CanTool", "Allow Player Tool-Useage", CanTool )
