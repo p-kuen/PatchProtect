@@ -88,6 +88,7 @@ hook.Add( "CanProperty", "Allow Player Property", PlayerProperty )
 
 --DISCONNECTED PLAYER'S PROP CLEANUP
 
+--Create timer for cleanup, if player goes from server
 function CleanupDiscPlayersProps( name )
 
 	timer.Create( "CleanupPropsOf" .. name , 10, 1, function() --ATM at 10. We should add a slider or sth to change this!
@@ -110,6 +111,7 @@ function CleanupDiscPlayersProps( name )
 	
 end
 
+--If player goes from server
 function SetCleanupProps( ply )
 
 	for k, v in pairs( ents.GetAll() ) do
@@ -130,6 +132,7 @@ function SetCleanupProps( ply )
 end
 hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", SetCleanupProps )
 
+--If player comes back in time
 function CheckComeback( name )
 
 	if timer.Exists( "CleanupPropsOf" .. name ) then
