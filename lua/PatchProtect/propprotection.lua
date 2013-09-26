@@ -253,8 +253,6 @@ concommand.Add("patchpp_cleanup_everything", PatchPP.CleanupEverything)
 function PatchPP.CleanupPlayersProps( cleared )
 
 	local name = cleared:GetName()
-	print(name)
-
 	for k, v in pairs( ents.GetAll() ) do
 
 		ent = v
