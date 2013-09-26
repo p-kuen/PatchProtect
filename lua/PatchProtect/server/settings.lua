@@ -248,3 +248,46 @@ function toolTableMessage( ply )
 	net.Send( ply )
 end
 hook.Add( "PlayerInitialSpawn", "ToolTableMessage", toolTableMessage )
+
+
+
+
+
+
+PatchPP = PatchPP or {}
+
+function PatchPP.GetConfig()
+
+	if sql.TableExists("patchpp") then
+
+		local checkquery = sql.Query("SELECT cdrive from patchpp")
+
+		if checkquery == false then
+
+			sql.Query("DROP TABLE patchpp")
+
+			MsgC(
+				Color(235, 0, 0), 
+				"[PatchProtect - PP] Deleted old table\n"
+				)
+
+		end
+
+	end
+
+	if(!sql.TableExists("patchpp")) then
+
+		sql.Query("CREATE TABLE IF NOT EXISTS patchpp(usepp INTEGER NOT NULL, usepd INTEGER NOT NULL, pddelay INTEGER NOT NULL, cdrive INTEGER NOT NULL);")
+		sql.Query("INSERT INTO patchpp(usepp, usepd, pddelay, cdrive) VALUES(1, 1, 120, 0)")
+		MsgC(
+			Color(0, 240, 100),
+			"[PatchProtect - PP] Created new table\n"
+			)
+
+	end
+
+	return sql.QueryRow("SELECT * FROM patchpp LIMIT 1")
+
+end
+
+PatchPP.Config = PatchPP.GetConfig()

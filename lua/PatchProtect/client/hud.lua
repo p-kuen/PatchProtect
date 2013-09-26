@@ -27,27 +27,31 @@ surface.CreateFont( "PatchProtectFont", {
 
 function PAS.ShowOwner()
 
-	if !LocalPlayer() or !LocalPlayer():IsValid() then
-		return
-	end
+	if tonumber(GetConVarString( "patchpp_usepp" )) == 1 then
 
-	local PlyTrace = LocalPlayer():GetEyeTraceNoCursor()
+		if !LocalPlayer() or !LocalPlayer():IsValid() then
+			return
+		end
 
-	if PlyTrace.HitNonWorld then
+		local PlyTrace = LocalPlayer():GetEyeTraceNoCursor()
 
-		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and isstring(PlyTrace.Entity:GetNetworkedEntity("Owner", false)) then
+		if PlyTrace.HitNonWorld then
 
-			local POwner = "Owner: " .. PlyTrace.Entity:GetNetworkedEntity("Owner", false)
+			if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and isstring(PlyTrace.Entity:GetNetworkedEntity("Owner", false)) then
 
-			surface.SetFont("PatchProtectFont")
+				local POwner = "Owner: " .. PlyTrace.Entity:GetNetworkedEntity("Owner", false)
 
-			local OW, OH = surface.GetTextSize(POwner)
-			OW = OW + 15
-			OH = OH + 15
+				surface.SetFont("PatchProtectFont")
 
-			draw.RoundedBox(2, ScrW() - OW - 10, ScrH() - OH - 10, OW, OH, Color(88, 144, 222, 200))
-			draw.SimpleText(POwner, "PatchProtectFont", ScrW() - (OW / 2) - 10, ScrH() - (OH / 2) - 10, Color(0,0,0, 255), 1, 1)
+				local OW, OH = surface.GetTextSize(POwner)
+				OW = OW + 15
+				OH = OH + 15
+
+				draw.RoundedBox(2, ScrW() - OW - 10, ScrH() - OH - 10, OW, OH, Color(88, 144, 222, 200))
+				draw.SimpleText(POwner, "PatchProtectFont", ScrW() - (OW / 2) - 10, ScrH() - (OH / 2) - 10, Color(0,0,0, 255), 1, 1)
 		
+			end
+
 		end
 
 	end

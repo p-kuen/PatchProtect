@@ -1,10 +1,25 @@
 PAS = PAS or {}
 
---Settings
-PAS.Settings = PAS.Settings or {}
 PAS.AdminPanel = nil
 PAS.AdminPanel2 = nil
 PAS.AdminPanel3 = nil
+
+CreateClientConVar("patchpp_usepp", 1, false, true)
+CreateClientConVar("patchpp_usepd", 1, false, true)
+CreateClientConVar("patchpp_pddelay", 120, false, true)
+CreateClientConVar("patchpp_cdrive", 0, false, true)
+
+
+
+
+
+
+
+
+
+
+--Settings
+PAS.Settings = PAS.Settings or {}
 
 --Constrols
 cl_PP.checks_general = {}
@@ -239,79 +254,86 @@ end
 
 --PROP PROTECTION MENU
 
-function PAS.ProtectionMenu(Panel2)
+function PAS.ProtectionMenu(ProtectionPanel)
 
 	--Delete Controls
-	Panel2:ClearControls()
+	ProtectionPanel:ClearControls()
 
 	--Check Admin
 	if !LocalPlayer():IsAdmin() then
-		Panel:AddControl("Label", {Text = "You are not an admin!"})
+		ProtectionPanel:AddControl("Label", {Text = "You are not an admin!"})
 		return
 	end
 
 	--Refresh Panels
 	if(!PAS.AdminCPanel2) then
-		PAS.AdminCPanel2 = Panel2
+		PAS.AdminCPanel2 = ProtectionPanel
 	end
 
 	--Set Content
-	cl_PP.addchk(Panel2, "Use PropProtection", "test", "")
-	cl_PP.addchk(Panel2, "Allow Property to Non-Admins", "test", "")
+	ProtectionPanel:AddControl("Label", {Text = "Main Settings:"})
+	ProtectionPanel:AddControl("CheckBox", {Label = "Use Prop Protection", Command = "patchpp_usepp"})
+
+	ProtectionPanel:AddControl("Label", {Text = "Prop-Delete on Disconnect:"})
+	ProtectionPanel:AddControl("CheckBox", {Label = "Use Prop-Delete", Command = "patchpp_usepd"})
+	ProtectionPanel:AddControl("Slider", {Label = "Prop-Delete Delay (in Seconds)", Command = "patchpp_pddelay", Type = "Integer", Min = "1", Max = "120"})
+	ProtectionPanel:AddControl("CheckBox", {Label = "Allow C-Driving", Command = "patchpp_cdrive"})
+
+	--Save Settings
+	ProtectionPanel:AddControl("Button", {Text = "Apply Settings", Command = "patchpp_save"})
 
 end
 
+
 --CLEANUP MENU
 
-function PAS.CleanupMenu(Panel3)
+function PAS.CleanupMenu(CleanupPanel)
 
 	--Delete Controls
-	Panel3:ClearControls()
+	CleanupPanel:ClearControls()
 
 	--Check Admin
 	if !LocalPlayer():IsAdmin() then
-		Panel:AddControl("Label", {Text = "You are not an admin!"})
+		CleanupPanel:AddControl( "Label", {Text = "You are not an Admin!"} )
 		return
 	end
 
 	--Refresh Panels
 	if(!PAS.AdminCPanel3) then
-		PAS.AdminCPanel3 = Panel3
+		PAS.AdminCPanel3 = CleanupPanel
 	end
 
 	--Set Content
 
 	--Cleanup everything
 	local count = 0
-
 	for i = 1, table.Count( player.GetAll() ) do
 		local plys = player.GetAll()[i]
 		count = count + plys:GetCount( "props" )
 	end
-
-	--Set Content
-	cl_PP.addlbl(Panel3, "Cleanup everything:")
-	cl_PP.addbtn(Panel3, "Cleanup everything  (" .. tostring(count) .. " Props)")
-	cl_PP.addlbl(Panel3, "Cleanup Props from a special player:")
+	CleanupPanel:AddControl( "Label", {Text = "Cleanup everything:"} )
+	CleanupPanel:AddControl( "Button", {Text = "Cleanup everything  (" .. tostring(count) .. ")", Command = "patchpp_cleanup_everything"} )
 
 	--Claenup Player's Props
+	CleanupPanel:AddControl( "Label", {Text = "Cleanup Props from a special player:"} )
 	for i = 1, table.Count( player.GetAll() ) do
 		local plys = player.GetAll()[i]
-		cl_PP.addbtn(Panel3, "Cleanup " .. plys:GetName() .. "  (" .. tostring(plys:GetCount( "props" )) .. " Props)", "", "")
+		CleanupPanel:AddControl( "Button", {Text = "Cleanup " .. plys:GetName() .. "  (" .. tostring(plys:GetCount( "props" )) .. " Props)", Command = "patchpp_cleanup_everything"} )
 	end
-	
+
 end
+
 
 --CREATE MENUS
 
-local function makeMenus()
+local function CreateMenus()
 
 	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPAdmin", "AntiSpam", "", "", PAS.AdminMenu)
 	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPPropProtection", "PropProtection", "", "", PAS.ProtectionMenu)
 	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPClientCleanup", "Cleanup", "", "", PAS.CleanupMenu)
 
 end
-hook.Add("PopulateToolMenu", "PASmakeMenus", makeMenus)
+hook.Add("PopulateToolMenu", "PASmakeMenus", CreateMenus)
 
 
 --UPDATE MENUS
