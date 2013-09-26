@@ -5,7 +5,7 @@ function PAS.SetupGeneralSettings()
 
 	MsgC(
 		Color(0,235,200),
-		"\n[PatchAntiSpam]"
+		"\n[PatchProtect]"
 	)
 
 	MsgC(
@@ -27,7 +27,7 @@ function PAS.SetupGeneralSettings()
 
 			MsgC(
 				Color(235, 0, 0), 
-				"[PatchAntiSpam] Deleted the old General-Settings-Table\n"
+				"[PatchProtect] Deleted the old General-Settings-Table\n"
 			)
 
 		end

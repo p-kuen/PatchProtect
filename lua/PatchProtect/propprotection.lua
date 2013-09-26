@@ -84,3 +84,71 @@ function PlayerProperty(ply, string, ent)
 
 end
 hook.Add( "CanProperty", "Allow Player Property", PlayerProperty )
+
+
+--DISCONNECTED PLAYER'S PROP CLEANUP
+
+function CleanupDiscPlayersProps( name )
+
+	timer.Create( "CleanupPropsOf" .. name , 10, 1, function() --ATM at 10. We should add a slider or sth to change this!
+
+		for k, v in pairs( ents.GetAll() ) do
+
+			ent = v
+
+			if ent.cleanuped == name and ent.name == "Disconnected Player" then
+			
+				ent:Remove()
+
+			end
+
+		end
+
+		print("[PatchProtect - Cleanup] Removed " .. name .. "'s Props!")
+
+	end)
+	
+end
+
+function SetCleanupProps( ply )
+
+	for k, v in pairs( ents.GetAll() ) do
+
+		ent = v
+
+		if ent.name == ply:Nick() then
+
+			ent.name = "Disconnected Player"
+			ent.cleanuped = ply:Nick()
+
+		end
+
+	end
+
+	CleanupDiscPlayersProps( ply:Nick() )
+
+end
+hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", SetCleanupProps )
+
+function CheckComeback( name )
+
+	if timer.Exists( "CleanupPropsOf" .. name ) then
+
+		timer.Destroy( "CleanupPropsOf" .. name )
+
+		for k, v in pairs( ents.GetAll() ) do
+
+			ent = v
+
+			if ent.cleanuped == name and ent.name == "Disconnected Player" then
+			
+				ent.name = name
+
+			end
+
+		end
+
+	end
+
+end
+hook.Add( "PlayerConnect", "CheckAbortCleanup", CheckComeback )
