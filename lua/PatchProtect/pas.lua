@@ -216,9 +216,9 @@ hook.Add("CanTool", "LimitToolGuns", PAS.Tool)
 
 
 --SET OWNER FOR STOOL-ENTITIES
-
-if cleanup then
-
+local keep = 0 --IMPORTANT, ONLY ACTIVATE IT IF YOU DON'T HAVE ANY OTHER PP ACTIVATED.  @producers: We must set a condition instead of "keep", that this only will be runned, if PropProtection checkbox is enabled.
+if cleanup and keep == 1 then
+	
 	local Clean = cleanup.Add
 
 	function cleanup.Add(ply, type, ent)
@@ -228,7 +228,7 @@ if cleanup then
 		    if ply:IsPlayer() and ent:IsValid() and ply.spawned == true then
 
 		    	if ent.name == nil then
-		    		
+
 		        	ent.name = ply:Nick()
 					ent:SetNetworkedString("Owner", ply:Nick())
 
