@@ -3,17 +3,17 @@ sv_PP = {}
 cl_PP = {}
 
 AddCSLuaFile() -- Make the client download this file.
-AddCSLuaFile("pas/client/hud.lua")
-AddCSLuaFile("pas/client/panel_functions.lua")
-AddCSLuaFile("pas/client/panel.lua")
+AddCSLuaFile("PatchProtect/client/hud.lua")
+AddCSLuaFile("PatchProtect/client/panel_functions.lua")
+AddCSLuaFile("PatchProtect/client/panel.lua")
 
 if SERVER then
-	include( "pas/sh_config.lua" )
-	include( "pas/server/settings.lua" )
-	include( "pas/pas.lua" )
-	include( "pas/propprotection.lua" )
+	include( "PatchProtect/sh_config.lua" )
+	include( "PatchProtect/server/settings.lua" )
+	include( "PatchProtect/pas.lua" )
+	include( "PatchProtect/propprotection.lua" )
 else
-	include( "pas/client/hud.lua" )
-	include( "pas/client/panel_functions.lua" )
-	include( "pas/client/panel.lua" )
+	include( "PatchProtect/client/hud.lua" )
+	include( "PatchProtect/client/panel_functions.lua" )
+	include( "PatchProtect/client/panel.lua" )
 end

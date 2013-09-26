@@ -1,7 +1,7 @@
 PAS = PAS or {}
 
 
---Settings Variables:
+--SETTINGS
 
 function PAS.Setup(ply)
 
@@ -17,7 +17,7 @@ end
 hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", PAS.Setup )
 
 
---Spam Action:
+--SPAM ACTION
 
 function spamaction(ply)
 
@@ -57,9 +57,9 @@ function spamaction(ply)
 end
 
 
---Prop Anti Spam:
+--PROP ANTI SPAM
 
-function PAS.Spawn(ply, mdl)
+function PAS.Spawn(ply)
 	
 	--Check if PAS is enabled
 	if tobool(PAS.Settings.General["use"]) == false then return end
@@ -78,6 +78,7 @@ function PAS.Spawn(ply, mdl)
 				if ply.props >= tonumber(PAS.Settings.General["spamcount"]) then
 					
 					PAS.AdminNotify(ply:Nick() .. " is spamming!")
+					print("[PatchProtect - PAS] " .. ply:Nick() .. " spams!")
 					ply.props = 0
 					spamaction(ply)
 
@@ -102,31 +103,52 @@ function PAS.Spawn(ply, mdl)
 end
 hook.Add("PlayerSpawnProp", "SpawningProp", PAS.Spawn)
 hook.Add("PlayerSpawnEffect", "SpawningEffect", PAS.Spawn)
-hook.Add("PlayerSpawnNPC", "SpawningNPC", PAS.Spawn)
-hook.Add("PlayerSpawnRagdoll", "SpawningRagdoll", PAS.Spawn)
 hook.Add("PlayerSpawnSENT", "SpawningSENT", PAS.Spawn)
-hook.Add("PlayerSpawnSWEP", "SpawningSWEP", PAS.Spawn)
+hook.Add("PlayerSpawnRagdoll", "SpawningRagdoll", PAS.Spawn)
 hook.Add("PlayerSpawnVehicle", "SpawningVehicle", PAS.Spawn)
 
 
---Set Prop-Owner
+--BLOCK THINGS
 
-function PAS.Spawned( ply, mdl, ent )
+function PAS.BlockSWEP(ply, type)
+
+	if ply:IsAdmin() then
+		return true
+	else
+		print("[PatchProtect - PAS] " .. ply:Nick() .. " tried to spawn " .. tostring(type) .. "!")
+		return false
+	end
+
+end
+hook.Add("PlayerSpawnSWEP", "BlockSWEP", PAS.BlockThis)
+hook.Add("PlayerSpawnNPC", "BlockNPC", PAS.BlockThis)
+
+
+--SET OWNER
+
+function PAS.SpawnedProp( ply, mdl, ent )
 
 	ent.name = ply:Nick()
 	ent:SetNetworkedString("Owner", ply:Nick())
 
 end
-hook.Add("PlayerSpawnedProp", "SpawnedProp", PAS.Spawned)
-hook.Add("PlayerSpawnedEffect", "SpawnedEffect", PAS.Spawned)
-hook.Add("PlayerSpawnedNPC", "SpawnedNPC", PAS.Spawned)
-hook.Add("PlayerSpawnedRagdoll", "SpawnedRagdoll", PAS.Spawned)
-hook.Add("PlayerSpawnedSENT", "SpawnedSENT", PAS.Spawned)
-hook.Add("PlayerSpawnedSWEP", "SpawnedSWEP", PAS.Spawned)
-hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", PAS.Spawned)
+hook.Add("PlayerSpawnedProp", "SpawnedProp", PAS.SpawnedProp)
+
+function PAS.SpawnedEnt( ply, ent )
+
+	ent.name = ply:Nick()
+	ent:SetNetworkedString("Owner", ply:Nick())
+
+end
+hook.Add("PlayerSpawnedEffect", "SpawnedEffect", PAS.SpawnedEnt)
+hook.Add("PlayerSpawnedNPC", "SpawnedNPC", PAS.SpawnedEnt)
+hook.Add("PlayerSpawnedRagdoll", "SpawnedRagdoll", PAS.SpawnedEnt)
+hook.Add("PlayerSpawnedSENT", "SpawnedSENT", PAS.SpawnedEnt)
+hook.Add("PlayerSpawnedSWEP", "SpawnedSWEP", PAS.SpawnedEnt)
+hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", PAS.SpawnedEnt)
 
 
---Tool Anti Spam:
+--TOOL ANTI SPAM
 
 function PAS.Tool( ply, trace, mode )
 
