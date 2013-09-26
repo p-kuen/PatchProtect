@@ -312,13 +312,13 @@ function PAS.CleanupMenu(CleanupPanel)
 		count = count + plys:GetCount( "props" )
 	end
 	CleanupPanel:AddControl( "Label", {Text = "Cleanup everything:"} )
-	CleanupPanel:AddControl( "Button", {Text = "Cleanup everything  (" .. tostring(count) .. ")", Command = "patchpp_cleanup_everything"} )
+	CleanupPanel:AddControl( "Button", {Text = "Cleanup everything  (" .. tostring(count) .. " Props)", Command = "patchpp_cleanup_everything"} )
 
 	--Claenup Player's Props
 	CleanupPanel:AddControl( "Label", {Text = "Cleanup Props from a special player:"} )
 	for i = 1, table.Count( player.GetAll() ) do
 		local plys = player.GetAll()[i]
-		CleanupPanel:AddControl( "Button", {Text = "Cleanup " .. plys:GetName() .. "  (" .. tostring(plys:GetCount( "props" )) .. " Props)", Command = "patchpp_cleanup_everything"} )
+		CleanupPanel:AddControl( "Button", {Text = "Cleanup " .. plys:GetName() .. "  (" .. tostring(plys:GetCount( "props" )) .. " Props)", Command = "patchpp_clean " .. plys:GetName()} )
 	end
 
 end

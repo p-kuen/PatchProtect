@@ -229,3 +229,42 @@ function PatchPP.SaveSettings(ply, cmd, args)
 
 end
 concommand.Add("patchpp_save", PatchPP.SaveSettings)
+
+
+
+
+
+---------------------------------
+--  CLEANUP MAP/PLAYERS PROPS  --
+---------------------------------
+
+
+-- CLEANUP EVERYTHING
+function PatchPP.CleanupEverything()
+
+	game.CleanUpMap()
+	PAS.InfoNotify(ply, "Cleaned Map!")
+
+end
+concommand.Add("patchpp_cleanup_everything", PatchPP.CleanupEverything)
+
+
+-- CLEANUP PLAYERS PROPS
+function PatchPP.CleanupPlayersProps( cleared )
+
+	local name = cleared:GetName()
+	print(name)
+
+	for k, v in pairs( ents.GetAll() ) do
+
+		ent = v
+		if ent.name == name then
+			ent:Remove()
+		end
+
+	end
+
+	PAS.InfoNotify(ply, "Cleaned " .. name .. "'s Props!")
+
+end
+concommand.Add("patchpp_clean", PatchPP.CleanupPlayersProps)
