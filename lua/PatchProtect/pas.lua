@@ -1,6 +1,5 @@
 PAS = PAS or {}
 
-
 --SETTINGS
 
 function PAS.Setup(ply)
@@ -12,6 +11,8 @@ function PAS.Setup(ply)
 	--Tools
 	ply.toolcooldown = 0
 	ply.tools = 0
+	ply.spawned = false
+	ply.tooltype = ""
 
 end
 hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", PAS.Setup )
@@ -152,6 +153,9 @@ hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", PAS.SpawnedEnt)
 
 function PAS.Tool( ply, trace, mode )
 
+	ply.spawned = true
+	ply.tooltype = mode
+
 	--Check, if PAS is enabled and also the Tool Restriction
 	if tobool(PAS.Settings.General["use"]) == false or tobool(PAS.Settings.General["toolprotection"]) == false then return end
 
@@ -188,9 +192,10 @@ function PAS.Tool( ply, trace, mode )
 
 		else
 
-				delete = false
-				ply.tools = 0
-				ply.toolcooldown = CurTime() + tonumber(PAS.Settings.General["cooldown"])
+			delete = false
+			
+			ply.tools = 0
+			ply.toolcooldown = CurTime() + tonumber(PAS.Settings.General["cooldown"])
 
 		end
 
@@ -208,3 +213,35 @@ function PAS.Tool( ply, trace, mode )
 	
 end
 hook.Add("CanTool", "LimitToolGuns", PAS.Tool)
+
+
+--SET OWNER FOR STOOL-ENTITIES
+
+if cleanup then
+
+	local Clean = cleanup.Add
+
+	function cleanup.Add(ply, type, ent)
+
+		if ent then
+
+		    if ply:IsPlayer() and ent:IsValid() and ply.spawned == true then
+
+		    	if ent.name == nil then
+		    		
+		        	ent.name = ply:Nick()
+					ent:SetNetworkedString("Owner", ply:Nick())
+
+				end
+
+		        ply.spawned = false
+
+		    end
+
+		end
+
+		Clean(ply, type, ent)
+
+	end
+
+end
