@@ -1,7 +1,11 @@
 PAS = PAS or {}
 
---SETTINGS
+----------------
+--  SETTINGS  --
+----------------
 
+
+-- SET PLAYER VARS
 function PAS.Setup(ply)
 
 	--Props
@@ -18,8 +22,14 @@ end
 hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", PAS.Setup )
 
 
---SPAM ACTION
 
+
+
+-------------------
+--  SPAM ACTION  --
+-------------------
+
+-- SET SPAM ACTION
 function spamaction(ply)
 
 	local action = tonumber(PAS.Settings.General["spamaction"])
@@ -58,8 +68,15 @@ function spamaction(ply)
 end
 
 
---PROP ANTI SPAM
 
+
+
+----------------
+--  ANTI SPAM --
+----------------
+
+
+-- PROP ANTI SPAM
 function PAS.Spawn(ply)
 	
 	--Check if PAS is enabled
@@ -109,8 +126,7 @@ hook.Add("PlayerSpawnRagdoll", "SpawningRagdoll", PAS.Spawn)
 hook.Add("PlayerSpawnVehicle", "SpawningVehicle", PAS.Spawn)
 
 
---BLOCK THINGS
-
+-- BLOCK WEAPONS AND NPCS
 function PAS.BlockSWEP(ply, type)
 
 	if ply:IsAdmin() then
@@ -125,33 +141,8 @@ hook.Add("PlayerSpawnSWEP", "BlockSWEP", PAS.BlockThis)
 hook.Add("PlayerSpawnNPC", "BlockNPC", PAS.BlockThis)
 
 
---SET OWNER
-
-function PAS.SpawnedProp( ply, mdl, ent )
-
-	ent.name = ply:Nick()
-	ent:SetNetworkedString("Owner", ply:Nick())
-
-end
-hook.Add("PlayerSpawnedProp", "SpawnedProp", PAS.SpawnedProp)
-
-function PAS.SpawnedEnt( ply, ent )
-
-	ent.name = ply:Nick()
-	ent:SetNetworkedString("Owner", ply:Nick())
-
-end
-hook.Add("PlayerSpawnedEffect", "SpawnedEffect", PAS.SpawnedEnt)
-hook.Add("PlayerSpawnedNPC", "SpawnedNPC", PAS.SpawnedEnt)
-hook.Add("PlayerSpawnedRagdoll", "SpawnedRagdoll", PAS.SpawnedEnt)
-hook.Add("PlayerSpawnedSENT", "SpawnedSENT", PAS.SpawnedEnt)
-hook.Add("PlayerSpawnedSWEP", "SpawnedSWEP", PAS.SpawnedEnt)
-hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", PAS.SpawnedEnt)
-
-
---TOOL ANTI SPAM
-
-function PAS.Tool( ply, trace, mode )
+-- TOOL ANTI SPAM
+function PAS.CanTool( ply, trace, mode )
 
 	ply.spawned = true
 	ply.tooltype = mode
@@ -212,12 +203,42 @@ function PAS.Tool( ply, trace, mode )
 	end
 	
 end
-hook.Add("CanTool", "LimitToolGuns", PAS.Tool)
+hook.Add("CanTool", "LimitToolGuns", PAS.CanTool)
 
 
---SET OWNER FOR STOOL-ENTITIES
-local keep = 0 --IMPORTANT, ONLY ACTIVATE IT IF YOU DON'T HAVE ANY OTHER PP ACTIVATED.  @producers: We must set a condition instead of "keep", that this only will be runned, if PropProtection checkbox is enabled.
-if cleanup and keep == 1 then
+
+
+
+-----------------
+--  SET OWNER  --
+-----------------
+
+
+-- SET OWNER OF PROP
+function PAS.SpawnedProp( ply, mdl, ent )
+
+	ent.name = ply:Nick()
+	ent:SetNetworkedString("Owner", ply:Nick())
+
+end
+hook.Add("PlayerSpawnedProp", "SpawnedProp", PAS.SpawnedProp)
+
+function PAS.SpawnedEnt( ply, ent )
+
+	ent.name = ply:Nick()
+	ent:SetNetworkedString("Owner", ply:Nick())
+
+end
+hook.Add("PlayerSpawnedEffect", "SpawnedEffect", PAS.SpawnedEnt)
+hook.Add("PlayerSpawnedNPC", "SpawnedNPC", PAS.SpawnedEnt)
+hook.Add("PlayerSpawnedRagdoll", "SpawnedRagdoll", PAS.SpawnedEnt)
+hook.Add("PlayerSpawnedSENT", "SpawnedSENT", PAS.SpawnedEnt)
+hook.Add("PlayerSpawnedSWEP", "SpawnedSWEP", PAS.SpawnedEnt)
+hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", PAS.SpawnedEnt)
+
+
+--SET OWNER OF TOOL-ENTS
+if cleanup and if tonumber(PatchPP.Config["usepp"]) == 1 then
 	
 	local Clean = cleanup.Add
 
