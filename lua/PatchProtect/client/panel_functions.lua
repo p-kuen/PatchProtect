@@ -1,4 +1,6 @@
---FRAME
+-------------
+--  FRAME  --
+-------------
 
 function cl_PP.addframe(width, height, title, draggable, closeable, var, btntext)
 
@@ -46,7 +48,10 @@ function cl_PP.addframe(width, height, title, draggable, closeable, var, btntext
 end
 
 
---CATEGORY
+
+----------------
+--  CATEGORY  --
+----------------
 
 function cl_PP.makeCategory(plist, name)
 
@@ -63,7 +68,10 @@ function cl_PP.makeCategory(plist, name)
 end
 
 
---CHECKBOX
+
+----------------
+--  CHECKBOX  --
+----------------
 
 function cl_PP.addchk(plist, text, typ, var)
 
@@ -97,7 +105,10 @@ function cl_PP.addchk(plist, text, typ, var)
 end
 
 
---SLIDER
+
+--------------
+--  SLIDER  --
+--------------
 
 function cl_PP.addsldr(plist, min, max, text, var, decimals)
 
@@ -120,7 +131,10 @@ function cl_PP.addsldr(plist, min, max, text, var, decimals)
 end
 
 
---LABEL
+
+-------------
+--  LABEL  --
+-------------
 
 function cl_PP.addlbl(plist, text)
 
@@ -134,7 +148,10 @@ function cl_PP.addlbl(plist, text)
 end
 
 
---BUTTON
+
+----------------
+--  BUTTON  --
+----------------
 
 function cl_PP.addbtn(plist, text, typ, args)
 
@@ -154,7 +171,10 @@ function cl_PP.addbtn(plist, text, typ, args)
 end
 
 
---TEXTBOX
+
+----------------
+--  TEXTBOX  --
+----------------
 
 function cl_PP.addtext(plist, text)
 		local tentry = plist:Add( "DTextEntry")

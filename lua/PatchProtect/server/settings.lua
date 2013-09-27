@@ -1,5 +1,15 @@
+----------------
+--  SETTINGS  --
+----------------
+
 PAS = PAS or {}
 PAS.Settings = PAS.Settings or {}
+
+
+
+---------------------------------------
+--  ANTISPAM SQL TABLE AND SETTINGS  --
+---------------------------------------
 
 function PAS.SetupGeneralSettings()
 
@@ -211,7 +221,10 @@ end
 concommand.Add("PAS_ChangeConVar", PAS.CCV)
 
 
---Notification Functions
+
+---------------------
+--  NOTIFICATIONS  --
+---------------------
 
 function PAS.InfoNotify(ply, text)
 	umsg.Start("PAS_InfoNotify", ply)
@@ -251,37 +264,41 @@ hook.Add( "PlayerInitialSpawn", "ToolTableMessage", toolTableMessage )
 
 
 
-
+----------------------------------------
+--  PROP PROTECTION SQL AND SETTINGS  --
+----------------------------------------
 
 
 PatchPP = PatchPP or {}
 
 function PatchPP.GetConfig()
 
+	-- Check if Table exists
 	if sql.TableExists("patchpp") then
 
 		local checkquery = sql.Query("SELECT cdrive from patchpp")
 
+		-- Delete old table, because it is not up to date
 		if checkquery == false then
 
 			sql.Query("DROP TABLE patchpp")
-
 			MsgC(
 				Color(235, 0, 0), 
-				"[PatchProtect - PP] Deleted old table\n"
-				)
+				"[PatchProtect - PP] Deleted old PropProtection-Table\n"
+			)
 
 		end
 
 	end
 
-	if(!sql.TableExists("patchpp")) then
+	if !sql.TableExists("patchpp") then
 
+		-- Create new Table
 		sql.Query("CREATE TABLE IF NOT EXISTS patchpp(usepp INTEGER NOT NULL, usepd INTEGER NOT NULL, pddelay INTEGER NOT NULL, cdrive INTEGER NOT NULL);")
 		sql.Query("INSERT INTO patchpp(usepp, usepd, pddelay, cdrive) VALUES(1, 1, 120, 0)")
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchProtect - PP] Created new table\n"
+			"[PatchProtect - PP] Created new PropProtection-Table\n"
 			)
 
 	end

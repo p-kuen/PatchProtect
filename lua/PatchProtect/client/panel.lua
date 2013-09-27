@@ -1,18 +1,21 @@
+----------------
+--  SETTINGS  --
+----------------
+
 PAS = PAS or {}
 
+-- PANEL VARIABLES
 PAS.AdminPanel = nil
 PAS.AdminPanel2 = nil
 PAS.AdminPanel3 = nil
 
-
--- CREATE CLIENT CONVARS
+-- CLIENT CONVARS
 CreateClientConVar("patchpp_usepp", 1, false, true)
 CreateClientConVar("patchpp_usepd", 1, false, true)
 CreateClientConVar("patchpp_pddelay", 120, false, true)
 CreateClientConVar("patchpp_cdrive", 0, false, true)
 
-
--- SETTINGS
+-- SETTINGS TABLE
 PAS.Settings = PAS.Settings or {}
 
 -- CONTROLS
@@ -27,7 +30,10 @@ cl_PP.sqlTools = {}
 cl_PP.toolNames = {}
 
 
---ANTISPAM MENU
+
+---------------------
+--  ANTISPAM MENU  --
+---------------------
 
 function PAS.AdminMenu(Panel)
 
@@ -40,7 +46,6 @@ function PAS.AdminMenu(Panel)
 	cl_PP.sliders = {}
 	cl_PP.texts = {}
 	cl_PP.combos = {}
-
 	local combo_sa
 	local updating = false
 	local sel = 0
@@ -123,7 +128,7 @@ function PAS.AdminMenu(Panel)
 	end
 
 
-	--SAVING
+	-- SAVING
 
 	--Tools
 	function saveTools()
@@ -246,7 +251,32 @@ function PAS.AdminMenu(Panel)
 end
 
 
---PROP PROTECTION MENU
+
+-------------------------
+--  RECEIVE TOOL DATA  --
+-------------------------
+
+local function getToolTable()
+
+	cl_PP.sqlTools = {}
+	cl_PP.toolNames = {}
+
+	local rowtable = net.ReadTable()
+
+	cl_PP.sqlTools = table.ClearKeys(rowtable) -- Here, we read the string that was sent from the server
+
+	table.foreach( rowtable, function( key, value )
+ 		table.insert(cl_PP.toolNames, key)
+	end )
+
+end
+net.Receive( "toolTable", getToolTable )
+
+
+
+----------------------------
+--  PROP PROTECTION MENU  --
+----------------------------
 
 function PAS.ProtectionMenu(ProtectionPanel)
 
@@ -279,25 +309,28 @@ function PAS.ProtectionMenu(ProtectionPanel)
 end
 
 
---CLEANUP MENU
+
+--------------------
+--  CLEANUP MENU  --
+--------------------
 
 function PAS.CleanupMenu(CleanupPanel)
 
-	--Delete Controls
+	-- DELETE CONTROLS
 	CleanupPanel:ClearControls()
 
-	--Check Admin
+	-- CHECK ADMIN
 	if !LocalPlayer():IsAdmin() then
 		CleanupPanel:AddControl( "Label", {Text = "You are not an Admin!"} )
 		return
 	end
 
-	--Refresh Panels
+	-- UPDATE PANEL IF ADMIN
 	if(!PAS.AdminCPanel3) then
 		PAS.AdminCPanel3 = CleanupPanel
 	end
 
-	--Set Content
+	-- SET CONTENT
 
 	--Cleanup everything
 	local count = 0
@@ -318,55 +351,47 @@ function PAS.CleanupMenu(CleanupPanel)
 end
 
 
---CREATE MENUS
+
+--------------------
+--  CREATE MENUS  --
+--------------------
 
 local function CreateMenus()
 
+	-- ANTISPAM
 	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPAdmin", "AntiSpam", "", "", PAS.AdminMenu)
+
+	-- PROP PROTECTION
 	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPPropProtection", "PropProtection", "", "", PAS.ProtectionMenu)
+
+	-- CLEANUP
 	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPClientCleanup", "Cleanup", "", "", PAS.CleanupMenu)
 
 end
 hook.Add("PopulateToolMenu", "PASmakeMenus", CreateMenus)
 
 
---UPDATE MENUS
+
+--------------------
+--  UPDATE MENUS  --
+--------------------
 
 local function UpdateMenus()
 	
-	--AntiSpam Menu
+	-- ANTISPAM
 	if PAS.AdminCPanel then
 		PAS.AdminMenu(PAS.AdminCPanel)
 	end
 	
-	--PropProtection Menu
+	-- PROP PROTECTION
 	if PAS.AdminCPanel2 then
 		PAS.ProtectionMenu(PAS.AdminCPanel2)
 	end
 
-	--Cleanup Menu
+	-- CLEANUP
 	if PAS.AdminCPanel3 then
 		PAS.CleanupMenu(PAS.AdminCPanel3)
 	end
 
 end
 hook.Add("SpawnMenuOpen", "PASMenus", UpdateMenus)
-
-
---RECEIVE TOOL DATA
-
-local function getToolTable()
-
-	cl_PP.sqlTools = {}
-	cl_PP.toolNames = {}
-
-	local rowtable = net.ReadTable()
-
-	cl_PP.sqlTools = table.ClearKeys(rowtable) -- Here, we read the string that was sent from the server
-
-	table.foreach( rowtable, function( key, value )
- 		table.insert(cl_PP.toolNames, key)
-	end )
-
-end
-net.Receive( "toolTable", getToolTable )

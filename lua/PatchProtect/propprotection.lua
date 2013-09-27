@@ -64,12 +64,9 @@ hook.Add( "CanProperty", "Allow Player Property", PlayerProperty )
 
 
 
-
-
 ------------------------------------------
 --  DISCONNECTED PLAYER'S PROP CLEANUP  --
 ------------------------------------------
-
 
 -- CREATE TIMER
 function CleanupDiscPlayersProps( name )
@@ -90,7 +87,6 @@ function CleanupDiscPlayersProps( name )
 	
 end
 
-
 -- PLAYER LEFT SERVER
 function SetCleanupProps( ply )
 
@@ -110,8 +106,7 @@ function SetCleanupProps( ply )
 end
 hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", SetCleanupProps )
 
-
--- PLAYER COME BACK
+-- PLAYER CAME BACK
 function CheckComeback( name )
 
 	if tonumber(PatchPP.Config["usepd"]) == 0 or tonumber(PatchPP.Config["usepp"]) == 0 then return end
@@ -136,12 +131,9 @@ hook.Add( "PlayerConnect", "CheckAbortCleanup", CheckComeback )
 
 
 
-
-
 -------------------------------------------------
 --  SAVE PROP PROTECTION SETTINGS FROM CLIENT  --
 -------------------------------------------------
-
 
 -- SYNCH CONFIG WITH CLIENT
 function PatchPP.GetPatchPPInfo(ply)
@@ -159,7 +151,6 @@ function PatchPP.GetPatchPPInfo(ply)
 
 end
 hook.Add("PlayerInitialSpawn", "getpatchppconfig", PatchPP.GetPatchPPInfo)
-
 
 -- SAVE SETTINGS TO DATABASE
 function PatchPP.SaveSettings(ply, cmd, args)
@@ -199,12 +190,9 @@ concommand.Add("patchpp_save", PatchPP.SaveSettings)
 
 
 
-
-
 ---------------------------------
 --  CLEANUP MAP/PLAYERS PROPS  --
 ---------------------------------
-
 
 -- CLEANUP EVERYTHING
 function PatchPP.CleanupEverything()
@@ -214,7 +202,6 @@ function PatchPP.CleanupEverything()
 
 end
 concommand.Add("patchpp_cleanup_everything", PatchPP.CleanupEverything)
-
 
 -- CLEANUP PLAYERS PROPS
 function PatchPP.CleanupPlayersProps( ply, cmd, args )

@@ -10,7 +10,10 @@ local HUDNote_c = 0
 local HUDNotes = {}
 
 
---CREATE FONT
+
+------------
+--  FONT  --
+------------
 
 surface.CreateFont( "PatchProtectFont", {
 	font 		= "DermaDefault",
@@ -23,35 +26,37 @@ surface.CreateFont( "PatchProtectFont", {
 } )
 
 
---SHOW PROP OWNER
+
+------------------
+--  PROP OWNER  --
+------------------
 
 function PAS.ShowOwner()
 
-	if tonumber(GetConVarString( "patchpp_usepp" )) == 1 then
+	-- Check, PatchPP
+	if tonumber(GetConVarString( "patchpp_usepp" )) == 0 then return end
 
-		if !LocalPlayer() or !LocalPlayer():IsValid() then
-			return
-		end
+	-- No Valid Player or Valid Entity
+	if !LocalPlayer() or !LocalPlayer():IsValid() then return end
 
-		local PlyTrace = LocalPlayer():GetEyeTraceNoCursor()
+	-- Set Trace
+	local PlyTrace = LocalPlayer():GetEyeTraceNoCursor()
 
-		if PlyTrace.HitNonWorld then
+	if PlyTrace.HitNonWorld then
 
-			if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and isstring(PlyTrace.Entity:GetNetworkedEntity("Owner", false)) then
+		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and isstring(PlyTrace.Entity:GetNetworkedEntity("Owner", false)) then
 
-				local POwner = "Owner: " .. PlyTrace.Entity:GetNetworkedEntity("Owner", false)
+			local POwner = "Owner: " .. PlyTrace.Entity:GetNetworkedEntity("Owner", false)
 
-				surface.SetFont("PatchProtectFont")
+			surface.SetFont("PatchProtectFont")
 
-				local OW, OH = surface.GetTextSize(POwner)
-				OW = OW + 15
-				OH = OH + 15
+			local OW, OH = surface.GetTextSize(POwner)
+			OW = OW + 15
+			OH = OH + 15
 
-				draw.RoundedBox(2, ScrW() - OW - 10, ScrH() - OH - 10, OW, OH, Color(88, 144, 222, 200))
-				draw.SimpleText(POwner, "PatchProtectFont", ScrW() - (OW / 2) - 10, ScrH() - (OH / 2) - 10, Color(0,0,0, 255), 1, 1)
+			draw.RoundedBox(2, ScrW() - OW - 10, ScrH() - OH - 10, OW, OH, Color(88, 144, 222, 200))
+			draw.SimpleText(POwner, "PatchProtectFont", ScrW() - (OW / 2) - 10, ScrH() - (OH / 2) - 10, Color(0,0,0, 255), 1, 1)
 		
-			end
-
 		end
 
 	end
@@ -60,8 +65,12 @@ end
 hook.Add("HUDPaint", "ShowingOwner", PAS.ShowOwner)
 
 
---INFO MESSAGES
 
+----------------
+--  MESSAGES  --
+----------------
+
+-- INFO MESSAGE
 function PAS.AddInfoNotify( str )
 
 	local tab = {}
@@ -76,9 +85,7 @@ function PAS.AddInfoNotify( str )
 end
 usermessage.Hook("PAS_InfoNotify", function(u) PAS.AddInfoNotify(u:ReadString()) end)
 
-
---Admin Messages:
-
+--ADMIN MESSAGE
 function PAS.AddAdminNotify( str )
 
 	local tab = {}
@@ -97,9 +104,7 @@ function PAS.AddAdminNotify( str )
 end
 usermessage.Hook( "PAS_AdminNotify", function( u ) PAS.AddAdminNotify( u:ReadString() ) end )
 
-
---Default Messages:
-
+-- DEFAULT MESSAGE
 function PAS.AddNotify( str )
 
 	local tab = {}
@@ -114,9 +119,7 @@ function PAS.AddNotify( str )
 end
 usermessage.Hook("PAS_Notify", function(u) PAS.AddNotify(u:ReadString()) end)
 
-
---Create Info Message:
-
+-- CREATE INFO MESSAGE
 local function DrawInfoNotice( self, k, v, i )
 
 	local text = v.text
@@ -138,9 +141,7 @@ local function DrawInfoNotice( self, k, v, i )
 
 end
 
-
---Create Admin Message:
-
+-- CREATE ADMIN MESSAGE
 local function DrawAdminNotice( self, k, v, i )
 
 	local text = v.text
@@ -162,9 +163,7 @@ local function DrawAdminNotice( self, k, v, i )
 
 end
 
-
---Create Default Message:
-
+--CREATE DEFAULT MESSAGE
 local function DrawNotice( self, k, v, i )
 
 	local text = v.text
@@ -185,6 +184,12 @@ local function DrawNotice( self, k, v, i )
 	draw.SimpleText( text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
+
+
+
+----------------
+--  PAINTING  --
+----------------
 
 local function Paint()
 

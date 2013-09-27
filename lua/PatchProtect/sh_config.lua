@@ -1,19 +1,14 @@
 PAS = PAS or {}
 
-
---Return if Table esists
-
+-- CHECK FOR EXISTING TABLE
 if PAS.ConVars then
 	return
 end
 
-
---Create ConVars-Table
-
+-- CREATE CONVARS TABLE
 PAS.ConVars = {}
 
---Put all Variables into the ConVar-Table
-
+-- INSERT CONVAR VARS INTO TABLE
 PAS.ConVars.PAS_ANTISPAM = {
 	use = 1,
 	cooldown = 3.5,
@@ -27,6 +22,7 @@ PAS.ConVars.PAS_ANTISPAM = {
 
 PAS.ConVars.PAS_ANTISPAM_tools = {}
 
+-- CREATE TOOL TABLE
 function sv_PP.createToolTable()
 	
 	if not PAS.ConVars then
@@ -62,8 +58,7 @@ function sv_PP.createToolTable()
 
 end
 
---Create ConVars
-
+-- CREATE CONVARS
 for p, cvar in pairs(PAS.ConVars) do
 
 	for k, v in pairs( cvar ) do
