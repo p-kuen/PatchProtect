@@ -1,25 +1,16 @@
-----------------------------
---  MAIN PROP PROTECTION  --
-----------------------------
+----------------------------------------
+--  PICKUP AND DRIVE PROP PROTECTION  --
+----------------------------------------
 
--- PROPS, DRIVE
 function CheckPlayer(ply, ent)
 
-	if tonumber(PatchPP.Config["usepp"]) == 1 then
+	if ply:IsAdmin() or tonumber(PatchPP.Config["usepp"]) == 1 then return true end
 
-		if !ply:IsAdmin() then
-
-			if ent.name == ply:Nick() and !ent:IsWorld() then
-				return true
-			else
-				PAS.Notify( ply, "You are not allowed to do this!" )
-				return false
-			end
-
-		else
-			return true
-		end
-
+	if !ent:IsWorld() and ent.name == ply:Nick() then
+		return true
+	else
+		PAS.Notify( ply, "You are not allowed to do this!" )
+		return false
 	end
 
 end
@@ -27,61 +18,46 @@ hook.Add( "PhysgunPickup", "Allow Player Pickup", CheckPlayer )
 hook.Add( "CanDrive", "Allow Driving", CheckPlayer )
 
 
--- TOOLS
+
+----------------------------
+--  TOOL PROP PROTECTION  --
+----------------------------
+
 function CanTool(ply, trace, tool)
 
-	if tonumber(PatchPP.Config["usepp"]) == 1 then
+	if ply:IsAdmin() or tonumber(PatchPP.Config["usepp"]) == 1 then return true end
 
-		if !ply:IsAdmin() then
+	if !IsValid( trace.Entity ) then return false end
 
-			if IsValid( trace.Entity ) then
-
-				ent = trace.Entity
-
-				if !ent:IsWorld() and ent.name == ply:Nick() then
-					return true
-				else
-					PAS.Notify( ply, "You are not allowed to do this!" )
-					return false
-				end
-
-			end
-
-		else
-			return true
-		end
-
+	ent = trace.Entity
+	if !ent:IsWorld() and ent.name == ply:Nick() then
+		return true
+	else
+		PAS.Notify( ply, "You are not allowed to do this!" )
+		return false
 	end
  	
 end
 hook.Add( "CanTool", "Allow Player Tool-Useage", CanTool )
 
 
--- CDRIVE
+
+--------------------------------
+--  PROPERTY PROP PROTECTION  --
+--------------------------------
+
 function PlayerProperty(ply, string, ent)
 
-	if tonumber(PatchPP.Config["usepp"]) == 1 then
+	if ply:IsAdmin() or tonumber(PatchPP.Config["usepp"]) == 1 then return true end
 
-		if !ply:IsAdmin() then
+	if string == "drive" and tonumber(PatchPP.Config["cdrive"]) == 0 then return false end
 
-			if string != "drive" or tonumber(PatchPP.Config["cdrive"]) == 1 then
-
-				if ent.name != nil and ent.name == ply:Nick() and !ent.IsWorld() and string != "persist" then
- 					return true
- 				else
- 					PAS.Notify( ply, "You are not allowed to do this!" )
- 					return false
- 				end
-
-			else
-				return false
-			end
-
-		else
-			return true
-		end
-
-	end
+	if !ent.IsWorld() and ent.name == ply:Nick() and string != "persist" then
+ 		return true
+ 	else
+ 		PAS.Notify( ply, "You are not allowed to do this!" )
+ 		return false
+ 	end
 
 end
 hook.Add( "CanProperty", "Allow Player Property", PlayerProperty )
@@ -98,24 +74,19 @@ hook.Add( "CanProperty", "Allow Player Property", PlayerProperty )
 -- CREATE TIMER
 function CleanupDiscPlayersProps( name )
 
-	if tonumber(PatchPP.Config["usepd"]) == 1 and tonumber(PatchPP.Config["usepp"]) == 1 then
+	timer.Create( "CleanupPropsOf" .. name , tonumber(PatchPP.Config["pddelay"]), 1, function()
 
-		timer.Create( "CleanupPropsOf" .. name , tonumber(PatchPP.Config["pddelay"]), 1, function()
+		for k, v in pairs( ents.GetAll() ) do
 
-			for k, v in pairs( ents.GetAll() ) do
-
-				ent = v
-				if ent.cleanuped == name and ent.name == "Disconnected Player" then
-					ent:Remove()
-				end
-
+			ent = v
+			if ent.cleanuped == name and ent.name == "Disconnected Player" then
+				ent:Remove()
 			end
 
-			print("[PatchProtect - Cleanup] Removed " .. name .. "'s Props!")
+		end
+		print("[PatchProtect - Cleanup] Removed " .. name .. "'s Props!")
 
-		end)
-
-	end
+	end)
 	
 end
 
@@ -123,21 +94,18 @@ end
 -- PLAYER LEFT SERVER
 function SetCleanupProps( ply )
 
-	if tonumber(PatchPP.Config["usepd"]) == 1 and tonumber(PatchPP.Config["usepp"]) == 1 then
+	if tonumber(PatchPP.Config["usepd"]) == 0 or tonumber(PatchPP.Config["usepp"]) == 0 then return end
 
-		for k, v in pairs( ents.GetAll() ) do
+	for k, v in pairs( ents.GetAll() ) do
 
-			ent = v
-			if ent.name == ply:Nick() then
-				ent.name = "Disconnected Player"
-				ent.cleanuped = ply:Nick()
-			end
-
+		ent = v
+		if ent.name == ply:Nick() then
+			ent.name = "Disconnected Player"
+			ent.cleanuped = ply:Nick()
 		end
 
-		CleanupDiscPlayersProps( ply:Nick() )
-
 	end
+	CleanupDiscPlayersProps( ply:Nick() )
 
 end
 hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", SetCleanupProps )
@@ -146,18 +114,17 @@ hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", SetCleanupPro
 -- PLAYER COME BACK
 function CheckComeback( name )
 
-	if tonumber(PatchPP.Config["usepd"]) == 1 and tonumber(PatchPP.Config["usepp"]) == 1 then
+	if tonumber(PatchPP.Config["usepd"]) == 0 or tonumber(PatchPP.Config["usepp"]) == 0 then return end
 
-		if timer.Exists( "CleanupPropsOf" .. name ) then
+	if timer.Exists( "CleanupPropsOf" .. name ) then
 
-			timer.Destroy( "CleanupPropsOf" .. name )
-			for k, v in pairs( ents.GetAll() ) do
+		timer.Destroy( "CleanupPropsOf" .. name )
 
-				ent = v
-				if ent.cleanuped == name and ent.name == "Disconnected Player" then
-					ent.name = name
-				end
+		for k, v in pairs( ents.GetAll() ) do
 
+			ent = v
+			if ent.cleanuped == name and ent.name == "Disconnected Player" then
+				ent.name = name
 			end
 
 		end
@@ -250,19 +217,18 @@ concommand.Add("patchpp_cleanup_everything", PatchPP.CleanupEverything)
 
 
 -- CLEANUP PLAYERS PROPS
-function PatchPP.CleanupPlayersProps( cleared )
+function PatchPP.CleanupPlayersProps( ply, cmd, args )
 
-	local name = cleared:GetName()
 	for k, v in pairs( ents.GetAll() ) do
 
 		ent = v
-		if ent.name == name then
+		if ent.name == tostring(args[1]) then
 			ent:Remove()
 		end
 
 	end
 
-	PAS.InfoNotify(ply, "Cleaned " .. name .. "'s Props!")
+	PAS.InfoNotify(ply, "Cleaned " .. tostring(args[1]) .. "'s Props!")
 
 end
 concommand.Add("patchpp_clean", PatchPP.CleanupPlayersProps)

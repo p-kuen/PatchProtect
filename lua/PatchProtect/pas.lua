@@ -80,43 +80,45 @@ end
 function PAS.Spawn(ply)
 	
 	--Check if PAS is enabled
-	if tobool(PAS.Settings.General["use"]) == false then return end
+	if tobool(PAS.Settings.General["use"]) == false then
+		return
+	end
 
-		--Checking Coodown
-		if CurTime() < ply.propcooldown then
+	--Checking Coodown
+	if CurTime() < ply.propcooldown then
 
-			if ply:IsAdmin() and tobool(PAS.Settings.General["noantiadmin"]) then
-				--Do nothing...
-			else
+		if ply:IsAdmin() and tobool(PAS.Settings.General["noantiadmin"]) then
+			--Do nothing...
+		else
 				
-				--Add One Prop to the Warning List
-				ply.props = ply.props + 1
+			--Add One Prop to the Warning List
+			ply.props = ply.props + 1
 
-				--Notify to Admin about spamming
-				if ply.props >= tonumber(PAS.Settings.General["spamcount"]) then
+			--Notify to Admin about spamming
+			if ply.props >= tonumber(PAS.Settings.General["spamcount"]) then
 					
-					PAS.AdminNotify(ply:Nick() .. " is spamming!")
-					print("[PatchProtect - PAS] " .. ply:Nick() .. " spams!")
-					ply.props = 0
-					spamaction(ply)
-
-				end
-
-				--Notify Client about Wait-Time
-				PAS.Notify( ply, "Wait: " .. math.Round( ply.propcooldown - CurTime(), 1))
-
-				--Block entity
-				return false
+				PAS.AdminNotify(ply:Nick() .. " is spamming!")
+				print("[PatchProtect - PAS] " .. ply:Nick() .. " spams!")
+				ply.props = 0
+				spamaction(ply)
 
 			end
 
-		else
+			--Notify Client about Wait-Time
+			PAS.Notify( ply, "Wait: " .. math.Round( ply.propcooldown - CurTime(), 1))
 
-			--Set Cooldown
-			ply.props = 0
-			ply.propcooldown = CurTime() + tonumber(PAS.Settings.General["cooldown"])
+			--Block entity
+			return false
 
 		end
+
+	else
+
+		--Set Cooldown
+		ply.props = 0
+		ply.propcooldown = CurTime() + tonumber(PAS.Settings.General["cooldown"])
+
+	end
 
 end
 hook.Add("PlayerSpawnProp", "SpawningProp", PAS.Spawn)
@@ -150,9 +152,9 @@ function PAS.CanTool( ply, trace, mode )
 	--Check, if PAS is enabled and also the Tool Restriction
 	if tobool(PAS.Settings.General["use"]) == false or tobool(PAS.Settings.General["toolprotection"]) == false then return end
 
-	local delete = false
+		local delete = false
 
-	local function blockedtool()
+		local function blockedtool()
 
 		--Checking Cooldown
 		if CurTime() < ply.toolcooldown then
@@ -238,7 +240,7 @@ hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", PAS.SpawnedEnt)
 
 
 --SET OWNER OF TOOL-ENTS
-if cleanup and if tonumber(PatchPP.Config["usepp"]) == 1 then
+if cleanup then
 	
 	local Clean = cleanup.Add
 

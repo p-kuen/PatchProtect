@@ -4,31 +4,25 @@ PAS.AdminPanel = nil
 PAS.AdminPanel2 = nil
 PAS.AdminPanel3 = nil
 
+
+-- CREATE CLIENT CONVARS
 CreateClientConVar("patchpp_usepp", 1, false, true)
 CreateClientConVar("patchpp_usepd", 1, false, true)
 CreateClientConVar("patchpp_pddelay", 120, false, true)
 CreateClientConVar("patchpp_cdrive", 0, false, true)
 
 
-
-
-
-
-
-
-
-
---Settings
+-- SETTINGS
 PAS.Settings = PAS.Settings or {}
 
---Constrols
+-- CONTROLS
 cl_PP.checks_general = {}
 cl_PP.checks_tools = {}
 cl_PP.sliders = {}
 cl_PP.texts = {}
 cl_PP.combos = {}
 
---Tools
+-- TOOLS
 cl_PP.sqlTools = {}
 cl_PP.toolNames = {}
 
@@ -243,7 +237,7 @@ function PAS.AdminMenu(Panel)
 		cl_PP.addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
 
 	elseif spamactionnumber == 5 then
-
+		
 		cl_PP.addlbl(saCat, "Write a command. Use <player> for the Spammer")
 		cl_PP.addtext(saCat, GetConVarString("_PAS_ANTISPAM_concommand"))
 
@@ -276,7 +270,7 @@ function PAS.ProtectionMenu(ProtectionPanel)
 
 	ProtectionPanel:AddControl("Label", {Text = "Prop-Delete on Disconnect:"})
 	ProtectionPanel:AddControl("CheckBox", {Label = "Use Prop-Delete", Command = "patchpp_usepd"})
-	ProtectionPanel:AddControl("Slider", {Label = "Prop-Delete Delay (in Seconds)", Command = "patchpp_pddelay", Type = "Integer", Min = "1", Max = "120"})
+	ProtectionPanel:AddControl("Slider", {Label = "Prop-Delete Delay (Sec.)", Command = "patchpp_pddelay", Type = "Integer", Min = "1", Max = "120"})
 	ProtectionPanel:AddControl("CheckBox", {Label = "Allow C-Driving", Command = "patchpp_cdrive"})
 
 	--Save Settings
@@ -318,7 +312,7 @@ function PAS.CleanupMenu(CleanupPanel)
 	CleanupPanel:AddControl( "Label", {Text = "Cleanup Props from a special player:"} )
 	for i = 1, table.Count( player.GetAll() ) do
 		local plys = player.GetAll()[i]
-		CleanupPanel:AddControl( "Button", {Text = "Cleanup " .. plys:GetName() .. "  (" .. tostring(plys:GetCount( "props" )) .. " Props)", Command = "patchpp_clean " .. plys:GetName()} )
+		CleanupPanel:AddControl( "Button", {Text = "Cleanup " .. plys:GetName() .."  (" .. tostring(plys:GetCount( "props" )) .. " Props)", Command = "patchpp_clean " .. plys:GetName()} )
 	end
 
 end
