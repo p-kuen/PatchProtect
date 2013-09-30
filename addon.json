@@ -1,5 +1,5 @@
 {
-	"title"		:	"PatchAntiSpam (PAS)",
+	"title"		:	"PatchProtect (PProtect)",
 	"type"		:	"tool",
 	"tags"		:	[ "build" ],
 	"ignore"	:

@@ -2,9 +2,9 @@
 --  CREATE TABLES  --
 ---------------------
 
-sh_PP = {}
-sv_PP = {}
-cl_PP = {}
+sh_PProtect = {}
+sv_PProtect = {}
+cl_PProtect = {}
 
 
 
@@ -27,7 +27,7 @@ if SERVER then
 
 	include( "PatchProtect/sh_config.lua" )
 	include( "PatchProtect/server/settings.lua" )
-	include( "PatchProtect/pas.lua" )
+	include( "PatchProtect/antispam.lua" )
 	include( "PatchProtect/propprotection.lua" )
 
 else

@@ -2,20 +2,20 @@
 --  PICKUP AND DRIVE PROP PROTECTION  --
 ----------------------------------------
 
-function CheckPlayer(ply, ent)
+function sv_PProtect.checkPlayer(ply, ent)
 
-	if ply:IsAdmin() or tonumber(PatchPP.Config["usepp"]) == 1 then return true end
+	if ply:IsAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
 
 	if !ent:IsWorld() and ent.name == ply:Nick() then
 		return true
 	else
-		PAS.Notify( ply, "You are not allowed to do this!" )
+		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
 		return false
 	end
 
 end
-hook.Add( "PhysgunPickup", "Allow Player Pickup", CheckPlayer )
-hook.Add( "CanDrive", "Allow Driving", CheckPlayer )
+hook.Add( "PhysgunPickup", "AllowPlayerPickup", sv_PProtect.checkPlayer )
+hook.Add( "CanDrive", "AllowDriving", sv_PProtect.checkPlayer )
 
 
 
@@ -23,22 +23,21 @@ hook.Add( "CanDrive", "Allow Driving", CheckPlayer )
 --  TOOL PROP PROTECTION  --
 ----------------------------
 
-function CanTool(ply, trace, tool)
+function sv_PProtect.canTool(ply, trace, tool)
 
-	if ply:IsAdmin() or tonumber(PatchPP.Config["usepp"]) == 1 then return true end
+	if ply:IsAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
 
-	if !IsValid( trace.Entity ) then return false end
-
-	ent = trace.Entity
-	if !ent:IsWorld() and ent.name == ply:Nick() then
+	local ent = trace.Entity
+	if ent:IsWorld() and tonumber(sv_PProtect.Settings.PropProtection["tool_world"]) == 0 then return false end
+	if ent.name == ply:Nick() or ent:IsWorld() then
 		return true
 	else
-		PAS.Notify( ply, "You are not allowed to do this!" )
+		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
 		return false
 	end
  	
 end
-hook.Add( "CanTool", "Allow Player Tool-Useage", CanTool )
+hook.Add( "CanTool", "AllowToolUsage", sv_PProtect.canTool )
 
 
 
@@ -46,22 +45,21 @@ hook.Add( "CanTool", "Allow Player Tool-Useage", CanTool )
 --  PROPERTY PROP PROTECTION  --
 --------------------------------
 
-function PlayerProperty(ply, string, ent)
+function sv_PProtect.playerProperty(ply, string, ent)
 
-	if ply:IsAdmin() or tonumber(PatchPP.Config["usepp"]) == 1 then return true end
+	if ply:IsAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
 
-	if string == "drive" and tonumber(PatchPP.Config["cdrive"]) == 0 then return false end
+	if string == "drive" and tonumber(sv_PProtect.Settings.PropProtection["cdrive"]) == 0 then return false end
 
 	if !ent.IsWorld() and ent.name == ply:Nick() and string != "persist" then
  		return true
  	else
- 		PAS.Notify( ply, "You are not allowed to do this!" )
+ 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
  		return false
  	end
 
 end
-hook.Add( "CanProperty", "Allow Player Property", PlayerProperty )
-
+hook.Add( "CanProperty", "AllowProperty", sv_PProtect.playerProperty )
 
 
 ------------------------------------------
@@ -69,9 +67,9 @@ hook.Add( "CanProperty", "Allow Player Property", PlayerProperty )
 ------------------------------------------
 
 -- CREATE TIMER
-function CleanupDiscPlayersProps( name )
+local function CleanupDiscPlayersProps( name )
 
-	timer.Create( "CleanupPropsOf" .. name , tonumber(PatchPP.Config["pddelay"]), 1, function()
+	timer.Create( "CleanupPropsOf" .. name , tonumber(sv_PProtect.Settings.PropProtection["propdelete_delay"]), 1, function()
 
 		for k, v in pairs( ents.GetAll() ) do
 
@@ -87,10 +85,11 @@ function CleanupDiscPlayersProps( name )
 	
 end
 
--- PLAYER LEFT SERVER
-function SetCleanupProps( ply )
 
-	if tonumber(PatchPP.Config["usepd"]) == 0 or tonumber(PatchPP.Config["usepp"]) == 0 then return end
+-- PLAYER LEFT SERVER
+function sv_PProtect.setCleanupProps( ply )
+
+	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
 
 	for k, v in pairs( ents.GetAll() ) do
 
@@ -104,12 +103,12 @@ function SetCleanupProps( ply )
 	CleanupDiscPlayersProps( ply:Nick() )
 
 end
-hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", SetCleanupProps )
+hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.setCleanupProps )
 
 -- PLAYER CAME BACK
-function CheckComeback( name )
+function sv_PProtect.checkComeback( name )
 
-	if tonumber(PatchPP.Config["usepd"]) == 0 or tonumber(PatchPP.Config["usepp"]) == 0 then return end
+	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
 
 	if timer.Exists( "CleanupPropsOf" .. name ) then
 
@@ -127,84 +126,23 @@ function CheckComeback( name )
 	end
 
 end
-hook.Add( "PlayerConnect", "CheckAbortCleanup", CheckComeback )
-
-
-
--------------------------------------------------
---  SAVE PROP PROTECTION SETTINGS FROM CLIENT  --
--------------------------------------------------
-
--- SYNCH CONFIG WITH CLIENT
-function PatchPP.GetPatchPPInfo(ply)
-
-	if(!ply or !ply:IsValid()) then
-		return
-	end
-	
-	for k, v in pairs(PatchPP.Config) do
-
-		local configs = k
-		ply:ConCommand("patchpp_" .. configs .. " " .. v .. "\n")
-
-	end
-
-end
-hook.Add("PlayerInitialSpawn", "getpatchppconfig", PatchPP.GetPatchPPInfo)
-
--- SAVE SETTINGS TO DATABASE
-function PatchPP.SaveSettings(ply, cmd, args)
-
-	if !ply then
-		MsgN("This command can only be run in-game!")
-	end
-
-	if(!ply:IsAdmin()) then
-		return
-	end
-
-	-- SAVE THINGS TO SERVER (GET DATA FROM SAVER)
-	local usepp = tonumber(ply:GetInfo("patchpp_usepp") or 1)
-	local usepd = tonumber(ply:GetInfo("patchpp_usepd") or 1)
-	local pddelay = tonumber(ply:GetInfo("patchpp_pddelay") or 120)
-	local cdrive = tonumber(ply:GetInfo("patchpp_cdrive") or 0)
-
-	sql.Query("UPDATE patchpp SET usepp = " .. usepp .. ", usepd = " .. usepd .. ", pddelay = " .. pddelay .. ", cdrive = " .. cdrive)
-	PatchPP.Config = sql.QueryRow("SELECT * FROM patchpp LIMIT 1")
-
-	PAS.InfoNotify(ply, "Settings Saved!")
-
-	-- SYNCH NEW CONFIG WITH ALL CLIENTS
-	timer.Simple(2, function()
-
-		local Players = player.GetAll()
-
-		for i = 1, table.Count(Players) do
-			PatchPP.GetPatchPPInfo(Players[i])
-		end
-
-	end)
-
-end
-concommand.Add("patchpp_save", PatchPP.SaveSettings)
-
-
+hook.Add( "PlayerConnect", "CheckAbortCleanup", sv_PProtect.checkComeback )
 
 ---------------------------------
 --  CLEANUP MAP/PLAYERS PROPS  --
 ---------------------------------
 
 -- CLEANUP EVERYTHING
-function PatchPP.CleanupEverything()
+function sv_PProtect.CleanupEverything()
 
 	game.CleanUpMap()
-	PAS.InfoNotify(ply, "Cleaned Map!")
+	sv_PProtect.InfoNotify(ply, "Cleaned Map!")
 
 end
-concommand.Add("patchpp_cleanup_everything", PatchPP.CleanupEverything)
+concommand.Add("btn_cleanup", sv_PProtect.CleanupEverything)
 
 -- CLEANUP PLAYERS PROPS
-function PatchPP.CleanupPlayersProps( ply, cmd, args )
+function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 
 	for k, v in pairs( ents.GetAll() ) do
 
@@ -215,7 +153,7 @@ function PatchPP.CleanupPlayersProps( ply, cmd, args )
 
 	end
 
-	PAS.InfoNotify(ply, "Cleaned " .. tostring(args[1]) .. "'s Props!")
+	sv_PProtect.InfoNotify(ply, "Cleaned " .. tostring(args[1]) .. "'s Props!")
 
 end
-concommand.Add("patchpp_clean", PatchPP.CleanupPlayersProps)
+concommand.Add("btn_cleanup_player", sv_PProtect.CleanupPlayersProps)

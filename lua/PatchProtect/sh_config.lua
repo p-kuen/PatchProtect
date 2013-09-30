@@ -1,35 +1,45 @@
-PAS = PAS or {}
-
 -- CHECK FOR EXISTING TABLE
-if PAS.ConVars then
-	return
+if sv_PProtect.ConVars then
+	--return
 end
 
--- CREATE CONVARS TABLE
-PAS.ConVars = {}
+--NETWORKING
+util.AddNetworkString("generalSettings")
+util.AddNetworkString("propProtectionSettings")
 
--- INSERT CONVAR VARS INTO TABLE
-PAS.ConVars.PAS_ANTISPAM = {
+-- CREATE CONVARS TABLE
+sv_PProtect.ConVars = {}
+
+-- CLIENT CONVARS
+sv_PProtect.ConVars.PProtect_AS = {
 	use = 1,
 	cooldown = 3.5,
 	noantiadmin = 1,
 	spamcount = 20,
-	spamaction = 0,
+	spamaction = 1,
 	bantime = 10.5,
-	concommand = "",
+	concommand = "blabla",
 	toolprotection = 1
 }
 
-PAS.ConVars.PAS_ANTISPAM_tools = {}
+sv_PProtect.ConVars.PProtect_PP = {
+	use = 1,
+	use_propdelete = 1,
+	propdelete_delay = 120,
+	cdrive = 0,
+	tool_world = 1
+}
+
+sv_PProtect.ConVars.PProtect_AS_tools = {}
 
 -- CREATE TOOL TABLE
-function sv_PP.createToolTable()
-	
-	if not PAS.ConVars then
-		PAS.ConVars = {}
+function sv_PProtect.createToolTable()
+
+	if not sv_PProtect.ConVars then
+		sv_PProtect.ConVars = {}
 	end
 
-	if PAS.ConVars.PAS_ANTISPAM_tools[1] ~= nil then
+	if sv_PProtect.ConVars.PProtect_AS_tools[1] ~= nil then
 		return
 	end
 
@@ -38,37 +48,22 @@ function sv_PP.createToolTable()
 		if wep.ClassName == "gmod_tool" then 
 			local t = wep.Tool
 			for name, tool in pairs( t ) do
-				table.insert(PAS.ConVars.PAS_ANTISPAM_tools, tostring(name))
+				table.insert(sv_PProtect.ConVars.PProtect_AS_tools, tostring(name))
 			end
 		end
 	end
 
-	for p, cvar in pairs(PAS.ConVars) do
-
-		for k, v in pairs( cvar ) do
-			--CreateConVar( "_" .. p .. "_" .. v, 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
-			if p == "PAS_ANTISPAM_tools" then
-				CreateClientConVar("_" .. p .. "_" .. v, 0, false, true)
-				
-			end
-			
-		end
-	
-	end
-
 end
 
--- CREATE CONVARS
-for p, cvar in pairs(PAS.ConVars) do
+function sendNetworks( ply )
+ 
+	net.Start("generalSettings")
+		net.WriteTable( sv_PProtect.ConVars.PProtect_AS )
+	net.Send( ply )
 
-	for k, v in pairs( cvar ) do
-		if type(k) == "number" then
-			CreateConVar( "_" .. p .. "_" .. v, 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
-		else
-			CreateConVar( "_" .. p .. "_" .. k, v, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
-		end
-
-	end
-	
+	net.Start("propProtectionSettings")
+		net.WriteTable( sv_PProtect.ConVars.PProtect_PP )
+	net.Send( ply )
+ 
 end
---CreateConVar( "_PatchProtect_PropProtection_" .. "UsePP", 0, {FCVAR_ARCHIVE, FCVAR_REPLICATED} )
+hook.Add( "PlayerInitialSpawn", "sendNetworks", sendNetworks )

@@ -2,7 +2,7 @@
 --  FRAME  --
 -------------
 
-function cl_PP.addframe(width, height, title, draggable, closeable, var, btntext)
+function cl_PProtect.addframe(width, height, title, draggable, closeable, var, btntext)
 
 	btntext = btntext or "Save"
 
@@ -28,21 +28,10 @@ function cl_PP.addframe(width, height, title, draggable, closeable, var, btntext
 	local list = vgui.Create( "DPanelList", frm )
 
 	list:SetPos( 10, 30 )
-	list:SetSize( width - 20, height - 40 - 40)
+	list:SetSize( width - 20, height - 40)
 	list:SetSpacing( 5 )
 	list:EnableHorizontal( false )
 	list:EnableVerticalScrollbar( true )
-
-	--Button
-	local btn = vgui.Create("DButton", frm)
-
-	btn:SetPos( width - 60 - 15, height  - 30 - 15)
-	btn:SetSize(60, 30)
-	btn:SetText(btntext)
-
-	function btn:OnMousePressed()
-		hook.Run("btn_" .. var)
-	end
 
 	return list
 end
@@ -53,7 +42,7 @@ end
 --  CATEGORY  --
 ----------------
 
-function cl_PP.makeCategory(plist, name)
+function cl_PProtect.makeCategory(plist, name)
 
 	local cat = vgui.Create( "DCollapsibleCategory")
 	cat:SetLabel(name)
@@ -73,29 +62,23 @@ end
 --  CHECKBOX  --
 ----------------
 
-function cl_PP.addchk(plist, text, typ, var)
+function cl_PProtect.addchk(plist, text, typ, var)
 
 	local chk = vgui.Create("DCheckBoxLabel")
 	chk:SetText(text)
 
-	if typ == "convar" then
-
-		var_checks = "general"
-		table.insert(cl_PP.checks_general, chk)
-		chk:SetChecked(tobool(GetConVarNumber("_PAS_ANTISPAM_" .. var)))
+	if typ == "general" then
+		chk:SetConVar("PProtect_AS_" .. var)
 		chk:SetDark(true)
 
-	elseif typ == "table" then
+	elseif typ == "tools" then
 
-		table.insert(cl_PP.checks_tools, chk)
-
-		--chk:SetConVar("_PAS_ANTISPAM_" .. var)
-		chk:SetChecked(tobool(tonumber(cl_PP.sqlTools[table.KeyFromValue(cl_PP.toolNames, string.sub(var, 7))])))
-			
+		chk:SetConVar("PProtect_AS_tools_" .. var)
 		chk:SetDark(true)
 
-	elseif typ == "test" then
+	elseif typ == "propprotection" then
 
+		chk:SetConVar("PProtect_PP_" .. var)
 		chk:SetDark(true)
 
 	end
@@ -110,13 +93,11 @@ end
 --  SLIDER  --
 --------------
 
-function cl_PP.addsldr(plist, min, max, text, var, decimals)
+function cl_PProtect.addsldr(plist, min, max, text, typ, var, decimals)
 
 	local sldr
 
-	if var ~= "bantime" then sldr = vgui.Create("DNumSlider") else sldr = plist:AddItem("DNumSlider") end
-
-	table.insert(cl_PP.sliders, sldr)
+	if var == "bantime" then sldr = plist:Add("DNumSlider") else sldr = vgui.Create("DNumSlider") end
 
 	sldr:SetMin(min)
 	sldr:SetMax(max)
@@ -124,7 +105,13 @@ function cl_PP.addsldr(plist, min, max, text, var, decimals)
 	sldr:SetDecimals(decimals)
 	sldr:SetText(text)
 	sldr:SetDark(true)
-	sldr:SetValue(GetConVarNumber("_PAS_ANTISPAM_" .. var))
+	if typ == "general" then
+		sldr:SetConVar( "PProtect_AS_" .. var )
+	elseif typ == "propprotection" then
+		sldr:SetConVar( "PProtect_PP_" .. var )
+	else
+		sldr:SetConVar( "PProtect_AS_" .. var )
+	end
 
 	if var ~= "bantime" then plist:AddItem(sldr) end
 
@@ -136,48 +123,72 @@ end
 --  LABEL  --
 -------------
 
-function cl_PP.addlbl(plist, text)
+function cl_PProtect.addlbl(plist, text)
 
-	local lbl = vgui.Create("DLabel")
+	local lbl = plist:Add("DLabel")
 
 	lbl:SetText(text)
 	lbl:SetDark(true)
 
-	plist:AddItem(lbl)
+	--plist:AddItem(lbl)
 	
 end
 
 
 
 ----------------
---  BUTTON  --
+--   BUTTON   --
 ----------------
 
-function cl_PP.addbtn(plist, text, typ, args)
+function cl_PProtect.addbtn(plist, text, cmd, args)
 
 	btn = vgui.Create("DButton")
-
-	if typ == "save" then btn:SetSize(150,30) else btn:SetSize(150,20) end
 
 	btn:Center()
 	btn:SetText(text)
 	btn:SetDark(true)
+	if args ~= nil then
 
-	function btn:OnMousePressed()
-		hook.Run("btn_" .. typ, args)
+		btn:SetConsoleCommand("btn_" .. cmd, args)
+
+	else
+
+		btn:SetConsoleCommand("btn_" .. cmd)
+
 	end
+
 
 	plist:AddItem(btn)
 end
 
+----------------
+--  COMBOBOX  --
+----------------
 
+function cl_PProtect.addcombo(plist, choices, var)
+	
+	local combo = plist:Add("DComboBox")
+
+	table.foreach( choices, function( key, value )
+		combo:AddChoice(value)
+	end )
+
+	--timer.Simple(0.1, function()
+		combo:ChooseOptionID(GetConVarNumber("PProtect_AS_" .. var))
+	--end )
+
+	function combo:OnSelect(index, value, data)
+
+		RunConsoleCommand("PProtect_AS_" .. var, index)
+
+	end
+end
 
 ----------------
 --  TEXTBOX  --
 ----------------
 
-function cl_PP.addtext(plist, text)
+function cl_PProtect.addtext(plist, text)
 		local tentry = plist:Add( "DTextEntry")
-		table.insert(cl_PP.texts, tentry)
 		tentry:SetText(text)
 	end

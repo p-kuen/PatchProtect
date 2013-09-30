@@ -2,16 +2,13 @@
 --  SETTINGS  --
 ----------------
 
-PAS = PAS or {}
-PAS.Settings = PAS.Settings or {}
-
-
+sv_PProtect.Settings = sv_PProtect.Settings or {}
 
 ---------------------------------------
 --  ANTISPAM SQL TABLE AND SETTINGS  --
 ---------------------------------------
 
-function PAS.SetupGeneralSettings()
+function sv_PProtect.SetupGeneralSettings()
 
 	MsgC(
 		Color(0,235,200),
@@ -22,9 +19,6 @@ function PAS.SetupGeneralSettings()
 		Color(255,255,255),
 		" Successfully loaded (Coded by Patcher56 & Ted894)\n\n"
 	)
-
-	--Networks
-	util.AddNetworkString( "toolTable" ) -- Cache the net message.
 
 	if sql.TableExists("pprotect_antispam_general") then
 
@@ -50,47 +44,43 @@ function PAS.SetupGeneralSettings()
 		local values = {}
 		local sqlvars = {}
 
-		for Protection, ConVars in pairs(PAS.ConVars) do
+			for k, v in pairs(sv_PProtect.ConVars.PProtect_AS) do
 
-			for Option, value in pairs(ConVars) do
-
-				local Type = type(PAS.ConVars.PAS_ANTISPAM[Option])
+				local Type = type(v)
 
 				if Type == "number" then
 
 					local isDecimal
-					if tonumber(value) > math.floor(tonumber(value)) then isDecimal = true else isDecimal = false end
+					if tonumber(v) > math.floor(tonumber(v)) then isDecimal = true else isDecimal = false end
 					if  not isDecimal then Type = string.gsub(Type, "number", "INTEGER") else Type = string.gsub(Type, "number", "DOUBLE") end
 					
 				end
 
 				Type = string.gsub(Type, "string", "VARCHAR(255)")
 
-				if Option == "spamcount" or Option == "cooldown" then
+				if k == "spamcount" or k == "cooldown" then
 
-					table.insert(sqlvars, tostring(Option) .. " " .. Type)
+					table.insert(sqlvars, tostring(k) .. " " .. Type)
 
 				else
 
-					table.insert(sqlvars, tostring(Option) .. " " .. Type)
-					
+					table.insert(sqlvars, tostring(k) .. " " .. Type)
 
 				end
-				if value == "" then
+
+				if v == "" then
 
 					table.insert(values, "''")
-					table.insert(options, "'" .. Option .. "'")
+					table.insert(options, "'" .. k .. "'")
 
 				else
 
-					table.insert(values, value)
-					table.insert(options, Option)
+					table.insert(values, v)
+					table.insert(options, k)
 
 				end
 				
 			end
-
-		end
 
 		sql.Query("CREATE TABLE IF NOT EXISTS pprotect_antispam_general(" .. table.concat( sqlvars, ", " ) .. ");")
 		sql.Query("INSERT INTO pprotect_antispam_general(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")") --
@@ -103,208 +93,242 @@ function PAS.SetupGeneralSettings()
 	end
 	
 	return sql.QueryRow("SELECT * FROM pprotect_antispam_general LIMIT 1")
-
+	
 end
 
-function PAS.SetupToolsSettings() 
-	
-	sv_PP.createToolTable()
-	
-	
-	if !sql.TableExists("pprotect_antispam_tools") then
-		local values = {}
-		local vars = {}
+function sv_PProtect.SetupPropProtectionSettings()
 
-		for p, cvars in pairs(PAS.ConVars) do
-			if p == "PAS_ANTISPAM_tools" then
+	if sql.TableExists("pprotect_propprotection") then
 
-				for k, v in pairs(cvars) do
+		--Check Table
+		local checktable = sql.Query("SELECT tool_world from pprotect_propprotection")
 
-					table.insert(vars, v)
-					table.insert(values, 0)
-				
-				end
+		if checktable == false then
 
-			end
+			sql.Query("DROP TABLE pprotect_propprotection")
+
+			MsgC(
+				Color(235, 0, 0), 
+				"[PatchProtect] Deleted the old PropProtection-Table\n"
+			)
 
 		end
-		sql.Query("CREATE TABLE IF NOT EXISTS pprotect_antispam_tools(" .. table.concat( vars, ", " ) .. ");")
-		sql.Query("INSERT INTO pprotect_antispam_tools(" .. table.concat( vars, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")")
+
+	end
+
+	if ( !sql.TableExists("pprotect_propprotection") ) then
+		
+		local options = {}
+		local values = {}
+		local sqlvars = {}
+
+			for k, v in pairs(sv_PProtect.ConVars.PProtect_PP) do
+
+				local Type = type(v)
+
+				if Type == "number" then
+
+					local isDecimal
+					if tonumber(v) > math.floor(tonumber(v)) then isDecimal = true else isDecimal = false end
+					if  not isDecimal then Type = string.gsub(Type, "number", "INTEGER") else Type = string.gsub(Type, "number", "DOUBLE") end
+					
+				end
+
+				table.insert(sqlvars, tostring(k) .. " " .. Type)
+
+				table.insert(values, v)
+				table.insert(options, k)
+				
+			end
+
+		sql.Query("CREATE TABLE IF NOT EXISTS pprotect_propprotection(" .. table.concat( sqlvars, ", " ) .. ");")
+		sql.Query("INSERT INTO pprotect_propprotection(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")") --
 		
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchAntiSpam] Created new Tools-Settings-Table!\n"
+			"[PatchAntiSpam] Created new PropProtection-Table\n"
 		)
 
 	end
-	
-	return sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
 
+	return sql.QueryRow("SELECT * FROM pprotect_propprotection LIMIT 1")
 end
 
-PAS.Settings.General = PAS.SetupGeneralSettings()
-timer.Simple(0.1, function()
-	PAS.Settings.Tools = PAS.SetupToolsSettings()
-end)
+function sv_PProtect.setBlockedTools()
+	sv_PProtect.BlockedTools = {}
 
-timer.Simple(0.2, function()
-	PAS.setBlockedTools()
-end)
-
-function PAS.ApplySettings(ply, cmd, args)
-	
-	if !ply then
-		PAS.InfoNotify(ply, "This command can only be run in-game!")
-	end
---[[ NOT WORKING AT THE MOMENT! - Not needed? A Non-Admin can't press the Save-Button
-	if (!ply:IsAdmin()) then
-		return
-	end
-]]	
-	if args[1] != nil then
-
-		local mode = string.Explode("_", args[1])
-
-		if mode[1] == "tools" then
-
-			local name = string.sub(args[1], 7)
-
-			sql.Query("UPDATE pprotect_antispam_tools SET " .. name .. " = " .. args[2])
-
-		else
-			local number = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetFloat()
-			local text = GetConVar("_PAS_ANTISPAM_" .. args[1]):GetString()
-
-			if text != 0 and number == 0 then
-				sql.Query("UPDATE pprotect_antispam_general SET '" .. args[1] .. "' = '" .. text .. "'")
-			else
-				sql.Query("UPDATE pprotect_antispam_general SET " .. args[1] .. " = " .. number)
-			end
-
+	table.foreach( sv_PProtect.Settings.Tools, function( key, value )
+		if tonumber(value) == 1 then
+			table.insert(sv_PProtect.BlockedTools, key)
 		end
-	end
-
+	end )
 end
-concommand.Add("PAS_SetSettings", PAS.ApplySettings)
 
-local savecount = 0
-
-function PAS.CCV(ply, cmd, args)
-
-	if tonumber(args[3]) == 0 then
-		RunConsoleCommand("_PAS_ANTISPAM_" .. args[1], args[2])
-	end
-
-	RunConsoleCommand("PAS_SetSettings", args[1], args[2], args[3])
-
-	savecount = savecount + 1
-
-	local condition = 0
-
-	if tonumber(args[3]) == 1 then condition = table.Count(PAS.Settings.Tools) else condition = table.Count(PAS.Settings.General) end
-	if savecount >= condition then
-		savecount = 0
-		timer.Simple(0.1, function()
-
-			PAS.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
-			PAS.Settings.General = sql.QueryRow("SELECT * FROM pprotect_antispam_general LIMIT 1")
-			PAS.setBlockedTools()
-
-			toolTableMessage(ply)
-			
-			PAS.InfoNotify(ply, "Settings saved!")
-		end)
-
-	end
-
-end
-concommand.Add("PAS_ChangeConVar", PAS.CCV)
-
-
+sv_PProtect.Settings.General = sv_PProtect.SetupGeneralSettings()
+sv_PProtect.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1") or {}
+sv_PProtect.setBlockedTools()
+sv_PProtect.Settings.PropProtection = sv_PProtect.SetupPropProtectionSettings()
 
 ---------------------
 --  NOTIFICATIONS  --
 ---------------------
 
-function PAS.InfoNotify(ply, text)
-	umsg.Start("PAS_InfoNotify", ply)
+function sv_PProtect.InfoNotify(ply, text)
+	umsg.Start("PProtect_InfoNotify", ply)
 		umsg.String(text)
 	umsg.End()
 end
 
-function PAS.AdminNotify(text)
-	umsg.Start("PAS_AdminNotify")
+function sv_PProtect.AdminNotify(text)
+	umsg.Start("PProtect_AdminNotify")
 		umsg.String(text)
 	umsg.End()
 end
 
-function PAS.Notify(ply, text)
-	umsg.Start("PAS_Notify", ply)
+function sv_PProtect.Notify(ply, text)
+	umsg.Start("PProtect_Notify", ply)
 		umsg.String(text)
 	umsg.End()
 end
 
-function PAS.setBlockedTools()
-	PAS.BlockedTools = {}
+function sv_PProtect.reloadSettingsPlayer( ply )
+	
+	if !ply or !ply:IsValid() then return end
 
-	table.foreach( PAS.Settings.Tools, function( key, value )
-		if tonumber(value) == 1 then
-			table.insert(PAS.BlockedTools, key)
-		end
-	end )
-end
+	if sv_PProtect.Settings.General then
 
---Networking
-function toolTableMessage( ply )
-	net.Start( "toolTable" )
-		net.WriteTable( PAS.Settings.Tools )
-	net.Send( ply )
-end
-hook.Add( "PlayerInitialSpawn", "ToolTableMessage", toolTableMessage )
+		table.foreach(sv_PProtect.Settings.General, function(key, value)
+			if key ~= "concommand" then
+				ply:ConCommand("PProtect_AS_" .. key .. " " .. value .. "\n")
+			end
 
-
-
-----------------------------------------
---  PROP PROTECTION SQL AND SETTINGS  --
-----------------------------------------
-
-
-PatchPP = PatchPP or {}
-
-function PatchPP.GetConfig()
-
-	-- Check if Table exists
-	if sql.TableExists("patchpp") then
-
-		local checkquery = sql.Query("SELECT cdrive from patchpp")
-
-		-- Delete old table, because it is not up to date
-		if checkquery == false then
-
-			sql.Query("DROP TABLE patchpp")
-			MsgC(
-				Color(235, 0, 0), 
-				"[PatchProtect - PP] Deleted old PropProtection-Table\n"
-			)
-
-		end
+		end)
 
 	end
 
-	if !sql.TableExists("patchpp") then
+	if sv_PProtect.Settings.Tools then
 
-		-- Create new Table
-		sql.Query("CREATE TABLE IF NOT EXISTS patchpp(usepp INTEGER NOT NULL, usepd INTEGER NOT NULL, pddelay INTEGER NOT NULL, cdrive INTEGER NOT NULL);")
-		sql.Query("INSERT INTO patchpp(usepp, usepd, pddelay, cdrive) VALUES(1, 1, 120, 0)")
+		table.foreach(sv_PProtect.Settings.Tools, function(key, value)
+
+			ply:ConCommand("PProtect_AS_tools_" .. key .. " " .. value .. "\n")
+
+		end)
+
+	end
+
+	if sv_PProtect.Settings.PropProtection then
+
+		table.foreach(sv_PProtect.Settings.PropProtection, function(key, value)
+
+			ply:ConCommand("PProtect_PP_" .. key .. " " .. value .. "\n")
+
+		end)
+
+	end
+
+end
+
+function sv_PProtect.reloadSettings()
+	if ply then
+		sv_PProtect.reloadSettingsPlayer(ply)
+	else
+		for k,v in pairs(player.GetAll()) do
+			sv_PProtect.reloadSettingsPlayer(v)
+		end
+	end
+end
+concommand.Add("sh_PProtect.reloadSettings", sv_PProtect.reloadSettings)
+
+---------------------
+--  SAVE SETTINGS  --
+---------------------
+
+function sv_PProtect.Save(ply, cmd, args)
+	local s_value
+	local toolNames = {}
+	local toolValues = {}
+
+	--GENERAL
+	table.foreach(sv_PProtect.ConVars.PProtect_AS, function(key, value)
+
+		s_value = tonumber(ply:GetInfo("PProtect_AS_" .. key))
+
+		if key ~= nil and value ~= nil and s_value ~= nil then
+			if type(s_value) == "number" then
+				sql.Query("UPDATE pprotect_antispam_general SET " .. key .. " = " .. s_value)
+			elseif type(s_value) == "string" then
+				sql.Query("UPDATE pprotect_antispam_general SET " .. key .. " = '" .. s_value .. "'")
+			end
+
+		end
+
+	end)
+
+	sv_PProtect.Settings.General = sql.QueryRow("SELECT * FROM pprotect_antispam_general LIMIT 1")
+
+	--TOOLS
+	for _, wep in pairs( weapons.GetList() ) do
+
+		if wep.ClassName == "gmod_tool" then 
+			local t = wep.Tool
+			for name, tool in pairs( t ) do
+				table.insert(toolNames, name)
+				table.insert(toolValues, tonumber(ply:GetInfo("PProtect_AS_tools_" .. name)))
+			end
+		end
+	end
+
+	if sql.TableExists("pprotect_antispam_tools") then
+
+		table.foreach(toolNames, function(key, value)
+			sql.Query("UPDATE pprotect_antispam_tools SET " .. value .. " = " .. toolValues[key])
+		end)
+		
+	end
+
+	if !sql.TableExists("pprotect_antispam_tools") then
+		sql.Query("CREATE TABLE IF NOT EXISTS pprotect_antispam_tools(" .. table.concat( toolNames, ", " ) .. ");")
+		sql.Query("INSERT INTO pprotect_antispam_tools(" .. table.concat( toolNames, ", " ) .. ") VALUES(" .. table.concat( toolValues, ", " ) .. ")")
+
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchProtect - PP] Created new PropProtection-Table\n"
-			)
-
+			"[PatchAntiSpam] Created new Tools-Settings-Table!\n"
+		)
 	end
 
-	return sql.QueryRow("SELECT * FROM patchpp LIMIT 1")
-
+	sv_PProtect.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
+	sv_PProtect.setBlockedTools()
+		
 end
+concommand.Add("btn_save", sv_PProtect.Save)
 
-PatchPP.Config = PatchPP.GetConfig()
+function sv_PProtect.Save_PP(ply, cmd, args)
+	local s_value
+
+	--GENERAL
+	table.foreach(sv_PProtect.ConVars.PProtect_PP, function(key, value)
+
+		s_value = tonumber(ply:GetInfo("PProtect_PP_" .. key))
+
+		if key ~= nil and value ~= nil and s_value ~= nil then
+			if type(s_value) == "number" then
+				sql.Query("UPDATE pprotect_propprotection SET " .. key .. " = " .. s_value)
+			elseif type(s_value) == "string" then
+				sql.Query("UPDATE pprotect_propprotection SET " .. key .. " = '" .. s_value .. "'")
+			end
+
+		end
+
+	end)
+
+	sv_PProtect.Settings.PropProtection = sql.QueryRow("SELECT * FROM pprotect_propprotection LIMIT 1")
+end
+concommand.Add("btn_save_pp", sv_PProtect.Save_PP)
+
+function initalSpawn( ply )
+ 
+	sv_PProtect.reloadSettings(ply)
+ 
+end
+hook.Add( "PlayerInitialSpawn", "initialSpawn", initalSpawn )
+

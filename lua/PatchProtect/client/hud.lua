@@ -1,5 +1,3 @@
-PAS = PAS or {}
-
 local HUDInfoNote_c = 0
 local HUDInfoNotes = {}
 
@@ -31,10 +29,10 @@ surface.CreateFont( "PatchProtectFont", {
 --  PROP OWNER  --
 ------------------
 
-function PAS.ShowOwner()
+function cl_PProtect.ShowOwner()
 
 	-- Check, PatchPP
-	if tonumber(GetConVarString( "patchpp_usepp" )) == 0 then return end
+	if tonumber(GetConVarString( "PProtect_PP_use" )) == 0 then return end
 
 	-- No Valid Player or Valid Entity
 	if !LocalPlayer() or !LocalPlayer():IsValid() then return end
@@ -62,7 +60,7 @@ function PAS.ShowOwner()
 	end
 
 end
-hook.Add("HUDPaint", "ShowingOwner", PAS.ShowOwner)
+hook.Add("HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner)
 
 
 
@@ -71,7 +69,7 @@ hook.Add("HUDPaint", "ShowingOwner", PAS.ShowOwner)
 ----------------
 
 -- INFO MESSAGE
-function PAS.AddInfoNotify( str )
+function cl_PProtect.AddInfoNotify( str )
 
 	local tab = {}
 	tab.text 	= str
@@ -83,10 +81,10 @@ function PAS.AddInfoNotify( str )
 	LocalPlayer():EmitSound("npc/turret_floor/click1.wav", 10, 100)
 
 end
-usermessage.Hook("PAS_InfoNotify", function(u) PAS.AddInfoNotify(u:ReadString()) end)
+usermessage.Hook("PProtect_InfoNotify", function(u) cl_PProtect.AddInfoNotify(u:ReadString()) end)
 
 --ADMIN MESSAGE
-function PAS.AddAdminNotify( str )
+function cl_PProtect.AddAdminNotify( str )
 
 	local tab = {}
 	tab.text = str
@@ -102,10 +100,10 @@ function PAS.AddAdminNotify( str )
 	LocalPlayer():EmitSound("npc/turret_floor/click1.wav", 10, 100)
 
 end
-usermessage.Hook( "PAS_AdminNotify", function( u ) PAS.AddAdminNotify( u:ReadString() ) end )
+usermessage.Hook( "PProtect_AdminNotify", function( u ) cl_PProtect.AddAdminNotify( u:ReadString() ) end )
 
 -- DEFAULT MESSAGE
-function PAS.AddNotify( str )
+function cl_PProtect.AddNotify( str )
 
 	local tab = {}
 	tab.text = str
@@ -117,7 +115,7 @@ function PAS.AddNotify( str )
 	LocalPlayer():EmitSound("npc/turret_floor/click1.wav", 10, 100)
 
 end
-usermessage.Hook("PAS_Notify", function(u) PAS.AddNotify(u:ReadString()) end)
+usermessage.Hook("PProtect_Notify", function(u) cl_PProtect.AddNotify(u:ReadString()) end)
 
 -- CREATE INFO MESSAGE
 local function DrawInfoNotice( self, k, v, i )
