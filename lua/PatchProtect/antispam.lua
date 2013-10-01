@@ -68,11 +68,10 @@ end
 
 
 
-----------------
---  ANTI SPAM --
-----------------
+----------------------
+--  PROP ANTI SPAM  --
+----------------------
 
--- PROP ANTI SPAM
 function sv_PProtect.Spawn(ply)
 	
 	--Check, if PProtect is enabled
@@ -116,7 +115,11 @@ hook.Add("PlayerSpawnRagdoll", "SpawningRagdoll", sv_PProtect.Spawn)
 hook.Add("PlayerSpawnVehicle", "SpawningVehicle", sv_PProtect.Spawn)
 
 
--- TOOL ANTI SPAM
+
+----------------------
+--  TOOL ANTI SPAM  --
+----------------------
+
 function sv_PProtect.CanTool( ply, trace, mode )
 
 	--Set some player information
@@ -177,63 +180,3 @@ function sv_PProtect.CanTool( ply, trace, mode )
 	
 end
 hook.Add("CanTool", "LimitToolGuns", sv_PProtect.CanTool)
-
-
-
------------------
---  SET OWNER  --
------------------
-
--- SET OWNER OF PROPS
-function sv_PProtect.SpawnedProp( ply, mdl, ent )
-
-	ent.name = ply:Nick()
-	ent:SetNetworkedString("Owner", ply:Nick())
-
-end
-hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
-
--- SET OWNER OF ENTS
-function sv_PProtect.SpawnedEnt( ply, ent )
-
-	ent.name = ply:Nick()
-	ent:SetNetworkedString("Owner", ply:Nick())
-
-end
-hook.Add("PlayerSpawnedEffect", "SpawnedEffect", sv_PProtect.SpawnedEnt)
-hook.Add("PlayerSpawnedNPC", "SpawnedNPC", sv_PProtect.SpawnedEnt)
-hook.Add("PlayerSpawnedRagdoll", "SpawnedRagdoll", sv_PProtect.SpawnedEnt)
-hook.Add("PlayerSpawnedSENT", "SpawnedSENT", sv_PProtect.SpawnedEnt)
-hook.Add("PlayerSpawnedSWEP", "SpawnedSWEP", sv_PProtect.SpawnedEnt)
-hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", sv_PProtect.SpawnedEnt)
-
-
---SET OWNER OF TOOL-ENTS
-if cleanup then
-	
-	local Clean = cleanup.Add
-
-	function cleanup.Add(ply, type, ent)
-
-		if ent then
-
-		    if ply:IsPlayer() and ent:IsValid() and ply.spawned == true then
-
-		    	if ent.name == nil then
-
-		        	ent.name = ply:Nick()
-					ent:SetNetworkedString("Owner", ply:Nick())
-
-				end
-
-		        ply.spawned = false
-
-		    end
-
-		end
-
-		Clean(ply, type, ent)
-
-	end
-
-end

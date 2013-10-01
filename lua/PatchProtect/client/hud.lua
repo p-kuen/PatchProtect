@@ -44,7 +44,7 @@ function cl_PProtect.ShowOwner()
 
 		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and isstring(PlyTrace.Entity:GetNetworkedEntity("Owner", false)) then
 
-			local POwner = "Owner: " .. PlyTrace.Entity:GetNetworkedEntity("Owner", false)
+			local POwner = "Owner: " .. PlyTrace.Entity:GetNetworkedEntity("PatchPPOwner", false)
 
 			surface.SetFont("PatchProtectFont")
 

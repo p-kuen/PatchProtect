@@ -1,3 +1,63 @@
+-----------------
+--  SET OWNER  --
+-----------------
+
+-- SET OWNER OF PROPS
+function sv_PProtect.SpawnedProp( ply, mdl, ent )
+
+	ent.PatchPPName = ply:Nick()
+	ent:SetNetworkedString("Owner", ply:Nick())
+
+end
+hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
+
+-- SET OWNER OF ENTS
+function sv_PProtect.SpawnedEnt( ply, ent )
+
+	ent.PatchPPName = ply:Nick()
+	ent:SetNetworkedString("PatchPPOwner", ply:Nick())
+
+end
+hook.Add("PlayerSpawnedEffect", "SpawnedEffect", sv_PProtect.SpawnedEnt)
+hook.Add("PlayerSpawnedNPC", "SpawnedNPC", sv_PProtect.SpawnedEnt)
+hook.Add("PlayerSpawnedRagdoll", "SpawnedRagdoll", sv_PProtect.SpawnedEnt)
+hook.Add("PlayerSpawnedSENT", "SpawnedSENT", sv_PProtect.SpawnedEnt)
+hook.Add("PlayerSpawnedSWEP", "SpawnedSWEP", sv_PProtect.SpawnedEnt)
+hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", sv_PProtect.SpawnedEnt)
+
+
+--SET OWNER OF TOOL-ENTS
+if cleanup then
+	
+	local Clean = cleanup.Add
+
+	function cleanup.Add(ply, type, ent)
+
+		if ent then
+
+		    if ply:IsPlayer() and ent:IsValid() and ply.spawned == true then
+
+		    	if ent.PatchPPName == nil then
+
+		        	ent.PatchPPName = ply:Nick()
+					ent:SetNetworkedString("Owner", ply:Nick())
+
+				end
+
+		        ply.spawned = false
+
+		    end
+
+		end
+
+		Clean(ply, type, ent)
+
+	end
+
+end
+
+
+
 ----------------------------------------
 --  PICKUP AND DRIVE PROP PROTECTION  --
 ----------------------------------------
@@ -6,7 +66,7 @@ function sv_PProtect.checkPlayer(ply, ent)
 
 	if ply:IsAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
 
-	if !ent:IsWorld() and ent.name == ply:Nick() then
+	if !ent:IsWorld() and ent.PatchPPName == ply:Nick() then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -29,7 +89,7 @@ function sv_PProtect.canTool(ply, trace, tool)
 
 	local ent = trace.Entity
 	if ent:IsWorld() and tonumber(sv_PProtect.Settings.PropProtection["tool_world"]) == 0 then return false end
-	if ent.name == ply:Nick() or ent:IsWorld() then
+	if ent.PatchPPName == ply:Nick() or ent:IsWorld() then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -51,7 +111,7 @@ function sv_PProtect.playerProperty(ply, string, ent)
 
 	if string == "drive" and tonumber(sv_PProtect.Settings.PropProtection["cdrive"]) == 0 then return false end
 
-	if !ent.IsWorld() and ent.name == ply:Nick() and string != "persist" then
+	if !ent:IsWorld() and ent.PatchPPName == ply:Nick() and string != "persist" then
  		return true
  	else
  		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -60,6 +120,7 @@ function sv_PProtect.playerProperty(ply, string, ent)
 
 end
 hook.Add( "CanProperty", "AllowProperty", sv_PProtect.playerProperty )
+
 
 
 ------------------------------------------
@@ -74,7 +135,7 @@ local function CleanupDiscPlayersProps( name )
 		for k, v in pairs( ents.GetAll() ) do
 
 			ent = v
-			if ent.cleanuped == name and ent.name == "Disconnected Player" then
+			if ent.PatchPPCleanup == name and ent.PatchPPName == "Disconnected Player" then
 				ent:Remove()
 			end
 
@@ -94,9 +155,9 @@ function sv_PProtect.setCleanupProps( ply )
 	for k, v in pairs( ents.GetAll() ) do
 
 		ent = v
-		if ent.name == ply:Nick() then
-			ent.name = "Disconnected Player"
-			ent.cleanuped = ply:Nick()
+		if ent.PatchPPName == ply:Nick() then
+			ent.PatchPPName = "Disconnected Player"
+			ent.PatchPPCleanup = ply:Nick()
 		end
 
 	end
@@ -117,8 +178,8 @@ function sv_PProtect.checkComeback( name )
 		for k, v in pairs( ents.GetAll() ) do
 
 			ent = v
-			if ent.cleanuped == name and ent.name == "Disconnected Player" then
-				ent.name = name
+			if ent.PatchPPCleanup == name and ent.PatchPPName == "Disconnected Player" then
+				ent.PatchPPName = name
 			end
 
 		end
@@ -127,6 +188,8 @@ function sv_PProtect.checkComeback( name )
 
 end
 hook.Add( "PlayerConnect", "CheckAbortCleanup", sv_PProtect.checkComeback )
+
+
 
 ---------------------------------
 --  CLEANUP MAP/PLAYERS PROPS  --
@@ -147,7 +210,7 @@ function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 	for k, v in pairs( ents.GetAll() ) do
 
 		ent = v
-		if ent.name == tostring(args[1]) then
+		if ent.PatchPPName == tostring(args[1]) then
 			ent:Remove()
 		end
 
