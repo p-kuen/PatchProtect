@@ -68,9 +68,9 @@ function sv_PProtect.SetupGeneralSettings()
 
 				end
 
-				if v == "" then
+				if k == "concommand" then
 
-					table.insert(values, "''")
+					table.insert(values, "'" .. v .. "'")
 					table.insert(options, "'" .. k .. "'")
 
 				else
