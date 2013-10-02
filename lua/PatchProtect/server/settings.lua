@@ -101,7 +101,7 @@ function sv_PProtect.SetupPropProtectionSettings()
 	if sql.TableExists("pprotect_propprotection") then
 
 		--Check Table
-		local checktable = sql.Query("SELECT tool_world from pprotect_propprotection")
+		local checktable = sql.Query("SELECT noantiadmin from pprotect_propprotection")
 
 		if checktable == false then
 
@@ -279,11 +279,9 @@ function sv_PProtect.Save(ply, cmd, args)
 	end
 
 	if sql.TableExists("pprotect_antispam_tools") then
-
 		table.foreach(toolNames, function(key, value)
 			sql.Query("UPDATE pprotect_antispam_tools SET " .. value .. " = " .. toolValues[key])
 		end)
-		
 	end
 
 	if !sql.TableExists("pprotect_antispam_tools") then
@@ -298,14 +296,15 @@ function sv_PProtect.Save(ply, cmd, args)
 
 	sv_PProtect.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
 	sv_PProtect.setBlockedTools()
+	sv_PProtect.InfoNotify(ply, "Saveed PropProtection Settings")
 		
 end
 concommand.Add("btn_save", sv_PProtect.Save)
 
 function sv_PProtect.Save_PP(ply, cmd, args)
+
 	local s_value
 
-	--GENERAL
 	table.foreach(sv_PProtect.ConVars.PProtect_PP, function(key, value)
 
 		s_value = tonumber(ply:GetInfo("PProtect_PP_" .. key))
@@ -322,10 +321,12 @@ function sv_PProtect.Save_PP(ply, cmd, args)
 	end)
 
 	sv_PProtect.Settings.PropProtection = sql.QueryRow("SELECT * FROM pprotect_propprotection LIMIT 1")
+	sv_PProtect.InfoNotify(ply, "Saveed PropProtection Settings")
+
 end
 concommand.Add("btn_save_pp", sv_PProtect.Save_PP)
 
-function initalSpawn( ply )
+local function initalSpawn( ply )
  
 	sv_PProtect.reloadSettings(ply)
  

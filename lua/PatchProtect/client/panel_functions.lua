@@ -124,7 +124,7 @@ end
 -------------
 --  LABEL  --
 -------------
-
+--[[
 function cl_PProtect.addlbl(plist, text)
 
 	local lbl = plist:Add("DLabel")
@@ -135,7 +135,7 @@ function cl_PProtect.addlbl(plist, text)
 	--plist:AddItem(lbl)
 	
 end
-
+]]
 
 
 ----------------

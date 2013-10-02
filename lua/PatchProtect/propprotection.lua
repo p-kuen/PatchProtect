@@ -6,7 +6,7 @@
 function sv_PProtect.SpawnedProp( ply, mdl, ent )
 
 	ent.PatchPPName = ply:Nick()
-	ent:SetNetworkedString("Owner", ply:Nick())
+	ent:SetNetworkedString("PatchPPOwner", ply:Nick())
 
 end
 hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
@@ -36,7 +36,7 @@ if cleanup then
 		if ply:IsPlayer() and ent:IsValid() and ply.spawned == true then
 
 			ent.PatchPPName = ply:Nick()
-			ent:SetNetworkedString("Owner", ply:Nick())
+			ent:SetNetworkedString("PatchPPOwner", ply:Nick())
 			ply.spawned = false
 
 		end
@@ -55,8 +55,8 @@ end
 
 function sv_PProtect.checkPlayer(ply, ent)
 
-	if ply:IsSuperAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
-	--if ply:IsAdmin() then return true end  --WE NEED TO ADD (ADMIN CAN TOUCH EVERYTHING)
+	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
 
 	if !ent:IsWorld() and ent.PatchPPName == ply:Nick() then
 		return true
@@ -77,8 +77,8 @@ hook.Add( "CanUse", "AllowUseing", sv_PProtect.checkPlayer )
 
 function sv_PProtect.canTool(ply, trace, tool)
 
-	if ply:IsSuperAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
-	--if ply:IsAdmin() then return true end  --WE NEED TO ADD (ADMIN CAN TOUCH EVERYTHING)
+	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
 
 	local ent = trace.Entity
 	if ent:IsWorld() and tonumber(sv_PProtect.Settings.PropProtection["tool_world"]) == 0 then return false end
@@ -100,8 +100,8 @@ hook.Add( "CanTool", "AllowToolUsage", sv_PProtect.canTool )
 
 function sv_PProtect.playerProperty(ply, string, ent)
 
-	if ply:IsSuperAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
-	--if ply:IsAdmin() then return true end  --WE NEED TO ADD (ADMIN CAN TOUCH EVERYTHING)
+	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
 
 	if string == "drive" and tonumber(sv_PProtect.Settings.PropProtection["cdrive"]) == 0 then return false end
 

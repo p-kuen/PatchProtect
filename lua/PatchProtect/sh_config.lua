@@ -24,6 +24,7 @@ sv_PProtect.ConVars.PProtect_AS = {
 
 sv_PProtect.ConVars.PProtect_PP = {
 	use = 1,
+	noantiadmin = 1,
 	use_propdelete = 1,
 	propdelete_delay = 120,
 	cdrive = 0,

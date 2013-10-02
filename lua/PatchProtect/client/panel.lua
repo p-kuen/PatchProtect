@@ -63,7 +63,7 @@ end )
 function cl_PProtect.ASMenu(Panel)
 
 	--Check Admin
-	if not LocalPlayer():IsAdmin() then
+	if not LocalPlayer():IsSuperAdmin() then
 		cl_PProtect.addlbl(saCat, "You are not an admin!")
 		return
 	end
@@ -87,13 +87,12 @@ function cl_PProtect.ASMenu(Panel)
 	cl_PProtect.addbtn(Panel, "Save Settings", "save") --Save Button
 
 	--SpamAction
-	cl_PProtect.addlbl(saCat, "Spam Action:")
 	cl_PProtect.addcombo(saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction")
 
 	local function spamactionChanged(CVar, PreviousValue, NewValue)
 		saCat:Clear()
 
-		cl_PProtect.addlbl(saCat, "Spam Action:")
+		Panel:AddControl("Label", {Text = "Spam Action:"})
 		cl_PProtect.addcombo(saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction")
 
 		if tonumber(NewValue) == 4 then
@@ -121,7 +120,7 @@ function cl_PProtect.PPMenu(Panel)
 	Panel:ClearControls()
 
 	--Check Admin
-	if !LocalPlayer():IsAdmin() then
+	if !LocalPlayer():IsSuperAdmin() then
 		Panel:AddControl("Label", {Text = "You are not an admin!"})
 		return
 	end
@@ -133,7 +132,9 @@ function cl_PProtect.PPMenu(Panel)
 
 	--Set Content
 	--cl_PProtect.addlbl(Panel, "Main Settings:")
-	cl_PProtect.addchk(Panel, "Use Prop Protection", "propprotection", "use")
+	cl_PProtect.addchk(Panel, "Use PropProtection", "propprotection", "use")
+
+	cl_PProtect.addchk(Panel, "No PropProtection for Admins", "propprotection", "noantiadmin")
 
 	--cl_PProtect.addlbl(Panel, "Prop-Delete on Disconnect:")
 	cl_PProtect.addchk(Panel, "Use Prop-Delete", "propprotection", "use_propdelete")
@@ -156,7 +157,7 @@ function cl_PProtect.CUMenu(Panel)
 	Panel:ClearControls()
 
 	-- CHECK ADMIN
-	if !LocalPlayer():IsAdmin() then
+	if !LocalPlayer():IsSuperAdmin() then
 		Panel:AddControl( "Label", {Text = "You are not an Admin!"} )
 		return
 	end
