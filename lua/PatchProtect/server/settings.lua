@@ -184,7 +184,7 @@ sv_PProtect.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools
 sv_PProtect.setBlockedTools()
 sv_PProtect.Settings.PropProtection = sv_PProtect.SetupPropProtectionSettings()
 
-if sv_PProtect.Settings.General = nil or sv_PProtect.Settings.PropProtection = nil then sv_PProtect.dropTables() end
+if sv_PProtect.Settings.General == nil or sv_PProtect.Settings.PropProtection == nil then sv_PProtect.dropTables() end
 
 ---------------------
 --  NOTIFICATIONS  --
