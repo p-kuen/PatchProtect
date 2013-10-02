@@ -33,20 +33,11 @@ if cleanup then
 
 	function cleanup.Add(ply, type, ent)
 
-		if ent then
+		if ply:IsPlayer() and ent:IsValid() and ply.spawned == true then
 
-		    if ply:IsPlayer() and ent:IsValid() and ply.spawned == true then
-
-		    	if ent.PatchPPName == nil then
-
-		        	ent.PatchPPName = ply:Nick()
-					ent:SetNetworkedString("Owner", ply:Nick())
-
-				end
-
-		        ply.spawned = false
-
-		    end
+			ent.PatchPPName = ply:Nick()
+			ent:SetNetworkedString("Owner", ply:Nick())
+			ply.spawned = false
 
 		end
 
@@ -58,13 +49,14 @@ end
 
 
 
-----------------------------------------
---  PICKUP AND DRIVE PROP PROTECTION  --
-----------------------------------------
+--------------------
+--  CHECK PLAYER  --
+--------------------
 
 function sv_PProtect.checkPlayer(ply, ent)
 
-	if ply:IsAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	if ply:IsSuperAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	--if ply:IsAdmin() then return true end  --WE NEED TO ADD (ADMIN CAN TOUCH EVERYTHING)
 
 	if !ent:IsWorld() and ent.PatchPPName == ply:Nick() then
 		return true
@@ -76,7 +68,7 @@ function sv_PProtect.checkPlayer(ply, ent)
 end
 hook.Add( "PhysgunPickup", "AllowPlayerPickup", sv_PProtect.checkPlayer )
 hook.Add( "CanDrive", "AllowDriving", sv_PProtect.checkPlayer )
-
+hook.Add( "CanUse", "AllowUseing", sv_PProtect.checkPlayer )
 
 
 ----------------------------
@@ -85,7 +77,8 @@ hook.Add( "CanDrive", "AllowDriving", sv_PProtect.checkPlayer )
 
 function sv_PProtect.canTool(ply, trace, tool)
 
-	if ply:IsAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	if ply:IsSuperAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	--if ply:IsAdmin() then return true end  --WE NEED TO ADD (ADMIN CAN TOUCH EVERYTHING)
 
 	local ent = trace.Entity
 	if ent:IsWorld() and tonumber(sv_PProtect.Settings.PropProtection["tool_world"]) == 0 then return false end
@@ -107,7 +100,8 @@ hook.Add( "CanTool", "AllowToolUsage", sv_PProtect.canTool )
 
 function sv_PProtect.playerProperty(ply, string, ent)
 
-	if ply:IsAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	if ply:IsSuperAdmin() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	--if ply:IsAdmin() then return true end  --WE NEED TO ADD (ADMIN CAN TOUCH EVERYTHING)
 
 	if string == "drive" and tonumber(sv_PProtect.Settings.PropProtection["cdrive"]) == 0 then return false end
 

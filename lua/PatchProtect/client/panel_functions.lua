@@ -34,6 +34,7 @@ function cl_PProtect.addframe(width, height, title, draggable, closeable, var, b
 	list:EnableVerticalScrollbar( true )
 
 	return list
+	
 end
 
 
@@ -105,6 +106,7 @@ function cl_PProtect.addsldr(plist, min, max, text, typ, var, decimals)
 	sldr:SetDecimals(decimals)
 	sldr:SetText(text)
 	sldr:SetDark(true)
+
 	if typ == "general" then
 		sldr:SetConVar( "PProtect_AS_" .. var )
 	elseif typ == "propprotection" then
@@ -147,19 +149,18 @@ function cl_PProtect.addbtn(plist, text, cmd, args)
 	btn:Center()
 	btn:SetText(text)
 	btn:SetDark(true)
+
 	if args ~= nil then
-
 		btn:SetConsoleCommand("btn_" .. cmd, args)
-
 	else
-
 		btn:SetConsoleCommand("btn_" .. cmd)
-
 	end
 
-
 	plist:AddItem(btn)
+
 end
+
+
 
 ----------------
 --  COMBOBOX  --
@@ -173,22 +174,25 @@ function cl_PProtect.addcombo(plist, choices, var)
 		combo:AddChoice(value)
 	end )
 
-	--timer.Simple(0.1, function()
-		combo:ChooseOptionID(GetConVarNumber("PProtect_AS_" .. var))
-	--end )
+	combo:ChooseOptionID(GetConVarNumber("PProtect_AS_" .. var))
 
 	function combo:OnSelect(index, value, data)
 
 		RunConsoleCommand("PProtect_AS_" .. var, index)
 
 	end
+
 end
+
+
 
 ----------------
 --  TEXTBOX  --
 ----------------
 
 function cl_PProtect.addtext(plist, text)
+
 		local tentry = plist:Add( "DTextEntry")
 		tentry:SetText(text)
-	end
+
+end
