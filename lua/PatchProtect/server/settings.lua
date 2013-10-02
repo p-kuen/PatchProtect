@@ -164,10 +164,27 @@ function sv_PProtect.setBlockedTools()
 	end )
 end
 
+function sv_PProtect.dropTables()
+	sql.Query("DROP TABLE pprotect_propprotection")
+	sql.Query("DROP TABLE pprotect_antispam_general")
+
+	MsgC(
+		Color(235, 0, 0), 
+		"[PatchProtect] DROPPED ALL TABLES. SORRY\n"
+	)
+
+	sv_PProtect.Settings.General = sv_PProtect.SetupGeneralSettings()
+	sv_PProtect.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1") or {}
+	sv_PProtect.setBlockedTools()
+	sv_PProtect.Settings.PropProtection = sv_PProtect.SetupPropProtectionSettings()
+end
+
 sv_PProtect.Settings.General = sv_PProtect.SetupGeneralSettings()
 sv_PProtect.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1") or {}
 sv_PProtect.setBlockedTools()
 sv_PProtect.Settings.PropProtection = sv_PProtect.SetupPropProtectionSettings()
+
+if sv_PProtect.Settings.General = nil or sv_PProtect.Settings.PropProtection = nil then sv_PProtect.dropTables() end
 
 ---------------------
 --  NOTIFICATIONS  --
