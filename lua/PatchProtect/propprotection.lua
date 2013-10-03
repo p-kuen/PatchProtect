@@ -164,8 +164,13 @@ function sv_PProtect.checkComeback( ply )
 		timer.Destroy( "CleanupPropsOf" .. ply:Nick() )
 	end
 
-	if ent.PatchPPCleanup == ply then
-		ent.PatchPPCleanup = ""
+	for k, v in pairs( ents.GetAll() ) do
+
+		ent = v
+		if ent.PatchPPCleanup == ply then
+			ent.PatchPPCleanup = ""
+		end
+
 	end
 
 end
