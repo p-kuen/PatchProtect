@@ -3,11 +3,8 @@
 ----------------
 
 cl_PProtect.ConVars = {}
-
 cl_PProtect.ConVars.PProtect_AS = {}
-
 cl_PProtect.ConVars.PProtect_AS_tools = {}
-
 cl_PProtect.ConVars.PProtect_PP = {}
 
 local function createCCV()
@@ -55,6 +52,8 @@ net.Receive( "propProtectionSettings", function( len )
 	createCCV()
 	
 end )
+
+
 
 ---------------------
 --  ANTISPAM MENU  --
@@ -110,6 +109,34 @@ function cl_PProtect.ASMenu(Panel)
 
 end
 
+local function spamactionChanged(CVar, PreviousValue, NewValue)
+	print("changed to " .. NewValue)
+	if tonumber(NewValue) == 4 then
+		cl_PProtect.addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
+
+	elseif tonumber(NewValue) == 5 then
+		cl_PProtect.addlbl(saCat, "Write a command. Use <player> for the Spammer", "category")
+		cl_PProtect.addtext(saCat, GetConVarString("_PProtect_AS_concommand"))
+
+	end
+end
+
+
+function cl_PProtect.ShowToolsFrame(ply, cmd, args)
+
+	tlsFrm = cl_PProtect.addframe(250, 350, "Set blocked Tools:", true, true, "savetools", "Save Tools")
+
+	table.foreach(cl_PProtect.ConVars.PProtect_AS_tools, function(key, value)
+
+		cl_PProtect.addchk(tlsFrm, value, "tools", value)
+
+	end)
+
+end
+concommand.Add("btn_tools", cl_PProtect.ShowToolsFrame)
+
+
+
 ----------------------------
 --  PROP PROTECTION MENU  --
 ----------------------------
@@ -146,6 +173,8 @@ function cl_PProtect.PPMenu(Panel)
 	cl_PProtect.addbtn(Panel, "Save Settings", "save_pp")
 
 end
+
+
 
 --------------------
 --  CLEANUP MENU  --
@@ -187,31 +216,6 @@ function cl_PProtect.CUMenu(Panel)
 
 end
 
-local function spamactionChanged(CVar, PreviousValue, NewValue)
-	print("changed to " .. NewValue)
-	if tonumber(NewValue) == 4 then
-		cl_PProtect.addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
-
-	elseif tonumber(NewValue) == 5 then
-		cl_PProtect.addlbl(saCat, "Write a command. Use <player> for the Spammer", "category")
-		cl_PProtect.addtext(saCat, GetConVarString("_PProtect_AS_concommand"))
-
-	end
-end
-
-
-function cl_PProtect.ShowToolsFrame(ply, cmd, args)
-
-	tlsFrm = cl_PProtect.addframe(250, 350, "Set blocked Tools:", true, true, "savetools", "Save Tools")
-
-	table.foreach(cl_PProtect.ConVars.PProtect_AS_tools, function(key, value)
-
-		cl_PProtect.addchk(tlsFrm, value, "tools", value)
-
-	end)
-
-end
-concommand.Add("btn_tools", cl_PProtect.ShowToolsFrame)
 
 
 --------------------

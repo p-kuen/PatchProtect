@@ -192,6 +192,8 @@ hook.Add( "PlayerConnect", "CheckAbortCleanup", sv_PProtect.checkComeback )
 -- CLEANUP EVERYTHING
 function sv_PProtect.CleanupEverything()
 
+	if !ply:IsAdmin and !ply:IsSuperAdmin then return end
+
 	game.CleanUpMap()
 	sv_PProtect.InfoNotify(ply, "Cleaned Map!")
 
@@ -201,6 +203,8 @@ concommand.Add("btn_cleanup", sv_PProtect.CleanupEverything)
 -- CLEANUP PLAYERS PROPS
 function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 
+	if !ply:IsAdmin and !ply:IsSuperAdmin then return end
+	
 	for k, v in pairs( ents.GetAll() ) do
 
 		ent = v

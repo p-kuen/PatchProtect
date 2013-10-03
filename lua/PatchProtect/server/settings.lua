@@ -4,6 +4,8 @@
 
 sv_PProtect.Settings = sv_PProtect.Settings or {}
 
+
+
 ---------------------------------------
 --  ANTISPAM SQL TABLE AND SETTINGS  --
 ---------------------------------------
@@ -154,6 +156,12 @@ function sv_PProtect.SetupPropProtectionSettings()
 	return sql.QueryRow("SELECT * FROM pprotect_propprotection LIMIT 1")
 end
 
+
+
+-------------------------
+--  SET BLOCKED TOOLS  --
+-------------------------
+
 function sv_PProtect.setBlockedTools()
 	sv_PProtect.BlockedTools = {}
 
@@ -164,13 +172,19 @@ function sv_PProtect.setBlockedTools()
 	end )
 end
 
+
+
+-------------------------------------
+--  DROP TABLES IF THERE ARE BUGS  --
+-------------------------------------
+
 function sv_PProtect.dropTables()
 	sql.Query("DROP TABLE pprotect_propprotection")
 	sql.Query("DROP TABLE pprotect_antispam_general")
 
 	MsgC(
 		Color(235, 0, 0), 
-		"[PatchProtect] DROPPED ALL TABLES. SORRY\n"
+		"[PatchProtect] DROPPED ALL TABLES FROM PATCHPROTECT. SORRY\n"
 	)
 
 	sv_PProtect.Settings.General = sv_PProtect.SetupGeneralSettings()
@@ -185,6 +199,8 @@ sv_PProtect.setBlockedTools()
 sv_PProtect.Settings.PropProtection = sv_PProtect.SetupPropProtectionSettings()
 
 if sv_PProtect.Settings.General == nil or sv_PProtect.Settings.PropProtection == nil then sv_PProtect.dropTables() end
+
+
 
 ---------------------
 --  NOTIFICATIONS  --
@@ -207,6 +223,12 @@ function sv_PProtect.Notify(ply, text)
 		umsg.String(text)
 	umsg.End()
 end
+
+
+
+-----------------------
+--  RELOAD SETTINGS  --
+-----------------------
 
 function sv_PProtect.reloadSettingsPlayer( ply )
 	
@@ -255,6 +277,8 @@ function sv_PProtect.reloadSettings()
 	end
 end
 concommand.Add("sh_PProtect.reloadSettings", sv_PProtect.reloadSettings)
+
+
 
 ---------------------
 --  SAVE SETTINGS  --
@@ -318,27 +342,41 @@ function sv_PProtect.Save(ply, cmd, args)
 end
 concommand.Add("btn_save", sv_PProtect.Save)
 
+
+
+---------------------
+--  SAVE SETTINGS  --
+---------------------
+
 function sv_PProtect.Save_PP(ply, cmd, args)
 
-	local s_value
+	if ply:IsSuperAdmin() then
 
-	table.foreach(sv_PProtect.ConVars.PProtect_PP, function(key, value)
+		local s_value
 
-		s_value = tonumber(ply:GetInfo("PProtect_PP_" .. key))
+		table.foreach(sv_PProtect.ConVars.PProtect_PP, function(key, value)
 
-		if key ~= nil and value ~= nil and s_value ~= nil then
-			if type(s_value) == "number" then
+			s_value = tonumber(ply:GetInfo("PProtect_PP_" .. key))
+
+			if key ~= nil and value ~= nil and s_value ~= nil then
+				if type(s_value) == "number" then
 				sql.Query("UPDATE pprotect_propprotection SET " .. key .. " = " .. s_value)
-			elseif type(s_value) == "string" then
+				elseif type(s_value) == "string" then
 				sql.Query("UPDATE pprotect_propprotection SET " .. key .. " = '" .. s_value .. "'")
+				end
+
 			end
 
-		end
+		end )
 
-	end)
+		sv_PProtect.Settings.PropProtection = sql.QueryRow("SELECT * FROM pprotect_propprotection LIMIT 1")
+		sv_PProtect.InfoNotify(ply, "Saveed PropProtection Settings")
 
-	sv_PProtect.Settings.PropProtection = sql.QueryRow("SELECT * FROM pprotect_propprotection LIMIT 1")
-	sv_PProtect.InfoNotify(ply, "Saveed PropProtection Settings")
+	else
+
+		sv_PProtect.Notify(ply, "You are not an Admin!")
+
+	end
 
 end
 concommand.Add("btn_save_pp", sv_PProtect.Save_PP)
