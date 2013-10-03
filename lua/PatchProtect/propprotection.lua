@@ -5,8 +5,8 @@
 -- SET OWNER OF PROPS
 function sv_PProtect.SpawnedProp( ply, mdl, ent )
 
-	ent.PatchPPName = ply:Nick()
-	ent:SetNetworkedString("PatchPPOwner", ply:Nick())
+	ent.PatchPPOwner = ply
+	ent:SetNetworkedEntity("PatchPPOwner", ply)
 
 end
 hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
@@ -14,8 +14,8 @@ hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
 -- SET OWNER OF ENTS
 function sv_PProtect.SpawnedEnt( ply, ent )
 
-	ent.PatchPPName = ply:Nick()
-	ent:SetNetworkedString("PatchPPOwner", ply:Nick())
+	ent.PatchPPOwner = ply
+	ent:SetNetworkedEntity("PatchPPOwner", ply)
 
 end
 hook.Add("PlayerSpawnedEffect", "SpawnedEffect", sv_PProtect.SpawnedEnt)
@@ -35,8 +35,8 @@ if cleanup then
 
 		if ply:IsPlayer() and ent:IsValid() and ply.spawned == true then
 
-			ent.PatchPPName = ply:Nick()
-			ent:SetNetworkedString("PatchPPOwner", ply:Nick())
+			ent.PatchPPOwner = ply
+			ent:SetNetworkedEntity("PatchPPOwner", ply)
 			ply.spawned = false
 
 		end
@@ -58,7 +58,7 @@ function sv_PProtect.checkPlayer(ply, ent)
 	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
 
-	if !ent:IsWorld() and ent.PatchPPName == ply:Nick() then
+	if !ent:IsWorld() and ent.PatchPPOwner == ply then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -82,7 +82,7 @@ function sv_PProtect.canTool(ply, trace, tool)
 
 	local ent = trace.Entity
 	if ent:IsWorld() and tonumber(sv_PProtect.Settings.PropProtection["tool_world"]) == 0 then return false end
-	if ent.PatchPPName == ply:Nick() or ent:IsWorld() then
+	if ent.PatchPPOwner == ply or ent:IsWorld() then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -105,7 +105,7 @@ function sv_PProtect.playerProperty(ply, string, ent)
 
 	if string == "drive" and tonumber(sv_PProtect.Settings.PropProtection["cdrive"]) == 0 then return false end
 
-	if !ent:IsWorld() and ent.PatchPPName == ply:Nick() and string != "persist" then
+	if !ent:IsWorld() and ent.PatchPPOwner == ply and string != "persist" then
  		return true
  	else
  		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -121,41 +121,36 @@ hook.Add( "CanProperty", "AllowProperty", sv_PProtect.playerProperty )
 --  DISCONNECTED PLAYER'S PROP CLEANUP  --
 ------------------------------------------
 
--- CREATE TIMER
-local function CleanupDiscPlayersProps( name )
-
-	timer.Create( "CleanupPropsOf" .. name , tonumber(sv_PProtect.Settings.PropProtection["propdelete_delay"]), 1, function()
-
-		for k, v in pairs( ents.GetAll() ) do
-
-			ent = v
-			if ent.PatchPPCleanup == name and ent.PatchPPName == "Disconnected Player" then
-				ent:Remove()
-			end
-
-		end
-		print("[PatchProtect - Cleanup] Removed " .. name .. "'s Props!")
-
-	end)
-	
-end
-
-
 -- PLAYER LEFT SERVER
 function sv_PProtect.setCleanupProps( ply )
 
+	local plyname = ply:Nick()
+	
 	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
 
 	for k, v in pairs( ents.GetAll() ) do
 
 		ent = v
-		if ent.PatchPPName == ply:Nick() then
-			ent.PatchPPName = "Disconnected Player"
+		if ent.PatchPPOwner == ply then
 			ent.PatchPPCleanup = ply:Nick()
 		end
 
 	end
-	CleanupDiscPlayersProps( ply:Nick() )
+	
+	-- Create Timer
+	timer.Create( "CleanupPropsOf" .. plyname , tonumber(sv_PProtect.Settings.PropProtection["propdelete_delay"]), 1, function()
+
+		for k, v in pairs( ents.GetAll() ) do
+
+			ent = v
+			if ent.PatchPPCleanup == plyname then
+				ent:Remove()
+			end
+
+		end
+		print( "[PatchProtect - Cleanup] Removed " .. plyname .. "'s Props!" )
+
+	end )
 
 end
 hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.setCleanupProps )
@@ -166,18 +161,11 @@ function sv_PProtect.checkComeback( name )
 	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
 
 	if timer.Exists( "CleanupPropsOf" .. name ) then
-
 		timer.Destroy( "CleanupPropsOf" .. name )
+	end
 
-		for k, v in pairs( ents.GetAll() ) do
-
-			ent = v
-			if ent.PatchPPCleanup == name and ent.PatchPPName == "Disconnected Player" then
-				ent.PatchPPName = name
-			end
-
-		end
-
+	if ent.PatchPPCleanup == name then
+		ent.PatchPPCleanup = ""
 	end
 
 end
@@ -192,7 +180,7 @@ hook.Add( "PlayerConnect", "CheckAbortCleanup", sv_PProtect.checkComeback )
 -- CLEANUP EVERYTHING
 function sv_PProtect.CleanupEverything()
 
-	if !ply:IsAdmin and !ply:IsSuperAdmin then return end
+	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
 
 	game.CleanUpMap()
 	sv_PProtect.InfoNotify(ply, "Cleaned Map!")
@@ -203,12 +191,12 @@ concommand.Add("btn_cleanup", sv_PProtect.CleanupEverything)
 -- CLEANUP PLAYERS PROPS
 function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 
-	if !ply:IsAdmin and !ply:IsSuperAdmin then return end
-	
+	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
+
 	for k, v in pairs( ents.GetAll() ) do
 
 		ent = v
-		if ent.PatchPPName == tostring(args[1]) then
+		if ent.PatchPPOwner == tostring(args[1]) then
 			ent:Remove()
 		end
 
