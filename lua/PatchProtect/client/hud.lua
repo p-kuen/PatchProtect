@@ -46,8 +46,7 @@ function cl_PProtect.ShowOwner()
 
 			local POwner = "Owner: " .. PlyTrace.Entity:GetNetworkedString("PatchPPOwner", false)
 
-			cl_PProtect.AddNotify(POwner)
---[[
+			--cl_PProtect.AddNotify(POwner)
 			surface.SetFont("PatchProtectFont")
 
 			local OW, OH = surface.GetTextSize(POwner)
@@ -56,8 +55,6 @@ function cl_PProtect.ShowOwner()
 
 			draw.RoundedBox(2, ScrW() - OW - 10, ScrH() - OH - 10, OW, OH, Color(88, 144, 222, 200))
 			draw.SimpleText(POwner, "PatchProtectFont", ScrW() - (OW / 2) - 10, ScrH() - (OH / 2) - 10, Color(0,0,0, 255), 1, 1)
-
-NEED THAT SOME TIME LATER!]]
 		
 		end
 

@@ -124,18 +124,23 @@ end
 -------------
 --  LABEL  --
 -------------
---[[
-function cl_PProtect.addlbl(plist, text)
 
-	local lbl = plist:Add("DLabel")
+function cl_PProtect.addlbl(plist, text, typ)
 
-	lbl:SetText(text)
-	lbl:SetDark(true)
+	if typ == "category" then
 
-	--plist:AddItem(lbl)
+		local lbl = plist:Add("DLabel")
+		lbl:SetText(text)
+		lbl:SetDark(true)
+
+	elseif typ == "panel" then
+
+		plist:AddControl("Label", {Text = text})
+
+	end
 	
 end
-]]
+
 
 
 ----------------

@@ -64,7 +64,7 @@ function cl_PProtect.ASMenu(Panel)
 
 	--Check Admin
 	if not LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl(saCat, "You are not an admin!")
+		cl_PProtect.addlbl(saCat, "You are not an admin!", "category")
 		return
 	end
 
@@ -92,7 +92,7 @@ function cl_PProtect.ASMenu(Panel)
 	local function spamactionChanged(CVar, PreviousValue, NewValue)
 		saCat:Clear()
 
-		Panel:AddControl("Label", {Text = "Spam Action:"})
+		
 		cl_PProtect.addcombo(saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction")
 
 		if tonumber(NewValue) == 4 then
@@ -101,7 +101,7 @@ function cl_PProtect.ASMenu(Panel)
 
 		elseif tonumber(NewValue) == 5 then
 		
-			cl_PProtect.addlbl(saCat, "Write a command. Use <player> for the Spammer")
+			cl_PProtect.addlbl(saCat, "Write a command. Use <player> for the Spammer", "category")
 			cl_PProtect.addtext(saCat, GetConVarString("PProtect_AS_concommand"))
 
 		end
@@ -121,7 +121,7 @@ function cl_PProtect.PPMenu(Panel)
 
 	--Check Admin
 	if !LocalPlayer():IsSuperAdmin() then
-		Panel:AddControl("Label", {Text = "You are not an admin!"})
+		cl_PProtect.addlbl(Panel, "You are not an Admin!", "panel")
 		return
 	end
 
@@ -131,12 +131,12 @@ function cl_PProtect.PPMenu(Panel)
 	end
 
 	--Set Content
-	--cl_PProtect.addlbl(Panel, "Main Settings:")
+	cl_PProtect.addlbl(Panel, "Main Settings:", "panel")
 	cl_PProtect.addchk(Panel, "Use PropProtection", "propprotection", "use")
 
 	cl_PProtect.addchk(Panel, "No PropProtection for Admins", "propprotection", "noantiadmin")
 
-	--cl_PProtect.addlbl(Panel, "Prop-Delete on Disconnect:")
+	cl_PProtect.addlbl(Panel, "Prop-Delete on Disconnect:", "panel")
 	cl_PProtect.addchk(Panel, "Use Prop-Delete", "propprotection", "use_propdelete")
 	cl_PProtect.addsldr(Panel, 1, 120, "Prop-Delete Delay (sec)", "propprotection", "propdelete_delay")
 	cl_PProtect.addchk(Panel, "Allow World-Tool", "propprotection", "tool_world")
@@ -158,7 +158,7 @@ function cl_PProtect.CUMenu(Panel)
 
 	-- CHECK ADMIN
 	if !LocalPlayer():IsSuperAdmin() then
-		Panel:AddControl( "Label", {Text = "You are not an Admin!"} )
+		cl_PProtect.addlbl(Panel, "You are not an Admin!", "panel")
 		return
 	end
 
@@ -175,11 +175,11 @@ function cl_PProtect.CUMenu(Panel)
 		local plys = player.GetAll()[i]
 		count = count + plys:GetCount( "props" )
 	end
-	Panel:AddControl( "Label", {Text = "Cleanup everything:"} )
+	cl_PProtect.addlbl(Panel, "Cleanup everything:", "panel")
 	cl_PProtect.addbtn(Panel, "Cleanup everything (" .. tostring(count) .. " Props)", "cleanup")
 
 	--Claenup Player's Props
-	Panel:AddControl( "Label", {Text = "Cleanup Props from a special player:"} )
+	cl_PProtect.addlbl(Panel, "Cleanup Player's props:", "panel")
 	for i = 1, table.Count( player.GetAll() ) do
 		local plys = player.GetAll()[i]
 		cl_PProtect.addbtn(Panel, "Cleanup " .. plys:GetName() .."  (" .. tostring(plys:GetCount( "props" )) .. " Props)", "cleanup_player", plys:GetName())
@@ -193,7 +193,7 @@ local function spamactionChanged(CVar, PreviousValue, NewValue)
 		cl_PProtect.addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
 
 	elseif tonumber(NewValue) == 5 then
-		cl_PProtect.addlbl(saCat, "Write a command. Use <player> for the Spammer")
+		cl_PProtect.addlbl(saCat, "Write a command. Use <player> for the Spammer", "category")
 		cl_PProtect.addtext(saCat, GetConVarString("_PProtect_AS_concommand"))
 
 	end
