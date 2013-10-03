@@ -156,20 +156,20 @@ end
 hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.setCleanupProps )
 
 -- PLAYER CAME BACK
-function sv_PProtect.checkComeback( name )
+function sv_PProtect.checkComeback( ply )
 
 	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
 
-	if timer.Exists( "CleanupPropsOf" .. name ) then
-		timer.Destroy( "CleanupPropsOf" .. name )
+	if timer.Exists( "CleanupPropsOf" .. ply:Nick() ) then
+		timer.Destroy( "CleanupPropsOf" .. ply:Nick() )
 	end
 
-	if ent.PatchPPCleanup == name then
+	if ent.PatchPPCleanup == ply then
 		ent.PatchPPCleanup = ""
 	end
 
 end
-hook.Add( "PlayerConnect", "CheckAbortCleanup", sv_PProtect.checkComeback )
+hook.Add( "PlayerSpawn", "CheckAbortCleanup", sv_PProtect.checkComeback )
 
 
 

@@ -154,6 +154,7 @@ function sv_PProtect.SetupPropProtectionSettings()
 	end
 
 	return sql.QueryRow("SELECT * FROM pprotect_propprotection LIMIT 1")
+	
 end
 
 
@@ -163,13 +164,16 @@ end
 -------------------------
 
 function sv_PProtect.setBlockedTools()
+
 	sv_PProtect.BlockedTools = {}
 
 	table.foreach( sv_PProtect.Settings.Tools, function( key, value )
+
 		if tonumber(value) == 1 then
 			table.insert(sv_PProtect.BlockedTools, key)
 		end
 	end )
+
 end
 
 
@@ -285,6 +289,9 @@ concommand.Add("sh_PProtect.reloadSettings", sv_PProtect.reloadSettings)
 ---------------------
 
 function sv_PProtect.Save(ply, cmd, args)
+
+	if !ply:IsAdmin() and !ply:IsSuperAdmin then return end
+
 	local s_value
 	local toolNames = {}
 	local toolValues = {}
@@ -387,4 +394,3 @@ local function initalSpawn( ply )
  
 end
 hook.Add( "PlayerInitialSpawn", "initialSpawn", initalSpawn )
-
