@@ -33,29 +33,6 @@ sv_PProtect.ConVars.PProtect_PP = {
 
 sv_PProtect.ConVars.PProtect_AS_tools = {}
 
--- CREATE TOOL TABLE
-function sv_PProtect.createToolTable()
-
-	if not sv_PProtect.ConVars then
-		sv_PProtect.ConVars = {}
-	end
-
-	if sv_PProtect.ConVars.PProtect_AS_tools[1] ~= nil then
-		return
-	end
-
-	for _, wep in pairs( weapons.GetList() ) do
-
-		if wep.ClassName == "gmod_tool" then 
-			local t = wep.Tool
-			for name, tool in pairs( t ) do
-				table.insert(sv_PProtect.ConVars.PProtect_AS_tools, tostring(name))
-			end
-		end
-	end
-
-end
-
 function sendNetworks( ply )
  
 	net.Start("generalSettings")

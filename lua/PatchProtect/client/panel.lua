@@ -33,16 +33,14 @@ net.Receive( "generalSettings", function( len )
 	cl_PProtect.ConVars.PProtect_AS = net.ReadTable()
 
 	for _, wep in pairs( weapons.GetList() ) do
-
-		if wep.ClassName == "gmod_tool" then 
-			local t = wep.Tool
-			for name, tool in pairs( t ) do
+		if wep.Tool ~= nil then 
+			for name, tool in pairs( wep.Tool ) do
 				table.insert(cl_PProtect.ConVars.PProtect_AS_tools, name)
 			end
 		end
 	end
 	
-	
+	table.sort(cl_PProtect.ConVars.PProtect_AS_tools)
 end )
 
 net.Receive( "propProtectionSettings", function( len )

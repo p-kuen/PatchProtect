@@ -290,7 +290,7 @@ concommand.Add("sh_PProtect.reloadSettings", sv_PProtect.reloadSettings)
 
 function sv_PProtect.Save(ply, cmd, args)
 
-	if !ply:IsAdmin() and !ply:IsSuperAdmin then return end
+	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
 
 	local s_value
 	local toolNames = {}
