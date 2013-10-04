@@ -6,6 +6,7 @@ end
 --NETWORKING
 util.AddNetworkString("generalSettings")
 util.AddNetworkString("propProtectionSettings")
+util.AddNetworkString("PatchPPOwner")
 
 -- CREATE CONVARS TABLE
 sv_PProtect.ConVars = {}

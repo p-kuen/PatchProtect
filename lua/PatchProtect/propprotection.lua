@@ -6,7 +6,12 @@
 function sv_PProtect.SpawnedProp( ply, mdl, ent )
 
 	ent.PatchPPOwner = ply
-	ent:SetNetworkedEntity("PatchPPOwner", ply)
+
+	net.Start("PatchPPOwner")
+		net.WriteEntity( ent.PatchPPOwner )
+	net.Send( ply )
+
+	--ent:SetNetworkedEntity("PatchPPOwner", ply)
 
 end
 hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
@@ -15,7 +20,12 @@ hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
 function sv_PProtect.SpawnedEnt( ply, ent )
 
 	ent.PatchPPOwner = ply
-	ent:SetNetworkedEntity("PatchPPOwner", ply)
+
+	net.Start("PatchPPOwner")
+		net.WriteEntity( ent.PatchPPOwner )
+	net.Send( ply )
+
+	--ent:SetNetworkedEntity("PatchPPOwner", ply)
 
 end
 hook.Add("PlayerSpawnedEffect", "SpawnedEffect", sv_PProtect.SpawnedEnt)
@@ -38,7 +48,13 @@ if cleanup then
 		if ply:IsPlayer() and ply.spawned == true then
 
 			ent.PatchPPOwner = ply
-			ent:SetNetworkedEntity("PatchPPOwner", ply)
+
+			net.Start("PatchPPOwner")
+				net.WriteEntity( ent.PatchPPOwner )
+			net.Send( ply )
+
+			--ent:SetNetworkedEntity("PatchPPOwner", ply)
+
 			ply.spawned = false
 
 		end

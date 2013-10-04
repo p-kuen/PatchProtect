@@ -27,30 +27,6 @@ local function createCCV()
 
 end
 
---NETWORKING
-net.Receive( "generalSettings", function( len )
-     
-	cl_PProtect.ConVars.PProtect_AS = net.ReadTable()
-
-	for _, wep in pairs( weapons.GetList() ) do
-		if wep.Tool ~= nil then 
-			for name, tool in pairs( wep.Tool ) do
-				table.insert(cl_PProtect.ConVars.PProtect_AS_tools, name)
-			end
-		end
-	end
-	
-	table.sort(cl_PProtect.ConVars.PProtect_AS_tools)
-end )
-
-net.Receive( "propProtectionSettings", function( len )
-     
-	cl_PProtect.ConVars.PProtect_PP = net.ReadTable()
-
-	createCCV()
-	
-end )
-
 
 
 ---------------------
@@ -61,7 +37,7 @@ function cl_PProtect.ASMenu(Panel)
 
 	--Check Admin
 	if not LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl(saCat, "You are not an admin!", "category")
+		cl_PProtect.addlbl(Panel, "You are not an admin!", "panel")
 		return
 	end
 
@@ -262,3 +238,30 @@ local function UpdateMenus()
 
 end
 hook.Add("SpawnMenuOpen", "PProtectMenus", UpdateMenus)
+
+------------------
+--  NETWORKING  --
+------------------
+
+net.Receive( "generalSettings", function( len )
+     
+	cl_PProtect.ConVars.PProtect_AS = net.ReadTable()
+
+	for _, wep in pairs( weapons.GetList() ) do
+		if wep.Tool ~= nil then 
+			for name, tool in pairs( wep.Tool ) do
+				table.insert(cl_PProtect.ConVars.PProtect_AS_tools, name)
+			end
+		end
+	end
+	
+	table.sort(cl_PProtect.ConVars.PProtect_AS_tools)
+end )
+
+net.Receive( "propProtectionSettings", function( len )
+     
+	cl_PProtect.ConVars.PProtect_PP = net.ReadTable()
+
+	createCCV()
+	
+end )

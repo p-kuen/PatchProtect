@@ -7,7 +7,7 @@ local HUDAdminNotes = {}
 local HUDNote_c = 0
 local HUDNotes = {}
 
-
+local PatchPPOwner
 
 ------------
 --  FONT  --
@@ -30,9 +30,9 @@ surface.CreateFont( "PatchProtectFont", {
 ------------------
 
 function cl_PProtect.ShowOwner()
-
+	
 	-- Check, PatchPP
-	if tonumber(GetConVarString( "PProtect_PP_use" )) == 0 then return end
+	if GetConVarNumber( "PProtect_PP_use" ) == 0 then return end
 
 	-- No Valid Player or Valid Entity
 	if !LocalPlayer() or !LocalPlayer():IsValid() then return end
@@ -41,11 +41,9 @@ function cl_PProtect.ShowOwner()
 	local PlyTrace = LocalPlayer():GetEyeTraceNoCursor()
 
 	if PlyTrace.HitNonWorld then
+		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and PatchPPOwner ~= nil then
 
-		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and PlyTrace.Entity:GetNetworkedEntity("PatchPPOwner", false) then
-
-			local POwnerEnt = PlyTrace.Entity:GetNetworkedEntity("PatchPPOwner", false)
-			local POwner = "Owner: " .. POwnerEnt:GetName()
+			local POwner = "Owner: " .. PatchPPOwner:GetName()
 
 			--cl_PProtect.AddNotify(POwner)
 			surface.SetFont("PatchProtectFont")
@@ -346,3 +344,14 @@ local function Paint()
 
 end
 hook.Add("HUDPaint", "RoundedBoxHud", Paint)
+
+------------------
+--  NETWORKING  --
+------------------
+
+net.Receive( "PatchPPOwner", function( len )
+     
+	PatchPPOwner = net.ReadEntity()
+	print("received: " .. PatchPPOwner:GetName())
+
+end )
