@@ -5,12 +5,15 @@
 -- SET OWNER OF PROPS
 function sv_PProtect.SpawnedProp( ply, mdl, ent )
 
-	ent.PatchPPOwner = ply
+	timer.Simple(0.1, function()
 
-	net.Start("PatchPPOwner")
-		net.WriteEntity( ent.PatchPPOwner )
-	net.Send( ply )
+		local Owner = ent:CPPIGetOwner()
 
+		net.Start("PatchPPOwner")
+			net.WriteEntity( Owner )
+		net.Send( ply )
+
+	end)
 	--ent:SetNetworkedEntity("PatchPPOwner", ply)
 
 end
@@ -19,11 +22,15 @@ hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
 -- SET OWNER OF ENTS
 function sv_PProtect.SpawnedEnt( ply, ent )
 
-	ent.PatchPPOwner = ply
+	timer.Simple(0.1, function()
 
-	net.Start("PatchPPOwner")
-		net.WriteEntity( ent.PatchPPOwner )
-	net.Send( ply )
+		local Owner = ent:CPPIGetOwner()
+
+		net.Start("PatchPPOwner")
+			net.WriteEntity( Owner )
+		net.Send( ply )
+
+	end)
 
 	--ent:SetNetworkedEntity("PatchPPOwner", ply)
 
@@ -38,28 +45,16 @@ hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", sv_PProtect.SpawnedEnt)
 
 --SET OWNER OF TOOL-ENTS
 if cleanup then
-	
-	local Clean = cleanup.Add
 
 	function cleanup.Add(ply, type, ent)
 
 		if !ent:IsValid() then return end
 
-		if ply:IsPlayer() and ply.spawned == true then
+		if ply:IsPlayer() then
 
-			ent.PatchPPOwner = ply
-
-			net.Start("PatchPPOwner")
-				net.WriteEntity( ent.PatchPPOwner )
-			net.Send( ply )
-
-			--ent:SetNetworkedEntity("PatchPPOwner", ply)
-
-			ply.spawned = false
+			ent:CPPISetOwner(ply)
 
 		end
-
-		Clean(ply, type, ent)
 
 	end
 
@@ -76,7 +71,9 @@ function sv_PProtect.checkPlayer(ply, ent)
 	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
 
-	if !ent:IsWorld() and ent.PatchPPOwner == ply then
+	local Owner = ent:CPPIGetOwner()
+
+	if !ent:IsWorld() and Owner == ply then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -99,8 +96,9 @@ function sv_PProtect.canTool(ply, trace, tool)
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
 
 	local ent = trace.Entity
+	local Owner = ent:CPPIGetOwner()
 	if ent:IsWorld() and tonumber(sv_PProtect.Settings.PropProtection["tool_world"]) == 0 then return false end
-	if ent.PatchPPOwner == ply or ent:IsWorld() then
+	if Owner == ply or ent:IsWorld() then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -123,7 +121,9 @@ function sv_PProtect.playerProperty(ply, string, ent)
 
 	if string == "drive" and tonumber(sv_PProtect.Settings.PropProtection["cdrive"]) == 0 then return false end
 
-	if !ent:IsWorld() and ent.PatchPPOwner == ply and string != "persist" then
+	local Owner = ent:CPPIGetOwner()
+
+	if !ent:IsWorld() and Owner == ply and string != "persist" then
  		return true
  	else
  		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -149,7 +149,9 @@ function sv_PProtect.setCleanupProps( ply )
 	for k, v in pairs( ents.GetAll() ) do
 
 		ent = v
-		if ent.PatchPPOwner == ply then
+
+		local Owner = ent:CPPIGetOwner()
+		if Owner == ply then
 			ent.PatchPPCleanup = ply:Nick()
 		end
 
@@ -219,7 +221,8 @@ function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 	for k, v in pairs( ents.GetAll() ) do
 
 		ent = v
-		if ent.PatchPPOwner == tostring(args[1]) then
+		local Owner = ent:CPPIGetOwner()
+		if Owner == tostring(args[1]) then
 			ent:Remove()
 		end
 
