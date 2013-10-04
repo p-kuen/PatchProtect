@@ -33,7 +33,9 @@ if cleanup then
 
 	function cleanup.Add(ply, type, ent)
 
-		if ply:IsPlayer() and ent:IsValid() and ply.spawned == true then
+		if !ent:IsValid() then return end
+
+		if ply:IsPlayer() and ply.spawned == true then
 
 			ent.PatchPPOwner = ply
 			ent:SetNetworkedEntity("PatchPPOwner", ply)
