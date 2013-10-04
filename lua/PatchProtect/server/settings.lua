@@ -377,7 +377,7 @@ function sv_PProtect.Save_PP(ply, cmd, args)
 		end )
 
 		sv_PProtect.Settings.PropProtection = sql.QueryRow("SELECT * FROM pprotect_propprotection LIMIT 1")
-		sv_PProtect.InfoNotify(ply, "Saveed PropProtection Settings")
+		sv_PProtect.InfoNotify(ply, "Saved PropProtection Settings")
 
 	else
 

@@ -23,6 +23,16 @@ surface.CreateFont( "PatchProtectFont", {
 	shadow 		= false
 } )
 
+surface.CreateFont( "PatchProtectFont_small", {
+	font 		= "DefaultSmall",
+	size 		= 12,
+	weight 		= 750,
+	blursize 	= 0,
+	scanlines 	= 0,
+	antialias 	= true,
+	shadow 		= false
+} )
+
 
 
 ------------------
@@ -41,19 +51,20 @@ function cl_PProtect.ShowOwner()
 	local PlyTrace = LocalPlayer():GetEyeTraceNoCursor()
 
 	if PlyTrace.HitNonWorld then
+
 		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and PatchPPOwner ~= nil then
 
 			local POwner = "Owner: " .. PatchPPOwner:GetName()
 
 			--cl_PProtect.AddNotify(POwner)
-			surface.SetFont("PatchProtectFont")
+			surface.SetFont("PatchProtectFont_small")
 
 			local OW, OH = surface.GetTextSize(POwner)
-			OW = OW + 15
-			OH = OH + 15
+			OW = OW + 10
+			OH = OH + 10
 
-			draw.RoundedBox(2, ScrW() - OW - 10, ScrH() - OH - 10, OW, OH, Color(88, 144, 222, 200))
-			draw.SimpleText(POwner, "PatchProtectFont", ScrW() - (OW / 2) - 10, ScrH() - (OH / 2) - 10, Color(0,0,0, 255), 1, 1)
+			draw.RoundedBox(2, ScrW() - OW, ScrH() / 2 - (OH/2), OW, OH, Color(88, 144, 222, 200))
+			draw.SimpleText(POwner, "PatchProtectFont_small", ScrW() - 5, ScrH() / 2 , Color(0,0,0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		
 		end
 
@@ -78,7 +89,7 @@ function cl_PProtect.AddInfoNotify( str )
 	table.insert( HUDInfoNotes, tab )
 	HUDInfoNote_c = HUDInfoNote_c + 1
 
-	LocalPlayer():EmitSound("npc/turret_floor/click1.wav", 10, 100)
+	LocalPlayer():EmitSound("buttons/button9.wav", 100, 100)
 
 end
 usermessage.Hook("PProtect_InfoNotify", function(u) cl_PProtect.AddInfoNotify(u:ReadString()) end)
@@ -352,6 +363,5 @@ hook.Add("HUDPaint", "RoundedBoxHud", Paint)
 net.Receive( "PatchPPOwner", function( len )
      
 	PatchPPOwner = net.ReadEntity()
-	print("received: " .. PatchPPOwner:GetName())
 
 end )
