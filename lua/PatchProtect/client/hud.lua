@@ -363,5 +363,5 @@ hook.Add("HUDPaint", "RoundedBoxHud", Paint)
 net.Receive( "PatchPPOwner", function( len )
      
 	PatchPPOwner = net.ReadEntity()
-
+	
 end )

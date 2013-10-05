@@ -18,6 +18,7 @@ function sv_PProtect.SpawnedProp( ply, mdl, ent )
 
 end
 hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
+hook.Add("PlayerSpawnedRagdoll", "SpawnedRagdoll", sv_PProtect.SpawnedEnt)
 
 -- SET OWNER OF ENTS
 function sv_PProtect.SpawnedEnt( ply, ent )
@@ -37,7 +38,6 @@ function sv_PProtect.SpawnedEnt( ply, ent )
 end
 hook.Add("PlayerSpawnedEffect", "SpawnedEffect", sv_PProtect.SpawnedEnt)
 hook.Add("PlayerSpawnedNPC", "SpawnedNPC", sv_PProtect.SpawnedEnt)
-hook.Add("PlayerSpawnedRagdoll", "SpawnedRagdoll", sv_PProtect.SpawnedEnt)
 hook.Add("PlayerSpawnedSENT", "SpawnedSENT", sv_PProtect.SpawnedEnt)
 hook.Add("PlayerSpawnedSWEP", "SpawnedSWEP", sv_PProtect.SpawnedEnt)
 hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", sv_PProtect.SpawnedEnt)
