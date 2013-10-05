@@ -5,7 +5,7 @@
 -- SET OWNER OF PROPS
 function sv_PProtect.SpawnedProp( ply, mdl, ent )
 
-	timer.Simple(0.1, function()
+	timer.Simple( 0.1, function()
 
 		local Owner = ent:CPPIGetOwner()
 
@@ -13,8 +13,7 @@ function sv_PProtect.SpawnedProp( ply, mdl, ent )
 			net.WriteEntity( Owner )
 		net.Send( ply )
 
-	end)
-	--ent:SetNetworkedEntity("PatchPPOwner", ply)
+	end )
 
 end
 hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
@@ -24,7 +23,7 @@ hook.Add("PlayerSpawnedEffect", "SpawnedEffect", sv_PProtect.SpawnedEnt)
 -- SET OWNER OF ENTS
 function sv_PProtect.SpawnedEnt( ply, ent )
 
-	timer.Simple(0.1, function()
+	timer.Simple( 0.1, function()
 
 		local Owner = ent:CPPIGetOwner()
 
@@ -32,9 +31,7 @@ function sv_PProtect.SpawnedEnt( ply, ent )
 			net.WriteEntity( Owner )
 		net.Send( ply )
 
-	end)
-
-	--ent:SetNetworkedEntity("PatchPPOwner", ply)
+	end )
 
 end
 hook.Add("PlayerSpawnedNPC", "SpawnedNPC", sv_PProtect.SpawnedEnt)
@@ -48,13 +45,9 @@ if cleanup then
 
 	function cleanup.Add(ply, type, ent)
 
-		if !ent:IsValid() then return end
+		if !ent:IsValid() or !ply:IsPlayer() then return end
 
-		if ply:IsPlayer() then
-
-			ent:CPPISetOwner(ply)
-
-		end
+		ent:CPPISetOwner(ply)
 
 	end
 
@@ -86,6 +79,7 @@ hook.Add( "CanDrive", "AllowDriving", sv_PProtect.checkPlayer )
 hook.Add( "CanUse", "AllowUseing", sv_PProtect.checkPlayer )
 
 
+
 ----------------------------
 --  TOOL PROP PROTECTION  --
 ----------------------------
@@ -97,7 +91,9 @@ function sv_PProtect.canTool(ply, trace, tool)
 
 	local ent = trace.Entity
 	local Owner = ent:CPPIGetOwner()
+
 	if ent:IsWorld() and tonumber(sv_PProtect.Settings.PropProtection["tool_world"]) == 0 then return false end
+
 	if Owner == ply or ent:IsWorld() then
 		return true
 	else
@@ -132,6 +128,25 @@ function sv_PProtect.playerProperty(ply, string, ent)
 
 end
 hook.Add( "CanProperty", "AllowProperty", sv_PProtect.playerProperty )
+
+
+
+------------------------------
+--  DAMAGE PROP PROTECTION  --
+------------------------------
+
+function sv_PProtect.EntityDamage(ent, info)
+	
+	local Owner = ent:CPPIGetOwner()
+	local Attacker = info:GetAttacker()
+
+	if !ent:IsValid() or ent:IsPlayer() then return end
+	if Owner == Attacker then return end -- Add Checkbox (Can Damage own Props/Ents)
+
+	info:SetDamage(0)
+
+end
+hook.Add("EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage)
 
 
 
