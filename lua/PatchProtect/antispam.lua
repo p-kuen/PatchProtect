@@ -113,6 +113,8 @@ hook.Add("PlayerSpawnEffect", "SpawningEffect", sv_PProtect.Spawn)
 hook.Add("PlayerSpawnSENT", "SpawningSENT", sv_PProtect.Spawn)
 hook.Add("PlayerSpawnRagdoll", "SpawningRagdoll", sv_PProtect.Spawn)
 hook.Add("PlayerSpawnVehicle", "SpawningVehicle", sv_PProtect.Spawn)
+hook.Add("PlayerSpawnNPC", "SpawningNPC", sv_PProtect.Spawn)
+hook.Add("PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.Spawn)
 
 
 

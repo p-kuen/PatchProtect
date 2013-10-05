@@ -19,6 +19,7 @@ function sv_PProtect.SpawnedProp( ply, mdl, ent )
 end
 hook.Add("PlayerSpawnedProp", "SpawnedProp", sv_PProtect.SpawnedProp)
 hook.Add("PlayerSpawnedRagdoll", "SpawnedRagdoll", sv_PProtect.SpawnedEnt)
+hook.Add("PlayerSpawnedEffect", "SpawnedEffect", sv_PProtect.SpawnedEnt)
 
 -- SET OWNER OF ENTS
 function sv_PProtect.SpawnedEnt( ply, ent )
@@ -36,7 +37,6 @@ function sv_PProtect.SpawnedEnt( ply, ent )
 	--ent:SetNetworkedEntity("PatchPPOwner", ply)
 
 end
-hook.Add("PlayerSpawnedEffect", "SpawnedEffect", sv_PProtect.SpawnedEnt)
 hook.Add("PlayerSpawnedNPC", "SpawnedNPC", sv_PProtect.SpawnedEnt)
 hook.Add("PlayerSpawnedSENT", "SpawnedSENT", sv_PProtect.SpawnedEnt)
 hook.Add("PlayerSpawnedSWEP", "SpawnedSWEP", sv_PProtect.SpawnedEnt)
