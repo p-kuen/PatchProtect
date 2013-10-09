@@ -140,8 +140,8 @@ function cl_PProtect.PPMenu(Panel)
 	cl_PProtect.addlbl(Panel, "Prop-Delete on Disconnect:", "panel")
 	cl_PProtect.addchk(Panel, "Use Prop-Delete", "propprotection", "use_propdelete")
 	cl_PProtect.addsldr(Panel, 1, 120, "Prop-Delete Delay (sec)", "propprotection", "propdelete_delay")
-	cl_PProtect.addchk(Panel, "Allow World-Tool", "propprotection", "tool_world")
-	cl_PProtect.addchk(Panel, "Allow C-Driving", "propprotection", "cdrive")
+	cl_PProtect.addchk(Panel, "Allow Toogun on Map", "propprotection", "tool_world")
+	cl_PProtect.addchk(Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "cdrive")
 
 	--Save Settings
 	cl_PProtect.addbtn(Panel, "Save Settings", "save_pp")
