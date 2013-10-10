@@ -5,11 +5,11 @@
 -- SET PLAYER VARS
 function sv_PProtect.Setup(ply)
 
-	--Props
+	-- PROPS
 	ply.propcooldown = 0
 	ply.props = 0
 
-	--Tools
+	-- TOOLS
 	ply.toolcooldown = 0
 	ply.tools = 0
 	ply.spawned = false
@@ -74,19 +74,19 @@ end
 
 function sv_PProtect.Spawn(ply)
 	
-	--Check, if PProtect is enabled
+	--Check if AntiSpam is enabled
 	if tobool(sv_PProtect.Settings.General["use"]) == false then return end
 
 	--Check Admin
 	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return end
 
-	--Checking Coodown
+	--Check Cooldown
 	if CurTime() < ply.propcooldown then
 				
-		--Add One Prop to the Warning List
+		--Add one Prop to the Warning-List
 		ply.props = ply.props + 1
 
-		--Notify to Admin about spamming
+		--Notify Admin about the Spam
 		if ply.props >= tonumber(sv_PProtect.Settings.General["spamcount"]) then
 					
 			sv_PProtect.AdminNotify(ply:Nick() .. " is spamming!")
@@ -96,8 +96,8 @@ function sv_PProtect.Spawn(ply)
 
 		end
 
+		--Block Prop-Spawning
 		sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.propcooldown - CurTime(), 1))
-		-- Block spawning the Prop
 		return false
 
 	end
@@ -124,11 +124,11 @@ hook.Add("PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.Spawn)
 
 function sv_PProtect.CanTool( ply, trace, mode )
 
-	--Set some player information
+	--Set some Player information
 	ply.spawned = true
 	ply.tooltype = mode
 
-	--Check, if PProtect is enabled
+	--Check, if AntiSpam is enabled or ToolProtection is disabled
 	if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false then return end
 	
 	--Check Admin
@@ -138,12 +138,13 @@ function sv_PProtect.CanTool( ply, trace, mode )
 
 	local function blockedtool()
 
-		--Checking Cooldown
+		--Check Cooldown
 		if CurTime() < ply.toolcooldown then
 
+			--Add one Tool-Action to the Warning-List
 			ply.tools = ply.tools + 1
 
-			--Notify Admin about Spam
+			--Notify Admin about Tool-Spam
 			if ply.tools >= tonumber(sv_PProtect.Settings.General["spamcount"]) then
 
 				sv_PProtect.AdminNotify("PatchProtect - AS] " .. ply:Nick() .. " is spamming with " .. tostring(mode) .. "s!")
@@ -152,14 +153,14 @@ function sv_PProtect.CanTool( ply, trace, mode )
 
 			end
 
-
+			--Block Toolgun-Firing
 			sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.toolcooldown - CurTime(), 1))
-			--Block Tool
 			delete = true
 			return false
 
 		else
 
+			--Set Cooldown
 			delete = false
 			ply.tools = 0
 			ply.toolcooldown = CurTime() + tonumber(sv_PProtect.Settings.General["cooldown"])

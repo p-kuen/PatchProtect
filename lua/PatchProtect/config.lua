@@ -19,7 +19,7 @@ sv_PProtect.ConVars.PProtect_AS = {
 	spamcount = 20,
 	spamaction = 1,
 	bantime = 10.5,
-	concommand = "blabla",
+	concommand = "Put your command here",
 	toolprotection = 1
 }
 
