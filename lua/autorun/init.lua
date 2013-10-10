@@ -25,7 +25,7 @@ AddCSLuaFile("PatchProtect/client/panel.lua")
 
 if SERVER then
 
-	include( "PatchProtect/sh_config.lua" )
+	include( "PatchProtect/config.lua" )
 	include( "PatchProtect/server/settings.lua" )
 	include( "PatchProtect/antispam.lua" )
 	include( "PatchProtect/propprotection.lua" )
