@@ -9,6 +9,8 @@ local HUDNotes = {}
 
 local PatchPPOwner
 
+
+
 ------------
 --  FONT  --
 ------------
@@ -25,7 +27,7 @@ surface.CreateFont( "PatchProtectFont", {
 
 surface.CreateFont( "PatchProtectFont_small", {
 	font 		= "DefaultSmall",
-	size 		= 12,
+	size 		= 13,
 	weight 		= 750,
 	blursize 	= 0,
 	scanlines 	= 0,
@@ -56,15 +58,14 @@ function cl_PProtect.ShowOwner()
 
 			local POwner = "Owner: " .. PatchPPOwner:GetName()
 
-			--cl_PProtect.AddNotify(POwner)
 			surface.SetFont("PatchProtectFont_small")
 
 			local OW, OH = surface.GetTextSize(POwner)
 			OW = OW + 10
 			OH = OH + 10
 
-			draw.RoundedBox(2, ScrW() - OW, ScrH() / 2 - (OH/2), OW, OH, Color(88, 144, 222, 200))
-			draw.SimpleText(POwner, "PatchProtectFont_small", ScrW() - 5, ScrH() / 2 , Color(0,0,0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+			draw.RoundedBox(3, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, Color(88, 144, 222, 200))
+			draw.SimpleText(POwner, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color(0, 0, 0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		
 		end
 
@@ -72,6 +73,12 @@ function cl_PProtect.ShowOwner()
 
 end
 hook.Add("HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner)
+
+--Set PhysBeam to a kind of "disabled" Beam, if the player is not allowed to pick the prop up
+function cl_PProtect.SetClientPhysBeam(ply, ent)
+	return false
+end
+hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
 
 
 
@@ -92,16 +99,18 @@ function cl_PProtect.AddInfoNotify( str )
 	LocalPlayer():EmitSound("buttons/button9.wav", 100, 100)
 
 end
-usermessage.Hook("PProtect_InfoNotify", function(u) cl_PProtect.AddInfoNotify(u:ReadString()) end)
+usermessage.Hook( "PProtect_InfoNotify", function( u )
+	cl_PProtect.AddInfoNotify( u:ReadString() )
+end )
 
---ADMIN MESSAGE
+-- ADMIN MESSAGE
 function cl_PProtect.AddAdminNotify( str )
 
 	local tab = {}
 	tab.text = str
 	tab.recv = SysTime()
 
-	if (LocalPlayer():IsAdmin()) then
+	if LocalPlayer():IsAdmin() then
 
 		table.insert( HUDAdminNotes, tab )
 		HUDAdminNote_c = HUDAdminNote_c + 1
@@ -111,7 +120,9 @@ function cl_PProtect.AddAdminNotify( str )
 	LocalPlayer():EmitSound("npc/turret_floor/click1.wav", 10, 100)
 
 end
-usermessage.Hook( "PProtect_AdminNotify", function( u ) cl_PProtect.AddAdminNotify( u:ReadString() ) end )
+usermessage.Hook( "PProtect_AdminNotify", function( u )
+	cl_PProtect.AddAdminNotify( u:ReadString() )
+end )
 
 -- DEFAULT MESSAGE
 function cl_PProtect.AddNotify( str )
@@ -126,7 +137,9 @@ function cl_PProtect.AddNotify( str )
 	LocalPlayer():EmitSound("npc/turret_floor/click1.wav", 10, 100)
 
 end
-usermessage.Hook("PProtect_Notify", function(u) cl_PProtect.AddNotify(u:ReadString()) end)
+usermessage.Hook("PProtect_Notify", function( u )
+	cl_PProtect.AddNotify(u:ReadString())
+end )
 
 -- CREATE INFO MESSAGE
 local function DrawInfoNotice( self, k, v, i )
@@ -172,7 +185,7 @@ local function DrawAdminNotice( self, k, v, i )
 
 end
 
---CREATE DEFAULT MESSAGE
+-- CREATE DEFAULT MESSAGE
 local function DrawNotice( self, k, v, i )
 
 	local text = v.text
@@ -202,10 +215,7 @@ end
 
 local function Paint()
 
-	--Set Player
-	local player = LocalPlayer()
-
-	--Show normal Messages
+	-- SHOW NORMAL MESSAGES
 	if not HUDNotes then return end
 
 	local i = 0
@@ -221,29 +231,17 @@ local function Paint()
 
 	end
 
-
-	--Delete normal Messages
-
+	-- DELETE NORMAL MESSAGES
 	for k, v in pairs(HUDNotes) do
 
 		local ShowNotify
 
-		if v ~= 0 and v.recv + 6 < SysTime() then
-			ShowNotify = true
-		else
-			ShowNotify = false
-		end
+		if v ~= 0 and v.recv + 6 < SysTime() then ShowNotify = true else ShowNotify = false end
 
 		if ShowNotify then
-
 			HUDNotes[ k ] = 0
-
-			if HUDNote_c > 0 then
-				HUDNote_c = HUDNote_c - 1
-			end
-
+			if HUDNote_c > 0 then HUDNote_c = HUDNote_c - 1 end
 			if (HUDNote_c < 1) then HUDNotes = {} end
-
 		end
 
 		if HUDNote_c > 1 then
@@ -254,9 +252,7 @@ local function Paint()
 
 	end
 
-
-	--Show Info Messages
-
+	-- SHOW INFO MESSAGES
 	if not HUDInfoNotes then return end
 
 	local a_i = 0
@@ -270,29 +266,17 @@ local function Paint()
 
 	end
 
-
-	--Delete Info Messages
-
+	-- DELETE INFO MESSAGES
 	for k, v in pairs(HUDInfoNotes) do
 
 		local ShowInfoNotify
 
-		if v ~= 0 and v.recv + 6 < SysTime() then
-			ShowInfoNotify = true
-		else
-			ShowInfoNotify = false
-		end
+		if v ~= 0 and v.recv + 6 < SysTime() then ShowInfoNotify = true else ShowInfoNotify = false end
 
 		if ShowInfoNotify then
-
 			HUDInfoNotes[ k ] = 0
-
-			if HUDInfoNote_c > 0 then
-				HUDInfoNote_c = HUDInfoNote_c - 1
-			end
-
+			if HUDInfoNote_c > 0 then HUDInfoNote_c = HUDInfoNote_c - 1 end
 			if (HUDInfoNote_c < 1) then HUDInfoNotes = {} end
-
 		end
 
 		if HUDInfoNote_c > 1 then
@@ -303,9 +287,7 @@ local function Paint()
 
 	end
 
-
-	--Show Admin Messages
-
+	-- SHOW ADMIN MESSAGES
 	if not HUDAdminNotes then return end
 
 	local a_i = 0
@@ -319,42 +301,31 @@ local function Paint()
 
 	end
 
-
-	--Delete Admin Messages
-
+	-- DELETE ADMIN MESSAGES
 	for k, v in pairs(HUDAdminNotes) do
 
 		local ShowAdminNotify
 
-		if v ~= 0 and v.recv + 6 < SysTime() then
-			ShowAdminNotify = true
-		else
-			ShowAdminNotify = false
-		end
+		if v ~= 0 and v.recv + 6 < SysTime() then ShowAdminNotify = true else ShowAdminNotify = false end
 
 		if ShowAdminNotify then
-
 			HUDAdminNotes[ k ] = 0
-
-			if HUDAdminNote_c > 0 then
-				HUDAdminNote_c = HUDAdminNote_c - 1
-			end
-
-			if (HUDAdminNote_c < 1) then HUDAdminNotes = {} end
-
+			if HUDAdminNote_c > 0 then HUDAdminNote_c = HUDAdminNote_c - 1 end
+			if HUDAdminNote_c < 1 then HUDAdminNotes = {} end
 		end
 
 		if HUDAdminNote_c > 1 then
-
 			HUDAdminNotes[ 1 ] = 0
 			table.remove(HUDAdminNotes, 1)
 			HUDAdminNote_c = 1
-
 		end
+
 	end
 
 end
 hook.Add("HUDPaint", "RoundedBoxHud", Paint)
+
+
 
 ------------------
 --  NETWORKING  --
