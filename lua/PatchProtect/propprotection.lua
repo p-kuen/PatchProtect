@@ -15,10 +15,7 @@ function sv_PProtect.SpawnedProp( ply, mdl, ent )
 		ownerTable[id] = Owner
 
 		net.Start("PatchPPOwner")
-			--net.WriteEntity( Owner )
-			--net.WriteType( id )
 			net.WriteTable( ownerTable )
-		--net.Send( ply )
 		net.Broadcast()
 
 	end )
@@ -50,8 +47,7 @@ hook.Add("PlayerSpawnedSENT", "SpawnedSENT", sv_PProtect.SpawnedEnt)
 hook.Add("PlayerSpawnedSWEP", "SpawnedSWEP", sv_PProtect.SpawnedEnt)
 hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", sv_PProtect.SpawnedEnt)
 
-
---SET OWNER OF TOOL-ENTS
+-- SET OWNER OF TOOL-ENTS
 if cleanup then
 
 	function cleanup.Add(ply, type, ent)
@@ -62,6 +58,15 @@ if cleanup then
 	end
 
 end
+
+--[[-- SET OWNER OVER PROPERTY MENU
+function sv_PProtect.setownerbyproperty( ply, cmd, args )
+
+	print("got command")
+	print( player.GetByUniqueID( args[1] ))
+	
+end
+concommand.Add("setpropertyowner", sv_PProtect.setownerbyproperty)]]
 
 
 
@@ -150,7 +155,7 @@ hook.Add( "CanProperty", "AllowProperty", sv_PProtect.playerProperty )
 --  DAMAGE PROP PROTECTION  --
 ------------------------------
 
-function sv_PProtect.EntityDamage(ent, info)
+function sv_PProtect.EntityDamage( ent, info )
 	
 	local Owner = ent:CPPIGetOwner()
 	local Attacker = info:GetAttacker()
@@ -165,145 +170,6 @@ hook.Add("EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage)
 
 
 
-------------------------------------------
---  DISCONNECTED PLAYER'S PROP CLEANUP  --
-------------------------------------------
-
--- PLAYER LEFT SERVER
-function sv_PProtect.setCleanupProps( ply )
-
-	local plyname = ply:Nick()
-	
-	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
-
-	for k, v in pairs( ents.GetAll() ) do
-
-		ent = v
-
-		local Owner = ent:CPPIGetOwner()
-		if Owner == ply then
-			ent.PatchPPCleanup = ply:Nick()
-		end
-
-	end
-	
-	-- Create Timer
-	timer.Create( "CleanupPropsOf" .. plyname , tonumber(sv_PProtect.Settings.PropProtection["propdelete_delay"]), 1, function()
-
-		for k, v in pairs( ents.GetAll() ) do
-
-			ent = v
-			if ent.PatchPPCleanup == plyname then
-				ent:Remove()
-			end
-
-		end
-		print( "[PatchProtect - Cleanup] Removed " .. plyname .. "'s Props!" )
-
-	end )
-
-	table.foreach(ownerTable, function(key, value)
-
-
-		if value == ply then
-
-			ownerTable[key] = "Disconnected (" .. ply:GetName() .. ")"
-
-			net.Start("PatchPPOwner")
-				net.WriteTable( ownerTable )
-			net.Broadcast()
-
-		end 
-
-
-	end)
-
-end
-hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.setCleanupProps )
-
--- PLAYER CAME BACK
-function sv_PProtect.checkComeback( ply )
-
-	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
-
-	if timer.Exists( "CleanupPropsOf" .. ply:Nick() ) then
-		timer.Destroy( "CleanupPropsOf" .. ply:Nick() )
-	end
-
-	for k, v in pairs( ents.GetAll() ) do
-
-		ent = v
-		if ent.PatchPPCleanup == ply then
-			ent.PatchPPCleanup = ""
-		end
-
-	end
-
-end
-hook.Add( "PlayerSpawn", "CheckAbortCleanup", sv_PProtect.checkComeback )
-
-
--- CLEAN ALL DISCONNECTED PLAYERS PROPS
-function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
-
-	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
-
-	for k, v in pairs( ents.GetAll() ) do
-
-		ent = v
-		if ent.PatchPPCleanup != nil and ent.PatchPPCleanup != "" then
-			ent:Remove()
-		end
-
-	end
-	sv_PProtect.InfoNotify( ply, "Cleaned all disconnected Players Props!" )
-	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all Props from disconnected Players!" )
-
-end
-concommand.Add("btn_cleandiscprops", sv_PProtect.CleanAllDisconnectedPlayersProps)
-
-
----------------------------------
---  CLEANUP MAP/PLAYERS PROPS  --
----------------------------------
-
--- CLEANUP EVERYTHING
-function sv_PProtect.CleanupEverything( ply )
-
-	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
-
-	game.CleanUpMap()
-	sv_PProtect.InfoNotify(ply, "Cleaned Map!")
-
-end
-concommand.Add("btn_cleanup", sv_PProtect.CleanupEverything)
-
--- CLEANUP PLAYERS PROPS
-function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
-
-	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
-	local count = 0
-
-	for k, v in pairs( ents.GetAll() ) do
-
-		ent = v
-		local Owner = ent:CPPIGetOwner()
-
-		if Owner != nil and Owner:GetName() == tostring(args[1]) then
-			ent:Remove()
-			count = count + 1
-		end
-
-	end
-
-	sv_PProtect.InfoNotify(ply, "Cleaned " .. tostring(args[1]) .. "'s Props! (" .. count .. ")")
-	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed " .. count .. " Props from " .. tostring(args[1]) .. "!" )
-
-end
-concommand.Add("btn_cleanup_player", sv_PProtect.CleanupPlayersProps)
-
-
-
 -------------------
 --  OWNER TABLE  --
 -------------------
@@ -313,8 +179,6 @@ function sv_PProtect.sendOwners( ply )
 	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
 
 	net.Start("PatchPPOwner")
-		--net.WriteEntity( Owner )
-		--net.WriteType( id )
 		net.WriteTable( ownerTable )
 	net.Send( ply )
 	

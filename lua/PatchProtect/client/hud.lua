@@ -11,6 +11,8 @@ local PatchPPOwner
 
 local entityOwners = {}
 
+
+
 ------------
 --  FONT  --
 ------------
@@ -91,10 +93,47 @@ end
 hook.Add("HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner)
 
 --Set PhysBeam to a kind of "disabled" Beam, if the player is not allowed to pick the prop up
-function cl_PProtect.SetClientPhysBeam(ply, ent)
+function cl_PProtect.SetClientPhysBeam( ply, ent )
+
 	return false
+
 end
 hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
+
+
+
+----------------------------------
+--  SET PROP OWNER OVER C-MENU  --
+----------------------------------
+
+properties.Add( "ExRestrictProp", {
+
+	MenuLabel = "Set Owner...",
+
+	Order = 2001,
+
+	Filter = function( self, ent, ply )
+
+		local Owner = entityOwners[ent:EntIndex()]
+		if !ent:IsValid() or ent:IsPlayer() or ply != Owner then return false end
+		return true
+
+	end,
+
+	MenuOpen = function( self, menu, ent, trace )
+		local submenu = menu:AddSubMenu()
+
+		for _, ply in ipairs( player.GetAll() ) do
+
+			submenu:AddOption( ply:Nick(), function()
+				--print("send to server")
+			end )
+
+		end
+
+	end,
+
+} )
 
 
 
@@ -106,8 +145,8 @@ hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
 function cl_PProtect.AddInfoNotify( str )
 
 	local tab = {}
-	tab.text 	= str
-	tab.recv 	= SysTime()
+	tab.text = str
+	tab.recv = SysTime()
 
 	table.insert( HUDInfoNotes, tab )
 	HUDInfoNote_c = HUDInfoNote_c + 1
