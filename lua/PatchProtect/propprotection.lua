@@ -55,8 +55,8 @@ hook.Add("PlayerSpawnedVehicle", "SpawnedVehicle", sv_PProtect.SpawnedEnt)
 if cleanup then
 
 	function cleanup.Add(ply, type, ent)
-
-		if !ent:IsValid() or ent:IsPlayer() then return end
+		
+		if IsEntity(ent) == false or ent:IsPlayer() then return end
 		ent:CPPISetOwner(ply)
 
 	end
