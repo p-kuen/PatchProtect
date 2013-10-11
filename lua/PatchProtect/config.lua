@@ -1,8 +1,3 @@
--- CHECK FOR EXISTING TABLE
-if sv_PProtect.ConVars then
-	--return
-end
-
 --NETWORKING
 util.AddNetworkString("generalSettings")
 util.AddNetworkString("propProtectionSettings")
