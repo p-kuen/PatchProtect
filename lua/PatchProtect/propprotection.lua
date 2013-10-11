@@ -209,6 +209,10 @@ function sv_PProtect.setCleanupProps( ply )
 
 			ownerTable[key] = "Disconnected (" .. ply:GetName() .. ")"
 
+			net.Start("PatchPPOwner")
+				net.WriteTable( ownerTable )
+			net.Broadcast()
+
 		end 
 
 
