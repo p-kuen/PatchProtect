@@ -188,6 +188,9 @@ function cl_PProtect.CUMenu(Panel)
 		cl_PProtect.addbtn(Panel, "Cleanup " .. plys:GetName() .."  (" .. tostring(plys:GetCount( "props" )) .. " Props)", "cleanup_player", plys:GetName())
 	end
 
+	cl_PProtect.addlbl(Panel, "Cleanup from disconnected Players:", "panel")
+	cl_PProtect.addbtn(Panel, "Cleanup all Props from disc. Players", "cleandiscprops")
+
 end
 
 
