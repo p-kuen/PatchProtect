@@ -59,14 +59,13 @@ if cleanup then
 
 end
 
---[[-- SET OWNER OVER PROPERTY MENU
+-- SET OWNER OVER PROPERTY MENU
 function sv_PProtect.setownerbyproperty( ply, cmd, args )
 
-	print("got command")
-	print( player.GetByUniqueID( args[1] ))
+	ent:CPPISetOwner(player.GetByUniqueID(args[1]))
 	
 end
-concommand.Add("setpropertyowner", sv_PProtect.setownerbyproperty)]]
+concommand.Add("setpropertyowner", sv_PProtect.setownerbyproperty)
 
 
 
@@ -159,9 +158,9 @@ function sv_PProtect.EntityDamage( ent, info )
 	
 	local Owner = ent:CPPIGetOwner()
 	local Attacker = info:GetAttacker()
-
-	if !ent:IsValid() or ent:IsPlayer() then return end
-	if Owner == Attacker then return end -- Add Checkbox (Can Damage own Props/Ents)
+	
+	if !ent:IsValid() or ent:IsPlayer() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["damageprotection"]) == 0 then return end
+	if Owner == Attacker then return end
 
 	info:SetDamage(0)
 

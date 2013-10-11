@@ -121,12 +121,12 @@ properties.Add( "setpropertyowner", {
 	end,
 
 	MenuOpen = function( self, menu, ent, trace )
-		local submenu = menu:AddSubMenu()
 
+		local submenu = menu:AddSubMenu()
 		for _, ply in ipairs( player.GetAll() ) do
 
 			submenu:AddOption( ply:Nick(), function()
-				--print("send to server")
+				RunConsoleCommand("setpropertyowner", ply:UniqueID())
 			end )
 
 		end

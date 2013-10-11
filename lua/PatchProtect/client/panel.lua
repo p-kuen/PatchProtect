@@ -84,15 +84,19 @@ function cl_PProtect.ASMenu(Panel)
 end
 
 local function spamactionChanged(CVar, PreviousValue, NewValue)
-	print("changed to " .. NewValue)
+
+	--print("changed to " .. NewValue)
 	if tonumber(NewValue) == 4 then
+
 		cl_PProtect.addsldr(saCat, 0, 60, "Ban Time (minutes)", "bantime")
 
 	elseif tonumber(NewValue) == 5 then
+
 		cl_PProtect.addlbl(saCat, "Write a command. Use <player> for the Spammer", "category")
 		cl_PProtect.addtext(saCat, GetConVarString("_PProtect_AS_concommand"))
 
 	end
+
 end
 
 
@@ -140,6 +144,7 @@ function cl_PProtect.PPMenu(Panel)
 	cl_PProtect.addlbl(Panel, "Prop-Delete on Disconnect:", "panel")
 	cl_PProtect.addchk(Panel, "Use Prop-Delete", "propprotection", "use_propdelete")
 	cl_PProtect.addsldr(Panel, 1, 120, "Prop-Delete Delay (sec)", "propprotection", "propdelete_delay")
+	cl_PProtect.addchk(Panel, "Use Damage-Protection", "propprotection", "damageprotection")
 	cl_PProtect.addchk(Panel, "Allow Toolgun on Map", "propprotection", "tool_world")
 	cl_PProtect.addchk(Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "cdrive")
 
