@@ -106,7 +106,7 @@ hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
 --  SET PROP OWNER OVER C-MENU  --
 ----------------------------------
 
-properties.Add( "ExRestrictProp", {
+properties.Add( "setpropertyowner", {
 
 	MenuLabel = "Set Owner...",
 
