@@ -56,8 +56,7 @@ if cleanup then
 
 	function cleanup.Add(ply, type, ent)
 
-		if !ent:IsValid() or !ply:IsPlayer() then return end
-
+		if !ent:IsValid() or ent:IsPlayer() then return end
 		ent:CPPISetOwner(ply)
 
 	end
@@ -73,7 +72,8 @@ end
 function sv_PProtect.checkPlayer(ply, ent)
 
 	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
-	--if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
+	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
+	if ply:IsSuperAdmin() then return true end
 
 	local Owner = ent:CPPIGetOwner()
 

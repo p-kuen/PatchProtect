@@ -40,7 +40,7 @@ function sv_PProtect.SetupGeneralSettings()
 
 	end
 
-	if ( !sql.TableExists("pprotect_antispam_general") ) then
+	if not sql.TableExists("pprotect_antispam_general") then
 		
 		local options = {}
 		local values = {}
