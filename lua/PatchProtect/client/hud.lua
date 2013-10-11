@@ -9,7 +9,7 @@ local HUDNotes = {}
 
 local PatchPPOwner
 
-
+local entityOwners = {}
 
 ------------
 --  FONT  --
@@ -50,13 +50,29 @@ function cl_PProtect.ShowOwner()
 	if !LocalPlayer() or !LocalPlayer():IsValid() then return end
 
 	-- Set Trace
-	local PlyTrace = LocalPlayer():GetEyeTraceNoCursor()
+	local PlyTrace = LocalPlayer():GetEyeTrace()
+	local Owner = entityOwners[PlyTrace.Entity:EntIndex()]
+
 
 	if PlyTrace.HitNonWorld then
 
-		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and PatchPPOwner ~= nil then
+		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and Owner ~= nil then
+			
+			local POwner
 
-			local POwner = "Owner: " .. PatchPPOwner:GetName()
+			if type(Owner) == "Player" then
+
+				POwner = "Owner: " .. Owner:GetName()
+
+			elseif type(Owner) == "String" then
+
+				POwner = "Owner: " .. Owner
+
+			else
+
+				return
+
+			end
 
 			surface.SetFont("PatchProtectFont_small")
 
@@ -333,6 +349,7 @@ hook.Add("HUDPaint", "RoundedBoxHud", Paint)
 
 net.Receive( "PatchPPOwner", function( len )
      
-	PatchPPOwner = net.ReadEntity()
-	
+	--PatchPPOwner = net.ReadEntity()
+	entityOwners = net.ReadTable()
+
 end )

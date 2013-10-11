@@ -1,3 +1,5 @@
+local ownerTable = {}
+
 -----------------
 --  SET OWNER  --
 -----------------
@@ -8,10 +10,16 @@ function sv_PProtect.SpawnedProp( ply, mdl, ent )
 	timer.Simple( 0.1, function()
 
 		local Owner = ent:CPPIGetOwner()
+		local id = ent:EntIndex()
+
+		ownerTable[id] = Owner
 
 		net.Start("PatchPPOwner")
-			net.WriteEntity( Owner )
-		net.Send( ply )
+			--net.WriteEntity( Owner )
+			--net.WriteType( id )
+			net.WriteTable( ownerTable )
+		--net.Send( ply )
+		net.Broadcast()
 
 	end )
 
@@ -26,10 +34,13 @@ function sv_PProtect.SpawnedEnt( ply, ent )
 	timer.Simple( 0.1, function()
 
 		local Owner = ent:CPPIGetOwner()
+		local id = ent:EntIndex()
+
+		ownerTable[id] = Owner
 
 		net.Start("PatchPPOwner")
-			net.WriteEntity( Owner )
-		net.Send( ply )
+			net.WriteTable( ownerTable )
+		net.Broadcast()
 
 	end )
 
@@ -62,9 +73,13 @@ end
 function sv_PProtect.checkPlayer(ply, ent)
 
 	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
-	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
+	--if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
 
 	local Owner = ent:CPPIGetOwner()
+
+	if Owner == nil then
+		return false
+	end
 
 	if !ent:IsWorld() and Owner == ply then
 		return true
@@ -187,6 +202,18 @@ function sv_PProtect.setCleanupProps( ply )
 
 	end )
 
+	table.foreach(ownerTable, function(key, value)
+
+
+		if value == ply then
+
+			ownerTable[key] = "Disconnected (" .. ply:GetName() .. ")"
+
+		end 
+
+
+	end)
+
 end
 hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.setCleanupProps )
 
@@ -211,6 +238,7 @@ function sv_PProtect.checkComeback( ply )
 end
 hook.Add( "PlayerSpawn", "CheckAbortCleanup", sv_PProtect.checkComeback )
 
+
 -- CLEAN ALL DISCONNECTED PLAYERS PROPS
 function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
 
@@ -229,7 +257,6 @@ function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
 
 end
 concommand.Add("btn_cleandiscprops", sv_PProtect.CleanAllDisconnectedPlayersProps)
-
 
 
 ---------------------------------
@@ -270,3 +297,23 @@ function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 
 end
 concommand.Add("btn_cleanup_player", sv_PProtect.CleanupPlayersProps)
+
+
+
+-------------------
+--  OWNER TABLE  --
+-------------------
+
+function sv_PProtect.sendOwners( ply )
+
+	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
+
+	net.Start("PatchPPOwner")
+		--net.WriteEntity( Owner )
+		--net.WriteType( id )
+		net.WriteTable( ownerTable )
+	net.Send( ply )
+	
+
+end
+hook.Add( "PlayerInitialSpawn", "sentOwnerTable", sv_PProtect.sendOwners )

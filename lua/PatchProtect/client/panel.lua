@@ -122,7 +122,7 @@ function cl_PProtect.PPMenu(Panel)
 
 	--Check Admin
 	if !LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl(Panel, "You are not an Admin!", "panel")
+		cl_PProtect.addlbl(Panel, "You are not an admin!", "panel")
 		return
 	end
 
@@ -140,7 +140,7 @@ function cl_PProtect.PPMenu(Panel)
 	cl_PProtect.addlbl(Panel, "Prop-Delete on Disconnect:", "panel")
 	cl_PProtect.addchk(Panel, "Use Prop-Delete", "propprotection", "use_propdelete")
 	cl_PProtect.addsldr(Panel, 1, 120, "Prop-Delete Delay (sec)", "propprotection", "propdelete_delay")
-	cl_PProtect.addchk(Panel, "Allow Toogun on Map", "propprotection", "tool_world")
+	cl_PProtect.addchk(Panel, "Allow Toolgun on Map", "propprotection", "tool_world")
 	cl_PProtect.addchk(Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "cdrive")
 
 	--Save Settings
@@ -161,7 +161,7 @@ function cl_PProtect.CUMenu(Panel)
 
 	-- CHECK ADMIN
 	if !LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl(Panel, "You are not an Admin!", "panel")
+		cl_PProtect.addlbl(Panel, "You are not an admin!", "panel")
 		return
 	end
 
@@ -188,7 +188,7 @@ function cl_PProtect.CUMenu(Panel)
 		cl_PProtect.addbtn(Panel, "Cleanup " .. plys:GetName() .."  (" .. tostring(plys:GetCount( "props" )) .. " Props)", "cleanup_player", plys:GetName())
 	end
 
-	cl_PProtect.addlbl(Panel, "Cleanup from disconnected Players:", "panel")
+	cl_PProtect.addlbl(Panel, "Cleanup props of disconnected Players:", "panel")
 	cl_PProtect.addbtn(Panel, "Cleanup all Props from disc. Players", "cleandiscprops")
 
 end
