@@ -1,6 +1,3 @@
-local ownerTable = {}
-
-
 
 -----------------
 --  SET OWNER  --
@@ -11,14 +8,6 @@ function sv_PProtect.SpawnedProp( ply, mdl, ent )
 
 	timer.Simple( 0.1, function()
 
-		local Owner = ent:CPPIGetOwner()
-		local id = ent:EntIndex()
-
-		ownerTable[id] = Owner
-
-		net.Start("PatchPPOwner")
-			net.WriteTable( ownerTable )
-		net.Broadcast()
 
 	end )
 
@@ -32,14 +21,7 @@ function sv_PProtect.SpawnedEnt( ply, ent )
 
 	timer.Simple( 0.1, function()
 
-		local Owner = ent:CPPIGetOwner()
-		local id = ent:EntIndex()
-
-		ownerTable[id] = Owner
-
-		net.Start("PatchPPOwner")
-			net.WriteTable( ownerTable )
-		net.Broadcast()
+		--local Owner = ent:CPPIGetOwner()
 
 	end )
 
@@ -115,6 +97,7 @@ function sv_PProtect.canTool(ply, trace, tool)
 
 	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
+	if ply:IsSuperAdmin() then return true end
 
 	local ent = trace.Entity
 	local Owner = ent:CPPIGetOwner()
@@ -176,18 +159,22 @@ hook.Add("EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage)
 
 
 
--------------------
---  OWNER TABLE  --
--------------------
+------------------
+--  NETWORKING  --
+------------------
 
-function sv_PProtect.sendOwners( ply )
-
-	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
-
-	net.Start("PatchPPOwner")
-		net.WriteTable( ownerTable )
-	net.Send( ply )
+function sv_PProtect.sendOwnerToClient(ent, ply)
 	
+	net.Start("sendOwner")
+		net.WriteEntity( ent:CPPIGetOwner() )
+	net.Send( ply )
 
 end
-hook.Add( "PlayerInitialSpawn", "sentOwnerTable", sv_PProtect.sendOwners )
+
+net.Receive( "getOwner", function( len, pl )
+     
+	local entity = net.ReadEntity()
+
+	sv_PProtect.sendOwnerToClient(entity, pl)
+
+end )

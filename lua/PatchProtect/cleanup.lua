@@ -39,22 +39,6 @@ function sv_PProtect.setCleanupProps( ply )
 
 	end )
 
-	table.foreach(ownerTable, function(key, value)
-
-
-		if value == ply then
-
-			ownerTable[key] = "Disconnected (" .. ply:GetName() .. ")"
-
-			net.Start("PatchPPOwner")
-				net.WriteTable( ownerTable )
-			net.Broadcast()
-
-		end 
-
-
-	end)
-
 end
 hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.setCleanupProps )
 

@@ -1,8 +1,9 @@
 --NETWORKING
 util.AddNetworkString("generalSettings")
 util.AddNetworkString("propProtectionSettings")
-util.AddNetworkString("PatchPPOwner")
 util.AddNetworkString( "SetOwnerOverProperty" )
+util.AddNetworkString( "getOwner" )
+util.AddNetworkString( "sendOwner" )
 
 -- CREATE CONVARS TABLE
 sv_PProtect.ConVars = {}

@@ -9,7 +9,7 @@ local HUDNotes = {}
 
 local PatchPPOwner
 
-local entityOwners = {}
+local Owner
 
 
 
@@ -53,40 +53,51 @@ function cl_PProtect.ShowOwner()
 
 	-- Set Trace
 	local PlyTrace = LocalPlayer():GetEyeTrace()
-	local Owner = entityOwners[PlyTrace.Entity:EntIndex()]
-
+	
 
 	if PlyTrace.HitNonWorld then
 
-		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() and Owner ~= nil then
+		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() then
 			
-			local POwner
+
+			if Owner == nil then
+				net.Start("getOwner")
+					net.WriteEntity( PlyTrace.Entity )
+				net.SendToServer()
+
+			end
+			
+			local ownerText
 
 			if type(Owner) == "Player" then
 
-				POwner = "Owner: " .. Owner:GetName()
-
-			elseif type(Owner) == "String" then
-
-				POwner = "Owner: " .. Owner
+				ownerText = "Owner: " .. Owner:GetName()
 
 			else
 
-				return
+				ownerText = "Owner: Disconnected"
 
 			end
 
 			surface.SetFont("PatchProtectFont_small")
 
-			local OW, OH = surface.GetTextSize(POwner)
+			local OW, OH = surface.GetTextSize(ownerText)
 			OW = OW + 10
 			OH = OH + 10
 
 			draw.RoundedBox(3, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, Color(88, 144, 222, 200))
-			draw.SimpleText(POwner, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color(0, 0, 0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-		
+			draw.SimpleText(ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color(0, 0, 0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+		else
+			if Owner ~= nil then --Because of the server performance, it just sets it to nil once
+				Owner = nil
+			end
 		end
+	else
 
+		if Owner ~= nil then --Because of the server performance, it just sets it to nil once
+			Owner = nil
+		end
+		
 	end
 
 end
@@ -415,9 +426,8 @@ hook.Add("HUDPaint", "RoundedBoxHud", Paint)
 --  NETWORKING  --
 ------------------
 
-net.Receive( "PatchPPOwner", function( len )
-     
-	--PatchPPOwner = net.ReadEntity()
-	entityOwners = net.ReadTable()
+net.Receive( "sendOwner", function( len )
+    
+	Owner = net.ReadEntity()
 
 end )
