@@ -1,5 +1,7 @@
 local ownerTable = {}
 
+
+
 -----------------
 --  SET OWNER  --
 -----------------
@@ -60,19 +62,20 @@ if cleanup then
 end
 
 -- SET OWNER OVER PROPERTY MENU
-util.AddNetworkString( "SetOwnerOverProperty" )
 
 net.Receive( "SetOwnerOverProperty", function( len, pl )
 
 	local sentInformation = net.ReadTable()
-	local changedEntity = sentInformation[1]
+	local ent = sentInformation[1]
 	local newOwner = sentInformation[2]
+	local Owner = ent:CPPIGetOwner()
 
-	if pl != changedEntity:CPPIGetOwner() then return end
+	if pl != Owner then return end
 
-	changedEntity:CPPISetOwner(newOwner)
+	ent:CPPISetOwner(newOwner)
 
 end )
+
 
 
 --------------------
@@ -81,9 +84,8 @@ end )
 
 function sv_PProtect.checkPlayer(ply, ent)
 
-	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
-	if ply:IsSuperAdmin() then return true end
 
 	local Owner = ent:CPPIGetOwner()
 
@@ -111,7 +113,7 @@ hook.Add( "CanUse", "AllowUseing", sv_PProtect.checkPlayer )
 
 function sv_PProtect.canTool(ply, trace, tool)
 
-	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
 
 	local ent = trace.Entity
@@ -137,9 +139,8 @@ hook.Add( "CanTool", "AllowToolUsage", sv_PProtect.canTool )
 
 function sv_PProtect.playerProperty(ply, string, ent)
 
-	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return true end
+	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
-
 	if string == "drive" and tonumber(sv_PProtect.Settings.PropProtection["cdrive"]) == 0 then return false end
 
 	local Owner = ent:CPPIGetOwner()

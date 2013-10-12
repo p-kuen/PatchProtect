@@ -102,10 +102,11 @@ hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
 
 
 
-----------------------------------
---  SET PROP OWNER OVER C-MENU  --
-----------------------------------
+---------------------
+--  PROPERTY MENU  --
+---------------------
 
+-- SET OTHER OWNER OVER C-MENU
 properties.Add( "setpropertyowner", {
 
 	MenuLabel = "Set Owner...",
@@ -134,12 +135,32 @@ properties.Add( "setpropertyowner", {
 				net.Start( "SetOwnerOverProperty" )
 					net.WriteTable( sendInformation )
 				net.SendToServer()
-				
+
 			end )
 
 		end
 
 	end,
+
+} )
+
+-- ADD TO BLOCKED PROPS
+properties.Add("addblockedprop", {
+
+	MenuLabel = "Add to blocked Props",
+	Order = 2002,
+
+	Filter = function(self, ent, ply)
+
+		if !ent:IsValid() or ent:IsPlayer() then return false end
+		if !ply:IsSuperAdmin() then return false end
+		return true
+
+	end,
+
+	Action = function(self, ent)
+		--Here goes funciton to block a prop
+	end
 
 } )
 
