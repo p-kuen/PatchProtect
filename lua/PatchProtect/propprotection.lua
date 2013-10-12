@@ -62,7 +62,12 @@ end
 -- SET OWNER OVER PROPERTY MENU
 function sv_PProtect.setownerbyproperty( ply, cmd, args )
 
-	ent:CPPISetOwner(player.GetByUniqueID(args[1]))
+	--We have to make that different. At the moment, I don't know how to make that as simple as possible.
+	--Maybe we send with usermessages or somthing like that the entity,
+	--which the player is looking at and the player-entity (the person, who will own the prop)
+
+	--Also it is very important to add also here an if-condition, that he is really
+	--the owner of the prop and also an ent:IsValid() of the entity, which the player is looking at.
 	
 end
 concommand.Add("setpropertyowner", sv_PProtect.setownerbyproperty)
