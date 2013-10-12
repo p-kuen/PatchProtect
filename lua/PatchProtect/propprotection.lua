@@ -82,7 +82,7 @@ end )
 --  CHECK PLAYER  --
 --------------------
 
-function sv_PProtect.checkPlayer(ply, ent)
+function sv_PProtect.checkPlayer( ply, ent )
 
 	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
@@ -105,13 +105,16 @@ hook.Add( "PhysgunPickup", "AllowPlayerPickup", sv_PProtect.checkPlayer )
 hook.Add( "CanDrive", "AllowDriving", sv_PProtect.checkPlayer )
 hook.Add( "CanUse", "AllowUseing", sv_PProtect.checkPlayer )
 
+function test()
 
+end
+hook.Add( "CanUse", "AllowUseing", sv_PProtect.checkPlayer )
 
 ----------------------------
 --  TOOL PROP PROTECTION  --
 ----------------------------
 
-function sv_PProtect.canTool(ply, trace, tool)
+function sv_PProtect.canTool( ply, trace, tool )
 
 	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
@@ -137,7 +140,7 @@ hook.Add( "CanTool", "AllowToolUsage", sv_PProtect.canTool )
 --  PROPERTY PROP PROTECTION  --
 --------------------------------
 
-function sv_PProtect.playerProperty(ply, string, ent)
+function sv_PProtect.playerProperty( ply, string, ent )
 
 	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
