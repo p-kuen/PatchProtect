@@ -129,19 +129,17 @@ hook.Add("PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.Spawn)
 --  TOOL ANTI SPAM  --
 ----------------------
 
-function sv_PProtect.CanTool( ply, trace, mode )
-
+function sv_PProtect.CanTool( ply, trace, tool )
+	
 	--Set some Player information
 	ply.spawned = true
-	ply.tooltype = mode
+	ply.tooltype = tool
 
 	--Check, if AntiSpam is enabled or ToolProtection is disabled
-	if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false or ply:IsSuperAdmin() then return true end
+	--if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false or ply:IsSuperAdmin() then return true end
 
 	--Check Admin
-	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
-
-	local delete = false
+	--if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
 
 	local function blockedtool()
 
@@ -154,7 +152,7 @@ function sv_PProtect.CanTool( ply, trace, mode )
 			--Notify Admin about Tool-Spam
 			if ply.tools >= tonumber(sv_PProtect.Settings.General["spamcount"]) then
 
-				sv_PProtect.AdminNotify("PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring(mode) .. "s!")
+				sv_PProtect.AdminNotify("PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring(tool) .. "s!")
 				ply.tools = 0
 				spamaction(ply)
 
@@ -162,13 +160,11 @@ function sv_PProtect.CanTool( ply, trace, mode )
 
 			--Block Toolgun-Firing
 			sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.toolcooldown - CurTime(), 1))
-			delete = true
 			return false
 
 		else
 
 			--Set Cooldown
-			delete = false
 			ply.tools = 0
 			ply.toolcooldown = CurTime() + tonumber(sv_PProtect.Settings.General["cooldown"])
 
@@ -178,15 +174,13 @@ function sv_PProtect.CanTool( ply, trace, mode )
 
 	table.foreach( sv_PProtect.BlockedTools, function( key, value )
 
- 		if value == mode then
+ 		if value == tool then
  			blockedtool()
  		end
 
 	end )
-
-	if delete then
-		return false
-	end
 	
+	sv_PProtect.canToolProtection( ply, trace, tool )
+
 end
 hook.Add( "CanTool", "LimitToolGuns", sv_PProtect.CanTool )
