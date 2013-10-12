@@ -1,4 +1,3 @@
-
 -----------------
 --  SET OWNER  --
 -----------------
@@ -6,7 +5,7 @@
 -- SET OWNER OF TOOL-ENTS
 if cleanup then
 
-	function cleanup.Add(ply, type, ent)
+	function cleanup.Add( ply, type, ent )
 		
 		if IsEntity(ent) == false or ent:IsPlayer() then return end
 		ent:CPPISetOwner(ply)
@@ -125,27 +124,21 @@ net.Receive( "SetOwnerOverProperty", function( len, pl )
 
 	local sentInformation = net.ReadTable()
 	local ent = sentInformation[1]
-	local newOwner = sentInformation[2]
 	local Owner = ent:CPPIGetOwner()
 
 	if pl != Owner then return end
 
-	ent:CPPISetOwner(newOwner)
+	ent:CPPISetOwner( sentInformation[2] )
 
 end )
 
-function sv_PProtect.sendOwnerToClient(ent, ply)
-	
-	net.Start("sendOwner")
-		net.WriteEntity( ent:CPPIGetOwner() )
-	net.Send( ply )
-
-end
-
+-- SEND THE OWNER TO THE CLIENT
 net.Receive( "getOwner", function( len, pl )
      
 	local entity = net.ReadEntity()
 
-	sv_PProtect.sendOwnerToClient(entity, pl)
+	net.Start("sendOwner")
+		net.WriteEntity( entity:CPPIGetOwner() )
+	net.Send( pl )
 
 end )

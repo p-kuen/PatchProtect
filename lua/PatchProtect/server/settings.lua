@@ -46,43 +46,35 @@ function sv_PProtect.SetupGeneralSettings()
 		local values = {}
 		local sqlvars = {}
 
-			for k, v in pairs(sv_PProtect.ConVars.PProtect_AS) do
+		for k, v in pairs(sv_PProtect.ConVars.PProtect_AS) do
 
-				local Type = type(v)
+			local Type = type(v)
 
-				if Type == "number" then
+			if Type == "number" then
 
-					local isDecimal
-					if tonumber(v) > math.floor(tonumber(v)) then isDecimal = true else isDecimal = false end
-					if  not isDecimal then Type = string.gsub(Type, "number", "INTEGER") else Type = string.gsub(Type, "number", "DOUBLE") end
+				local isDecimal
+				if tonumber(v) > math.floor(tonumber(v)) then isDecimal = true else isDecimal = false end
+				if  not isDecimal then Type = string.gsub(Type, "number", "INTEGER") else Type = string.gsub(Type, "number", "DOUBLE") end
 					
-				end
-
-				Type = string.gsub(Type, "string", "VARCHAR(255)")
-
-				if k == "spamcount" or k == "cooldown" then
-
-					table.insert(sqlvars, tostring(k) .. " " .. Type)
-
-				else
-
-					table.insert(sqlvars, tostring(k) .. " " .. Type)
-
-				end
-
-				if k == "concommand" then
-
-					table.insert(values, "'" .. v .. "'")
-					table.insert(options, "'" .. k .. "'")
-
-				else
-
-					table.insert(values, v)
-					table.insert(options, k)
-
-				end
-				
 			end
+
+			Type = string.gsub(Type, "string", "VARCHAR(255)")
+
+			if k == "spamcount" or k == "cooldown" then
+				table.insert(sqlvars, tostring(k) .. " " .. Type)
+			else
+				table.insert(sqlvars, tostring(k) .. " " .. Type)
+			end
+
+			if k == "concommand" then
+				table.insert(values, "'" .. v .. "'")
+				table.insert(options, "'" .. k .. "'")
+			else
+				table.insert(values, v)
+				table.insert(options, k)
+			end
+				
+		end
 
 		sql.Query("CREATE TABLE IF NOT EXISTS pprotect_antispam_general(" .. table.concat( sqlvars, ", " ) .. ");")
 		sql.Query("INSERT INTO pprotect_antispam_general(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")") --
@@ -124,24 +116,23 @@ function sv_PProtect.SetupPropProtectionSettings()
 		local values = {}
 		local sqlvars = {}
 
-			for k, v in pairs(sv_PProtect.ConVars.PProtect_PP) do
+		for k, v in pairs(sv_PProtect.ConVars.PProtect_PP) do
 
-				local Type = type(v)
+			local Type = type(v)
 
-				if Type == "number" then
+			if Type == "number" then
 
-					local isDecimal
-					if tonumber(v) > math.floor(tonumber(v)) then isDecimal = true else isDecimal = false end
-					if  not isDecimal then Type = string.gsub(Type, "number", "INTEGER") else Type = string.gsub(Type, "number", "DOUBLE") end
+				local isDecimal
+				if tonumber(v) > math.floor(tonumber(v)) then isDecimal = true else isDecimal = false end
+				if not isDecimal then Type = string.gsub(Type, "number", "INTEGER") else Type = string.gsub(Type, "number", "DOUBLE") end
 					
-				end
-
-				table.insert(sqlvars, tostring(k) .. " " .. Type)
-
-				table.insert(values, v)
-				table.insert(options, k)
-				
 			end
+
+			table.insert(sqlvars, tostring(k) .. " " .. Type)
+			table.insert(values, v)
+			table.insert(options, k)
+				
+		end
 
 		sql.Query("CREATE TABLE IF NOT EXISTS pprotect_propprotection(" .. table.concat( sqlvars, ", " ) .. ");")
 		sql.Query("INSERT INTO pprotect_propprotection(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")") --
@@ -172,6 +163,7 @@ function sv_PProtect.setBlockedTools()
 		if tonumber(value) == 1 then
 			table.insert(sv_PProtect.BlockedTools, key)
 		end
+
 	end )
 
 end
@@ -183,6 +175,7 @@ end
 -------------------------------------
 
 function sv_PProtect.dropTables()
+
 	sql.Query("DROP TABLE pprotect_propprotection")
 	sql.Query("DROP TABLE pprotect_antispam_general")
 
@@ -195,6 +188,7 @@ function sv_PProtect.dropTables()
 	sv_PProtect.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1") or {}
 	sv_PProtect.setBlockedTools()
 	sv_PProtect.Settings.PropProtection = sv_PProtect.SetupPropProtectionSettings()
+
 end
 
 sv_PProtect.Settings.General = sv_PProtect.SetupGeneralSettings()
@@ -210,22 +204,28 @@ if sv_PProtect.Settings.General == nil or sv_PProtect.Settings.PropProtection ==
 --  NOTIFICATIONS  --
 ---------------------
 
-function sv_PProtect.InfoNotify(ply, text)
+function sv_PProtect.InfoNotify( ply, text )
+
 	umsg.Start("PProtect_InfoNotify", ply)
 		umsg.String(text)
 	umsg.End()
+
 end
 
-function sv_PProtect.AdminNotify(text)
+function sv_PProtect.AdminNotify( text )
+
 	umsg.Start("PProtect_AdminNotify")
 		umsg.String(text)
 	umsg.End()
+
 end
 
-function sv_PProtect.Notify(ply, text)
+function sv_PProtect.Notify( ply, text )
+
 	umsg.Start("PProtect_Notify", ply)
 		umsg.String(text)
 	umsg.End()
+
 end
 
 
@@ -240,45 +240,52 @@ function sv_PProtect.reloadSettingsPlayer( ply )
 
 	if sv_PProtect.Settings.General then
 
-		table.foreach(sv_PProtect.Settings.General, function(key, value)
+		table.foreach( sv_PProtect.Settings.General, function(key, value)
+
 			if key ~= "concommand" then
 				ply:ConCommand("PProtect_AS_" .. key .. " " .. value .. "\n")
 			end
 
-		end)
+		end )
 
 	end
 
 	if sv_PProtect.Settings.Tools then
 
-		table.foreach(sv_PProtect.Settings.Tools, function(key, value)
+		table.foreach( sv_PProtect.Settings.Tools, function(key, value)
 
 			ply:ConCommand("PProtect_AS_tools_" .. key .. " " .. value .. "\n")
 
-		end)
+		end )
 
 	end
 
 	if sv_PProtect.Settings.PropProtection then
 
-		table.foreach(sv_PProtect.Settings.PropProtection, function(key, value)
+		table.foreach( sv_PProtect.Settings.PropProtection, function(key, value)
 
 			ply:ConCommand("PProtect_PP_" .. key .. " " .. value .. "\n")
 
-		end)
+		end )
 
 	end
 
 end
 
 function sv_PProtect.reloadSettings()
+
 	if ply then
-		sv_PProtect.reloadSettingsPlayer(ply)
+
+		sv_PProtect.reloadSettingsPlayer( ply )
+
 	else
-		for k,v in pairs(player.GetAll()) do
-			sv_PProtect.reloadSettingsPlayer(v)
+
+		for k,v in pairs( player.GetAll() ) do
+			sv_PProtect.reloadSettingsPlayer( v )
 		end
+
 	end
+
 end
 concommand.Add("sh_PProtect.reloadSettings", sv_PProtect.reloadSettings)
 
@@ -288,20 +295,24 @@ concommand.Add("sh_PProtect.reloadSettings", sv_PProtect.reloadSettings)
 --  SAVE SETTINGS  --
 ---------------------
 
-function sv_PProtect.Save(ply, cmd, args)
+function sv_PProtect.Save( ply, cmd, args )
 
-	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
+	if !ply:IsSuperAdmin() and !ply:IsAdmin() then
+		sv_PProtect.Notify(ply, "You are not an Admin!")
+		return
+	end
 
 	local s_value
 	local toolNames = {}
 	local toolValues = {}
 
 	--GENERAL
-	table.foreach(sv_PProtect.ConVars.PProtect_AS, function(key, value)
+	table.foreach( sv_PProtect.ConVars.PProtect_AS, function(key, value)
 
-		s_value = tonumber(ply:GetInfo("PProtect_AS_" .. key))
+		s_value = tonumber( ply:GetInfo("PProtect_AS_" .. key) )
 
 		if key ~= nil and value ~= nil and s_value ~= nil then
+
 			if type(s_value) == "number" then
 				sql.Query("UPDATE pprotect_antispam_general SET " .. key .. " = " .. s_value)
 			elseif type(s_value) == "string" then
@@ -310,29 +321,36 @@ function sv_PProtect.Save(ply, cmd, args)
 
 		end
 
-	end)
+	end )
 
 	sv_PProtect.Settings.General = sql.QueryRow("SELECT * FROM pprotect_antispam_general LIMIT 1")
 
 	--TOOLS
 	for _, wep in pairs( weapons.GetList() ) do
 
-		if wep.ClassName == "gmod_tool" then 
+		if wep.ClassName == "gmod_tool" then
+
 			local t = wep.Tool
+
 			for name, tool in pairs( t ) do
 				table.insert(toolNames, name)
 				table.insert(toolValues, tonumber(ply:GetInfo("PProtect_AS_tools_" .. name)))
 			end
+
 		end
+
 	end
 
 	if sql.TableExists("pprotect_antispam_tools") then
-		table.foreach(toolNames, function(key, value)
+
+		table.foreach( toolNames, function(key, value)
 			sql.Query("UPDATE pprotect_antispam_tools SET " .. value .. " = " .. toolValues[key])
-		end)
+		end )
+
 	end
 
 	if !sql.TableExists("pprotect_antispam_tools") then
+
 		sql.Query("CREATE TABLE IF NOT EXISTS pprotect_antispam_tools(" .. table.concat( toolNames, ", " ) .. ");")
 		sql.Query("INSERT INTO pprotect_antispam_tools(" .. table.concat( toolNames, ", " ) .. ") VALUES(" .. table.concat( toolValues, ", " ) .. ")")
 
@@ -340,6 +358,7 @@ function sv_PProtect.Save(ply, cmd, args)
 			Color(0, 240, 100),
 			"[PatchAntiSpam] Created new Tools-Settings-Table!\n"
 		)
+
 	end
 
 	sv_PProtect.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
@@ -355,42 +374,41 @@ concommand.Add("btn_save", sv_PProtect.Save)
 --  SAVE SETTINGS  --
 ---------------------
 
-function sv_PProtect.Save_PP(ply, cmd, args)
+function sv_PProtect.Save_PP( ply, cmd, args )
 
-	if ply:IsSuperAdmin() then
+	if !ply:IsSuperAdmin() and !ply:IsAdmin() then
+		sv_PProtect.Notify(ply, "You are not an Admin!")
+		return
+	end
 
-		local s_value
+	local s_value
 
-		table.foreach(sv_PProtect.ConVars.PProtect_PP, function(key, value)
+	table.foreach( sv_PProtect.ConVars.PProtect_PP, function(key, value)
 
-			s_value = tonumber(ply:GetInfo("PProtect_PP_" .. key))
+		s_value = tonumber(ply:GetInfo("PProtect_PP_" .. key))
 
-			if key ~= nil and value ~= nil and s_value ~= nil then
-				if type(s_value) == "number" then
+		if key ~= nil and value ~= nil and s_value ~= nil then
+
+			if type(s_value) == "number" then
 				sql.Query("UPDATE pprotect_propprotection SET " .. key .. " = " .. s_value)
-				elseif type(s_value) == "string" then
+			elseif type(s_value) == "string" then
 				sql.Query("UPDATE pprotect_propprotection SET " .. key .. " = '" .. s_value .. "'")
-				end
-
 			end
 
-		end )
+		end
 
-		sv_PProtect.Settings.PropProtection = sql.QueryRow("SELECT * FROM pprotect_propprotection LIMIT 1")
-		sv_PProtect.InfoNotify(ply, "Saved PropProtection Settings")
+	end )
 
-	else
-
-		sv_PProtect.Notify(ply, "You are not an Admin!")
-
-	end
+	sv_PProtect.Settings.PropProtection = sql.QueryRow("SELECT * FROM pprotect_propprotection LIMIT 1")
+	sv_PProtect.InfoNotify(ply, "Saved PropProtection Settings")
 
 end
 concommand.Add("btn_save_pp", sv_PProtect.Save_PP)
 
+-- RELOAD SETTINGS FOR EACH PLAYER
 local function initalSpawn( ply )
  
-	sv_PProtect.reloadSettings(ply)
+	sv_PProtect.reloadSettings( ply )
  
 end
 hook.Add( "PlayerInitialSpawn", "initialSpawn", initalSpawn )

@@ -12,8 +12,6 @@ function sv_PProtect.Setup( ply )
 	-- TOOLS
 	ply.toolcooldown = 0
 	ply.tools = 0
-	ply.spawned = false
-	ply.tooltype = ""
 
 end
 hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
@@ -74,10 +72,7 @@ end
 
 function sv_PProtect.Spawn( ply )
 	
-	--Check if AntiSpam is enabled
 	if tobool(sv_PProtect.Settings.General["use"]) == false then return end
-
-	--Check Admin
 	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return end
 
 	--Check Blocked Prop
@@ -130,21 +125,14 @@ hook.Add("PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.Spawn)
 ----------------------
 
 function sv_PProtect.CanTool( ply, trace, tool )
-	
-	--Set some Player information
-	ply.spawned = true
-	ply.tooltype = tool
 
-	--Check, if AntiSpam is enabled or ToolProtection is disabled
-	--if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false or ply:IsSuperAdmin() then return true end
-
-	--Check Admin
-	--if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
+	if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false or ply:IsSuperAdmin() then return true end
+	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
 
 	local function blockedtool()
 
 		--Check Cooldown
-		if CurTime() < ply.toolcooldown then
+		if CurTime() >= ply.toolcooldown then
 
 			--Add one Tool-Action to the Warning-List
 			ply.tools = ply.tools + 1
@@ -154,12 +142,12 @@ function sv_PProtect.CanTool( ply, trace, tool )
 
 				sv_PProtect.AdminNotify("PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring(tool) .. "s!")
 				ply.tools = 0
-				spamaction(ply)
+				spamaction( ply )
 
 			end
 
 			--Block Toolgun-Firing
-			sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.toolcooldown - CurTime(), 1))
+			sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.toolcooldown - CurTime(), 1) )
 			return false
 
 		else
