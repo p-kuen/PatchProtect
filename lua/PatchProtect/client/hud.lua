@@ -106,7 +106,7 @@ hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
 --  SET PROP OWNER OVER C-MENU  --
 ----------------------------------
 
---[[properties.Add( "setpropertyowner", {
+properties.Add( "setpropertyowner", {
 
 	MenuLabel = "Set Owner...",
 
@@ -126,14 +126,22 @@ hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
 		for _, ply in ipairs( player.GetAll() ) do
 
 			submenu:AddOption( ply:Nick(), function()
-				RunConsoleCommand("setpropertyowner", ply:UniqueID(), ent:UniqueID())
+
+				local sendInformation = {}
+				table.insert(sendInformation, ent)
+				table.insert(sendInformation, ply)
+
+				net.Start( "SetOwnerOverProperty" )
+					net.WriteTable( sendInformation )
+				net.SendToServer()
+				
 			end )
 
 		end
 
 	end,
 
-} )]]
+} )
 
 
 

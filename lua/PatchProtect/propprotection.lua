@@ -60,18 +60,19 @@ if cleanup then
 end
 
 -- SET OWNER OVER PROPERTY MENU
-function sv_PProtect.setownerbyproperty( ply, cmd, args )
+util.AddNetworkString( "SetOwnerOverProperty" )
 
-	--We have to make that different. At the moment, I don't know how to make that as simple as possible.
-	--Maybe we send with usermessages or somthing like that the entity,
-	--which the player is looking at and the player-entity (the person, who will own the prop)
+net.Receive( "SetOwnerOverProperty", function( len, pl )
 
-	--Also it is very important to add also here an if-condition, that he is really
-	--the owner of the prop and also an ent:IsValid() of the entity, which the player is looking at.
-	
-end
-concommand.Add("setpropertyowner", sv_PProtect.setownerbyproperty)
+	local sentInformation = net.ReadTable()
+	local changedEntity = sentInformation[1]
+	local newOwner = sentInformation[2]
 
+	if pl != changedEntity:CPPIGetOwner() then return end
+
+	changedEntity:CPPISetOwner(newOwner)
+
+end )
 
 
 --------------------
