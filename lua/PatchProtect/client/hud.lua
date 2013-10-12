@@ -84,9 +84,12 @@ function cl_PProtect.ShowOwner()
 			local OW, OH = surface.GetTextSize(ownerText)
 			OW = OW + 10
 			OH = OH + 10
+			if type(Owner) ~= "nil" then
 
-			draw.RoundedBox(3, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, Color(88, 144, 222, 200))
-			draw.SimpleText(ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color(0, 0, 0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+				draw.RoundedBox(3, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, Color(88, 144, 222, 200))
+				draw.SimpleText(ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color(0, 0, 0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+
+			end
 		else
 			if Owner ~= nil then --Because of the server performance, it just sets it to nil once
 				Owner = nil
