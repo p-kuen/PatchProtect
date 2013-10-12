@@ -58,15 +58,13 @@ function cl_PProtect.ShowOwner()
 	if PlyTrace.HitNonWorld then
 
 		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() then
-			
 
 			if Owner == nil then
 				net.Start("getOwner")
 					net.WriteEntity( PlyTrace.Entity )
 				net.SendToServer()
-
 			end
-			
+
 			local ownerText
 
 			if type(Owner) == "Player" then
@@ -75,7 +73,7 @@ function cl_PProtect.ShowOwner()
 
 			else
 
-				ownerText = "Owner: Disconnected"
+				ownerText = "Owner: Disc. or World"
 
 			end
 
@@ -90,13 +88,17 @@ function cl_PProtect.ShowOwner()
 				draw.SimpleText(ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color(0, 0, 0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 
 			end
+
 		else
+
 			if Owner ~= nil then --Because of the server performance, it just sets it to nil once
 				Owner = nil
 			end
-		end
-	else
 
+		end
+
+	else
+		
 		if Owner ~= nil then --Because of the server performance, it just sets it to nil once
 			Owner = nil
 		end
