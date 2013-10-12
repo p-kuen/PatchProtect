@@ -2,6 +2,7 @@
 util.AddNetworkString("generalSettings")
 util.AddNetworkString("propProtectionSettings")
 util.AddNetworkString("PatchPPOwner")
+util.AddNetworkString( "SetOwnerOverProperty" )
 
 -- CREATE CONVARS TABLE
 sv_PProtect.ConVars = {}
@@ -15,7 +16,8 @@ sv_PProtect.ConVars.PProtect_AS = {
 	spamaction = 1,
 	bantime = 10.5,
 	concommand = "Put your command here",
-	toolprotection = 1
+	toolprotection = 1,
+	propblock = 1
 }
 
 sv_PProtect.ConVars.PProtect_PP = {
@@ -24,7 +26,8 @@ sv_PProtect.ConVars.PProtect_PP = {
 	use_propdelete = 1,
 	propdelete_delay = 120,
 	cdrive = 0,
-	tool_world = 1
+	tool_world = 1,
+	damageprotection = 1
 }
 
 sv_PProtect.ConVars.PProtect_AS_tools = {}

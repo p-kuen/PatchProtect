@@ -11,6 +11,8 @@ local PatchPPOwner
 
 local entityOwners = {}
 
+
+
 ------------
 --  FONT  --
 ------------
@@ -91,10 +93,76 @@ end
 hook.Add("HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner)
 
 --Set PhysBeam to a kind of "disabled" Beam, if the player is not allowed to pick the prop up
-function cl_PProtect.SetClientPhysBeam(ply, ent)
+function cl_PProtect.SetClientPhysBeam( ply, ent )
+
 	return false
+
 end
 hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
+
+
+
+---------------------
+--  PROPERTY MENU  --
+---------------------
+
+-- SET OTHER OWNER OVER C-MENU
+properties.Add( "setpropertyowner", {
+
+	MenuLabel = "Set Owner...",
+
+	Order = 2001,
+
+	Filter = function( self, ent, ply )
+
+		local Owner = entityOwners[ent:EntIndex()]
+		if !ent:IsValid() or ent:IsPlayer() or ply != Owner then return false end
+		return true
+
+	end,
+
+	MenuOpen = function( self, menu, ent, trace )
+
+		local submenu = menu:AddSubMenu()
+		for _, ply in ipairs( player.GetAll() ) do
+
+			submenu:AddOption( ply:Nick(), function()
+
+				local sendInformation = {}
+				table.insert(sendInformation, ent)
+				table.insert(sendInformation, ply)
+
+				net.Start( "SetOwnerOverProperty" )
+					net.WriteTable( sendInformation )
+				net.SendToServer()
+
+			end )
+
+		end
+
+	end,
+
+} )
+
+-- ADD TO BLOCKED PROPS
+properties.Add("addblockedprop", {
+
+	MenuLabel = "Add to blocked Props",
+	Order = 2002,
+
+	Filter = function(self, ent, ply)
+
+		if !ent:IsValid() or ent:IsPlayer() then return false end
+		if !ply:IsSuperAdmin() then return false end
+		return true
+
+	end,
+
+	Action = function(self, ent)
+		--Here goes funciton to block a prop
+	end
+
+} )
 
 
 
@@ -106,8 +174,8 @@ hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
 function cl_PProtect.AddInfoNotify( str )
 
 	local tab = {}
-	tab.text 	= str
-	tab.recv 	= SysTime()
+	tab.text = str
+	tab.recv = SysTime()
 
 	table.insert( HUDInfoNotes, tab )
 	HUDInfoNote_c = HUDInfoNote_c + 1

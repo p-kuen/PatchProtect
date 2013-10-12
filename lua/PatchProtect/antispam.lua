@@ -3,7 +3,7 @@
 ----------------
 
 -- SET PLAYER VARS
-function sv_PProtect.Setup(ply)
+function sv_PProtect.Setup( ply )
 
 	-- PROPS
 	ply.propcooldown = 0
@@ -25,7 +25,7 @@ hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
 -------------------
 
 -- SET SPAM ACTION
-function sv_PProtect.spamaction(ply)
+function sv_PProtect.spamaction( ply )
 
 	local action = tonumber(sv_PProtect.Settings.General["spamaction"])
 
@@ -72,13 +72,20 @@ end
 --  PROP ANTI SPAM  --
 ----------------------
 
-function sv_PProtect.Spawn(ply)
+function sv_PProtect.Spawn( ply )
 	
 	--Check if AntiSpam is enabled
 	if tobool(sv_PProtect.Settings.General["use"]) == false then return end
 
 	--Check Admin
 	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return end
+
+	--Check Blocked Prop
+	if tobool(sv_PProtect.Settings.General["propblock"]) then
+
+		--here goes propblock function
+
+	end
 
 	--Check Cooldown
 	if CurTime() < ply.propcooldown then
@@ -129,10 +136,10 @@ function sv_PProtect.CanTool( ply, trace, mode )
 	ply.tooltype = mode
 
 	--Check, if AntiSpam is enabled or ToolProtection is disabled
-	if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false then return end
-	
+	if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false or ply:IsSuperAdmin() then return true end
+
 	--Check Admin
-	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return end
+	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
 
 	local delete = false
 
@@ -147,7 +154,7 @@ function sv_PProtect.CanTool( ply, trace, mode )
 			--Notify Admin about Tool-Spam
 			if ply.tools >= tonumber(sv_PProtect.Settings.General["spamcount"]) then
 
-				sv_PProtect.AdminNotify("PatchProtect - AS] " .. ply:Nick() .. " is spamming with " .. tostring(mode) .. "s!")
+				sv_PProtect.AdminNotify("PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring(mode) .. "s!")
 				ply.tools = 0
 				spamaction(ply)
 
@@ -182,4 +189,4 @@ function sv_PProtect.CanTool( ply, trace, mode )
 	end
 	
 end
-hook.Add("CanTool", "LimitToolGuns", sv_PProtect.CanTool)
+hook.Add( "CanTool", "LimitToolGuns", sv_PProtect.CanTool )

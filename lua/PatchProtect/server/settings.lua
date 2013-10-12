@@ -25,7 +25,7 @@ function sv_PProtect.SetupGeneralSettings()
 	if sql.TableExists("pprotect_antispam_general") then
 
 		--Check Table
-		local checktable = sql.Query("SELECT toolprotection from pprotect_antispam_general")
+		local checktable = sql.Query("SELECT propblock from pprotect_antispam_general")
 
 		if checktable == false then
 
@@ -103,7 +103,7 @@ function sv_PProtect.SetupPropProtectionSettings()
 	if sql.TableExists("pprotect_propprotection") then
 
 		--Check Table
-		local checktable = sql.Query("SELECT noantiadmin from pprotect_propprotection")
+		local checktable = sql.Query("SELECT damageprotection from pprotect_propprotection")
 
 		if checktable == false then
 

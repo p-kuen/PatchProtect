@@ -29,6 +29,7 @@ if SERVER then
 	include( "PatchProtect/server/settings.lua" )
 	include( "PatchProtect/antispam.lua" )
 	include( "PatchProtect/propprotection.lua" )
+	include( "PatchProtect/cleanup.lua" )
 
 else
 
