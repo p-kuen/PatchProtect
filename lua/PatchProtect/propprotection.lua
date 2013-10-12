@@ -56,6 +56,8 @@ function sv_PProtect.canToolProtection( ply, trace, tool )
 	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
 
 	local ent = trace.Entity
+	if not ent:IsValid() then return end
+
 	local Owner = ent:CPPIGetOwner()
 
 	if ent:IsWorld() and tonumber(sv_PProtect.Settings.PropProtection["tool_world"]) == 0 then return false end
