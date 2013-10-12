@@ -40,4 +40,4 @@ There is also a Cleanup-Menu, where you can cleanup everything on the server, or
 
 If there are some problems, please let us know! We try to answer as soon as possible.
 
-We hope, that you enjoy <b>PatchProtect</b> on your server.
+We hope, that you enjoy <b>PatchProtect</b> on your server!
