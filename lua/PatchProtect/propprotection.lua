@@ -105,8 +105,6 @@ function sv_PProtect.playerProperty( ply, property, ent )
 end
 hook.Add( "CanProperty", "AllowProperty", sv_PProtect.playerProperty )
 
-
-
 ------------------------------
 --  DAMAGE PROP PROTECTION  --
 ------------------------------
@@ -115,10 +113,20 @@ function sv_PProtect.EntityDamage( ent, info )
 	
 	local Owner = ent:CPPIGetOwner()
 	local Attacker = info:GetAttacker()
-	
-	if !ent:IsValid() or ent:IsPlayer() or sv_PProtect.Settings.PropProtection["use"] == false or sv_PProtect.Settings.PropProtection["damageprotection"] == false then return end
-	if Owner != Attacker then info:SetDamage(0) end
 
+	if !ent:IsValid() or ent:IsPlayer() or sv_PProtect.Settings.PropProtection["use"] == false or sv_PProtect.Settings.PropProtection["damageprotection"] == false then return end
+
+	if Attacker:IsPlayer() and Owner ~= Attacker then
+		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and sv_PProtect.Settings.PropProtection["noantiadmin"] == true then return end
+
+		info:SetDamage(0)
+		timer.Simple(0.1, function()
+			if ent:IsOnFire() then
+				ent:Extinguish()
+			end
+		end)
+
+	end
 end
 hook.Add( "EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage )
 
