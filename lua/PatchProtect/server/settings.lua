@@ -206,25 +206,26 @@ if sv_PProtect.Settings.General == nil or sv_PProtect.Settings.PropProtection ==
 
 function sv_PProtect.InfoNotify( ply, text )
 
-	umsg.Start("PProtect_InfoNotify", ply)
-		umsg.String(text)
-	umsg.End()
+	net.Start("PProtect_InfoNotify")
+		net.WriteString( text )
+	net.Send( ply )
 
 end
 
 function sv_PProtect.AdminNotify( text )
 
-	umsg.Start("PProtect_AdminNotify")
-		umsg.String(text)
-	umsg.End()
+	print("got notify")
+	net.Start("PProtect_AdminNotify")
+		net.WriteString( text )
+	net.Broadcast()
 
 end
 
 function sv_PProtect.Notify( ply, text )
 
-	umsg.Start("PProtect_Notify", ply)
-		umsg.String(text)
-	umsg.End()
+	net.Start("PProtect_Notify")
+		net.WriteString( text )
+	net.Send( ply )
 
 end
 
@@ -363,7 +364,7 @@ function sv_PProtect.Save( ply, cmd, args )
 
 	sv_PProtect.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
 	sv_PProtect.setBlockedTools()
-	sv_PProtect.InfoNotify(ply, "Saveed PropProtection Settings")
+	sv_PProtect.InfoNotify(ply, "Saved PropProtection Settings")
 		
 end
 concommand.Add("btn_save", sv_PProtect.Save)

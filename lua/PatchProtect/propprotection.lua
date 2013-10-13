@@ -119,9 +119,9 @@ hook.Add("EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage)
 
 
 
-------------------------------
---  DAMAGE PROP PROTECTION  --
-------------------------------
+-------------------------
+--  RELOAD PROTECTION  --
+-------------------------
 
 function sv_PProtect.PhysgunReload( weapon, ply )
 	

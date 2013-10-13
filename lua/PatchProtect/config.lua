@@ -5,6 +5,11 @@ util.AddNetworkString( "SetOwnerOverProperty" )
 util.AddNetworkString( "getOwner" )
 util.AddNetworkString( "sendOwner" )
 
+--Notify Networkstrings
+util.AddNetworkString( "PProtect_InfoNotify" )
+util.AddNetworkString( "PProtect_AdminNotify" )
+util.AddNetworkString( "PProtect_Notify" )
+
 -- CREATE CONVARS TABLE
 sv_PProtect.ConVars = {}
 
