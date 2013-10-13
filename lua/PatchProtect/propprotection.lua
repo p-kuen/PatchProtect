@@ -20,16 +20,22 @@ end
 --  CHECK PLAYER  --
 --------------------
 
+-- CHECK ADMIN FUNCTION
+function sv_PProtect.checkAdmin( ply )
+
+	if sv_PProtect.Settings.PropProtection["use"] == false or ply:IsSuperAdmin() then return true end
+	if ply:IsAdmin() and sv_PProtect.Settings.PropProtection["noantiadmin"] == true then return true end
+
+end
+
+-- GENERAL CHECK-PLAYER FUNCTION
 function sv_PProtect.checkPlayer( ply, ent )
 
-	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or ply:IsSuperAdmin() then return true end
-	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
+	if sv_PProtect.checkAdmin( ply ) then return true end
 
 	local Owner = ent:CPPIGetOwner()
 
-	if Owner == nil then
-		return false
-	end
+	if Owner == nil then return false end
 
 	if !ent:IsWorld() and Owner == ply then
 		return true
@@ -51,8 +57,7 @@ hook.Add( "CanUse", "AllowUseing", sv_PProtect.checkPlayer )
 
 function sv_PProtect.canToolProtection( ply, trace, tool )
 	
-	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or ply:IsSuperAdmin() then return true end
-	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
+	if sv_PProtect.checkAdmin( ply ) then return true end
 
 	local ent = trace.Entity
 	if not ent:IsValid() then return end
@@ -78,9 +83,8 @@ end
 
 function sv_PProtect.playerProperty( ply, string, ent )
 
-	if tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or ply:IsSuperAdmin() then return true end
-	if ply:IsAdmin() and tonumber(sv_PProtect.Settings.PropProtection["noantiadmin"]) == 1 then return true end
-	if string == "drive" and tonumber(sv_PProtect.Settings.PropProtection["cdrive"]) == 0 then return false end
+	if sv_PProtect.checkAdmin( ply ) then return true end
+	if string == "drive" and sv_PProtect.Settings.PropProtection["cdrive"] == false then return false end
 
 	local Owner = ent:CPPIGetOwner()
 
@@ -112,6 +116,25 @@ function sv_PProtect.EntityDamage( ent, info )
 
 end
 hook.Add("EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage)
+
+
+
+------------------------------
+--  DAMAGE PROP PROTECTION  --
+------------------------------
+
+function sv_PProtect.PhysgunReload( weapon, ply )
+	
+	if sv_PProtect.checkAdmin( ply ) then return end
+	if sv_PProtect.Settings.PropProtection["reloadprotection"] == false then return false end
+
+	local entity = ply:GetEyeTrace().Entity
+	if !entity:IsValid() then return false end
+
+	if ply != entity:CPPIGetOwner() then return false end
+
+end
+hook.Add("OnPhysgunReload", "PhysgunReloading", sv_PProtect.PhysgunReload)
 
 
 

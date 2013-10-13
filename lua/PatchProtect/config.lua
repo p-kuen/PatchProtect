@@ -28,7 +28,8 @@ sv_PProtect.ConVars.PProtect_PP = {
 	propdelete_delay = 120,
 	cdrive = 0,
 	tool_world = 1,
-	damageprotection = 1
+	damageprotection = 1,
+	reloadprotection = 1
 }
 
 sv_PProtect.ConVars.PProtect_AS_tools = {}
