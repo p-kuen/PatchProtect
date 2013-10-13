@@ -131,7 +131,6 @@ properties.Add( "setpropertyowner", {
 
 	Filter = function( self, ent, ply )
 
-		local Owner = entityOwners[ent:EntIndex()]
 		if !ent:IsValid() or ent:IsPlayer() or ply != Owner then return false end
 		return true
 

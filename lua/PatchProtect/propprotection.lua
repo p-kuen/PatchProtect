@@ -82,14 +82,14 @@ end
 --  PROPERTY PROP PROTECTION  --
 --------------------------------
 
-function sv_PProtect.playerProperty( ply, string, ent )
+function sv_PProtect.playerProperty( ply, property, ent )
 
 	if sv_PProtect.checkAdmin( ply ) then return true end
-	if string == "drive" and sv_PProtect.Settings.PropProtection["cdrive"] == false then return false end
+	if property == "drive" and sv_PProtect.Settings.PropProtection["cdrive"] == false then return false end
 
 	local Owner = ent:CPPIGetOwner()
 
-	if !ent:IsWorld() and Owner == ply and string != "persist" then
+	if !ent:IsWorld() and Owner == ply and property != "persist" then
  		return true
  	else
  		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
