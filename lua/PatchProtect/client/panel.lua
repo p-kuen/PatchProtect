@@ -140,11 +140,12 @@ function cl_PProtect.PPMenu(Panel)
 	cl_PProtect.addlbl(Panel, "Main Settings:", "panel")
 	cl_PProtect.addchk(Panel, "Use PropProtection", "propprotection", "use")
 	cl_PProtect.addchk(Panel, "No PropProtection for Admins", "propprotection", "noantiadmin")
+	cl_PProtect.addchk(Panel, "Use GravGun-Protection", "propprotection", "gravgunprotection")
 	cl_PProtect.addchk(Panel, "Use Reload-Protection", "propprotection", "reloadprotection")
 	cl_PProtect.addchk(Panel, "Use Damage-Protection", "propprotection", "damageprotection")
 	cl_PProtect.addchk(Panel, "Allow Toolgun on Map", "propprotection", "tool_world")
 	cl_PProtect.addchk(Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "cdrive")
-
+	--WE NEED TO MAKE SOME SPACE IN HERE, TO GET AN OVERVIEW OF THE PANEL AGAIN
 	cl_PProtect.addlbl(Panel, "Prop-Delete on Disconnect:", "panel")
 	cl_PProtect.addchk(Panel, "Use Prop-Delete on Disconnect", "propprotection", "use_propdelete")
 	cl_PProtect.addsldr(Panel, 1, 120, "Prop-Delete Delay (sec)", "propprotection", "propdelete_delay")
