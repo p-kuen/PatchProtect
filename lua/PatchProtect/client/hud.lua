@@ -60,9 +60,14 @@ function cl_PProtect.ShowOwner()
 		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() then
 
 			if Owner == nil then
+
+				local traceent = PlyTrace.Entity
+				if !traceent:IsValid() then return end
+
 				net.Start("getOwner")
-					net.WriteEntity( PlyTrace.Entity )
+					net.WriteEntity( traceent )
 				net.SendToServer()
+				
 			end
 
 			local ownerText
