@@ -5,8 +5,14 @@
 -- SET OWNER OF TOOL-ENTS
 if cleanup then
 
-	function cleanup.Add( ply, type, ent )
+	function cleanup.Add( ply, enttype, ent )
 		
+		if ply.duplicate == true then
+			if enttype != "duplicates" then
+				ply.duplicate = false
+			end
+		end
+
 		if IsEntity(ent) == false or ent:IsPlayer() then return end
 		ent:CPPISetOwner(ply)
 
@@ -111,9 +117,7 @@ function sv_PProtect.EntityDamage( ent, info )
 	local Attacker = info:GetAttacker()
 	
 	if !ent:IsValid() or ent:IsPlayer() or sv_PProtect.Settings.PropProtection["use"] == false or sv_PProtect.Settings.PropProtection["damageprotection"] == false then return end
-	if Owner == Attacker then return end
-
-	info:SetDamage(0)
+	if Owner != Attacker then info:SetDamage(0) end
 
 end
 hook.Add( "EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage )

@@ -35,10 +35,10 @@ surface.CreateFont( "PatchProtectFont_small", {
 
 function cl_PProtect.ShowOwner()
 	
-	-- Check, PatchPP
+	-- Check PatchPP
 	if GetConVarNumber( "PProtect_PP_use" ) == 0 then return end
 
-	-- No Valid Player or Valid Entity
+	-- No valid Player or valid Entity
 	if !LocalPlayer() or !LocalPlayer():IsValid() then return end
 
 	-- Set Trace
@@ -95,9 +95,7 @@ hook.Add("HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner)
 
 --Set PhysBeam to a kind of "disabled" Beam, if the player is not allowed to pick the prop up
 function cl_PProtect.SetClientPhysBeam( ply, ent )
-
 	return false
-
 end
 hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
 
@@ -116,6 +114,7 @@ properties.Add( "setpropertyowner", {
 
 	Filter = function( self, ent, ply )
 
+		if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then return true end
 		if !ent:IsValid() or ent:IsPlayer() or ply != Owner then return false end
 		return true
 
@@ -147,18 +146,19 @@ properties.Add( "setpropertyowner", {
 -- ADD TO BLOCKED PROPS
 properties.Add("addblockedprop", {
 
-	MenuLabel = "Add to blocked Props",
+	MenuLabel = "Add to blocked Props (doesn't work atm, sry)",
+
 	Order = 2002,
 
-	Filter = function(self, ent, ply)
+	Filter = function( self, ent, ply )
 
+		if !LocalPlayer():IsAdmin() or !LocalPlayer():IsSuperAdmin() then return true end
 		if !ent:IsValid() or ent:IsPlayer() then return false end
-		if !ply:IsSuperAdmin() then return false end
 		return true
 
 	end,
 
-	Action = function(self, ent)
+	Action = function( self, ent )
 		--Here goes function to block a prop
 	end
 
@@ -206,7 +206,7 @@ end
 ----------------
 --  PAINTING  --
 ----------------
-local count = 0
+
 local function Paint()
 
 	-- SHOW MESSAGES

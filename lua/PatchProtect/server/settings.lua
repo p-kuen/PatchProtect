@@ -81,7 +81,7 @@ function sv_PProtect.SetupGeneralSettings()
 		
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchAntiSpam] Created new General-Settings-Table\n"
+			"[PatchProtect] Created new General-Settings-Table\n"
 		)
 
 	end
@@ -139,7 +139,7 @@ function sv_PProtect.SetupPropProtectionSettings()
 		
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchAntiSpam] Created new PropProtection-Table\n"
+			"[PatchProtect] Created new PropProtection-Table\n"
 		)
 
 	end
@@ -356,7 +356,7 @@ function sv_PProtect.Save( ply, cmd, args )
 
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchAntiSpam] Created new Tools-Settings-Table!\n"
+			"[PatchProtect] Created new Tools-Settings-Table!\n"
 		)
 
 	end

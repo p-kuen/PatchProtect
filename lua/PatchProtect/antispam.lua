@@ -12,6 +12,7 @@ function sv_PProtect.Setup( ply )
 	-- TOOLS
 	ply.toolcooldown = 0
 	ply.tools = 0
+	ply.duplicate = false
 
 end
 hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
@@ -71,10 +72,11 @@ end
 ----------------------
 
 function sv_PProtect.Spawn( ply )
-	
+
 	if tobool(sv_PProtect.Settings.General["use"]) == false then return end
 	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return end
-
+	if ply.duplicate == true then return true end
+	
 	--Check Blocked Prop
 	if tobool(sv_PProtect.Settings.General["propblock"]) then
 
@@ -99,7 +101,7 @@ function sv_PProtect.Spawn( ply )
 		end
 
 		--Block Prop-Spawning
-		sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.propcooldown - CurTime(), 1))
+		sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.propcooldown - CurTime(), 1) )
 		return false
 
 	end
@@ -124,15 +126,32 @@ hook.Add("PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.Spawn)
 --  TOOL ANTI SPAM  --
 ----------------------
 
-function sv_PProtect.CanTool( ply, trace, tool )
+-- CHECK IF THE PLAYER FIRED WITH THE DUPLICATOR OR WITH A SIMILAR TOOL
+function sv_PProtect.CheckDupe( ply, tool )
 
-	if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false or ply:IsSuperAdmin() then return true end
-	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
-
-	if !table.HasValue( sv_PProtect.BlockedTools, tool ) then
-		if sv_PProtect.canToolProtection( ply, trace, tool ) then return true else return false end
+	if tool == "duplicator" or tool == "adv_duplicator" or tool == "adv_duplicator2" then
+		ply.duplicate = true
+	else
+		ply.duplicate = false
 	end
 
+end
+
+-- THE ANTISPAM FOR TOOL ITSELF
+function sv_PProtect.CanTool( ply, trace, tool )
+
+	if tobool(sv_PProtect.Settings.General["use"]) == false then return true end
+	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
+	if tobool(sv_PProtect.Settings.General["toolprotection"]) == false then
+		sv_PProtect.CheckDupe( ply, tool )
+		return true
+	end
+	
+	if !table.HasValue( sv_PProtect.BlockedTools, tool ) then
+		sv_PProtect.CheckDupe( ply, tool )
+		if sv_PProtect.canToolProtection( ply, trace, tool ) then return true else return false end
+	end
+	
  	--Check Cooldown
 	if CurTime() < ply.toolcooldown then
 
@@ -158,9 +177,10 @@ function sv_PProtect.CanTool( ply, trace, tool )
 		ply.tools = 0
 		ply.toolcooldown = CurTime() + tonumber(sv_PProtect.Settings.General["cooldown"])
 
+		sv_PProtect.CheckDupe( ply, tool )
+		if sv_PProtect.canToolProtection( ply, trace, tool ) then return true else return false end
+
 	end
-	
-	if sv_PProtect.canToolProtection( ply, trace, tool ) then return true else return false end
 
 end
-hook.Add( "CanTool", "LimitToolGuns", sv_PProtect.CanTool )
+hook.Add( "CanTool", "FiringToolgun", sv_PProtect.CanTool )
