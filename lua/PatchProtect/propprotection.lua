@@ -120,15 +120,9 @@ hook.Add( "EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage )
 
 
 
-<<<<<<< HEAD
--------------------------
---  RELOAD PROTECTION  --
--------------------------
-=======
 ---------------------------------
 --  PHYSGUN-RELOAD PROTECTION  --
 ---------------------------------
->>>>>>> 5344b83292f5985cb98a22b49f2fcddefb0f63c6
 
 function sv_PProtect.PhysgunReload( weapon, ply )
 	
