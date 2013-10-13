@@ -126,47 +126,40 @@ hook.Add("PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.Spawn)
 
 function sv_PProtect.CanTool( ply, trace, tool )
 
-	if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false or ply:IsSuperAdmin() then return true end
-	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
+	--if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false or ply:IsSuperAdmin() then return true end
+	--if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
 
-	local function blockedtool()
+	if !table.HasValue( sv_PProtect.BlockedTools, tool ) then
+		sv_PProtect.canToolProtection( ply, trace, tool )
+		return true
+	end
 
-		--Check Cooldown
-		if CurTime() >= ply.toolcooldown then
+ 	--Check Cooldown
+	if CurTime() < ply.toolcooldown then
 
-			--Add one Tool-Action to the Warning-List
-			ply.tools = ply.tools + 1
+		--Add one Tool-Action to the Warning-List
+		ply.tools = ply.tools + 1
 
-			--Notify Admin about Tool-Spam
-			if ply.tools >= tonumber(sv_PProtect.Settings.General["spamcount"]) then
+		--Notify Admin about Tool-Spam
+		if ply.tools >= tonumber(sv_PProtect.Settings.General["spamcount"]) then
 
-				sv_PProtect.AdminNotify("PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring(tool) .. "s!")
-				ply.tools = 0
-				spamaction( ply )
-
-			end
-
-			--Block Toolgun-Firing
-			sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.toolcooldown - CurTime(), 1) )
-			return false
-
-		else
-
-			--Set Cooldown
+			sv_PProtect.AdminNotify("PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring(tool) .. "s!")
 			ply.tools = 0
-			ply.toolcooldown = CurTime() + tonumber(sv_PProtect.Settings.General["cooldown"])
+			spamaction( ply )
 
 		end
 
+		--Block Toolgun-Firing
+		sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.toolcooldown - CurTime(), 1) )
+		return false
+
+	else
+
+		--Set Cooldown
+		ply.tools = 0
+		ply.toolcooldown = CurTime() + tonumber(sv_PProtect.Settings.General["cooldown"])
+
 	end
-
-	table.foreach( sv_PProtect.BlockedTools, function( key, value )
-
- 		if value == tool then
- 			blockedtool()
- 		end
-
-	end )
 	
 	sv_PProtect.canToolProtection( ply, trace, tool )
 

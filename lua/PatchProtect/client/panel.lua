@@ -52,7 +52,7 @@ function cl_PProtect.ASMenu(Panel)
 	--Main Controls
 	cl_PProtect.addchk(Panel, "Use AntiSpam", "general", "use")
 	cl_PProtect.addchk(Panel, "Use Tool-Protection", "general", "toolprotection")
-	cl_PProtect.addchk(Panel, "Use Prop-Block", "general", "propblock")
+	--cl_PProtect.addchk(Panel, "Use Prop-Block", "general", "propblock")
 	cl_PProtect.addbtn(Panel, "Set Tools", "tools")
 	cl_PProtect.addsldr(Panel, 0, 10, "Cooldown (Seconds)","general", "cooldown")
 	cl_PProtect.addsldr(Panel, 0, 40, "Props until Admin-Message","general", "spamcount", 0)
