@@ -34,7 +34,8 @@ sv_PProtect.ConVars.PProtect_PP = {
 	cdrive = 0,
 	tool_world = 1,
 	damageprotection = 1,
-	reloadprotection = 1
+	reloadprotection = 1,
+	gravgunprotection = 1
 }
 
 sv_PProtect.ConVars.PProtect_AS_tools = {}

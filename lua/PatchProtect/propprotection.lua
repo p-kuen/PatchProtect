@@ -45,7 +45,8 @@ function sv_PProtect.checkPlayer( ply, ent )
 	end
 
 end
-hook.Add( "PhysgunPickup", "AllowPlayerPickup", sv_PProtect.checkPlayer )
+hook.Add( "PhysgunPickup", "AllowPhysPickup", sv_PProtect.checkPlayer )
+hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.checkPlayer )
 hook.Add( "CanDrive", "AllowDriving", sv_PProtect.checkPlayer )
 hook.Add( "CanUse", "AllowUseing", sv_PProtect.checkPlayer )
 
@@ -64,7 +65,7 @@ function sv_PProtect.canToolProtection( ply, trace, tool )
 
 	local Owner = ent:CPPIGetOwner()
 
-	if ent:IsWorld() and tonumber(sv_PProtect.Settings.PropProtection["tool_world"]) == 0 then return false end
+	if ent:IsWorld() and sv_PProtect.Settings.PropProtection["tool_world"] == false then return false end
 
 	if Owner == ply or ent:IsWorld() then
 		return true
@@ -81,14 +82,14 @@ end
 --  PROPERTY PROP PROTECTION  --
 --------------------------------
 
-function sv_PProtect.playerProperty( ply, string, ent )
+function sv_PProtect.playerProperty( ply, property, ent )
 
 	if sv_PProtect.checkAdmin( ply ) then return true end
-	if string == "drive" and sv_PProtect.Settings.PropProtection["cdrive"] == false then return false end
+	if property == "drive" and sv_PProtect.Settings.PropProtection["cdrive"] == false then return false end
 
 	local Owner = ent:CPPIGetOwner()
 
-	if !ent:IsWorld() and Owner == ply and string != "persist" then
+	if !ent:IsWorld() and Owner == ply and property != "persist" then
  		return true
  	else
  		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -109,19 +110,25 @@ function sv_PProtect.EntityDamage( ent, info )
 	local Owner = ent:CPPIGetOwner()
 	local Attacker = info:GetAttacker()
 	
-	if !ent:IsValid() or ent:IsPlayer() or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["damageprotection"]) == 0 then return end
+	if !ent:IsValid() or ent:IsPlayer() or sv_PProtect.Settings.PropProtection["use"] == false or sv_PProtect.Settings.PropProtection["damageprotection"] == false then return end
 	if Owner == Attacker then return end
 
 	info:SetDamage(0)
 
 end
-hook.Add("EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage)
+hook.Add( "EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage )
 
 
 
+<<<<<<< HEAD
 -------------------------
 --  RELOAD PROTECTION  --
 -------------------------
+=======
+---------------------------------
+--  PHYSGUN-RELOAD PROTECTION  --
+---------------------------------
+>>>>>>> 5344b83292f5985cb98a22b49f2fcddefb0f63c6
 
 function sv_PProtect.PhysgunReload( weapon, ply )
 	
@@ -134,7 +141,23 @@ function sv_PProtect.PhysgunReload( weapon, ply )
 	if ply != entity:CPPIGetOwner() then return false end
 
 end
-hook.Add("OnPhysgunReload", "PhysgunReloading", sv_PProtect.PhysgunReload)
+hook.Add( "OnPhysgunReload", "PhysgunReloading", sv_PProtect.PhysgunReload )
+
+
+
+-------------------------------
+--  GRAVGUN PUNT PROTECTION  --
+-------------------------------
+
+function sv_PProtect.checkPlayer( ply, ent )
+
+	if sv_PProtect.checkAdmin( ply ) then return true end
+	if sv_PProtect.Settings.PropProtection["gravgunprotection"] == false then return false end
+
+	if ply != ent:CPPIGetOwner() then return false end
+
+end
+hook.Add( "GravGunPunt", "GravgunPunting", sv_PProtect.GravgunPunt )
 
 
 
