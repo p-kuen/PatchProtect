@@ -214,7 +214,6 @@ end
 
 function sv_PProtect.AdminNotify( text )
 
-	print("got notify")
 	net.Start("PProtect_AdminNotify")
 		net.WriteString( text )
 	net.Broadcast()
@@ -364,7 +363,7 @@ function sv_PProtect.Save( ply, cmd, args )
 
 	sv_PProtect.Settings.Tools = sql.QueryRow("SELECT * FROM pprotect_antispam_tools LIMIT 1")
 	sv_PProtect.setBlockedTools()
-	sv_PProtect.InfoNotify(ply, "Saved PropProtection Settings")
+	sv_PProtect.InfoNotify(ply, "Saved AntiSpam Settings")
 		
 end
 concommand.Add("btn_save", sv_PProtect.Save)

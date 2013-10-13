@@ -206,26 +206,15 @@ end
 ----------------
 --  PAINTING  --
 ----------------
-
+local count = 0
 local function Paint()
 
 	-- SHOW MESSAGES
 	if not PProtect_Notes then return end
 
-	local count = 0
 	table.foreach( PProtect_Notes, function(key, value)
 
-		if value.mode == "normal" then
-			count = count + 1
-		end
-
 		if SysTime() < value.time + 4 then
-
-			if count > 1 then
-
-				table.remove(PProtect_Notes, key - 1)
-				count = count - 1
-			end
 
 			PProtect_DrawNote( self, key, value)
 
@@ -284,6 +273,16 @@ net.Receive( "PProtect_Notify", function( len )
 	curmsg.text = net.ReadString()
 	curmsg.time = SysTime()
 	curmsg.mode = "normal"
+
+	table.foreach( PProtect_Notes, function(key, value)
+
+		if value.mode == "normal" then
+
+			table.remove(PProtect_Notes, key)
+
+		end
+
+	end)
 
 	table.insert( PProtect_Notes, curmsg )
 
