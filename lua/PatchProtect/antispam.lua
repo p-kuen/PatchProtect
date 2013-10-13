@@ -126,12 +126,11 @@ hook.Add("PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.Spawn)
 
 function sv_PProtect.CanTool( ply, trace, tool )
 
-	--if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false or ply:IsSuperAdmin() then return true end
-	--if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
+	if tobool(sv_PProtect.Settings.General["use"]) == false or tobool(sv_PProtect.Settings.General["toolprotection"]) == false or ply:IsSuperAdmin() then return true end
+	if ply:IsAdmin() and tobool(sv_PProtect.Settings.General["noantiadmin"]) then return true end
 
 	if !table.HasValue( sv_PProtect.BlockedTools, tool ) then
-		sv_PProtect.canToolProtection( ply, trace, tool )
-		return true
+		if sv_PProtect.canToolProtection( ply, trace, tool ) then return true else return false end
 	end
 
  	--Check Cooldown
@@ -161,7 +160,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 
 	end
 	
-	sv_PProtect.canToolProtection( ply, trace, tool )
+	if sv_PProtect.canToolProtection( ply, trace, tool ) then return true else return false end
 
 end
 hook.Add( "CanTool", "LimitToolGuns", sv_PProtect.CanTool )
