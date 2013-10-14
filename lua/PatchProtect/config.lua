@@ -1,19 +1,31 @@
---NETWORKING
-util.AddNetworkString("generalSettings")
-util.AddNetworkString("propProtectionSettings")
+------------------
+--  NETWORKING  --
+------------------
+
+-- ANTISPAM
+util.AddNetworkString( "generalSettings" )
+
+-- PROP PROTECTION
+util.AddNetworkString( "propProtectionSettings" )
 util.AddNetworkString( "SetOwnerOverProperty" )
 util.AddNetworkString( "getOwner" )
 util.AddNetworkString( "sendOwner" )
 
---Notify Networkstrings
+-- NOTIFICATIONS
 util.AddNetworkString( "PProtect_InfoNotify" )
 util.AddNetworkString( "PProtect_AdminNotify" )
 util.AddNetworkString( "PProtect_Notify" )
 
--- CREATE CONVARS TABLE
+
+
+--------------
+--  TABLES  --
+--------------
+
+-- CONVARS
 sv_PProtect.ConVars = {}
 
--- CLIENT CONVARS
+-- ANTI SPAM
 sv_PProtect.ConVars.PProtect_AS = {
 	use = 1,
 	cooldown = 3.5,
@@ -26,6 +38,9 @@ sv_PProtect.ConVars.PProtect_AS = {
 	propblock = 1
 }
 
+sv_PProtect.ConVars.PProtect_AS_tools = {}
+
+-- PROP PROTECTION
 sv_PProtect.ConVars.PProtect_PP = {
 	use = 1,
 	noantiadmin = 1,
@@ -39,7 +54,11 @@ sv_PProtect.ConVars.PProtect_PP = {
 	blockcreatortool = 1
 }
 
-sv_PProtect.ConVars.PProtect_AS_tools = {}
+
+
+------------------------
+--  SEND INFORMATION  --
+------------------------
 
 function sendNetworks( ply )
  

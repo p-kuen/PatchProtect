@@ -33,18 +33,15 @@ surface.CreateFont( "PatchProtectFont_small", {
 --  PROP OWNER  --
 ------------------
 
+-- SHOW OWNER
 function cl_PProtect.ShowOwner()
 	
-	-- Check PatchPP
 	if GetConVarNumber( "PProtect_PP_use" ) == 0 then return end
-
-	-- No valid Player or valid Entity
 	if !LocalPlayer() or !LocalPlayer():IsValid() then return end
 
 	-- Set Trace
 	local PlyTrace = LocalPlayer():GetEyeTrace()
 	
-
 	if PlyTrace.HitNonWorld then
 
 		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() then
@@ -80,20 +77,21 @@ function cl_PProtect.ShowOwner()
 
 		else
 
-			if Owner ~= nil then Owner = nil end --Because of the server performance, it just sets it to nil once
+			--Because of the server performance, it just sets it to nil once
+			if Owner ~= nil then Owner = nil end
 
 		end
 
 	else
 		
-		if Owner ~= nil then Owner = nil end --Because of the server performance, it just sets it to nil once
+		if Owner ~= nil then Owner = nil end
 		
 	end
 
 end
 hook.Add("HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner)
 
---Set PhysBeam to a kind of "disabled" Beam, if the player is not allowed to pick the prop up
+-- SET DISABLED PHYSBEAM IF NOT ALLOWED TO PICKUP
 function cl_PProtect.SetClientPhysBeam( ply, ent )
 	return false
 end
@@ -207,9 +205,9 @@ end
 --  PAINTING  --
 ----------------
 
+-- SHOW MESSAGES
 local function Paint()
 
-	-- SHOW MESSAGES
 	if not PProtect_Notes then return end
 
 	table.foreach( PProtect_Notes, function(key, value)

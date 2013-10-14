@@ -59,7 +59,6 @@ function sv_PProtect.checkComeback( ply )
 end
 hook.Add( "PlayerSpawn", "CheckAbortCleanup", sv_PProtect.checkComeback )
 
-
 -- CLEAN ALL DISCONNECTED PLAYERS PROPS
 function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
 
@@ -77,7 +76,8 @@ function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
 	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all Props from disconnected Players!" )
 
 end
-concommand.Add("btn_cleandiscprops", sv_PProtect.CleanAllDisconnectedPlayersProps)
+concommand.Add( "btn_cleandiscprops", sv_PProtect.CleanAllDisconnectedPlayersProps )
+
 
 
 ---------------------------------
@@ -94,7 +94,7 @@ function sv_PProtect.CleanupEverything( ply )
 	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all Props!" )
 
 end
-concommand.Add("btn_cleanup", sv_PProtect.CleanupEverything)
+concommand.Add( "btn_cleanup", sv_PProtect.CleanupEverything )
 
 -- CLEANUP PLAYERS PROPS
 function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
@@ -107,15 +107,15 @@ function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 		ent = v
 		local Owner = ent:CPPIGetOwner()
 
-		if Owner != nil and Owner:GetName() == tostring(args[1]) then
+		if Owner != nil and Owner:GetName() == tostring( args[1] ) then
 			ent:Remove()
 			count = count + 1
 		end
 
 	end
 
-	sv_PProtect.InfoNotify(ply, "Cleaned " .. tostring(args[1]) .. "'s Props! (" .. count .. ")")
+	sv_PProtect.InfoNotify( ply, "Cleaned " .. tostring( args[1] ) .. "'s Props! (" .. count .. ")" )
 	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed " .. count .. " Props from " .. tostring(args[1]) .. "!" )
 
 end
-concommand.Add("btn_cleanup_player", sv_PProtect.CleanupPlayersProps)
+concommand.Add( "btn_cleanup_player", sv_PProtect.CleanupPlayersProps )

@@ -120,6 +120,7 @@ function sv_PProtect.EntityDamage( ent, info )
 	if !ent:IsValid() or ent:IsPlayer() or sv_PProtect.Settings.PropProtection["use"] == false or sv_PProtect.Settings.PropProtection["damageprotection"] == false then return end
 
 	if Attacker:IsPlayer() and Owner ~= Attacker then
+		
 		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and sv_PProtect.Settings.PropProtection["noantiadmin"] == true then return end
 
 		info:SetDamage(0)

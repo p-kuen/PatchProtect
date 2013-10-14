@@ -110,15 +110,14 @@ function sv_PProtect.Spawn( ply )
 	ply.props = 0
 	ply.propcooldown = CurTime() + tonumber(sv_PProtect.Settings.General["cooldown"])
 
-
 end
-hook.Add("PlayerSpawnProp", "SpawningProp", sv_PProtect.Spawn)
-hook.Add("PlayerSpawnEffect", "SpawningEffect", sv_PProtect.Spawn)
-hook.Add("PlayerSpawnSENT", "SpawningSENT", sv_PProtect.Spawn)
-hook.Add("PlayerSpawnRagdoll", "SpawningRagdoll", sv_PProtect.Spawn)
-hook.Add("PlayerSpawnVehicle", "SpawningVehicle", sv_PProtect.Spawn)
-hook.Add("PlayerSpawnNPC", "SpawningNPC", sv_PProtect.Spawn)
-hook.Add("PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.Spawn)
+hook.Add( "PlayerSpawnProp", "SpawningProp", sv_PProtect.Spawn )
+hook.Add( "PlayerSpawnEffect", "SpawningEffect", sv_PProtect.Spawn )
+hook.Add( "PlayerSpawnSENT", "SpawningSENT", sv_PProtect.Spawn )
+hook.Add( "PlayerSpawnRagdoll", "SpawningRagdoll", sv_PProtect.Spawn )
+hook.Add( "PlayerSpawnVehicle", "SpawningVehicle", sv_PProtect.Spawn )
+hook.Add( "PlayerSpawnNPC", "SpawningNPC", sv_PProtect.Spawn )
+hook.Add( "PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.Spawn )
 
 
 
@@ -178,7 +177,6 @@ function sv_PProtect.CanTool( ply, trace, tool )
 		ply.toolcooldown = CurTime() + tonumber(sv_PProtect.Settings.General["cooldown"])
 
 		sv_PProtect.CheckDupe( ply, tool )
-		
 		if sv_PProtect.canToolProtection( ply, trace, tool ) then return true else return false end
 
 	end
