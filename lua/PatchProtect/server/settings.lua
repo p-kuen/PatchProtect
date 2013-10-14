@@ -95,7 +95,7 @@ function sv_PProtect.SetupPropProtectionSettings()
 	if sql.TableExists("pprotect_propprotection") then
 
 		--Check Table
-		local checktable = sql.Query("SELECT gravgunprotection from pprotect_propprotection")
+		local checktable = sql.Query("SELECT blockcreatortool from pprotect_propprotection")
 
 		if checktable == false then
 

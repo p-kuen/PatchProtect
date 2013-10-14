@@ -178,6 +178,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 		ply.toolcooldown = CurTime() + tonumber(sv_PProtect.Settings.General["cooldown"])
 
 		sv_PProtect.CheckDupe( ply, tool )
+		
 		if sv_PProtect.canToolProtection( ply, trace, tool ) then return true else return false end
 
 	end

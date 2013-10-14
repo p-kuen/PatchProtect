@@ -35,7 +35,8 @@ sv_PProtect.ConVars.PProtect_PP = {
 	tool_world = 1,
 	damageprotection = 1,
 	reloadprotection = 1,
-	gravgunprotection = 1
+	gravgunprotection = 1,
+	blockcreatortool = 1
 }
 
 sv_PProtect.ConVars.PProtect_AS_tools = {}

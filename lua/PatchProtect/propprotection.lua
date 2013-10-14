@@ -65,14 +65,15 @@ hook.Add( "CanUse", "AllowUseing", sv_PProtect.checkPlayer )
 function sv_PProtect.canToolProtection( ply, trace, tool )
 	
 	if sv_PProtect.checkAdmin( ply ) then return true end
+	if tool == "creator" and sv_PProtect.Settings.PropProtection["blockcreatortool"] == true then return end
 
 	local ent = trace.Entity
-	if not ent:IsValid() then return end
+	if not ent:IsValid() and not ent:IsWorld() then return end
 
 	local Owner = ent:CPPIGetOwner()
-
+	
 	if ent:IsWorld() and sv_PProtect.Settings.PropProtection["tool_world"] == false then return false end
-
+	
 	if Owner == ply or ent:IsWorld() then
 		return true
 	else
@@ -105,6 +106,8 @@ function sv_PProtect.playerProperty( ply, property, ent )
 end
 hook.Add( "CanProperty", "AllowProperty", sv_PProtect.playerProperty )
 
+
+
 ------------------------------
 --  DAMAGE PROP PROTECTION  --
 ------------------------------
@@ -120,13 +123,14 @@ function sv_PProtect.EntityDamage( ent, info )
 		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and sv_PProtect.Settings.PropProtection["noantiadmin"] == true then return end
 
 		info:SetDamage(0)
-		timer.Simple(0.1, function()
+		timer.Simple( 0.1, function()
 			if ent:IsOnFire() then
 				ent:Extinguish()
 			end
-		end)
+		end )
 
 	end
+
 end
 hook.Add( "EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage )
 
