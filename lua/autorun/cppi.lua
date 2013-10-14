@@ -44,7 +44,7 @@ function ENTITY:CPPIGetOwner()
 
 	local Owner = self.PatchPPOwner
 
-	if not Owner:IsValid() or not Owner:IsPlayer() then return Owner, self.PatchPPOwnerID end
+	if not IsValid(Owner) or not Owner:IsPlayer() then return Owner, self.PatchPPOwnerID end
 	return Owner, Owner:UniqueID()
 
 end
