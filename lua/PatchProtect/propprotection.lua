@@ -13,8 +13,8 @@ if cleanup then
 			end
 		end
 
-		if IsEntity(ent) == false or ent:IsPlayer() then return end
-		ent:CPPISetOwner(ply)
+		if IsEntity( ent ) == false or ent:IsPlayer() then return end
+		ent:CPPISetOwner( ply )
 
 	end
 
@@ -38,12 +38,12 @@ end
 function sv_PProtect.checkPlayer( ply, ent )
 
 	if sv_PProtect.checkAdmin( ply ) then return true end
+	if not ent:IsValid() or ent:IsWorld() then return false end
 
 	local Owner = ent:CPPIGetOwner()
-
 	if Owner == nil then return false end
 
-	if !ent:IsWorld() and Owner == ply then
+	if Owner == ply then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -65,12 +65,13 @@ hook.Add( "CanUse", "AllowUseing", sv_PProtect.checkPlayer )
 function sv_PProtect.canToolProtection( ply, trace, tool )
 	
 	if sv_PProtect.checkAdmin( ply ) then return true end
-	if tool == "creator" and sv_PProtect.Settings.PropProtection["blockcreatortool"] == true then return end
+	if tool == "creator" and sv_PProtect.Settings.PropProtection["blockcreatortool"] == true then return false end
 
 	local ent = trace.Entity
-	if not ent:IsValid() and not ent:IsWorld() then return end
+	if not ent:IsValid() and not ent:IsWorld() then return false end
 
 	local Owner = ent:CPPIGetOwner()
+	if Owner == nil then return false end
 	
 	if ent:IsWorld() and sv_PProtect.Settings.PropProtection["tool_world"] == false then return false end
 	
@@ -89,7 +90,7 @@ end
 --  PROPERTY PROP PROTECTION  --
 --------------------------------
 
-function sv_PProtect.playerProperty( ply, property, ent )
+function sv_PProtect.canProperty( ply, property, ent )
 
 	if sv_PProtect.checkAdmin( ply ) then return true end
 	if property == "drive" and sv_PProtect.Settings.PropProtection["cdrive"] == false then return false end
@@ -104,7 +105,7 @@ function sv_PProtect.playerProperty( ply, property, ent )
  	end
 
 end
-hook.Add( "CanProperty", "AllowProperty", sv_PProtect.playerProperty )
+hook.Add( "CanProperty", "AllowProperty", sv_PProtect.canProperty )
 
 
 
@@ -112,14 +113,14 @@ hook.Add( "CanProperty", "AllowProperty", sv_PProtect.playerProperty )
 --  DAMAGE PROP PROTECTION  --
 ------------------------------
 
-function sv_PProtect.EntityDamage( ent, info )
+function sv_PProtect.canDamage( ent, info )
 	
 	local Owner = ent:CPPIGetOwner()
 	local Attacker = info:GetAttacker()
 
 	if !ent:IsValid() or ent:IsPlayer() or sv_PProtect.Settings.PropProtection["use"] == false or sv_PProtect.Settings.PropProtection["damageprotection"] == false then return end
 
-	if Attacker:IsPlayer() and Owner ~= Attacker then
+	if Attacker:IsPlayer() and Owner != Attacker then
 		
 		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and sv_PProtect.Settings.PropProtection["noantiadmin"] == true then return end
 
@@ -133,7 +134,7 @@ function sv_PProtect.EntityDamage( ent, info )
 	end
 
 end
-hook.Add( "EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage )
+hook.Add( "EntityTakeDamage", "AllowEntityDamage", sv_PProtect.canDamage )
 
 
 
@@ -141,18 +142,22 @@ hook.Add( "EntityTakeDamage", "EntityGetsDamage", sv_PProtect.EntityDamage )
 --  PHYSGUN-RELOAD PROTECTION  --
 ---------------------------------
 
-function sv_PProtect.PhysgunReload( weapon, ply )
+function sv_PProtect.canPhysReload( weapon, ply )
 	
-	if sv_PProtect.checkAdmin( ply ) then return end
+	if sv_PProtect.checkAdmin( ply ) then return true end
 	if sv_PProtect.Settings.PropProtection["reloadprotection"] == false then return false end
 
 	local entity = ply:GetEyeTrace().Entity
 	if !entity:IsValid() then return false end
 
-	if ply != entity:CPPIGetOwner() then return false end
+	if ply == ent:CPPIGetOwner() then
+		return true
+	else
+		return false
+	end
 
 end
-hook.Add( "OnPhysgunReload", "PhysgunReloading", sv_PProtect.PhysgunReload )
+hook.Add( "OnPhysgunReload", "AllowPhysReload", sv_PProtect.canPhysReload )
 
 
 
@@ -160,15 +165,20 @@ hook.Add( "OnPhysgunReload", "PhysgunReloading", sv_PProtect.PhysgunReload )
 --  GRAVGUN PUNT PROTECTION  --
 -------------------------------
 
-function sv_PProtect.checkPlayer( ply, ent )
+function sv_PProtect.canGravPunt( ply, ent )
 
 	if sv_PProtect.checkAdmin( ply ) then return true end
 	if sv_PProtect.Settings.PropProtection["gravgunprotection"] == false then return false end
+	if !ent:IsValid() then return false end
 
-	if ply != ent:CPPIGetOwner() then return false end
+	if ply == ent:CPPIGetOwner() then
+		return true
+	else
+		return false
+	end
 
 end
-hook.Add( "GravGunPunt", "GravgunPunting", sv_PProtect.GravgunPunt )
+hook.Add( "GravGunPunt", "AllowGravPunt", sv_PProtect.canGravPunt )
 
 
 
@@ -179,23 +189,24 @@ hook.Add( "GravGunPunt", "GravgunPunting", sv_PProtect.GravgunPunt )
 -- SET OWNER OVER PROPERTY MENU
 net.Receive( "SetOwnerOverProperty", function( len, pl )
 
-	local sentInformation = net.ReadTable()
-	local ent = sentInformation[1]
+	local Info = net.ReadTable()
+	local ent = Info[1]
+	if !ent:IsValid() then return end
 	local Owner = ent:CPPIGetOwner()
 
 	if pl != Owner then return end
 
-	ent:CPPISetOwner( sentInformation[2] )
+	ent:CPPISetOwner( Info[2] )
 
 end )
 
 -- SEND THE OWNER TO THE CLIENT
 net.Receive( "getOwner", function( len, pl )
      
-	local entity = net.ReadEntity()
+	local ent = net.ReadEntity()
 
-	net.Start("sendOwner")
-		net.WriteEntity( entity:CPPIGetOwner() )
+	net.Start( "sendOwner" )
+		net.WriteEntity( ent:CPPIGetOwner() )
 	net.Send( pl )
 
 end )
