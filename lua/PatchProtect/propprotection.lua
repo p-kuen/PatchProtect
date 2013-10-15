@@ -43,7 +43,7 @@ function sv_PProtect.checkPlayer( ply, ent )
 	local Owner = ent:CPPIGetOwner()
 	if Owner == nil then return false end
 
-	if Owner == ply then
+	if !ent:IsWorld() and Owner == ply then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
