@@ -12,7 +12,7 @@ PatchProtect is a Prop Protection for Garry's Mod. (Fully written in Garry's Mod
 <b>Note: </b>At the moment, the whole PropProtection works without any known bugs.
 Only a Buddy-Function is still missing in our PropProtection, but we try to push an update as soon as possible to add this, so please be patient, if we send an update to workshop. <b>(Of course, we will offer patchnotes of every update, to keep you informed about the newest changes!)</b>
 
-<h1>Usage of PatchProtect:</h1>
+<h1>Useage of PatchProtect:</h1>
 You can control the Settings in the <b>Q-Menu > Utilities</b>. There, if you are an admin, you can change all settings and also what should happen, if someone is spamming. (Don't forget to press the Save-Button!)
 There is also a Cleanup-Menu, where you can cleanup everything on the server, or cleanup props from a special player, or cleanup all props, which are from disconnected players.
 
