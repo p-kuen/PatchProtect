@@ -136,5 +136,5 @@ if SERVER then
 		return sv_PProtect.checkPlayer(ply, self)
 
 	end
-	
+
 end

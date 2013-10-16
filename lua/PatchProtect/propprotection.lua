@@ -202,7 +202,7 @@ end )
 
 -- SEND THE OWNER TO THE CLIENT
 net.Receive( "getOwner", function( len, pl )
-     
+	
 	local ent = net.ReadEntity()
 
 	net.Start( "sendOwner" )

@@ -191,15 +191,26 @@ function cl_PProtect.CUMenu( Panel )
 	cl_PProtect.addlbl(Panel, "Cleanup everything:", "panel")
 	cl_PProtect.addbtn(Panel, "Cleanup everything (" .. tostring(count) .. " Props)", "cleanup")
 
+	--Cleanup Disconnected Player's Props
+	cl_PProtect.addlbl(Panel, "Cleanup props of disconnected Players:", "panel")
+	cl_PProtect.addbtn(Panel, "Cleanup all Props from disc. Players", "cleandiscprops")
+
 	--Claenup Player's Props
 	cl_PProtect.addlbl(Panel, "Cleanup Player's props:", "panel")
 	for i = 1, table.Count( player.GetAll() ) do
-		local plys = player.GetAll()[i]
-		cl_PProtect.addbtn(Panel, "Cleanup " .. plys:GetName() .."  (" .. tostring(plys:GetCount( "props" )) .. " Props)", "cleanup_player", plys:GetName())
-	end
 
-	cl_PProtect.addlbl(Panel, "Cleanup props of disconnected Players:", "panel")
-	cl_PProtect.addbtn(Panel, "Cleanup all Props from disc. Players", "cleandiscprops")
+		local plys = player.GetAll()[i]
+
+		net.Start( "getCount" )
+			net.WriteEntity( plys )
+		net.SendToServer()
+
+		net.Receive( "sendCount", function()
+			local counter = net.ReadString()
+			cl_PProtect.addbtn( Panel, "Cleanup " .. plys:GetName() .."  (" .. counter .. " Props)", "cleanup_player", plys:GetName() )
+		end )
+
+	end
 
 end
 

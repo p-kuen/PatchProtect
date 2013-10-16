@@ -10,6 +10,8 @@ util.AddNetworkString( "propProtectionSettings" )
 util.AddNetworkString( "SetOwnerOverProperty" )
 util.AddNetworkString( "getOwner" )
 util.AddNetworkString( "sendOwner" )
+util.AddNetworkString( "getCount" )
+util.AddNetworkString( "sendCount" )
 
 -- NOTIFICATIONS
 util.AddNetworkString( "PProtect_InfoNotify" )

@@ -38,7 +38,7 @@ function sv_PProtect.setCleanupProps( ply )
 end
 hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.setCleanupProps )
 
--- PLAYER CAME BACK
+-- PLAYER COMES BACK
 function sv_PProtect.checkComeback( ply )
 
 	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
@@ -101,12 +101,12 @@ function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
 	local count = 0
-
+	
 	for k, v in pairs( ents.GetAll() ) do
 
-		ent = v
+		if v:IsValid() and !v:IsPlayer() then ent = v end
 		local Owner = ent:CPPIGetOwner()
-
+		
 		if Owner != nil and Owner:GetName() == tostring( args[1] ) then
 			ent:Remove()
 			count = count + 1
@@ -119,3 +119,25 @@ function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 
 end
 concommand.Add( "btn_cleanup_player", sv_PProtect.CleanupPlayersProps )
+
+-- SEND THE OWNER TO THE CLIENT
+net.Receive( "getCount", function( len, pl )
+	
+	local player = net.ReadEntity()
+	local counter = 0
+
+	for k, v in pairs( ents.GetAll() ) do
+
+		local Owner = v:CPPIGetOwner()
+
+		if Owner != nil and Owner == player then
+			counter = counter + 1
+		end
+
+	end
+	
+	net.Start( "sendCount" )
+		net.WriteString( tostring(counter) )
+	net.Send( pl )
+
+end )

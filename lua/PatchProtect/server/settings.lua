@@ -412,8 +412,8 @@ concommand.Add( "btn_save_pp", sv_PProtect.Save_PP )
 
 -- RELOAD SETTINGS FOR EACH PLAYER
 local function initalSpawn( ply )
- 
+
 	sv_PProtect.reloadSettings( ply )
- 
+
 end
 hook.Add( "PlayerInitialSpawn", "initialSpawn", initalSpawn )
