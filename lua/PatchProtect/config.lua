@@ -10,7 +10,6 @@ util.AddNetworkString( "sendNewBlockedPropTable" )
 
 -- PROP PROTECTION
 util.AddNetworkString( "propProtectionSettings" )
-util.AddNetworkString( "SetOwnerOverProperty" )
 util.AddNetworkString( "getOwner" )
 util.AddNetworkString( "sendOwner" )
 
@@ -69,11 +68,11 @@ sv_PProtect.ConVars.PProtect_PP = {
 
 function sendNetworks( ply )
  
-	net.Start("generalSettings")
+	net.Start( "generalSettings" )
 		net.WriteTable( sv_PProtect.ConVars.PProtect_AS )
 	net.Send( ply )
 
-	net.Start("propProtectionSettings")
+	net.Start( "propProtectionSettings" )
 		net.WriteTable( sv_PProtect.ConVars.PProtect_PP )
 	net.Send( ply )
  

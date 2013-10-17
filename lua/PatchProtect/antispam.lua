@@ -17,6 +17,13 @@ function sv_PProtect.Setup( ply )
 end
 hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
 
+function sv_PProtect.CheckAdmin( ply )
+
+	if tobool( sv_PProtect.Settings.General["use"] ) == false or ply:IsSuperAdmin() then return true end
+	if ply:IsAdmin() and tobool( sv_PProtect.Settings.General["noantiadmin"] ) then return true end
+
+end
+
 
 
 -------------------
@@ -26,7 +33,7 @@ hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
 -- SET SPAM ACTION
 function sv_PProtect.spamaction( ply )
 
-	local action = tonumber(sv_PProtect.Settings.General["spamaction"])
+	local action = tonumber( sv_PProtect.Settings.General["spamaction"] )
 
 	--Cleanup
 	if action == 2 then
@@ -67,18 +74,18 @@ end
 
 
 
-----------------------
---  PROP ANTI SPAM  --
-----------------------
+----------------
+--  ANTISPAM  --
+----------------
 
-function sv_PProtect.Spawn( ply, mdl )
+function sv_PProtect.CanSpawn( ply, mdl )
 
-	if tobool( sv_PProtect.Settings.General["use"] ) == false or ply:IsSuperAdmin() then return true end
-	if ply:IsAdmin() and tobool( sv_PProtect.Settings.General["noantiadmin"] ) then return true end
+	if sv_PProtect.CheckAdmin( ply ) == true then return true end
 	if ply.duplicate == true then return true end
 	
-	--Check Blocked Prop
+	--Check blocked Props
 	if tobool( sv_PProtect.Settings.General["propblock"] ) and isstring( mdl ) then
+		sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
 		if table.HasValue( sv_PProtect.BlockedProps, string.lower( mdl ) ) then return false end
 	end
 	
@@ -104,18 +111,18 @@ function sv_PProtect.Spawn( ply, mdl )
 
 	end
 
-	--Set Cooldown
+	--Set new Cooldown
 	ply.props = 0
 	ply.propcooldown = CurTime() + tonumber( sv_PProtect.Settings.General["cooldown"] )
 
 end
-hook.Add( "PlayerSpawnProp", "SpawningProp", sv_PProtect.Spawn )
-hook.Add( "PlayerSpawnEffect", "SpawningEffect", sv_PProtect.Spawn )
-hook.Add( "PlayerSpawnSENT", "SpawningSENT", sv_PProtect.Spawn )
-hook.Add( "PlayerSpawnRagdoll", "SpawningRagdoll", sv_PProtect.Spawn )
-hook.Add( "PlayerSpawnVehicle", "SpawningVehicle", sv_PProtect.Spawn )
-hook.Add( "PlayerSpawnNPC", "SpawningNPC", sv_PProtect.Spawn )
-hook.Add( "PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.Spawn )
+hook.Add( "PlayerSpawnProp", "SpawningProp", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnEffect", "SpawningEffect", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnSENT", "SpawningSENT", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnRagdoll", "SpawningRagdoll", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnVehicle", "SpawningVehicle", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnNPC", "SpawningNPC", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.CanSpawn )
 
 
 
@@ -137,9 +144,7 @@ end
 -- THE ANTISPAM FOR TOOL ITSELF
 function sv_PProtect.CanTool( ply, trace, tool )
 
-	if tobool( sv_PProtect.Settings.General["use"] ) == false or ply:IsSuperAdmin() then return true end
-	local IsAdmin = false
-	if ply:IsAdmin() and tobool( sv_PProtect.Settings.General["noantiadmin"] ) == true then IsAdmin = true end
+	if sv_PProtect.CheckAdmin( ply ) == true then return true end
 	
 	--Check AntiSpam if Tool is in the Block-List
 	if table.HasValue( sv_PProtect.BlockedTools, tool )	and tobool( sv_PProtect.Settings.General["toolprotection"] ) == true then
@@ -165,7 +170,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 
 		else
 
-			--Set Cooldown (If Player is allowed to fire the Toolgun)
+			--Set new Cooldown
 			ply.tools = 0
 			ply.toolcooldown = CurTime() + tonumber( sv_PProtect.Settings.General["cooldown"] )
 
@@ -174,18 +179,18 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	end
 	
  	sv_PProtect.CheckDupe( ply, tool )
-	if sv_PProtect.canToolProtection( ply, trace, tool ) then return true else return false end
+	if sv_PProtect.CanToolProtection( ply, trace, tool ) == false then return false end
 
 end
 hook.Add( "CanTool", "FiringToolgun", sv_PProtect.CanTool )
 
 
 
--------------------------------
---  SEND/GET  BLOCKED PROPS  --
--------------------------------
+---------------------
+--  BLOCKED PROPS  --
+---------------------
 
--- GET BLOCKED PROP
+-- GET NEW BLOCKED PROP
 net.Receive( "sendBlockedProp", function( len, pl )
 	
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then
@@ -208,7 +213,7 @@ net.Receive( "sendBlockedProp", function( len, pl )
 	
 end )
 
--- SEND BLOCKED PROPS TABLE TO CLIENT
+-- SEND BLOCKEDPROPS-TABLE TO CLIENT
 concommand.Add( "btn_props", function( ply, cmd, args )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
@@ -218,7 +223,7 @@ concommand.Add( "btn_props", function( ply, cmd, args )
 
 end )
 
--- GET NEW BLOCKED PROP TABLE
+-- GET NEW BLOCKEDPROPS-TABLE FROM CLIENT
 net.Receive( "sendNewBlockedPropTable", function( len, pl )
 	
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end

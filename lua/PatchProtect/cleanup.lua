@@ -1,6 +1,6 @@
 -----------------------------------------
---  DISCONNECTED PLAYER'S PROP CLEANUP  --
-------------------------------------------
+--  CLIENT DISCONNECTED PLAYERS PROPS  --
+-----------------------------------------
 
 -- PLAYER LEFT SERVER
 function sv_PProtect.setCleanupProps( ply )
@@ -20,7 +20,7 @@ function sv_PProtect.setCleanupProps( ply )
 
 	end
 	
-	-- Create Timer
+	--Create Timer
 	timer.Create( "CleanupPropsOf" .. plyname , tonumber(sv_PProtect.Settings.PropProtection["propdelete_delay"]), 1, function()
 
 		for k, v in pairs( ents.GetAll() ) do
@@ -38,7 +38,7 @@ function sv_PProtect.setCleanupProps( ply )
 end
 hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.setCleanupProps )
 
--- PLAYER COMES BACK
+-- PLAYER CAME BACK
 function sv_PProtect.checkComeback( ply )
 
 	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
@@ -59,7 +59,7 @@ function sv_PProtect.checkComeback( ply )
 end
 hook.Add( "PlayerSpawn", "CheckAbortCleanup", sv_PProtect.checkComeback )
 
--- CLEAN ALL DISCONNECTED PLAYERS PROPS
+-- CLEAN ALL DISCONNECTED PLAYERS PROPS (BUTTON)
 function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
@@ -120,24 +120,30 @@ function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 end
 concommand.Add( "btn_cleanup_player", sv_PProtect.CleanupPlayersProps )
 
--- SEND THE OWNER TO THE CLIENT
+
+
+-------------------
+--  COUNT PROPS  --
+-------------------
+
+--Get request for counting props from a specific player
 net.Receive( "getCount", function( len, pl )
 	
 	local player = net.ReadEntity()
-	local counter = 0
+	local count = 0
 
 	for k, v in pairs( ents.GetAll() ) do
 
 		local Owner = v:CPPIGetOwner()
-
 		if Owner != nil and Owner == player then
-			counter = counter + 1
+			count = count + 1
 		end
 
 	end
 	
+	--Send the result back to the player
 	net.Start( "sendCount" )
-		net.WriteString( tostring(counter) )
+		net.WriteString( tostring( count ) )
 	net.Send( pl )
 
 end )
