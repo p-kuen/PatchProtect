@@ -175,6 +175,26 @@ end
 
 
 
+-------------------------
+--  SET BLOCKED TOOLS  --
+-------------------------
+
+function sv_PProtect.setBlockedProps()
+
+	sv_PProtect.BlockedProps = {}
+	--[[
+	Patcher, please put in here your sql things and so on, so we can save it and call it back
+	after a restart!
+
+	I know, that you can do it better than me, because you wrote this stuff here.
+	Thanks ;)
+	]]
+end
+--only temporarily
+sv_PProtect.setBlockedProps()
+
+
+
 -------------------------------------
 --  DROP TABLES IF THERE ARE BUGS  --
 -------------------------------------

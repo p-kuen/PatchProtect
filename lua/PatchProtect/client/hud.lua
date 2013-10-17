@@ -144,12 +144,13 @@ properties.Add( "setpropertyowner", {
 -- ADD TO BLOCKED PROPS
 properties.Add("addblockedprop", {
 
-	MenuLabel = "Add to blocked Props (doesn't work atm, sry)",
+	MenuLabel = "Add to blocked Props",
 
 	Order = 2002,
 
 	Filter = function( self, ent, ply )
 
+		if GetConVarNumber( "PProtect_AS_use" ) == 1 and GetConVarNumber( "PProtect_AS_propblock" ) == 1 then return true else return false end
 		if !LocalPlayer():IsAdmin() or !LocalPlayer():IsSuperAdmin() then return true end
 		if !ent:IsValid() or ent:IsPlayer() then return false end
 		return true
@@ -157,7 +158,11 @@ properties.Add("addblockedprop", {
 	end,
 
 	Action = function( self, ent )
-		--Here goes function to block a prop
+
+		net.Start( "sendBlockedProp" )
+			net.WriteString( ent:GetModel() )
+		net.SendToServer()
+		
 	end
 
 } )

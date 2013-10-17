@@ -48,22 +48,35 @@ function cl_PProtect.ASMenu( Panel )
 	end
 
 	-- SET CONTENT
-
-	--Main Controls
 	cl_PProtect.addchk( Panel, "Use AntiSpam", "general", "use" )
-	cl_PProtect.addchk( Panel, "Use Tool-Protection", "general", "toolprotection" )
-	--cl_PProtect.addchk( Panel, "Use Prop-Block", "general", "propblock" )
-	cl_PProtect.addbtn( Panel, "Set Tools", "tools" )
-	cl_PProtect.addsldr( Panel, 0, 10, "Cooldown (Seconds)","general", "cooldown" )
-	cl_PProtect.addsldr( Panel, 0, 40, "Props until Admin-Message","general", "spamcount", 0 )
-	cl_PProtect.addchk( Panel, "No AntiSpam for Admins", "general", "noantiadmin" )
-	SpamActionCat, saCat = cl_PProtect.makeCategory(Panel, "Spam Action" )
+
+	if GetConVarNumber( "PProtect_AS_use" ) == 1 then
+
+		cl_PProtect.addchk( Panel, "Use Tool-Protection", "general", "toolprotection" )
+		cl_PProtect.addchk( Panel, "Use Prop-Block", "general", "propblock" )
+
+		if GetConVarNumber( "PProtect_AS_toolprotection" ) == 1 then
+			cl_PProtect.addbtn( Panel, "Set blocked Tools", "tools" )
+		end
+
+		if GetConVarNumber( "PProtect_AS_propblock" ) == 1 then
+			cl_PProtect.addbtn( Panel, "Set blocked Props", "props" )
+		end
+
+		cl_PProtect.addsldr( Panel, 0, 10, "Cooldown (Seconds)","general", "cooldown" )
+		cl_PProtect.addsldr( Panel, 0, 40, "Props until Admin-Message","general", "spamcount", 0 )
+		cl_PProtect.addchk( Panel, "No AntiSpam for Admins", "general", "noantiadmin" )
+		SpamActionCat, saCat = cl_PProtect.makeCategory( Panel, "Spam Action" )
+
+	end
 
 	-- SAVE SETTINGS
 	cl_PProtect.addbtn( Panel, "Save Settings", "save" )
 
 	-- SPAMACTION
-	cl_PProtect.addcombo( saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction")
+	if GetConVarNumber( "PProtect_AS_use" ) == 1 then
+		cl_PProtect.addcombo( saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction")
+	end
 
 	local function spamactionChanged( CVar, PreviousValue, NewValue )
 		
@@ -87,6 +100,7 @@ function cl_PProtect.ASMenu( Panel )
 
 end
 
+-- SPAMACTION CHANGED
 local function spamactionChanged( CVar, PreviousValue, NewValue )
 
 	if tonumber( NewValue ) == 4 then
@@ -102,10 +116,11 @@ local function spamactionChanged( CVar, PreviousValue, NewValue )
 
 end
 
-
+-- SHOW BLOCKEDTOOLS FRAME
 function cl_PProtect.ShowToolsFrame( ply, cmd, args )
 
-	tlsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", true, true, "savetools", "Save Tools" )
+	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
+	tlsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", true, true, false )
 
 	table.foreach( cl_PProtect.ConVars.PProtect_AS_tools, function( key, value )
 
@@ -114,7 +129,35 @@ function cl_PProtect.ShowToolsFrame( ply, cmd, args )
 	end )
 
 end
-concommand.Add("btn_tools", cl_PProtect.ShowToolsFrame)
+concommand.Add( "btn_tools", cl_PProtect.ShowToolsFrame )
+
+-- SHOW BLOCKEDPROPS FRAME
+net.Receive( "getBlockedPropData", function()
+
+	local PropsTable = net.ReadTable()
+
+	psFrm = cl_PProtect.addframe( 800, 600, "Set blocked Props:", false, false, true, "Save Props", PropsTable, "sendNewBlockedPropTable" )
+
+	table.foreach( PropsTable, function( key, value )
+
+		local Icon = vgui.Create( "SpawnIcon", psFrm )
+		Icon:SetModel( value )
+
+		Icon.DoClick = function()
+			local menu = DermaMenu()
+			menu:AddOption( "Remove from blocked Props", function()
+				table.RemoveByValue( PropsTable, value )
+				Icon:Remove()
+				psFrm:InvalidateLayout()
+			end )
+			menu:Open()
+		end
+
+		psFrm:AddItem( Icon )
+
+	end )
+
+end )
 
 
 
@@ -139,19 +182,27 @@ function cl_PProtect.PPMenu( Panel )
 	end
 
 	-- SET CONTENT
-	cl_PProtect.addlbl( Panel, "Main Settings:", "panel" )
 	cl_PProtect.addchk( Panel, "Use PropProtection", "propprotection", "use" )
-	cl_PProtect.addchk( Panel, "No PropProtection for Admins", "propprotection", "noantiadmin" )
-	cl_PProtect.addchk( Panel, "Block 'Creator'-Tool (e.g.: Spawn Weapons with Toolgun)", "propprotection", "blockcreatortool" )
-	cl_PProtect.addchk( Panel, "Use GravGun-Protection", "propprotection", "gravgunprotection" )
-	cl_PProtect.addchk( Panel, "Use Reload-Protection", "propprotection", "reloadprotection" )
-	cl_PProtect.addchk( Panel, "Use Damage-Protection", "propprotection", "damageprotection" )
-	cl_PProtect.addchk( Panel, "Allow Toolgun on Map", "propprotection", "tool_world" )
-	cl_PProtect.addchk( Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "cdrive" )
+
+	if GetConVarNumber( "PProtect_PP_use" ) == 1 then
+
+		cl_PProtect.addlbl( Panel, "Prop Protection Settings:", "panel" )
+		cl_PProtect.addchk( Panel, "No PropProtection for Admins", "propprotection", "noantiadmin" )
+		cl_PProtect.addchk( Panel, "Block 'Creator'-Tool (e.g.: Spawn Weapons with Toolgun)", "propprotection", "blockcreatortool" )
+		cl_PProtect.addchk( Panel, "Use GravGun-Protection", "propprotection", "gravgunprotection" )
+		cl_PProtect.addchk( Panel, "Use Reload-Protection", "propprotection", "reloadprotection" )
+		cl_PProtect.addchk( Panel, "Use Damage-Protection", "propprotection", "damageprotection" )
+		cl_PProtect.addchk( Panel, "Allow Toolgun on Map", "propprotection", "tool_world" )
+		cl_PProtect.addchk( Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "cdrive" )
 	
-	cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
-	cl_PProtect.addchk( Panel, "Use Prop-Delete on Disconnect", "propprotection", "use_propdelete" )
-	cl_PProtect.addsldr( Panel, 1, 120, "Prop-Delete Delay (sec)", "propprotection", "propdelete_delay" )
+		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
+		cl_PProtect.addchk( Panel, "Use Prop-Delete on Disconnect", "propprotection", "use_propdelete" )
+
+		if GetConVarNumber( "PProtect_PP_use_propdelete" ) == 1 then
+			cl_PProtect.addsldr( Panel, 1, 120, "Prop-Delete Delay (sec)", "propprotection", "propdelete_delay" )
+		end
+
+	end
 
 	-- SAVE SETTINGS
 	cl_PProtect.addbtn( Panel, "Save Settings", "save_pp" )

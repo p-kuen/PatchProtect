@@ -2,10 +2,7 @@
 --  FRAME  --
 -------------
 
-function cl_PProtect.addframe( width, height, title, draggable, closeable, var, btntext )
-
-	-- BUTTON TEXT
-	btntext = btntext or "Save"
+function cl_PProtect.addframe( width, height, title, draggable, closeable, horizontal, btntext, btnarg, nettext )
 
 	-- MAIN FRAME
 	local frm = vgui.Create("DFrame")
@@ -29,10 +26,36 @@ function cl_PProtect.addframe( width, height, title, draggable, closeable, var, 
 	local list = vgui.Create( "DPanelList", frm )
 
 	list:SetPos( 10, 30 )
-	list:SetSize( width - 20, height - 40)
+	local ButtonSize = 0
+	
+	if btntext != nil then ButtonSize = 50 end
+	list:SetSize( width - 20, height - 40 - ButtonSize )
 	list:SetSpacing( 5 )
-	list:EnableHorizontal( false )
+	list:EnableHorizontal( horizontal )
 	list:EnableVerticalScrollbar( true )
+
+	if btntext != nil then
+
+		local btn = vgui.Create( "DButton", frm )
+
+		btn:Center()
+		btn:SetText( btntext )
+		btn:SetDark( true )
+		btn:SetSize( 150, 30 )
+		btn:SetPos( 20, height - 50 )
+
+		btn.DoClick = function()
+			if btnarg == nil then return end
+
+			if type( btnarg ) == "table" then
+				net.Start( nettext )
+					net.WriteTable( btnarg )
+				net.SendToServer()
+			end
+			frm:Close()
+		end
+
+	end
 
 	return list
 	

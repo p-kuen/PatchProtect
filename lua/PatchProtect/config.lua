@@ -4,12 +4,17 @@
 
 -- ANTISPAM
 util.AddNetworkString( "generalSettings" )
+util.AddNetworkString( "sendBlockedProp" )
+util.AddNetworkString( "getBlockedPropData" )
+util.AddNetworkString( "sendNewBlockedPropTable" )
 
 -- PROP PROTECTION
 util.AddNetworkString( "propProtectionSettings" )
 util.AddNetworkString( "SetOwnerOverProperty" )
 util.AddNetworkString( "getOwner" )
 util.AddNetworkString( "sendOwner" )
+
+-- CLEANUP
 util.AddNetworkString( "getCount" )
 util.AddNetworkString( "sendCount" )
 
