@@ -17,7 +17,7 @@ function sv_PProtect.Setup( ply )
 end
 hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
 
-function sv_PProtect.CheckAdmin( ply )
+function sv_PProtect.CheckASAdmin( ply )
 
 	if tobool( sv_PProtect.Settings.General["use"] ) == false or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tobool( sv_PProtect.Settings.General["noantiadmin"] ) then return true end
@@ -80,7 +80,7 @@ end
 
 function sv_PProtect.CanSpawn( ply, mdl )
 
-	if sv_PProtect.CheckAdmin( ply ) == true then return true end
+	if sv_PProtect.CheckASAdmin( ply ) == true then return true end
 	if ply.duplicate == true then return true end
 	
 	--Check blocked Props
@@ -144,7 +144,7 @@ end
 -- THE ANTISPAM FOR TOOL ITSELF
 function sv_PProtect.CanTool( ply, trace, tool )
 
-	if sv_PProtect.CheckAdmin( ply ) == true then return true end
+	if sv_PProtect.CheckASAdmin( ply ) == true then return true end
 	
 	--Check AntiSpam if Tool is in the Block-List
 	if table.HasValue( sv_PProtect.BlockedTools, tool )	and tobool( sv_PProtect.Settings.General["toolprotection"] ) == true then
