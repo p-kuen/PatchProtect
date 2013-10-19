@@ -2,63 +2,75 @@
 --  FRAME  --
 -------------
 
-function cl_PProtect.addframe( width, height, title, draggable, closeable, horizontal, btntext, btnarg, nettext )
+function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, btnarg, nettext )
 
 	-- MAIN FRAME
-	local frm = vgui.Create("DFrame")
+	local frm = vgui.Create( "DFrame" )
 
-	frm:SetPos( surface.ScreenWidth() / 2 - ( width / 2 ), surface.ScreenHeight() / 2 - ( height / 2 ) )
-	frm:SetSize( width, height )
+	frm:SetPos( surface.ScreenWidth() / 2 - ( w / 2 ), surface.ScreenHeight() / 2 - ( h / 2 ) )
+	frm:SetSize( w, h )
 	frm:SetTitle( title )
 	frm:SetVisible( true )
-	frm:SetDraggable( draggable )
-	frm:ShowCloseButton( closeable )
+	frm:SetDraggable( drag )
+	frm:ShowCloseButton( close )
 	frm:SetBackgroundBlur( true )
 	frm:MakePopup()
+	
+	function frm:Paint()
+ 
+		surface.SetDrawColor( 220, 220, 220, 255 )
+		self:DrawFilledRect()
+		draw.RoundedBox( 0, 0, 0, frm:GetWide(), 24, Color( 88, 144, 222, 255 ) )
+ 
+	end
 
-	frm.Paint = function()
-		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 88, 144, 222, 255 ) )
-		draw.RoundedBox( 0, 3, 3, frm:GetWide() - 6, frm:GetTall() - 6, Color( 220, 220, 220, 255 ) )
-		draw.RoundedBox( 0, 3, 3, frm:GetWide() - 6, 22, Color( 88, 144, 222, 255 ) )
+	function frm:PaintOver()
+
+		surface.SetDrawColor( 88, 144, 222, 255 )
+		self:DrawOutlinedRect()
+
 	end
 
 	-- FRAME CATEGORY
 	local list = vgui.Create( "DPanelList", frm )
+	local ButtonSize = 0
 
 	list:SetPos( 10, 30 )
-	local ButtonSize = 0
-	
 	if btntext != nil then ButtonSize = 50 end
-	list:SetSize( width - 20, height - 40 - ButtonSize )
+	list:SetSize( w - 20, h - 40 - ButtonSize )
 	list:SetSpacing( 5 )
 	list:EnableHorizontal( horizontal )
 	list:EnableVerticalScrollbar( true )
 
-	if btntext != nil then
+	if btntext == nil then return list end
 
-		local btn = vgui.Create( "DButton", frm )
+	local btn = vgui.Create( "DButton", frm )
 
-		btn:Center()
-		btn:SetText( btntext )
-		btn:SetDark( true )
-		btn:SetSize( 150, 30 )
-		btn:SetPos( 20, height - 50 )
+	btn:Center()
+	btn:SetText( btntext )
+	btn:SetDark( true )
+	btn:SetSize( 150, 30 )
+	btn:SetPos( 20, h - 50 )
+	btn.DoClick = function()
+		if btnarg == nil then return end
 
-		btn.DoClick = function()
-			if btnarg == nil then return end
-
-			if type( btnarg ) == "table" then
-				net.Start( nettext )
-					net.WriteTable( btnarg )
-				net.SendToServer()
-			end
-			frm:Close()
+		if type( btnarg ) == "table" then
+			net.Start( nettext )
+				net.WriteTable( btnarg )
+			net.SendToServer()
 		end
+		frm:Close()
+	end
+
+	function btn:Paint()
+
+		draw.RoundedBox( 2, 1, 1, btn:GetWide() - 3, btn:GetTall() - 3, Color( 150, 150, 150, 255 ) )
+		draw.RoundedBox( 2, 2, 2, btn:GetWide() - 5, btn:GetTall() - 5, Color( 200, 200, 200, 255 ) )
 
 	end
 
 	return list
-	
+
 end
 
 
@@ -91,21 +103,14 @@ function cl_PProtect.addchk( plist, text, typ, var )
 
 	local chk = vgui.Create("DCheckBoxLabel")
 	chk:SetText( text )
+	chk:SetDark( true )
 
 	if typ == "general" then
 		chk:SetConVar( "PProtect_AS_" .. var )
-		chk:SetDark(true)
-
 	elseif typ == "tools" then
-
 		chk:SetConVar( "PProtect_AS_tools_" .. var )
-		chk:SetDark( true )
-
 	elseif typ == "propprotection" then
-
 		chk:SetConVar( "PProtect_PP_" .. var )
-		chk:SetDark( true )
-
 	end
 
 	plist:AddItem( chk )
@@ -139,7 +144,7 @@ function cl_PProtect.addsldr( plist, min, max, text, typ, var, decimals )
 		sldr:SetConVar( "PProtect_AS_" .. var )
 	end
 
-	if var ~= "bantime" then plist:AddItem( sldr ) end
+	if var != "bantime" then plist:AddItem( sldr ) end
 
 end
 

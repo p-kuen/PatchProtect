@@ -23,13 +23,13 @@ function sv_PProtect.SetupGeneralSettings()
 		" Successfully loaded (Coded by Patcher56 & Ted894)\n\n"
 	)
 
-	if sql.TableExists("pprotect_antispam_general") then
+	if sql.TableExists( "pprotect_antispam_general" ) then
 
-		local checktable = sql.Query("SELECT propblock from pprotect_antispam_general")
+		local checktable = sql.Query( "SELECT propblock from pprotect_antispam_general" )
 
 		if checktable == false then
 
-			sql.Query("DROP TABLE pprotect_antispam_general")
+			sql.Query( "DROP TABLE pprotect_antispam_general" )
 
 			MsgC(
 				Color(235, 0, 0), 

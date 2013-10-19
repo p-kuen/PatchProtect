@@ -58,21 +58,21 @@ function cl_PProtect.ShowOwner()
 			end
 
 			local ownerText
-			if type(Owner) == "Player" then
+			if type( Owner ) == "Player" then
 				ownerText = "Owner: " .. Owner:GetName()
 			else
 				ownerText = "Owner: Disc. or World"
 			end
 
-			surface.SetFont("PatchProtectFont_small")
+			surface.SetFont( "PatchProtectFont_small" )
 
-			local OW, OH = surface.GetTextSize(ownerText)
+			local OW, OH = surface.GetTextSize( ownerText )
 			OW = OW + 10
 			OH = OH + 10
 
-			if type(Owner) ~= "nil" then
-				draw.RoundedBox(3, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, Color(88, 144, 222, 200))
-				draw.SimpleText(ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color(0, 0, 0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+			if type( Owner ) != "nil" then
+				draw.RoundedBox( 3, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, Color(88, 144, 222, 200) )
+				draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color(0, 0, 0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 			end
 
 		else
@@ -89,13 +89,13 @@ function cl_PProtect.ShowOwner()
 	end
 
 end
-hook.Add("HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner)
+hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner )
 
 -- SET DISABLED PHYSBEAM IF NOT ALLOWED TO PICKUP
 function cl_PProtect.SetClientPhysBeam( ply, ent )
 	return false
 end
-hook.Add("PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam)
+hook.Add( "PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam )
 
 
 
