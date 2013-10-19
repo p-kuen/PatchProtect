@@ -9,11 +9,11 @@ cl_PProtect.ConVars.PProtect_PP = {}
 
 local function createCCV()
 
-	for p, cvar in pairs(cl_PProtect.ConVars) do
+	for p, cvar in pairs( cl_PProtect.ConVars ) do
 
 		for k, v in pairs( cvar ) do
 
-			if type(k) == "number" then
+			if type( k ) == "number" then
 				CreateClientConVar(p .. "_" .. v, 0, false, true)
 			else
 				CreateClientConVar(p .. "_" .. k, v, false, true)
@@ -55,17 +55,23 @@ function cl_PProtect.ASMenu( Panel )
 	if GetConVarNumber( "PProtect_AS_use" ) == 1 then
 
 		cl_PProtect.addchk( Panel, "No AntiSpam for Admins", "general", "noantiadmin" )
-		cl_PProtect.addchk( Panel, "Use Tool-Protection", "general", "toolprotection" )
+		cl_PProtect.addchk( Panel, "Use Tool-AntiSpam (Affected by AntiSpam)", "general", "toolprotection" )
+		cl_PProtect.addchk( Panel, "Use Tool-Block", "general", "toolblock" )
 		cl_PProtect.addchk( Panel, "Use Prop-Block", "general", "propblock" )
 
 		--Tool Protection
 		if GetConVarNumber( "PProtect_AS_toolprotection" ) == 1 then
-			cl_PProtect.addbtn( Panel, "Set blocked Tools", "tools" )
+			cl_PProtect.addbtn( Panel, "Set antispammed Tools", "tools" )
+		end
+
+		--Tool Block
+		if GetConVarNumber( "PProtect_AS_toolblock" ) == 1 then
+			cl_PProtect.addbtn( Panel, "Set blocked Tools", "btools" )
 		end
 
 		--Prop Block
 		if GetConVarNumber( "PProtect_AS_propblock" ) == 1 then
-			cl_PProtect.addbtn( Panel, "Set blocked Props", "props" )
+			cl_PProtect.addbtn( Panel, "Set blocked Props", "bprops" )
 		end
 
 		--Cooldown/Spamaction
@@ -112,7 +118,7 @@ end
 function cl_PProtect.ShowToolsFrame( ply, cmd, args )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
-	tlsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", true, true, false )
+	tlsFrm = cl_PProtect.addframe( 250, 350, "Set antispammed Tools:", true, true, false )
 
 	table.foreach( cl_PProtect.ConVars.PProtect_AS_tools, function( key, value )
 

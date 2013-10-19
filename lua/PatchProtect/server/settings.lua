@@ -25,7 +25,7 @@ function sv_PProtect.SetupGeneralSettings()
 
 	if sql.TableExists( "pprotect_antispam_general" ) then
 
-		local checktable = sql.Query( "SELECT propblock from pprotect_antispam_general" )
+		local checktable = sql.Query( "SELECT toolblock from pprotect_antispam_general" )
 
 		if checktable == false then
 
@@ -159,7 +159,7 @@ end
 --  SET BLOCKED TOOLS  --
 -------------------------
 
-function sv_PProtect.setBlockedTools()
+function sv_PProtect.setBlockedTools()--We have to rename that to "antispammed" - because of the real blocked tools
 
 	sv_PProtect.BlockedTools = {}
 
@@ -189,6 +189,7 @@ function sv_PProtect.setBlockedProps()
 	I know, that you can do it better than me, because you wrote this stuff here.
 	Thanks ;)
 	]]
+
 end
 --only temporarily
 sv_PProtect.setBlockedProps()

@@ -85,8 +85,10 @@ function sv_PProtect.CanSpawn( ply, mdl )
 	
 	--Check blocked Props
 	if tobool( sv_PProtect.Settings.General["propblock"] ) and isstring( mdl ) then
-		sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
-		if table.HasValue( sv_PProtect.BlockedProps, string.lower( mdl ) ) then return false end
+		if table.HasValue( sv_PProtect.BlockedProps, string.lower( mdl ) ) then
+			sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
+			return false
+		end
 	end
 	
 	--Check Cooldown
@@ -214,12 +216,25 @@ net.Receive( "sendBlockedProp", function( len, pl )
 end )
 
 -- SEND BLOCKEDPROPS-TABLE TO CLIENT
-concommand.Add( "btn_props", function( ply, cmd, args )
+concommand.Add( "btn_bprops", function( ply, cmd, args )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
 	net.Start( "getBlockedPropData" )
 		net.WriteTable( sv_PProtect.BlockedProps )
 	net.Send( ply )
+
+end )
+
+-- SEND BLOCKEDTOOLS-TABLE TO CLIENT
+concommand.Add( "btn_btools", function( ply, cmd, args )
+
+	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
+	--[[
+	Here should be something for the blocked Tools.
+	Patcher, you did that well in Tool-AntiSpam,
+	so please can you do that for me?
+	Thanks ^^
+	]]
 
 end )
 

@@ -41,6 +41,7 @@ sv_PProtect.ConVars.PProtect_AS = {
 	bantime = 10.5,
 	concommand = "Put your command here",
 	toolprotection = 1,
+	toolblock = 1,
 	propblock = 1
 }
 
