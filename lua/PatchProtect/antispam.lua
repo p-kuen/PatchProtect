@@ -225,6 +225,21 @@ concommand.Add( "btn_bprops", function( ply, cmd, args )
 
 end )
 
+-- GET NEW BLOCKEDPROPS-TABLE FROM CLIENT
+net.Receive( "sendNewBlockedPropTable", function( len, pl )
+	
+	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+	sv_PProtect.BlockedProps = net.ReadTable()
+	sv_PProtect.InfoNotify( pl, "Saved new blocked Prop Table!" )
+	
+end )
+
+
+
+---------------------
+--  BLOCKED TOOLS  --
+---------------------
+
 -- SEND BLOCKEDTOOLS-TABLE TO CLIENT
 concommand.Add( "btn_btools", function( ply, cmd, args )
 
@@ -236,13 +251,4 @@ concommand.Add( "btn_btools", function( ply, cmd, args )
 	Thanks ^^
 	]]
 
-end )
-
--- GET NEW BLOCKEDPROPS-TABLE FROM CLIENT
-net.Receive( "sendNewBlockedPropTable", function( len, pl )
-	
-	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
-	sv_PProtect.BlockedProps = net.ReadTable()
-	sv_PProtect.InfoNotify( pl, "Saved new blocked Prop Table!" )
-	
 end )

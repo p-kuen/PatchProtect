@@ -4,7 +4,7 @@
 
 function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, btnarg, nettext )
 
-	-- MAIN FRAME
+	-- FRAME
 	local frm = vgui.Create( "DFrame" )
 
 	frm:SetPos( surface.ScreenWidth() / 2 - ( w / 2 ), surface.ScreenHeight() / 2 - ( h / 2 ) )
@@ -31,7 +31,7 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 
 	end
 
-	-- FRAME CATEGORY
+	-- CATEGORY IN FRAME
 	local list = vgui.Create( "DPanelList", frm )
 	local ButtonSize = 0
 
@@ -44,22 +44,30 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 
 	if btntext == nil then return list end
 
+	-- BUTTON IN FRAME
 	local btn = vgui.Create( "DButton", frm )
 
-	btn:Center()
+	btn:SetPos( 20, h - 50 )
+	btn:SetSize( 150, 30 )
 	btn:SetText( btntext )
 	btn:SetDark( true )
-	btn:SetSize( 150, 30 )
-	btn:SetPos( 20, h - 50 )
-	btn.DoClick = function()
-		if btnarg == nil then return end
+	btn:Center()
+	btn:SetFont( "DermaDefaultBold" )
 
-		if type( btnarg ) == "table" then
-			net.Start( nettext )
-				net.WriteTable( btnarg )
-			net.SendToServer()
+	function btn:DoClick()
+
+		if btnarg == nil then
+
+			if type( btnarg ) == "table" then
+				net.Start( nettext )
+					net.WriteTable( btnarg )
+				net.SendToServer()
+			end
+
 		end
+
 		frm:Close()
+
 	end
 
 	function btn:Paint()
@@ -82,13 +90,12 @@ end
 function cl_PProtect.makeCategory( plist, name )
 
 	local cat = vgui.Create( "DCollapsibleCategory" )
-	cat:SetLabel( name )
-
 	local pan = vgui.Create( "DListLayout" )
+	
+	cat:SetLabel( name )
 	cat:SetContents( pan )
 
 	plist:AddItem( cat )
-
 	return cat, pan
 
 end
@@ -101,7 +108,8 @@ end
 
 function cl_PProtect.addchk( plist, text, typ, var )
 
-	local chk = vgui.Create("DCheckBoxLabel")
+	local chk = vgui.Create( "DCheckBoxLabel" )
+
 	chk:SetText( text )
 	chk:SetDark( true )
 
@@ -126,7 +134,6 @@ end
 function cl_PProtect.addsldr( plist, min, max, text, typ, var, decimals )
 
 	local sldr
-
 	if var == "bantime" then sldr = plist:Add( "DNumSlider" ) else sldr = vgui.Create( "DNumSlider" ) end
 
 	sldr:SetMin( min )
@@ -159,6 +166,7 @@ function cl_PProtect.addlbl( plist, text, typ )
 	if typ == "category" then
 
 		local lbl = plist:Add( "DLabel" )
+
 		lbl:SetText( text )
 		lbl:SetDark( true )
 
@@ -178,7 +186,7 @@ end
 
 function cl_PProtect.addbtn( plist, text, cmd, args )
 
-	btn = vgui.Create( "DButton" )
+	local btn = vgui.Create( "DButton" )
 
 	btn:Center()
 	btn:SetText( text )
@@ -207,7 +215,6 @@ function cl_PProtect.addcombo( plist, choices, var )
 	table.foreach( choices, function( key, value )
 		combo:AddChoice( value )
 	end )
-
 	combo:ChooseOptionID( GetConVarNumber( "PProtect_AS_" .. var ) )
 
 	function combo:OnSelect( index, value, data )
@@ -227,6 +234,7 @@ end
 function cl_PProtect.addtext( plist, text )
 
 	local tentry = plist:Add( "DTextEntry" )
+	
 	tentry:SetText( text )
 
 end

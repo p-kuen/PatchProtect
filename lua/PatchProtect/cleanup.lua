@@ -4,14 +4,12 @@
 
 -- PLAYER LEFT SERVER
 function sv_PProtect.setCleanupProps( ply )
-
-	local plyname = ply:Nick()
 	
-	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
+	if tonumber( sv_PProtect.Settings.PropProtection["propdelete"] ) == 0 or tonumber( sv_PProtect.Settings.PropProtection["use"] ) == 0 then return end
 
 	for k, v in pairs( ents.GetAll() ) do
 
-		ent = v
+		local ent = v
 
 		local Owner = ent:CPPIGetOwner()
 		if Owner == ply then
@@ -21,17 +19,17 @@ function sv_PProtect.setCleanupProps( ply )
 	end
 	
 	--Create Timer
-	timer.Create( "CleanupPropsOf" .. plyname , tonumber(sv_PProtect.Settings.PropProtection["propdelete_delay"]), 1, function()
+	timer.Create( "CleanupPropsOf" .. ply:Nick(), tonumber( sv_PProtect.Settings.PropProtection["propdelete_delay"] ), 1, function()
 
 		for k, v in pairs( ents.GetAll() ) do
 
 			ent = v
-			if ent.PatchPPCleanup == plyname then
+			if ent.PatchPPCleanup == ply:Nick() then
 				ent:Remove()
 			end
 
 		end
-		print( "[PatchProtect - Cleanup] Removed " .. plyname .. "'s Props!" )
+		print( "[PatchProtect - Cleanup] Removed " .. ply:Nick() .. "'s Props!" )
 
 	end )
 
@@ -41,16 +39,17 @@ hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.s
 -- PLAYER CAME BACK
 function sv_PProtect.checkComeback( ply )
 
-	if tonumber(sv_PProtect.Settings.PropProtection["propdelete"]) == 0 or tonumber(sv_PProtect.Settings.PropProtection["use"]) == 0 then return end
+	if tonumber( sv_PProtect.Settings.PropProtection["propdelete"] ) == 0 or tonumber( sv_PProtect.Settings.PropProtection["use"] ) == 0 then return end
 
 	if timer.Exists( "CleanupPropsOf" .. ply:Nick() ) then
+		print( "[PatchProtect - Cleanup] Aborded Cleanup! " .. ply:Nick() .. " came back!" )
 		timer.Destroy( "CleanupPropsOf" .. ply:Nick() )
 	end
 
 	for k, v in pairs( ents.GetAll() ) do
 
 		ent = v
-		if ent.PatchPPCleanup == ply then
+		if ent.PatchPPCleanup == ply:Nick() then
 			ent.PatchPPCleanup = ""
 		end
 
@@ -66,7 +65,7 @@ function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
 
 	for k, v in pairs( ents.GetAll() ) do
 
-		ent = v
+		local ent = v
 		if ent.PatchPPCleanup != nil and ent.PatchPPCleanup != "" then
 			ent:Remove()
 		end
