@@ -13,11 +13,8 @@ if cleanup then
 			end
 		end
 
-		if ent == nil or enttype == nil then return end
-		if ent:IsPlayer() then return end
+		if ent == nil or enttype == nil or ent:IsPlayer() then return end
 
-		--print(ent)
-		--print(enttype)
 		ent:CPPISetOwner( ply )
 
 	end
