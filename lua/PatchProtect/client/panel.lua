@@ -137,19 +137,21 @@ net.Receive( "getBlockedPropData", function()
 	psFrm = cl_PProtect.addframe( 800, 600, "Set blocked Props:", false, false, true, "Save Props", PropsTable, "sendNewBlockedPropTable" )
 
 	table.foreach( PropsTable, function( key, value )
-		print( key .. " " .. type(key))
-		print( value .. " " .. type( value ))
+
 		local Icon = vgui.Create( "SpawnIcon", psFrm )
 		Icon:SetModel( value )
 
 		Icon.DoClick = function()
+
 			local menu = DermaMenu()
 			menu:AddOption( "Remove from blocked Props", function()
-				table.RemoveByValue( PropsTable, tostring( value ) )
+				table.RemoveByValue( PropsTable, value )
 				Icon:Remove()
 				psFrm:InvalidateLayout()
 			end )
+			
 			menu:Open()
+
 		end
 
 		psFrm:AddItem( Icon )

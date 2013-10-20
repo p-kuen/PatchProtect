@@ -135,7 +135,7 @@ function sv_PProtect.setBlockedProps()
 end
 sv_PProtect.setBlockedProps()
 
-function sv_PProtect.saveBlockedProps( proptable )
+function sv_PProtect.saveBlockedProps( proptable, wpanel )
 
 	local propkeys1 = {}
 	local propkeys2 = {}
@@ -157,19 +157,6 @@ function sv_PProtect.saveBlockedProps( proptable )
 		sql.Query( "INSERT INTO pprotect_blockedprops( " .. table.concat( propkeys2, ", " ) .. " ) VALUES( " .. table.concat( props, ", " ) .. " )" )
 
 	end
-
-	timer.Simple( 1, function()
-
-		sv_PProtect.BlockedProps = {}
-		sv_PProtect.LoadedBlockedProps = sql.QueryRow( "SELECT * FROM pprotect_blockedprops LIMIT 1" ) or {}
-
-		if table.Count( sv_PProtect.LoadedBlockedProps ) != 0 then
-			table.foreach( sv_PProtect.LoadedBlockedProps, function( key, value )
-				table.insert( sv_PProtect.BlockedProps, value )
-			end )
-		end
-
-	end )
 	
 end
 
