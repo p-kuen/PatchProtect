@@ -44,7 +44,7 @@ function ENTITY:CPPIGetOwner()
 
 	local Owner = self.PatchPPOwner
 
-	if not IsValid(Owner) or not Owner:IsPlayer() then return Owner, self.PatchPPOwnerID end
+	if not IsValid( Owner ) or not Owner:IsPlayer() then return Owner, self.PatchPPOwnerID end
 	return Owner, Owner:UniqueID()
 
 end
@@ -54,20 +54,22 @@ if SERVER then
 
 	-- SET OWNER
 	function ENTITY:CPPISetOwner( ply )
+		
+		if self == nil then return end
 
 		self.PatchPPOwner = ply
 		self.PatchPPOwnerID = ply:SteamID()
-
+		
 		if constraint.HasConstraints( self ) then
-
+			
 			local ConstrainedEntities = constraint.GetAllConstrainedEntities( self )
 
-			for _,ent in pairs(ConstrainedEntities) do
+			for _, cent in pairs( ConstrainedEntities ) do
 
-				if IsValid(ent) then
-					ent.PatchPPOwner = ply
-					ent.PatchPPOwnerID = ply:SteamID()
-				end
+				if IsEntity( cent.PatchPPOwner ) and cent.PatchPPOwner:IsValid() then return end
+
+				cent.PatchPPOwner = ply
+				cent.PatchPPOwnerID = ply:SteamID()
 
 			end
 
@@ -80,14 +82,14 @@ if SERVER then
 	-- SET OWNER UNIQUE ID
 	function ENTITY:CPPISetOwnerUID( UID )
 
-		local ply = player.GetByUniqueID( tostring(UID) )
+		local ply = player.GetByUniqueID( tostring( UID ) )
 
 		if self.PatchPPOwner and ply:IsValid() then
 
 			if self.AllowedPlayers then
 				table.insert( self.AllowedPlayers, ply )
 			else
-				self.AllowedPlayers = {ply}
+				self.AllowedPlayers = { ply }
 			end
 
 			return true
