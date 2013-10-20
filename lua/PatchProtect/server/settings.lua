@@ -6,65 +6,62 @@ sv_PProtect.Settings = sv_PProtect.Settings or {}
 
 
 
------------------------------
---  ANTISPAM SQL SETTINGS  --
------------------------------
+-------------------------------
+--  LOAD/WRITE SQL SETTINGS  --
+-------------------------------
 
-function sv_PProtect.SetupGeneralSettings()
+function sv_PProtect.SetupSQLSettings( sqlname, name, sqltable, checking )
 
-	-- STARTUP MESSAGE
-	MsgC(
-		Color(0,235,200),
-		"\n[PatchProtect]"
-	)
+	if name == "PropProtection" then
+		MsgC(
+			Color(0,235,200),
+			"\n[PatchProtect]"
+		)
 
-	MsgC(
-		Color(255,255,255),
-		" Successfully loaded (Coded by Patcher56 & Ted894)\n\n"
-	)
+		MsgC(
+			Color(255,255,255),
+			" Successfully loaded (Coded by Patcher56 & Ted894)\n\n"
+		)
+	end
 
-	if sql.TableExists( "pprotect_antispam_general" ) then
+	if sql.TableExists( sqlname ) then
 
-		local checktable = sql.Query( "SELECT toolblock from pprotect_antispam_general" )
+		local checktable = sql.Query( "SELECT " .. checking .. " from " .. sqlname )
 
 		if checktable == false then
 
-			sql.Query( "DROP TABLE pprotect_antispam_general" )
+			sql.Query( "DROP TABLE " .. sqlname )
 
 			MsgC(
 				Color(235, 0, 0), 
-				"[PatchProtect] Deleted the old General-Settings-Table\n"
+				"[PatchProtect] Deleted the old " .. name .. "-Settings-Table\n"
 			)
 
 		end
 
 	end
 
-	if not sql.TableExists( "pprotect_antispam_general" ) then
+	if not sql.TableExists( sqlname ) then
 		
 		local options = {}
 		local values = {}
 		local sqlvars = {}
 
-		for k, v in pairs( sv_PProtect.ConVars.PProtect_AS ) do
+		for k, v in pairs( sqltable ) do
 
-			local Type = type(v)
+			local Type = type( v )
 
 			if Type == "number" then
 
 				local isDecimal
-				if tonumber(v) > math.floor( tonumber(v) ) then isDecimal = true else isDecimal = false end
-				if  not isDecimal then Type = string.gsub( Type, "number", "INTEGER" ) else Type = string.gsub( Type, "number", "DOUBLE" ) end
+				if tonumber( v ) > math.floor( tonumber( v ) ) then isDecimal = true else isDecimal = false end
+				if not isDecimal then Type = string.gsub( Type, "number", "INTEGER" ) else Type = string.gsub( Type, "number", "DOUBLE" ) end
 					
 			end
 
 			Type = string.gsub( Type, "string", "VARCHAR(255)" )
 
-			if k == "spamcount" or k == "cooldown" then
-				table.insert( sqlvars, tostring( k ) .. " " .. Type )
-			else
-				table.insert( sqlvars, tostring( k ) .. " " .. Type )
-			end
+			table.insert( sqlvars, tostring( k ) .. " " .. Type )
 
 			if k == "concommand" then
 				table.insert( values, "'" .. v .. "'" )
@@ -76,97 +73,34 @@ function sv_PProtect.SetupGeneralSettings()
 				
 		end
 
-		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_antispam_general(" .. table.concat( sqlvars, ", " ) .. ");" )
-		sql.Query( "INSERT INTO pprotect_antispam_general(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")" )
+		sql.Query( "CREATE TABLE IF NOT EXISTS " .. sqlname .. "(" .. table.concat( sqlvars, ", " ) .. ");" )
+		sql.Query( "INSERT INTO " .. sqlname .. "(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")" )
 		
 		MsgC(
 			Color(0, 240, 100),
-			"[PatchProtect] Created new General-Settings-Table\n"
+			"[PatchProtect] Created new " .. name .. "-Settings-Table\n"
 		)
 
 	end
 	
-	return sql.QueryRow( "SELECT * FROM pprotect_antispam_general LIMIT 1" )
+	return sql.QueryRow( "SELECT * FROM " .. sqlname .. " LIMIT 1" )
 	
 end
 
 
 
-------------------------------------
---  PROP PROTECTION SQL SETTINGS  --
-------------------------------------
+-----------------------------
+--  SET ANTISPAMMED TOOLS  --
+-----------------------------
 
-function sv_PProtect.SetupPropProtectionSettings()
+function sv_PProtect.setAntiSpamTools()
 
-	if sql.TableExists( "pprotect_propprotection" ) then
+	sv_PProtect.AntiSpamTools = {}
 
-		local checktable = sql.Query( "SELECT blockcreatortool from pprotect_propprotection" )
-
-		if checktable == false then
-
-			sql.Query( "DROP TABLE pprotect_propprotection" )
-
-			MsgC(
-				Color(235, 0, 0), 
-				"[PatchProtect] Deleted the old PropProtection-Table\n"
-			)
-
-		end
-
-	end
-
-	if !sql.TableExists( "pprotect_propprotection" ) then
-		
-		local options = {}
-		local values = {}
-		local sqlvars = {}
-
-		for k, v in pairs( sv_PProtect.ConVars.PProtect_PP ) do
-
-			local Type = type(v)
-
-			if Type == "number" then
-
-				local isDecimal
-				if tonumber(v) > math.floor( tonumber(v) ) then isDecimal = true else isDecimal = false end
-				if not isDecimal then Type = string.gsub( Type, "number", "INTEGER" ) else Type = string.gsub( Type, "number", "DOUBLE" ) end
-					
-			end
-
-			table.insert( sqlvars, tostring(k) .. " " .. Type )
-			table.insert( values, v )
-			table.insert( options, k )
-				
-		end
-
-		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_propprotection(" .. table.concat( sqlvars, ", " ) .. ");" )
-		sql.Query( "INSERT INTO pprotect_propprotection(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")" )
-		
-		MsgC(
-			Color(0, 240, 100),
-			"[PatchProtect] Created new PropProtection-Table\n"
-		)
-
-	end
-
-	return sql.QueryRow( "SELECT * FROM pprotect_propprotection LIMIT 1" )
-	
-end
-
-
-
--------------------------
---  SET BLOCKED TOOLS  --
--------------------------
-
-function sv_PProtect.setBlockedTools()--We have to rename that to "antispammed" - because of the real blocked tools
-
-	sv_PProtect.BlockedTools = {}
-
-	table.foreach( sv_PProtect.Settings.Tools, function( key, value )
+	table.foreach( sv_PProtect.Settings.AntiSpamTools, function( key, value )
 
 		if tonumber( value ) == 1 then
-			table.insert( sv_PProtect.BlockedTools, key )
+			table.insert( sv_PProtect.AntiSpamTools, key )
 		end
 
 	end )
@@ -175,54 +109,109 @@ end
 
 
 
--------------------------
---  SET BLOCKED TOOLS  --
--------------------------
+---------------------
+--  BLOCKED PROPS  --
+---------------------
 
 function sv_PProtect.setBlockedProps()
 
-	sv_PProtect.BlockedProps = {}
-	--[[
-	Patcher, please put in here your sql things and so on, so we can save it and call it back
-	after a restart!
+	if sql.TableExists( "pprotect_blockedprops" ) then
 
-	I know, that you can do it better than me, because you wrote this stuff here.
-	Thanks ;)
-	]]
+		sv_PProtect.BlockedProps = {}
+		sv_PProtect.LoadedBlockedProps = sql.QueryRow( "SELECT * FROM pprotect_blockedprops LIMIT 1" ) or {}
+
+		if table.Count( sv_PProtect.LoadedBlockedProps ) != 0 then
+			table.foreach( sv_PProtect.LoadedBlockedProps, function( key, value )
+				table.insert( sv_PProtect.BlockedProps, value )
+			end ) 
+		end
+
+	else
+
+		sv_PProtect.BlockedProps = {}
+
+	end
 
 end
---only temporarily
 sv_PProtect.setBlockedProps()
 
+function sv_PProtect.saveBlockedProps( proptable )
+
+	local propkeys1 = {}
+	local propkeys2 = {}
+	local props = {}
+
+	if sql.TableExists( "pprotect_blockedprops" ) then
+		sql.Query( "DROP TABLE pprotect_blockedprops" )
+	end
+
+	if not sql.TableExists( "pprotect_blockedprops" ) then
+
+		for k, v in pairs( proptable ) do
+			table.insert( propkeys1, "prop_" .. k .. " VARCHAR(255)" )
+			table.insert( propkeys2, "'prop_" .. k .. "'" )
+			table.insert( props, "'" .. v .. "'" )
+		end
+
+		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blockedprops( " .. table.concat( propkeys1, ", " ) .. " );" )
+		sql.Query( "INSERT INTO pprotect_blockedprops( " .. table.concat( propkeys2, ", " ) .. " ) VALUES( " .. table.concat( props, ", " ) .. " )" )
+
+	end
+
+	timer.Simple( 1, function()
+
+		sv_PProtect.BlockedProps = {}
+		sv_PProtect.LoadedBlockedProps = sql.QueryRow( "SELECT * FROM pprotect_blockedprops LIMIT 1" ) or {}
+
+		if table.Count( sv_PProtect.LoadedBlockedProps ) != 0 then
+			table.foreach( sv_PProtect.LoadedBlockedProps, function( key, value )
+				table.insert( sv_PProtect.BlockedProps, value )
+			end )
+		end
+
+	end )
+	
+end
 
 
--------------------------------------
---  DROP TABLES IF THERE ARE BUGS  --
--------------------------------------
+
+-----------------------------------
+--  GET DATA FROM SQL DATABASES  --
+-----------------------------------
+
+function sv_PProtect.getData()
+
+	local SelectAntiSpam = "propblock"
+	local SelectPropProtection = "blockcreatortool"
+
+	sv_PProtect.Settings.AntiSpam_General = sv_PProtect.SetupSQLSettings( "pprotect_antispam_general", "AntiSpam", sv_PProtect.ConVars.PProtect_AS, SelectAntiSpam )
+	sv_PProtect.Settings.AntiSpamTools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}
+	sv_PProtect.setAntiSpamTools()
+	sv_PProtect.Settings.PropProtection = sv_PProtect.SetupSQLSettings( "pprotect_propprotection", "PropProtection", sv_PProtect.ConVars.PProtect_PP, SelectPropProtection )
+
+end
+sv_PProtect.getData()
+
+
+
+-----------------------------------------------------------
+--  DROP ALL PATCHPROTECT DATABASES IF THERE ARE ERRORS  --
+-----------------------------------------------------------
 
 function sv_PProtect.dropTables()
-
-	sql.Query( "DROP TABLE pprotect_propprotection" )
+	
 	sql.Query( "DROP TABLE pprotect_antispam_general" )
+	sql.Query( "DROP TABLE pprotect_propprotection" )
 
 	MsgC(
 		Color(235, 0, 0), 
-		"[PatchProtect] DROPPED ALL TABLES FROM PATCHPROTECT. SORRY\n"
+		"[PatchProtect] Cause of a Bug, PatchProtect deleted all Settings. Sorry\n"
 	)
 
-	sv_PProtect.Settings.General = sv_PProtect.SetupGeneralSettings()
-	sv_PProtect.Settings.Tools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}
-	sv_PProtect.setBlockedTools()
-	sv_PProtect.Settings.PropProtection = sv_PProtect.SetupPropProtectionSettings()
+	sv_PProtect.getData()
 
 end
-
-sv_PProtect.Settings.General = sv_PProtect.SetupGeneralSettings()
-sv_PProtect.Settings.Tools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}
-sv_PProtect.setBlockedTools()
-sv_PProtect.Settings.PropProtection = sv_PProtect.SetupPropProtectionSettings()
-
-if sv_PProtect.Settings.General == nil or sv_PProtect.Settings.PropProtection == nil then sv_PProtect.dropTables() end
+if sv_PProtect.Settings.AntiSpam_General == nil or sv_PProtect.Settings.PropProtection == nil then sv_PProtect.dropTables() end
 
 
 
@@ -230,9 +219,17 @@ if sv_PProtect.Settings.General == nil or sv_PProtect.Settings.PropProtection ==
 --  NOTIFICATIONS  --
 ---------------------
 
+function sv_PProtect.Notify( ply, text )
+
+	net.Start( "PProtect_Notify" )
+		net.WriteString( text )
+	net.Send( ply )
+
+end
+
 function sv_PProtect.InfoNotify( ply, text )
 
-	net.Start("PProtect_InfoNotify")
+	net.Start( "PProtect_InfoNotify" )
 		net.WriteString( text )
 	net.Send( ply )
 
@@ -240,17 +237,9 @@ end
 
 function sv_PProtect.AdminNotify( text )
 
-	net.Start("PProtect_AdminNotify")
+	net.Start( "PProtect_AdminNotify" )
 		net.WriteString( text )
 	net.Broadcast()
-
-end
-
-function sv_PProtect.Notify( ply, text )
-
-	net.Start("PProtect_Notify")
-		net.WriteString( text )
-	net.Send( ply )
 
 end
 
@@ -264,11 +253,11 @@ function sv_PProtect.reloadSettingsPlayer( ply )
 	
 	if !ply or !ply:IsValid() then return end
 
-	if sv_PProtect.Settings.General then
+	if sv_PProtect.Settings.AntiSpam_General then
 
-		table.foreach( sv_PProtect.Settings.General, function(key, value)
+		table.foreach( sv_PProtect.Settings.AntiSpam_General, function( key, value )
 
-			if key ~= "concommand" then
+			if key != "concommand" then
 				ply:ConCommand( "PProtect_AS_" .. key .. " " .. value .. "\n" )
 			end
 
@@ -276,9 +265,9 @@ function sv_PProtect.reloadSettingsPlayer( ply )
 
 	end
 
-	if sv_PProtect.Settings.Tools then
+	if sv_PProtect.Settings.AntiSpamTools then
 
-		table.foreach( sv_PProtect.Settings.Tools, function(key, value)
+		table.foreach( sv_PProtect.Settings.AntiSpamTools, function( key, value )
 
 			ply:ConCommand( "PProtect_AS_tools_" .. key .. " " .. value .. "\n" )
 
@@ -288,7 +277,7 @@ function sv_PProtect.reloadSettingsPlayer( ply )
 
 	if sv_PProtect.Settings.PropProtection then
 
-		table.foreach( sv_PProtect.Settings.PropProtection, function(key, value)
+		table.foreach( sv_PProtect.Settings.PropProtection, function( key, value )
 
 			ply:ConCommand( "PProtect_PP_" .. key .. " " .. value .. "\n" )
 
@@ -306,14 +295,14 @@ function sv_PProtect.reloadSettings()
 
 	else
 
-		for k,v in pairs( player.GetAll() ) do
+		for k, v in pairs( player.GetAll() ) do
 			sv_PProtect.reloadSettingsPlayer( v )
 		end
 
 	end
 
 end
-concommand.Add("sh_PProtect.reloadSettings", sv_PProtect.reloadSettings)
+concommand.Add( "sh_PProtect.reloadSettings", sv_PProtect.reloadSettings )
 
 
 
@@ -340,16 +329,16 @@ function sv_PProtect.Save( ply, cmd, args )
 		if key ~= nil and value ~= nil and s_value ~= nil then
 
 			if type(s_value) == "number" then
-				sql.Query("UPDATE pprotect_antispam_general SET " .. key .. " = " .. s_value)
+				sql.Query( "UPDATE pprotect_antispam_general SET " .. key .. " = " .. s_value )
 			elseif type(s_value) == "string" then
-				sql.Query("UPDATE pprotect_antispam_general SET " .. key .. " = '" .. s_value .. "'")
+				sql.Query( "UPDATE pprotect_antispam_general SET " .. key .. " = '" .. s_value .. "'" )
 			end
 
 		end
 
 	end )
 
-	sv_PProtect.Settings.General = sql.QueryRow( "SELECT * FROM pprotect_antispam_general LIMIT 1" )
+	sv_PProtect.Settings.AntiSpam_General = sql.QueryRow( "SELECT * FROM pprotect_antispam_general LIMIT 1" )
 
 	--TOOLS
 	for _, wep in pairs( weapons.GetList() ) do
@@ -387,8 +376,8 @@ function sv_PProtect.Save( ply, cmd, args )
 
 	end
 
-	sv_PProtect.Settings.Tools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" )
-	sv_PProtect.setBlockedTools()
+	sv_PProtect.Settings.AntiSpamTools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" )
+	sv_PProtect.setAntiSpamTools()
 	sv_PProtect.InfoNotify( ply, "Saved AntiSpam Settings" )
 		
 end

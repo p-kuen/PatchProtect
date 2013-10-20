@@ -14,9 +14,9 @@ local function createCCV()
 		for k, v in pairs( cvar ) do
 
 			if type( k ) == "number" then
-				CreateClientConVar(p .. "_" .. v, 0, false, true)
+				CreateClientConVar( p .. "_" .. v, 0, false, true )
 			else
-				CreateClientConVar(p .. "_" .. k, v, false, true)
+				CreateClientConVar( p .. "_" .. k, v, false, true )
 			end
 
 		end
@@ -38,7 +38,7 @@ function cl_PProtect.ASMenu( Panel )
 
 	-- CHECK ADMIN
 	if not LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl(Panel, "You are not an admin!", "panel")
+		cl_PProtect.addlbl( Panel, "You are not an admin!", "panel" )
 		return
 	end
 
@@ -137,14 +137,15 @@ net.Receive( "getBlockedPropData", function()
 	psFrm = cl_PProtect.addframe( 800, 600, "Set blocked Props:", false, false, true, "Save Props", PropsTable, "sendNewBlockedPropTable" )
 
 	table.foreach( PropsTable, function( key, value )
-
+		print( key .. " " .. type(key))
+		print( value .. " " .. type( value ))
 		local Icon = vgui.Create( "SpawnIcon", psFrm )
 		Icon:SetModel( value )
 
 		Icon.DoClick = function()
 			local menu = DermaMenu()
 			menu:AddOption( "Remove from blocked Props", function()
-				table.RemoveByValue( PropsTable, value )
+				table.RemoveByValue( PropsTable, tostring( value ) )
 				Icon:Remove()
 				psFrm:InvalidateLayout()
 			end )
@@ -329,8 +330,8 @@ net.Receive( "generalSettings", function( len )
 			end
 		end
 	end
-	
 	table.sort( cl_PProtect.ConVars.PProtect_AS_tools )
+
 end )
 
 -- PROP PROTECTION

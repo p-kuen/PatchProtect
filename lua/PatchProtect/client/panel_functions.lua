@@ -47,18 +47,19 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	-- BUTTON IN FRAME
 	local btn = vgui.Create( "DButton", frm )
 
+	btn:Center()
 	btn:SetPos( 20, h - 50 )
 	btn:SetSize( 150, 30 )
 	btn:SetText( btntext )
 	btn:SetDark( true )
-	btn:Center()
 	btn:SetFont( "DermaDefaultBold" )
 
-	function btn:DoClick()
+	btn.DoClick = function()
 
-		if btnarg == nil then
-
+		if btnarg != nil then
+			
 			if type( btnarg ) == "table" then
+				
 				net.Start( nettext )
 					net.WriteTable( btnarg )
 				net.SendToServer()
