@@ -183,6 +183,26 @@ hook.Add( "GravGunPunt", "AllowGravPunt", sv_PProtect.CanGravPunt )
 
 
 
+-----------------------
+--  SET WORLD PROPS  --
+-----------------------
+
+function sv_PProtect.setWorldProps()
+
+	table.foreach( ents:GetAll(), function( key, value )
+
+		if value:IsValid() and value:GetClass() == "prop_physics" then 
+			local ent = value
+			ent.WorldOwned = true
+		end
+		
+	end )
+
+end
+hook.Add( "PersistenceLoad", "SetWorldOwnedEnts", sv_PProtect.setWorldProps )
+
+
+
 ------------------
 --  NETWORKING  --
 ------------------
@@ -191,9 +211,13 @@ hook.Add( "GravGunPunt", "AllowGravPunt", sv_PProtect.CanGravPunt )
 net.Receive( "getOwner", function( len, pl )
 	
 	local ent = net.ReadEntity()
+	local went = ""
+
+	if ent.WorldOwned == true then went = "World" end
 
 	net.Start( "sendOwner" )
 		net.WriteEntity( ent:CPPIGetOwner() )
+		net.WriteString( went )
 	net.Send( pl )
 
 end )

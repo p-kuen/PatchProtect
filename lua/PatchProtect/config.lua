@@ -52,6 +52,7 @@ sv_PProtect.ConVars.PProtect_PP = {
 	use = 1,
 	noantiadmin = 1,
 	use_propdelete = 1,
+	keepadminsprops = 0,
 	propdelete_delay = 120,
 	cdrive = 0,
 	tool_world = 1,

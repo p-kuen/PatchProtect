@@ -204,6 +204,7 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "Use Prop-Delete on Disconnect", "propprotection", "use_propdelete" )
 
 		if GetConVarNumber( "PProtect_PP_use_propdelete" ) == 1 then
+			cl_PProtect.addchk( Panel, "Keep Admin-Props on Disconnect", "propprotection", "keepadminsprops" )
 			cl_PProtect.addsldr( Panel, 1, 120, "Prop-Delete Delay (sec)", "propprotection", "propdelete_delay" )
 		end
 
@@ -239,10 +240,12 @@ function cl_PProtect.CUMenu( Panel )
 	-- SET CONTENT
 
 	--Cleanup everything
-	cl_PProtect.addlbl( Panel, "Cleanup everything:", "panel" )
+	cl_PProtect.addlbl( Panel, "Cleanup everything: (Including World Props)", "panel" )
 	local count = 0
-	table.foreach( player.GetAll(), function( key, value )
-		count = count + value:GetCount( "props" )
+	table.foreach( ents.GetAll(), function( key, value )
+		if value:IsValid() and value:GetClass() == "prop_physics" then
+			count = count + 1
+		end
 	end )
 	cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring(count) .. " Props)", "cleanup" )
 

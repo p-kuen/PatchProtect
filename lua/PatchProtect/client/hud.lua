@@ -1,4 +1,6 @@
 local Owner
+local IsWorld
+local oldentity
 local PProtect_Notes = {}
 
 
@@ -40,53 +42,40 @@ function cl_PProtect.ShowOwner()
 	if !LocalPlayer() or !LocalPlayer():IsValid() then return end
 
 	-- Set Trace
-	local PlyTrace = LocalPlayer():GetEyeTrace()
+	local entity = LocalPlayer():GetEyeTrace().Entity
 	
-	if PlyTrace.HitNonWorld then
-
-		if PlyTrace.Entity:IsValid() and !PlyTrace.Entity:IsPlayer() and !LocalPlayer():InVehicle() then
-
-			if Owner == nil then
-
-				local traceent = PlyTrace.Entity
-				if !traceent:IsValid() then return end
-
-				net.Start("getOwner")
-					net.WriteEntity( traceent )
-				net.SendToServer()
-				
-			end
-
-			local ownerText
-			if type( Owner ) == "Player" then
-				ownerText = "Owner: " .. Owner:GetName()
-			else
-				ownerText = "Owner: Disc. or World"
-			end
-
-			surface.SetFont( "PatchProtectFont_small" )
-
-			local OW, OH = surface.GetTextSize( ownerText )
-			OW = OW + 10
-			OH = OH + 10
-
-			if type( Owner ) != "nil" then
-				draw.RoundedBox( 3, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, Color(88, 144, 222, 200) )
-				draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color(0, 0, 0, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
-			end
-
-		else
-
-			--Because of the server performance, it just sets it to nil once
-			if Owner ~= nil then Owner = nil end
-
-		end
-
-	else
+	if oldentity != entity then
 		
-		if Owner ~= nil then Owner = nil end
-		
+		net.Start( "getOwner" )
+			net.WriteEntity( entity )
+		net.SendToServer()
+
+		oldentity = entity
+		Owner = nil
+		IsWorld = nil
+
 	end
+	
+	if Owner == nil or IsWorld == nil or !entity:IsValid() then return end
+
+	local ownerText
+	if Owner:IsPlayer() and IsWorld == false then
+		ownerText = "Owner: " .. Owner:GetName()
+	elseif IsWorld == true then
+		ownerText = "Owner: World Prop"
+	elseif IsWorld == false and !Owner:IsPlayer() then
+		ownerText = "Owner: Disconnected Player"
+	else
+		return
+	end
+
+	surface.SetFont( "PatchProtectFont_small" )
+	local OW, OH = surface.GetTextSize( ownerText )
+	OW = OW + 10
+	OH = OH + 10
+
+	draw.RoundedBox( 4, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, Color( 88, 144, 222, 200 ) )
+	draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
 hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner )
@@ -104,7 +93,7 @@ hook.Add( "PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam )
 ---------------------
 
 -- ADD TO BLOCKED PROPS
-properties.Add("addblockedprop", {
+properties.Add( "addblockedprop", {
 
 	MenuLabel = "Add to blocked Props",
 
@@ -253,9 +242,11 @@ net.Receive( "PProtect_Notify", function( len )
 
 end )
 
--- OWNER
+-- RECEIVE OWNER
 net.Receive( "sendOwner", function( len )
     
 	Owner = net.ReadEntity()
+
+	if net.ReadString() != "" then IsWorld = true else IsWorld = false end
 
 end )

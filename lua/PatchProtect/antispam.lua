@@ -38,7 +38,7 @@ function sv_PProtect.spamaction( ply )
 	--Cleanup
 	if action == 2 then
 
-		cleanup.CC_Cleanup(ply, "", {} )
+		cleanup.CC_Cleanup( ply, "", {} )
 		ply.cleanedup = true
 		sv_PProtect.InfoNotify( ply, "Your props have been cleanuped!" )
 		sv_PProtect.AdminNotify( ply:Nick() .. "s props were cleaned up! (Reason: Spam)" )
@@ -54,7 +54,7 @@ function sv_PProtect.spamaction( ply )
 	--Ban
 	elseif action == 4 then
 
-		local banminutes = tonumber(sv_PProtect.Settings.AntiSpam_General["bantime"])
+		local banminutes = tonumber( sv_PProtect.Settings.AntiSpam_General["bantime"] )
 		ply:Ban(banminutes, "Banned by PProtect: Spammer")
 		sv_PProtect.AdminNotify(ply:Nick() .. " was banned from the server for " .. banminutes .. " minutes! (Reason: Spam)")
 		print("[PatchProtect - AS] " .. ply:Nick() .. " was banned from the server for " .. banminutes .. " minutes!")
@@ -62,11 +62,11 @@ function sv_PProtect.spamaction( ply )
 	--ConCommand
 	elseif action == 5 then
 
-		local concommand = tostring(sv_PProtect.Settings.AntiSpam_General["concommand"])
-		concommand = string.Replace(concommand, "<player>", ply:Nick())
-		local commands = string.Explode(" ", concommand)
-		RunConsoleCommand(commands[1], unpack(commands, 2))
-		print("[PatchProtect - AS] Ran console command " .. tostring(sv_PProtect.Settings.AntiSpam_General["concommand"]) .. " on " .. ply:Nick())
+		local concommand = tostring( sv_PProtect.Settings.AntiSpam_General["concommand"] )
+		concommand = string.Replace( concommand, "<player>", ply:Nick() )
+		local commands = string.Explode( " ", concommand )
+		RunConsoleCommand( commands[1], unpack( commands, 2 ) )
+		print( "[PatchProtect - AS] Ran console command " .. tostring( sv_PProtect.Settings.AntiSpam_General["concommand"] ) .. " on " .. ply:Nick() )
 
 	end
 
@@ -108,7 +108,7 @@ function sv_PProtect.CanSpawn( ply, mdl )
 		end
 
 		--Block Prop-Spawning
-		sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.propcooldown - CurTime(), 1) )
+		sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.propcooldown - CurTime(), 1 ) )
 		return false
 
 	end
@@ -197,6 +197,7 @@ net.Receive( "sendBlockedProp", function( len, pl )
 	
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then
 		sv_PProtect.Notify( pl, "You are not an Admin!" )
+		return
 	end
 
 	local Prop = net.ReadString()

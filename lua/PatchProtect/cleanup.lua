@@ -5,14 +5,19 @@
 -- PLAYER LEFT SERVER
 function sv_PProtect.setCleanupProps( ply )
 	
-	if tonumber( sv_PProtect.Settings.PropProtection["propdelete"] ) == 0 or tonumber( sv_PProtect.Settings.PropProtection["use"] ) == 0 then return end
+	if tonumber( sv_PProtect.Settings.PropProtection["use"] ) == 0 then return end
+	if tonumber( sv_PProtect.Settings.PropProtection["propdelete"] ) == 0 then return end
+	if tonumber( sv_PProtect.Settings.PropProtection["keepadminsprops"] ) == 1 then
 
+		if ply:IsAdmin() or ply:IsSuperAdmin() then return end
+
+	end
+	
 	for k, v in pairs( ents.GetAll() ) do
 
 		local ent = v
-
-		local Owner = ent:CPPIGetOwner()
-		if Owner == ply then
+		
+		if ent.PatchPPOwnerID == ply:SteamID() then
 			ent.PatchPPCleanup = ply:Nick()
 		end
 
@@ -38,7 +43,7 @@ hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.s
 
 -- PLAYER CAME BACK
 function sv_PProtect.checkComeback( ply )
-
+	
 	if tonumber( sv_PProtect.Settings.PropProtection["propdelete"] ) == 0 or tonumber( sv_PProtect.Settings.PropProtection["use"] ) == 0 then return end
 
 	if timer.Exists( "CleanupPropsOf" .. ply:Nick() ) then
@@ -48,9 +53,12 @@ function sv_PProtect.checkComeback( ply )
 
 	for k, v in pairs( ents.GetAll() ) do
 
+		if v.PatchPPCleanupID != nil then print(v.PatchPPCleanupID) end
+
 		ent = v
-		if ent.PatchPPCleanup == ply:Nick() then
+		if ent.PatchPPOwnerID == ply:SteamID() then
 			ent.PatchPPCleanup = ""
+			ent:CPPISetOwner( ply )
 		end
 
 	end
@@ -89,6 +97,10 @@ function sv_PProtect.CleanupEverything( ply )
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
 
 	game.CleanUpMap()
+
+	--Define World-Props again!
+	sv_PProtect.setWorldProps()
+
 	sv_PProtect.InfoNotify(ply, "Cleaned Map!")
 	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all Props!" )
 
