@@ -17,6 +17,7 @@ function sv_PProtect.Setup( ply )
 end
 hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
 
+-- CHECK ANTISPAM ADMIN
 function sv_PProtect.CheckASAdmin( ply )
 
 	if tobool( sv_PProtect.Settings.AntiSpam_General["use"] ) == false or ply:IsSuperAdmin() then return true end
@@ -143,7 +144,7 @@ function sv_PProtect.CheckDupe( ply, tool )
 
 end
 
--- THE ANTISPAM FOR TOOL ITSELF
+-- THE TOOL-ANTISPAM ITSELF
 function sv_PProtect.CanTool( ply, trace, tool )
 
 	if sv_PProtect.CheckASAdmin( ply ) == true then return true end
@@ -238,7 +239,7 @@ net.Receive( "sendNewBlockedPropTable", function( len, pl )
 
 	--Save into SQL-Table
 	sv_PProtect.saveBlockedProps( sv_PProtect.BlockedProps )
-
+	
 	sv_PProtect.InfoNotify( pl, "Saved new blocked Prop Table!" )
 	
 end )

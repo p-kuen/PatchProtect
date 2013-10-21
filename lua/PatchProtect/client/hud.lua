@@ -10,7 +10,7 @@ local PProtect_Notes = {}
 ------------
 
 surface.CreateFont( "PatchProtectFont", {
-	font 		= "DermaDefault",
+	font 		= "Roboto",
 	size 		= 15,
 	weight 		= 750,
 	blursize 	= 0,
@@ -20,9 +20,9 @@ surface.CreateFont( "PatchProtectFont", {
 } )
 
 surface.CreateFont( "PatchProtectFont_small", {
-	font 		= "DefaultSmall",
-	size 		= 13,
-	weight 		= 750,
+	font 		= "Roboto",
+	size 		= 14,
+	weight 		= 500,
 	blursize 	= 0,
 	scanlines 	= 0,
 	antialias 	= true,
@@ -39,7 +39,6 @@ surface.CreateFont( "PatchProtectFont_small", {
 function cl_PProtect.ShowOwner()
 	
 	if GetConVarNumber( "PProtect_PP_use" ) == 0 then return end
-	if !LocalPlayer() or !LocalPlayer():IsValid() then return end
 
 	-- Set Trace
 	local entity = LocalPlayer():GetEyeTrace().Entity
@@ -59,21 +58,24 @@ function cl_PProtect.ShowOwner()
 	if Owner == nil or IsWorld == nil or !entity:IsValid() then return end
 
 	local ownerText
-	if Owner:IsPlayer() and IsWorld == false then
-		ownerText = "Owner: " .. Owner:GetName()
-	elseif IsWorld == true then
+	if IsWorld then
+
 		ownerText = "Owner: World Prop"
-	elseif IsWorld == false and !Owner:IsPlayer() then
-		ownerText = "Owner: Disconnected Player"
+
 	else
-		return
+
+		if Owner:IsPlayer() then
+			ownerText = "Owner: " .. Owner:GetName()
+		else
+			ownerText = "Owner: Disconnected Player"
+		end
+
 	end
 
 	surface.SetFont( "PatchProtectFont_small" )
 	local OW, OH = surface.GetTextSize( ownerText )
 	OW = OW + 10
 	OH = OH + 10
-
 	draw.RoundedBox( 4, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, Color( 88, 144, 222, 200 ) )
 	draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
@@ -126,14 +128,12 @@ properties.Add( "addblockedprop", {
 
 -- CREATE INFO MESSAGE
 local function PProtect_DrawNote( self, key, value )
-	
-	local text = value.text
+
 	surface.SetFont( "PatchProtectFont" )
-	local tsW, tsH = surface.GetTextSize( text )
+	local tsW, tsH = surface.GetTextSize( value.text )
 	
 	local w = tsW + 20
 	local h = tsH + 15
-
 	local x = ScrW() - w - 15
 	local y = ScrH() - h - 35 * key
 
@@ -151,7 +151,7 @@ local function PProtect_DrawNote( self, key, value )
 	local coltext = Color( 0, 0, 0, 255 )
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
-	draw.SimpleText( text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	draw.SimpleText( value.text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
 
@@ -165,23 +165,18 @@ end
 local function Paint()
 
 	if not PProtect_Notes then return end
-
-	table.foreach( PProtect_Notes, function(key, value)
+	table.foreach( PProtect_Notes, function( key, value )
 
 		if SysTime() < value.time + 4 then
-
-			PProtect_DrawNote( self, key, value)
-
+			PProtect_DrawNote( self, key, value )
 		else
-
-			table.remove(PProtect_Notes, key)
-
+			table.remove( PProtect_Notes, key )
 		end
 
 	end )
 
 end
-hook.Add("HUDPaint", "RoundedBoxHud", Paint)
+hook.Add( "HUDPaint", "RoundedBoxHud", Paint )
 
 
 
@@ -205,6 +200,7 @@ end )
 
 -- ADMIN NOTIFY
 net.Receive( "PProtect_AdminNotify", function( len )
+
     if LocalPlayer():IsAdmin() then
 
 		local curmsg = {}
@@ -246,7 +242,6 @@ end )
 net.Receive( "sendOwner", function( len )
     
 	Owner = net.ReadEntity()
-
 	if net.ReadString() != "" then IsWorld = true else IsWorld = false end
 
 end )

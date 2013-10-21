@@ -8,17 +8,13 @@ function sv_PProtect.setCleanupProps( ply )
 	if tonumber( sv_PProtect.Settings.PropProtection["use"] ) == 0 then return end
 	if tonumber( sv_PProtect.Settings.PropProtection["propdelete"] ) == 0 then return end
 	if tonumber( sv_PProtect.Settings.PropProtection["keepadminsprops"] ) == 1 then
-
 		if ply:IsAdmin() or ply:IsSuperAdmin() then return end
-
 	end
 	
 	for k, v in pairs( ents.GetAll() ) do
-
-		local ent = v
 		
-		if ent.PatchPPOwnerID == ply:SteamID() then
-			ent.PatchPPCleanup = ply:Nick()
+		if v.PatchPPOwnerID == ply:SteamID() then
+			v.PatchPPCleanup = ply:Nick()
 		end
 
 	end
@@ -28,9 +24,8 @@ function sv_PProtect.setCleanupProps( ply )
 
 		for k, v in pairs( ents.GetAll() ) do
 
-			ent = v
-			if ent.PatchPPCleanup == ply:Nick() then
-				ent:Remove()
+			if v.PatchPPCleanup == ply:Nick() then
+				v:Remove()
 			end
 
 		end
@@ -53,12 +48,9 @@ function sv_PProtect.checkComeback( ply )
 
 	for k, v in pairs( ents.GetAll() ) do
 
-		if v.PatchPPCleanupID != nil then print(v.PatchPPCleanupID) end
-
-		ent = v
-		if ent.PatchPPOwnerID == ply:SteamID() then
-			ent.PatchPPCleanup = ""
-			ent:CPPISetOwner( ply )
+		if v.PatchPPOwnerID == ply:SteamID() then
+			v.PatchPPCleanup = ""
+			v:CPPISetOwner( ply )
 		end
 
 	end
@@ -73,9 +65,8 @@ function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
 
 	for k, v in pairs( ents.GetAll() ) do
 
-		local ent = v
-		if ent.PatchPPCleanup != nil and ent.PatchPPCleanup != "" then
-			ent:Remove()
+		if v.PatchPPCleanup != nil and v.PatchPPCleanup != "" then
+			v:Remove()
 		end
 
 	end
@@ -115,11 +106,11 @@ function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 	
 	for k, v in pairs( ents.GetAll() ) do
 
-		if v:IsValid() and !v:IsPlayer() then ent = v end
-		local Owner = ent:CPPIGetOwner()
+		if !v:IsValid() or v:IsPlayer() then return end
+		local Owner = v:CPPIGetOwner()
 		
 		if Owner != nil and Owner:GetName() == tostring( args[1] ) then
-			ent:Remove()
+			v:Remove()
 			count = count + 1
 		end
 

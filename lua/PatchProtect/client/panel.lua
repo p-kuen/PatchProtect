@@ -47,9 +47,7 @@ function cl_PProtect.ASMenu( Panel )
 		cl_PProtect.ASCPanel = Panel
 	end
 
-	-- SET CONTENT
-
-	--Main Settings
+	-- MAIN SETTINGS
 	cl_PProtect.addchk( Panel, "Use AntiSpam", "general", "use" )
 
 	if GetConVarNumber( "PProtect_AS_use" ) == 1 then
@@ -114,7 +112,7 @@ end
 --  FRAMES  --
 --------------
 
--- PROTECTED TOOLS
+-- ANTISPAMED TOOLS
 function cl_PProtect.ShowToolsFrame( ply, cmd, args )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
@@ -182,14 +180,11 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.PPCPanel = Panel
 	end
 
-	-- SET CONTENT
-
-	--Main Switch
+	-- MAIN SETTINGS
 	cl_PProtect.addchk( Panel, "Use PropProtection", "propprotection", "use" )
 
 	if GetConVarNumber( "PProtect_PP_use" ) == 1 then
 
-		--Protection Settings
 		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
 		cl_PProtect.addchk( Panel, "No PropProtection for Admins", "propprotection", "noantiadmin" )
 		cl_PProtect.addchk( Panel, "Block 'Creator'-Tool (e.g.: Spawn Weapons with Toolgun)", "propprotection", "blockcreatortool" )
@@ -198,11 +193,11 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "Use Damage-Protection", "propprotection", "damageprotection" )
 		cl_PProtect.addchk( Panel, "Allow Toolgun on Map", "propprotection", "tool_world" )
 		cl_PProtect.addchk( Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "cdrive" )
-		
-		--Prop Delete Settings
+
 		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
 		cl_PProtect.addchk( Panel, "Use Prop-Delete on Disconnect", "propprotection", "use_propdelete" )
 
+		--Prop Delete
 		if GetConVarNumber( "PProtect_PP_use_propdelete" ) == 1 then
 			cl_PProtect.addchk( Panel, "Keep Admin-Props on Disconnect", "propprotection", "keepadminsprops" )
 			cl_PProtect.addsldr( Panel, 1, 120, "Prop-Delete Delay (sec)", "propprotection", "propdelete_delay" )
@@ -221,6 +216,20 @@ end
 --  CLEANUP MENU  --
 --------------------
 
+function cl_PProtect.GetCount()
+
+	local count = 0
+
+	table.foreach( ents.GetAll(), function( key, value )
+		if value:IsValid() and value:GetClass() == "prop_physics" then
+			count = count + 1
+		end
+	end )
+
+	return count
+
+end
+
 function cl_PProtect.CUMenu( Panel )
 
 	-- DELETE CONTROLS
@@ -237,23 +246,14 @@ function cl_PProtect.CUMenu( Panel )
 		cl_PProtect.CUCPanel = Panel
 	end
 
-	-- SET CONTENT
-
-	--Cleanup everything
+	-- CLEANUP CONTROLS
 	cl_PProtect.addlbl( Panel, "Cleanup everything: (Including World Props)", "panel" )
-	local count = 0
-	table.foreach( ents.GetAll(), function( key, value )
-		if value:IsValid() and value:GetClass() == "prop_physics" then
-			count = count + 1
-		end
-	end )
-	cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring(count) .. " Props)", "cleanup" )
+	cl_PProtect.GetCount()
+	cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring( count ) .. " Props)", "cleanup" )
 
-	--Cleanup Disconnected Player's Props
 	cl_PProtect.addlbl( Panel, "\nCleanup props of disconnected Players:", "panel" )
 	cl_PProtect.addbtn( Panel, "Cleanup all Props from disc. Players", "cleandiscprops" )
 
-	--Claenup Player's Props
 	cl_PProtect.addlbl( Panel, "\nCleanup Player's props:", "panel" )
 	table.foreach( player.GetAll(), function( key, value )
 
@@ -261,10 +261,12 @@ function cl_PProtect.CUMenu( Panel )
 			net.WriteEntity( value )
 		net.SendToServer()
 
-		net.Receive( "sendCount", function()
-			local counter = net.ReadString()
-			cl_PProtect.addbtn( Panel, "Cleanup " .. value:GetName() .."  (" .. counter .. " Props)", "cleanup_player", value:GetName() )
-		end )
+	end )
+
+	net.Receive( "sendCount", function()
+
+		local counter = net.ReadString()
+		cl_PProtect.addbtn( Panel, "Cleanup " .. value:GetName() .."  (" .. counter .. " Props)", "cleanup_player", value:GetName() )
 
 	end )
 
@@ -343,7 +345,6 @@ end )
 net.Receive( "propProtectionSettings", function( len )
      
 	cl_PProtect.ConVars.PProtect_PP = net.ReadTable()
-
 	createCCV()
 	
 end )

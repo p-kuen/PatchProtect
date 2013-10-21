@@ -1,7 +1,3 @@
-----------------
---  SETTINGS  --
-----------------
-
 sv_PProtect.Settings = sv_PProtect.Settings or {}
 
 
@@ -113,6 +109,7 @@ end
 --  BLOCKED PROPS  --
 ---------------------
 
+-- SET BLOCKED PROPS
 function sv_PProtect.setBlockedProps()
 
 	if sql.TableExists( "pprotect_blockedprops" ) then
@@ -133,8 +130,8 @@ function sv_PProtect.setBlockedProps()
 	end
 
 end
-sv_PProtect.setBlockedProps()
 
+-- SAVE BLOCKED PROPS
 function sv_PProtect.saveBlockedProps( proptable, wpanel )
 
 	local propkeys1 = {}
@@ -174,6 +171,7 @@ function sv_PProtect.getData()
 	sv_PProtect.Settings.AntiSpam_General = sv_PProtect.SetupSQLSettings( "pprotect_antispam_general", "AntiSpam", sv_PProtect.ConVars.PProtect_AS, SelectAntiSpam )
 	sv_PProtect.Settings.AntiSpamTools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}
 	sv_PProtect.setAntiSpamTools()
+	sv_PProtect.setBlockedProps()
 	sv_PProtect.Settings.PropProtection = sv_PProtect.SetupSQLSettings( "pprotect_propprotection", "PropProtection", sv_PProtect.ConVars.PProtect_PP, SelectPropProtection )
 
 end
@@ -236,6 +234,7 @@ end
 --  RELOAD SETTINGS  --
 -----------------------
 
+-- FOR A SPECIAL PLAYER
 function sv_PProtect.reloadSettingsPlayer( ply )
 	
 	if !ply or !ply:IsValid() then return end
@@ -274,6 +273,7 @@ function sv_PProtect.reloadSettingsPlayer( ply )
 
 end
 
+-- FOR EVERYONE
 function sv_PProtect.reloadSettings()
 
 	if ply then
@@ -297,6 +297,7 @@ concommand.Add( "sh_PProtect.reloadSettings", sv_PProtect.reloadSettings )
 --  SAVE SETTINGS  --
 ---------------------
 
+-- ANTI SPAM
 function sv_PProtect.Save( ply, cmd, args )
 
 	if !ply:IsSuperAdmin() and !ply:IsAdmin() then
@@ -370,12 +371,7 @@ function sv_PProtect.Save( ply, cmd, args )
 end
 concommand.Add( "btn_save", sv_PProtect.Save )
 
-
-
----------------------
---  SAVE SETTINGS  --
----------------------
-
+-- PROP PROTECTION
 function sv_PProtect.Save_PP( ply, cmd, args )
 
 	if !ply:IsSuperAdmin() and !ply:IsAdmin() then
@@ -406,6 +402,13 @@ function sv_PProtect.Save_PP( ply, cmd, args )
 
 end
 concommand.Add( "btn_save_pp", sv_PProtect.Save_PP )
+
+
+
+
+--------------------
+--  OTHER THINGS  --
+--------------------
 
 -- RELOAD SETTINGS FOR EACH PLAYER
 local function initalSpawn( ply )
