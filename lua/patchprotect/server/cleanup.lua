@@ -11,24 +11,24 @@ function sv_PProtect.setCleanupProps( ply )
 		if ply:IsAdmin() or ply:IsSuperAdmin() then return end
 	end
 	
-	for k, v in pairs( ents.GetAll() ) do
+	table.foreach( ents.GetAll(), function( k, v )
 		
 		if v.PatchPPOwnerID == ply:SteamID() then
 			v.PatchPPCleanup = ply:Nick()
 		end
 
-	end
+	end )
 	
 	--Create Timer
 	timer.Create( "CleanupPropsOf" .. ply:Nick(), tonumber( sv_PProtect.Settings.PropProtection["propdelete_delay"] ), 1, function()
 
-		for k, v in pairs( ents.GetAll() ) do
+		table.foreach( ents.GetAll(), function( k, v )
 
 			if v.PatchPPCleanup == ply:Nick() then
 				v:Remove()
 			end
 
-		end
+		end )
 		print( "[PatchProtect - Cleanup] Removed " .. ply:Nick() .. "'s Props!" )
 
 	end )
@@ -46,14 +46,14 @@ function sv_PProtect.checkComeback( ply )
 		timer.Destroy( "CleanupPropsOf" .. ply:Nick() )
 	end
 
-	for k, v in pairs( ents.GetAll() ) do
+	table.foreach( ents.GetAll(), function( k, v )
 
 		if v.PatchPPOwnerID == ply:SteamID() then
 			v.PatchPPCleanup = ""
 			v:CPPISetOwner( ply )
 		end
 
-	end
+	end )
 
 end
 hook.Add( "PlayerSpawn", "CheckAbortCleanup", sv_PProtect.checkComeback )
@@ -63,13 +63,13 @@ function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
 
-	for k, v in pairs( ents.GetAll() ) do
+	table.foreach( ents.GetAll(), function( k, v )
 
 		if v.PatchPPCleanup != nil and v.PatchPPCleanup != "" then
 			v:Remove()
 		end
 
-	end
+	end )
 	sv_PProtect.InfoNotify( ply, "Cleaned all disconnected Players Props!" )
 	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all Props from disconnected Players!" )
 
@@ -104,7 +104,7 @@ function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
 	local count = 0
 	
-	for k, v in pairs( ents.GetAll() ) do
+	table.foreach( ents.GetAll(), function( k, v )
 
 		if !v:IsValid() or v:IsPlayer() then return end
 		local Owner = v:CPPIGetOwner()
@@ -114,7 +114,7 @@ function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 			count = count + 1
 		end
 
-	end
+	end )
 
 	sv_PProtect.InfoNotify( ply, "Cleaned " .. tostring( args[1] ) .. "'s Props! (" .. count .. ")" )
 	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed " .. count .. " Props from " .. tostring(args[1]) .. "!" )
@@ -134,14 +134,14 @@ net.Receive( "getCount", function( len, pl )
 	local player = net.ReadEntity()
 	local count = 0
 
-	for k, v in pairs( ents.GetAll() ) do
+	table.foreach( ents.GetAll(), function( k, v )
 
 		local Owner = v:CPPIGetOwner()
 		if Owner != nil and Owner == player then
 			count = count + 1
 		end
 
-	end
+	end )
 	
 	--Send the result back to the player
 	net.Start( "sendCount" )

@@ -51,7 +51,7 @@ function cl_PProtect.ShowOwner()
 
 		stopsend = true
 
-	else
+	elseif !entity:IsValid() then
 		stopsend = false
 	end
 	

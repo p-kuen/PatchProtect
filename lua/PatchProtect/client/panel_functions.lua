@@ -193,7 +193,7 @@ function cl_PProtect.addbtn( plist, text, cmd, args )
 	btn:SetText( text )
 	btn:SetDark( true )
 
-	if args ~= nil then
+	if args != nil then
 		btn:SetConsoleCommand( "btn_" .. cmd, args )
 	else
 		btn:SetConsoleCommand( "btn_" .. cmd )

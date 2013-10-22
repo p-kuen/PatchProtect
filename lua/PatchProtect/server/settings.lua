@@ -43,7 +43,7 @@ function sv_PProtect.SetupSQLSettings( sqlname, name, sqltable, checking )
 		local values = {}
 		local sqlvars = {}
 
-		for k, v in pairs( sqltable ) do
+		table.foreach( sqltable, function( k, v )
 
 			local Type = type( v )
 
@@ -67,7 +67,7 @@ function sv_PProtect.SetupSQLSettings( sqlname, name, sqltable, checking )
 				table.insert( options, k )
 			end
 				
-		end
+		end )
 
 		sql.Query( "CREATE TABLE IF NOT EXISTS " .. sqlname .. "(" .. table.concat( sqlvars, ", " ) .. ");" )
 		sql.Query( "INSERT INTO " .. sqlname .. "(" .. table.concat( options, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")" )
@@ -144,11 +144,11 @@ function sv_PProtect.saveBlockedProps( proptable )
 
 	if not sql.TableExists( "pprotect_blockedprops" ) then
 
-		for k, v in pairs( proptable ) do
+		table.foreach( proptable, function( k, v )
 			table.insert( propkeys1, "prop_" .. k .. " VARCHAR(255)" )
 			table.insert( propkeys2, "'prop_" .. k .. "'" )
 			table.insert( props, "'" .. v .. "'" )
-		end
+		end )
 
 		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blockedprops( " .. table.concat( propkeys1, ", " ) .. " );" )
 		sql.Query( "INSERT INTO pprotect_blockedprops( " .. table.concat( propkeys2, ", " ) .. " ) VALUES( " .. table.concat( props, ", " ) .. " )" )
@@ -282,9 +282,9 @@ function sv_PProtect.reloadSettings()
 
 	else
 
-		for k, v in pairs( player.GetAll() ) do
+		table.foreach( player.GetAll(), function( k, v )
 			sv_PProtect.reloadSettingsPlayer( v )
-		end
+		end )
 
 	end
 
@@ -314,7 +314,7 @@ function sv_PProtect.Save( ply, cmd, args )
 
 		s_value = tonumber( ply:GetInfo( "PProtect_AS_" .. key ) )
 
-		if key ~= nil and value ~= nil and s_value ~= nil then
+		if key != nil and value != nil and s_value != nil then
 
 			if type(s_value) == "number" then
 				sql.Query( "UPDATE pprotect_antispam_general SET " .. key .. " = " .. s_value )
@@ -329,20 +329,18 @@ function sv_PProtect.Save( ply, cmd, args )
 	sv_PProtect.Settings.AntiSpam_General = sql.QueryRow( "SELECT * FROM pprotect_antispam_general LIMIT 1" )
 
 	--TOOLS
-	for _, wep in pairs( weapons.GetList() ) do
+	table.foreach( weapons.GetList(), function( _, wep )
 
 		if wep.ClassName == "gmod_tool" then
 
-			local t = wep.Tool
-
-			for name, tool in pairs( t ) do
+			table.foreach( wep.Tool, function(name, tool )
 				table.insert( toolNames, name )
 				table.insert( toolValues, tonumber( ply:GetInfo("PProtect_AS_tools_" .. name) ) )
-			end
+			end )
 
 		end
 
-	end
+	end )
 
 	if sql.TableExists( "pprotect_antispam_tools" ) then
 
@@ -385,7 +383,7 @@ function sv_PProtect.Save_PP( ply, cmd, args )
 
 		s_value = tonumber( ply:GetInfo( "PProtect_PP_" .. key ) )
 
-		if key ~= nil and value ~= nil and s_value ~= nil then
+		if key != nil and value != nil and s_value != nil then
 
 			if type(s_value) == "number" then
 				sql.Query( "UPDATE pprotect_propprotection SET " .. key .. " = " .. s_value )

@@ -9,9 +9,9 @@ cl_PProtect.ConVars.PProtect_PP = {}
 
 local function createCCV()
 
-	for p, cvar in pairs( cl_PProtect.ConVars ) do
+	table.foreach( cl_PProtect.ConVars, function( p, cvar )
 
-		for k, v in pairs( cvar ) do
+		table.foreach( cvar, function ( k, v )
 
 			if type( k ) == "number" then
 				CreateClientConVar( p .. "_" .. v, 0, false, true )
@@ -19,9 +19,9 @@ local function createCCV()
 				CreateClientConVar( p .. "_" .. k, v, false, true )
 			end
 
-		end
+		end )
 
-	end
+	end )
 
 end
 
@@ -219,11 +219,12 @@ end
 function cl_PProtect.GetCount()
 
 	local count = 0
-
+	
 	table.foreach( ents.GetAll(), function( key, value )
 		if value:IsValid() and value:GetClass() == "prop_physics" then
 			count = count + 1
 		end
+		
 	end )
 
 	return count
@@ -248,8 +249,7 @@ function cl_PProtect.CUMenu( Panel )
 
 	-- CLEANUP CONTROLS
 	cl_PProtect.addlbl( Panel, "Cleanup everything: (Including World Props)", "panel" )
-	cl_PProtect.GetCount()
-	cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring( count ) .. " Props)", "cleanup" )
+	cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring( cl_PProtect.GetCount() ) .. " Props)", "cleanup" )
 
 	cl_PProtect.addlbl( Panel, "\nCleanup props of disconnected Players:", "panel" )
 	cl_PProtect.addbtn( Panel, "Cleanup all Props from disc. Players", "cleandiscprops" )
@@ -328,13 +328,17 @@ net.Receive( "generalSettings", function( len )
      
 	cl_PProtect.ConVars.PProtect_AS = net.ReadTable()
 
-	for _, wep in pairs( weapons.GetList() ) do
-		if wep.Tool ~= nil then 
-			for name, tool in pairs( wep.Tool ) do
+	table.foreach( weapons.GetList(), function( _, wep )
+
+		if wep.Tool != nil then
+
+			table.foreach( wep.Tool, function( name, tool )
 				table.insert( cl_PProtect.ConVars.PProtect_AS_tools, name )
-			end
+			end )
+
 		end
-	end
+
+	end )
 	table.sort( cl_PProtect.ConVars.PProtect_AS_tools )
 
 end )

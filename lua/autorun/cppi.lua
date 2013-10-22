@@ -64,14 +64,14 @@ if SERVER then
 			
 			local ConstrainedEntities = constraint.GetAllConstrainedEntities( self )
 
-			for _, cent in pairs( ConstrainedEntities ) do
+			table.foreach( ConstrainedEntities, function( _, cent )
 
 				if IsEntity( cent.PatchPPOwner ) and cent.PatchPPOwner:IsValid() then return end
 
 				cent.PatchPPOwner = ply
 				cent.PatchPPOwnerID = ply:SteamID()
 
-			end
+			end )
 
 		end
 
@@ -112,7 +112,7 @@ if SERVER then
 
 		local Value = sv_PProtect.canTool( ply, nil, tool, self )
 
-		if Value ~= false and Value ~= true then Value = true end
+		if Value != false and Value != true then Value = true end
 
 		return Value -- fourth argument is entity, to avoid traces.
 
