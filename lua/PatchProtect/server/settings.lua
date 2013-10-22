@@ -132,7 +132,7 @@ function sv_PProtect.setBlockedProps()
 end
 
 -- SAVE BLOCKED PROPS
-function sv_PProtect.saveBlockedProps( proptable, wpanel )
+function sv_PProtect.saveBlockedProps( proptable )
 
 	local propkeys1 = {}
 	local propkeys2 = {}

@@ -12,10 +12,10 @@ cl_PProtect = {}
 --  LOAD CLIENT FILES  --
 -------------------------
 
-AddCSLuaFile() -- Make the client download this file.
-AddCSLuaFile("PatchProtect/client/hud.lua")
-AddCSLuaFile("PatchProtect/client/panel_functions.lua")
-AddCSLuaFile("PatchProtect/client/panel.lua")
+AddCSLuaFile()
+AddCSLuaFile("patchprotect/client/hud.lua")
+AddCSLuaFile("patchprotect/client/panel_functions.lua")
+AddCSLuaFile("patchprotect/client/panel.lua")
 
 
 
@@ -25,16 +25,16 @@ AddCSLuaFile("PatchProtect/client/panel.lua")
 
 if SERVER then
 
-	include( "PatchProtect/config.lua" )
-	include( "PatchProtect/server/settings.lua" )
-	include( "PatchProtect/antispam.lua" )
-	include( "PatchProtect/propprotection.lua" )
-	include( "PatchProtect/cleanup.lua" )
+	include( "patchprotect/server/config.lua" )
+	include( "patchprotect/server/settings.lua" )
+	include( "patchprotect/server/antispam.lua" )
+	include( "patchprotect/server/propprotection.lua" )
+	include( "patchprotect/server/cleanup.lua" )
 
 else
 
-	include( "PatchProtect/client/hud.lua" )
-	include( "PatchProtect/client/panel_functions.lua" )
-	include( "PatchProtect/client/panel.lua" )
+	include( "patchprotect/client/hud.lua" )
+	include( "patchprotect/client/panel_functions.lua" )
+	include( "patchprotect/client/panel.lua" )
 	
 end

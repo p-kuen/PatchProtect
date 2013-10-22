@@ -240,7 +240,7 @@ end )
 
 -- RECEIVE OWNER
 net.Receive( "sendOwner", function( len )
-    
+	
 	Owner = net.ReadEntity()
 	if net.ReadString() != "" then IsWorld = true else IsWorld = false end
 
