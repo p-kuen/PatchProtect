@@ -261,12 +261,10 @@ function cl_PProtect.CUMenu( Panel )
 			net.WriteEntity( value )
 		net.SendToServer()
 
-	end )
-
-	net.Receive( "sendCount", function()
-
-		local counter = net.ReadString()
-		cl_PProtect.addbtn( Panel, "Cleanup " .. value:GetName() .."  (" .. counter .. " Props)", "cleanup_player", value:GetName() )
+		net.Receive( "sendCount", function()
+			local counter = net.ReadString()
+			cl_PProtect.addbtn( Panel, "Cleanup " .. value:GetName() .."  (" .. counter .. " Props)", "cleanup_player", value:GetName() )
+		end )
 
 	end )
 

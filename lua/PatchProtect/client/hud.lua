@@ -1,6 +1,6 @@
 local Owner
 local IsWorld
-local oldentity
+local stopsend
 local PProtect_Notes = {}
 
 
@@ -42,17 +42,17 @@ function cl_PProtect.ShowOwner()
 
 	-- Set Trace
 	local entity = LocalPlayer():GetEyeTrace().Entity
-	
-	if oldentity != entity then
-		
+
+	if entity:IsValid() and stopsend == false then
+
 		net.Start( "getOwner" )
 			net.WriteEntity( entity )
 		net.SendToServer()
 
-		oldentity = entity
-		Owner = nil
-		IsWorld = nil
+		stopsend = true
 
+	else
+		stopsend = false
 	end
 	
 	if Owner == nil or IsWorld == nil or !entity:IsValid() then return end
@@ -240,7 +240,7 @@ end )
 
 -- RECEIVE OWNER
 net.Receive( "sendOwner", function( len )
-	
+
 	Owner = net.ReadEntity()
 	if net.ReadString() != "" then IsWorld = true else IsWorld = false end
 
