@@ -131,27 +131,70 @@ function sv_PProtect.setBlockedProps()
 
 end
 
--- SAVE BLOCKED PROPS
-function sv_PProtect.saveBlockedProps( proptable )
 
-	local propkeys1 = {}
-	local propkeys2 = {}
-	local props = {}
 
-	if sql.TableExists( "pprotect_blockedprops" ) then
-		sql.Query( "DROP TABLE pprotect_blockedprops" )
+---------------------
+--  BLOCKED TOOLS  --
+---------------------
+
+-- SET BLOCKED TOOLS
+function sv_PProtect.setBlockedTools()
+
+	if sql.TableExists( "pprotect_blockedtools" ) then
+
+		sv_PProtect.LoadedBlockedTools = sql.QueryRow( "SELECT * FROM pprotect_blockedtools LIMIT 1" ) or {}
+		
+		table.foreach( sv_PProtect.LoadedBlockedTools, function( key, value )
+
+			if value == "true" then
+				value = true
+			else
+				value = false
+			end
+
+		end )
+		sv_PProtect.BlockedTools = sv_PProtect.LoadedBlockedTools or {}
+
+	else
+
+		sv_PProtect.BlockedTools = {}
+
 	end
 
-	if not sql.TableExists( "pprotect_blockedprops" ) then
+end
 
-		table.foreach( proptable, function( k, v )
-			table.insert( propkeys1, "prop_" .. k .. " VARCHAR(255)" )
-			table.insert( propkeys2, "'prop_" .. k .. "'" )
-			table.insert( props, "'" .. v .. "'" )
+
+
+--------------------
+--  BLOCKED DATA  --
+--------------------
+
+function sv_PProtect.saveBlockedData( datatable, datatype )
+
+	local keys1 = {}
+	local keys2 = {}
+	local values = {}
+
+	if sql.TableExists( "pprotect_blocked" .. datatype ) then
+		sql.Query( "DROP TABLE pprotect_blocked" .. datatype )
+	end
+
+	if not sql.TableExists( "pprotect_blocked" .. datatype ) then
+
+		table.foreach( datatable, function( k, v )
+			if datatype == "props" then
+				table.insert( keys1, "prop_" .. k .. " VARCHAR(255)" )
+				table.insert( keys2, "'prop_" .. k .. "'" )
+				table.insert( values, "'" .. v .. "'" )
+			else
+				table.insert( keys1, k .. " VARCHAR(255)" )
+				table.insert( keys2, "'" .. k .. "'" )
+				table.insert( values, "'" .. tostring( v ) .. "'" )
+			end
 		end )
 
-		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blockedprops( " .. table.concat( propkeys1, ", " ) .. " );" )
-		sql.Query( "INSERT INTO pprotect_blockedprops( " .. table.concat( propkeys2, ", " ) .. " ) VALUES( " .. table.concat( props, ", " ) .. " )" )
+		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blocked" .. datatype .. "( " .. table.concat( keys1, ", " ) .. " );" )
+		sql.Query( "INSERT INTO pprotect_blocked" .. datatype .. "( " .. table.concat( keys2, ", " ) .. " ) VALUES( " .. table.concat( values, ", " ) .. " )" )
 
 	end
 	
@@ -171,6 +214,7 @@ function sv_PProtect.getData()
 	sv_PProtect.Settings.AntiSpam_General = sv_PProtect.SetupSQLSettings( "pprotect_antispam_general", "AntiSpam", sv_PProtect.ConVars.PProtect_AS, SelectAntiSpam )
 	sv_PProtect.Settings.AntiSpamTools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}
 	sv_PProtect.setAntiSpamTools()
+	sv_PProtect.setBlockedTools()
 	sv_PProtect.setBlockedProps()
 	sv_PProtect.Settings.PropProtection = sv_PProtect.SetupSQLSettings( "pprotect_propprotection", "PropProtection", sv_PProtect.ConVars.PProtect_PP, SelectPropProtection )
 

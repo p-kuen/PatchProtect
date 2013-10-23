@@ -36,7 +36,7 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	local ButtonSize = 0
 
 	list:SetPos( 10, 30 )
-	if btntext != nil then ButtonSize = 50 end
+	if btntext != nil then ButtonSize = 40 end
 	list:SetSize( w - 20, h - 40 - ButtonSize )
 	list:SetSpacing( 5 )
 	list:EnableHorizontal( horizontal )
@@ -48,7 +48,7 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	local btn = vgui.Create( "DButton", frm )
 
 	btn:Center()
-	btn:SetPos( 20, h - 50 )
+	btn:SetPos( w - 160, h - 40 )
 	btn:SetSize( 150, 30 )
 	btn:SetText( btntext )
 	btn:SetDark( true )
@@ -107,7 +107,7 @@ end
 --  CHECKBOX  --
 ----------------
 
-function cl_PProtect.addchk( plist, text, typ, var )
+function cl_PProtect.addchk( plist, text, typ, var, var2 )
 
 	local chk = vgui.Create( "DCheckBoxLabel" )
 
@@ -118,6 +118,11 @@ function cl_PProtect.addchk( plist, text, typ, var )
 		chk:SetConVar( "PProtect_AS_" .. var )
 	elseif typ == "tools" then
 		chk:SetConVar( "PProtect_AS_tools_" .. var )
+	elseif typ == "blockedtools" then
+		chk:SetChecked( var2 )
+		function chk:OnChange()
+			ToolsTable[var] = chk:GetChecked()
+		end
 	elseif typ == "propprotection" then
 		chk:SetConVar( "PProtect_PP_" .. var )
 	end

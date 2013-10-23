@@ -146,12 +146,23 @@ end
 
 -- THE TOOL-ANTISPAM ITSELF
 function sv_PProtect.CanTool( ply, trace, tool )
+	
+	local IsBlockedTool = false
 
 	if sv_PProtect.CheckASAdmin( ply ) == true then return true end
 	
-	--Check AntiSpam if Tool is in the Block-List
-	if table.HasValue( sv_PProtect.BlockedTools, tool )	and tobool( sv_PProtect.Settings.AntiSpam_General["toolprotection"] ) == true then
+	table.foreach( sv_PProtect.BlockedTools, function( key, value )
+		if tool == key then
+			IsBlockedTool = tobool(value)
+			if IsBlockedTool == true then sv_PProtect.Notify( ply, "Sry, this Tool is blocked on this server!" ) end
+		end
+	end )
 
+	if IsBlockedTool == true then return false end
+	
+	--Check AntiSpam if Tool is in the Block-List
+	if table.HasValue( sv_PProtect.AntiSpamTools, tool ) and tobool( sv_PProtect.Settings.AntiSpam_General["toolprotection"] ) == true then
+		
 		--Check Cooldown
 		if CurTime() < ply.toolcooldown then
 
@@ -208,7 +219,7 @@ net.Receive( "sendBlockedProp", function( len, pl )
 		table.insert( sv_PProtect.BlockedProps, string.lower( Prop ) )
 
 		--Save into SQL-Table
-		sv_PProtect.saveBlockedProps( sv_PProtect.BlockedProps )
+		sv_PProtect.saveBlockedData( sv_PProtect.BlockedProps, "props" )
 		
 		sv_PProtect.InfoNotify( pl, "Saved " .. Prop .. " to blocked Props!" )
 		print( "[PatchProtect - AS] " .. pl:Nick() .. " added " .. Prop .. " to the blocked Props!" )
@@ -238,7 +249,7 @@ net.Receive( "sendNewBlockedPropTable", function( len, pl )
 	sv_PProtect.BlockedProps = net.ReadTable()
 
 	--Save into SQL-Table
-	sv_PProtect.saveBlockedProps( sv_PProtect.BlockedProps )
+	sv_PProtect.saveBlockedData( sv_PProtect.BlockedProps, "props" )
 	
 	sv_PProtect.InfoNotify( pl, "Saved new blocked Prop Table!" )
 	
@@ -254,11 +265,44 @@ end )
 concommand.Add( "btn_btools", function( ply, cmd, args )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
-	--[[
-	Here should be something for the blocked Tools.
-	Patcher, you did that well in Tool-AntiSpam,
-	so please can you do that for me?
-	Thanks ^^
-	]]
 
+	if table.Count( sv_PProtect.BlockedTools ) != 0 then
+
+		net.Start( "getBlockedToolData" )
+			net.WriteTable( sv_PProtect.BlockedTools )
+		net.Send( ply )
+
+	else
+
+		table.foreach( weapons.GetList(), function( _, wep )
+
+			if wep.ClassName == "gmod_tool" then
+
+				table.foreach( wep.Tool, function( name, tool )
+					sv_PProtect.BlockedTools[name] = false
+				end )
+
+			end
+
+		end )
+
+		net.Start( "getBlockedToolData" )
+			net.WriteTable( sv_PProtect.BlockedTools )
+		net.Send( ply )
+
+	end
+
+end )
+
+-- GET NEW BLOCKEDTOOLS-TABLE FROM CLIENT
+net.Receive( "sendNewBlockedToolTable", function( len, pl )
+	
+	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+	sv_PProtect.BlockedTools = net.ReadTable()
+
+	--Save into SQL-Table
+	sv_PProtect.saveBlockedData( sv_PProtect.BlockedTools, "tools" )
+	
+	sv_PProtect.InfoNotify( pl, "Saved new blocked Tool Table!" )
+	
 end )
