@@ -155,7 +155,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	if tobool( sv_PProtect.Settings.AntiSpam_General["toolblock"] ) == true then
 		table.foreach( sv_PProtect.BlockedTools, function( key, value )
 			if tool == key then
-				IsBlockedTool = tobool(value)
+				IsBlockedTool = value
 				if IsBlockedTool == true then sv_PProtect.Notify( ply, "Sry, this Tool is blocked on this server!" ) end
 			end
 		end )
