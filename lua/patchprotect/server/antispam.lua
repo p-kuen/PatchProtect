@@ -84,7 +84,7 @@ function sv_PProtect.CanSpawn( ply, mdl )
 	if sv_PProtect.CheckASAdmin( ply ) == true then return true end
 	if ply.duplicate == true then return true end
 	
-	--Check blocked Props
+	--Prop block
 	if tobool( sv_PProtect.Settings.AntiSpam_General["propblock"] ) and isstring( mdl ) then
 		if table.HasValue( sv_PProtect.BlockedProps, string.lower( mdl ) ) then
 			sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
@@ -151,12 +151,15 @@ function sv_PProtect.CanTool( ply, trace, tool )
 
 	if sv_PProtect.CheckASAdmin( ply ) == true then return true end
 	
-	table.foreach( sv_PProtect.BlockedTools, function( key, value )
-		if tool == key then
-			IsBlockedTool = tobool(value)
-			if IsBlockedTool == true then sv_PProtect.Notify( ply, "Sry, this Tool is blocked on this server!" ) end
-		end
-	end )
+	--Tool block
+	if tobool( sv_PProtect.Settings.AntiSpam_General["toolblock"] ) == true then
+		table.foreach( sv_PProtect.BlockedTools, function( key, value )
+			if tool == key then
+				IsBlockedTool = tobool(value)
+				if IsBlockedTool == true then sv_PProtect.Notify( ply, "Sry, this Tool is blocked on this server!" ) end
+			end
+		end )
+	end
 
 	if IsBlockedTool == true then return false end
 	
@@ -266,31 +269,36 @@ concommand.Add( "btn_btools", function( ply, cmd, args )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
 
-	if table.Count( sv_PProtect.BlockedTools ) != 0 then
+	local sendingTable = {}
 
-		net.Start( "getBlockedToolData" )
-			net.WriteTable( sv_PProtect.BlockedTools )
-		net.Send( ply )
+	--This is here, that we get everytime the new tools from addons
+	table.foreach( weapons.GetList(), function( _, wep )
 
-	else
+		if wep.ClassName == "gmod_tool" then
 
-		table.foreach( weapons.GetList(), function( _, wep )
+			table.foreach( wep.Tool, function( name, tool )
+				sendingTable[ name ] = false
+			end )
 
-			if wep.ClassName == "gmod_tool" then
+		end
 
-				table.foreach( wep.Tool, function( name, tool )
-					sv_PProtect.BlockedTools[name] = false
-				end )
+	end )
+	
+	if table.Count( sendingTable ) != 0 then
 
+		table.foreach( sv_PProtect.BlockedTools, function( key, value )
+			
+			if value == true then
+				sendingTable[ key ] = true
 			end
 
 		end )
 
-		net.Start( "getBlockedToolData" )
-			net.WriteTable( sv_PProtect.BlockedTools )
-		net.Send( ply )
-
 	end
+	
+	net.Start( "getBlockedToolData" )
+		net.WriteTable( sendingTable )
+	net.Send( ply )
 
 end )
 

@@ -147,9 +147,9 @@ function sv_PProtect.setBlockedTools()
 		table.foreach( sv_PProtect.LoadedBlockedTools, function( key, value )
 
 			if value == "true" then
-				value = true
+				sv_PProtect.LoadedBlockedTools[ key ] = true
 			else
-				value = false
+				sv_PProtect.LoadedBlockedTools[ key ] = false
 			end
 
 		end )
@@ -186,7 +186,7 @@ function sv_PProtect.saveBlockedData( datatable, datatype )
 				table.insert( keys1, "prop_" .. k .. " VARCHAR(255)" )
 				table.insert( keys2, "'prop_" .. k .. "'" )
 				table.insert( values, "'" .. v .. "'" )
-			else
+			elseif datatype == "tools" then
 				table.insert( keys1, k .. " VARCHAR(255)" )
 				table.insert( keys2, "'" .. k .. "'" )
 				table.insert( values, "'" .. tostring( v ) .. "'" )
