@@ -5,7 +5,7 @@ PatchProtect is a Prop Protection for Garry's Mod 13.
 <h2>Why we recommend, using PatchProtect?</h2>
 
 <h3>Lagfree and highest Performance</h3>
-We try to keep the CPU-Useage as low as possible to save resources for the server and keep it lagfree from PatchProtect
+We try to keep the CPU-Usage as low as possible to save resources for the server and keep it lagfree from PatchProtect
 
 <h3>AntiSpam</h3>
 In this Prop Protection, we offer a nice working <b>AntiSpam-Function</b> so that people are not able to spam around.
@@ -40,7 +40,7 @@ We try to keep a fast service: If someone posts an error on GitHub or on Worksho
 <b>For sure, we can say, that the next update on workshop will include the Buddy-System! (Of course, we will offer patchnotes of every update, to keep you informed about the newest changes!)</b>
 
 
-<h2>Useage of PatchProtect:</h2>
+<h2>Usage of PatchProtect:</h2>
 You can control the Settings in the <b>Q-Menu > Utilities</b>. There, if you are an admin, you can change all settings and also what should happen, if someone is spamming. (Don't forget to press the Save-Button!)
 
 
