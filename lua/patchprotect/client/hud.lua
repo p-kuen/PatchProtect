@@ -103,8 +103,8 @@ properties.Add( "addblockedprop", {
 
 	Filter = function( self, ent, ply )
 
-		if GetConVarNumber( "PProtect_AS_use" ) == 1 and GetConVarNumber( "PProtect_AS_propblock" ) == 1 then return true else return false end
-		if !LocalPlayer():IsAdmin() or !LocalPlayer():IsSuperAdmin() then return true end
+		if GetConVarNumber( "PProtect_AS_use" ) == 0 or GetConVarNumber( "PProtect_AS_propblock" ) == 0 then return false end
+		if !LocalPlayer():IsAdmin() or !LocalPlayer():IsSuperAdmin() then return false end
 		if !ent:IsValid() or ent:IsPlayer() then return false end
 		return true
 
