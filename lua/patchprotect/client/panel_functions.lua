@@ -17,17 +17,19 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	frm:MakePopup()
 	
 	function frm:Paint()
- 
-		surface.SetDrawColor( 220, 220, 220, 255 )
-		self:DrawFilledRect()
-		draw.RoundedBox( 0, 0, 0, frm:GetWide(), 24, Color( 88, 144, 222, 255 ) )
- 
+
+		draw.RoundedBox( 4, 0, 0, frm:GetWide(), frm:GetTall(), Color( 88, 144, 222, 255 ) )
+		draw.RoundedBox( 4, 2, 22, frm:GetWide() - 4, frm:GetTall() - 24, Color( 220, 220, 220, 255 ) )
+
 	end
 
 	function frm:PaintOver()
 
-		surface.SetDrawColor( 88, 144, 222, 255 )
-		self:DrawOutlinedRect()
+		if close == false then return end
+		draw.RoundedBox( 4, w - 100, 0, 100, 22, Color( 88, 144, 222, 255 ) )
+		draw.RoundedBox( 2, w - 35, 2, 30, 18, Color( 150, 0, 0, 255 ) )
+		draw.RoundedBox( 2, w - 34, 3, 28, 16, Color( 220, 0, 0, 255 ) )
+		draw.DrawText( "X", "PatchProtectFont", w - 24, 4, Color( 240, 240, 240, 255 ), TEXT_ALIGN_LEFT )
 
 	end
 
@@ -52,18 +54,17 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	btn:SetSize( 150, 30 )
 	btn:SetText( btntext )
 	btn:SetDark( true )
-	btn:SetFont( "DermaDefaultBold" )
+	btn:SetFont( "PatchProtectFont" )
 
-	btn.DoClick = function()
+	function btn:OnMousePressed()
 
-		if btnarg != nil then
+		if btnarg == nil then return end
 			
-			if type( btnarg ) == "table" then
+		if type( btnarg ) == "table" then
 				
-				net.Start( nettext )
-					net.WriteTable( btnarg )
-				net.SendToServer()
-			end
+			net.Start( nettext )
+				net.WriteTable( btnarg )
+			net.SendToServer()
 
 		end
 
@@ -73,8 +74,8 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 
 	function btn:Paint()
 
-		draw.RoundedBox( 2, 1, 1, btn:GetWide() - 3, btn:GetTall() - 3, Color( 150, 150, 150, 255 ) )
-		draw.RoundedBox( 2, 2, 2, btn:GetWide() - 5, btn:GetTall() - 5, Color( 200, 200, 200, 255 ) )
+		draw.RoundedBox( 2, 0, 0, btn:GetWide(), btn:GetTall(), Color( 88, 144, 222, 255 ) )
+		draw.RoundedBox( 2, 1, 1, btn:GetWide() - 2, btn:GetTall() - 2, Color( 200, 200, 200, 255 ) )
 
 	end
 
@@ -125,6 +126,15 @@ function cl_PProtect.addchk( plist, text, typ, var, var2 )
 		end
 	elseif typ == "propprotection" then
 		chk:SetConVar( "PProtect_PP_" .. var )
+	end
+
+	function chk:PaintOver()
+
+		draw.RoundedBox( 2, 0, 0, chk:GetTall(), chk:GetTall(), Color( 150, 150, 150, 255 ) )
+		draw.RoundedBox( 2, 1, 1, chk:GetTall() - 2, chk:GetTall() - 2, Color( 240, 240, 240, 255 ) )
+		if chk:GetChecked() == false then return end
+		draw.RoundedBox( 2, 2, 2, chk:GetTall() - 4, chk:GetTall() - 4, Color( 88, 144, 222, 255 ) )
+
 	end
 
 	plist:AddItem( chk )

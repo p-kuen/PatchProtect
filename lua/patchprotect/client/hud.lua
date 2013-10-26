@@ -98,8 +98,8 @@ hook.Add( "PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam )
 properties.Add( "addblockedprop", {
 
 	MenuLabel = "Add to blocked Props",
-
 	Order = 2002,
+	MenuIcon = "icon16/page_white_edit.png",
 
 	Filter = function( self, ent, ply )
 

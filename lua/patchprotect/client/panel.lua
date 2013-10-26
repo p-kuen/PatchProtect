@@ -152,6 +152,13 @@ net.Receive( "getBlockedPropData", function()
 
 		end
 
+		function Icon:Paint()
+
+			draw.RoundedBox( 4, 0, 0, Icon:GetWide(), Icon:GetTall(), Color( 200, 200, 200, 255 ) )
+			draw.RoundedBox( 4, 3, 3, Icon:GetWide() - 6, Icon:GetTall() - 6, Color( 240, 240, 240, 255 ) )
+			
+		end
+
 		psFrm:AddItem( Icon )
 
 	end )
