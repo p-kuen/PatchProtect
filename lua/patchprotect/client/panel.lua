@@ -170,7 +170,7 @@ net.Receive( "getBlockedToolData", function()
 
 	ToolsTable = net.ReadTable()
 
-	tsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", false, false, false, "Save Tools", ToolsTable, "sendNewBlockedToolTable" )
+	tsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", false, true, false, "Save Tools", ToolsTable, "sendNewBlockedToolTable" )
 
 	for key, value in SortedPairs( ToolsTable ) do
 

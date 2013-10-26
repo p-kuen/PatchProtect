@@ -84,7 +84,7 @@ function cl_PProtect.ShowOwner()
 	end
 	draw.RoundedBox( 4, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, col )
 	draw.RoundedBox( 4, ScrW() - OW - 3, ScrH() / 2 - (OH / 2) + 2, OW - 4, OH - 4, Color( 240, 240, 240, 200 ) )
-	draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
 hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner )
