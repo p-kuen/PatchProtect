@@ -22,6 +22,7 @@ function sv_PProtect.CheckASAdmin( ply )
 
 	if tobool( sv_PProtect.Settings.AntiSpam_General["use"] ) == false or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tobool( sv_PProtect.Settings.AntiSpam_General["noantiadmin"] ) then return true end
+	return false
 
 end
 
@@ -40,10 +41,9 @@ function sv_PProtect.spamaction( ply )
 	if action == 2 then
 
 		cleanup.CC_Cleanup( ply, "", {} )
-		ply.cleanedup = true
-		sv_PProtect.InfoNotify( ply, "Your props have been cleanuped!" )
-		sv_PProtect.AdminNotify( ply:Nick() .. "s props were cleaned up! (Reason: Spam)" )
-		print( "[PatchProtect - AS] " .. ply:Nick() .. "s props have been cleaned up!" )
+		sv_PProtect.InfoNotify( ply, "Cleaned all your Props! (Reason: Spam)" )
+		sv_PProtect.AdminNotify( "Cleaned " .. ply:Nick() .. "s props! (Reason: Spam)" )
+		print( "[PatchProtect - AS] Cleaned " .. ply:Nick() .. "s props! (Reason: Spam)" )
 
 	--Kick
 	elseif action == 3 then
@@ -85,11 +85,9 @@ function sv_PProtect.CanSpawn( ply, mdl )
 	if ply.duplicate == true then return true end
 	
 	--Prop block
-	if tobool( sv_PProtect.Settings.AntiSpam_General["propblock"] ) and isstring( mdl ) then
-		if table.HasValue( sv_PProtect.BlockedProps, string.lower( mdl ) ) then
-			sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
-			return false
-		end
+	if tobool( sv_PProtect.Settings.AntiSpam_General["propblock"] ) and isstring( mdl ) and table.HasValue( sv_PProtect.BlockedProps, string.lower( mdl ) ) then
+		sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
+		return false
 	end
 	
 	--Check Cooldown
@@ -147,24 +145,24 @@ end
 -- THE TOOL-ANTISPAM ITSELF
 function sv_PProtect.CanTool( ply, trace, tool )
 	
-	local IsBlockedTool = false
-
 	if sv_PProtect.CheckASAdmin( ply ) == true then return true end
+	local IsBlockedTool = false
 	
-	--Tool block
-	if tobool( sv_PProtect.Settings.AntiSpam_General["toolblock"] ) == true then
+	--Tool-Block
+	if tobool( sv_PProtect.Settings.AntiSpam_General[ "toolblock" ] ) == true then
+
 		table.foreach( sv_PProtect.BlockedTools, function( key, value )
 			if tool == key then
 				IsBlockedTool = value
 				if IsBlockedTool == true then sv_PProtect.Notify( ply, "Sry, this Tool is blocked on this server!" ) end
 			end
 		end )
-	end
 
+	end
 	if IsBlockedTool == true then return false end
 	
 	--Check AntiSpam if Tool is in the Block-List
-	if table.HasValue( sv_PProtect.AntiSpamTools, tool ) and tobool( sv_PProtect.Settings.AntiSpam_General["toolprotection"] ) == true then
+	if table.HasValue( sv_PProtect.AntiSpamTools, tool ) and tobool( sv_PProtect.Settings.AntiSpam_General[ "toolprotection" ] ) == true then
 		
 		--Check Cooldown
 		if CurTime() < ply.toolcooldown then
@@ -207,6 +205,16 @@ hook.Add( "CanTool", "FiringToolgun", sv_PProtect.CanTool )
 --  BLOCKED PROPS  --
 ---------------------
 
+-- SEND BLOCKEDPROPS-TABLE TO CLIENT
+concommand.Add( "btn_bprops", function( ply, cmd, args )
+
+	if sv_PProtect.CheckASAdmin( ply ) == false then return end
+	net.Start( "getBlockedPropData" )
+		net.WriteTable( sv_PProtect.BlockedProps )
+	net.Send( ply )
+
+end )
+
 -- GET NEW BLOCKED PROP
 net.Receive( "sendBlockedProp", function( len, pl )
 	
@@ -235,16 +243,6 @@ net.Receive( "sendBlockedProp", function( len, pl )
 	
 end )
 
--- SEND BLOCKEDPROPS-TABLE TO CLIENT
-concommand.Add( "btn_bprops", function( ply, cmd, args )
-
-	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
-	net.Start( "getBlockedPropData" )
-		net.WriteTable( sv_PProtect.BlockedProps )
-	net.Send( ply )
-
-end )
-
 -- GET NEW BLOCKEDPROPS-TABLE FROM CLIENT
 net.Receive( "sendNewBlockedPropTable", function( len, pl )
 	
@@ -253,7 +251,6 @@ net.Receive( "sendNewBlockedPropTable", function( len, pl )
 
 	--Save into SQL-Table
 	sv_PProtect.saveBlockedData( sv_PProtect.BlockedProps, "props" )
-	
 	sv_PProtect.InfoNotify( pl, "Saved new blocked Prop Table!" )
 	
 end )
@@ -267,13 +264,11 @@ end )
 -- SEND BLOCKEDTOOLS-TABLE TO CLIENT
 concommand.Add( "btn_btools", function( ply, cmd, args )
 
-	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
-
+	if sv_PProtect.CheckASAdmin( ply ) == false then return end
 	local sendingTable = {}
 
 	--This is here, that we get everytime the new tools from addons
 	table.foreach( weapons.GetList(), function( _, wep )
-
 		if wep.ClassName == "gmod_tool" then
 
 			table.foreach( wep.Tool, function( name, tool )
@@ -281,20 +276,13 @@ concommand.Add( "btn_btools", function( ply, cmd, args )
 			end )
 
 		end
-
 	end )
-	
-	if table.Count( sendingTable ) != 0 then
 
-		table.foreach( sv_PProtect.BlockedTools, function( key, value )
-			
-			if value == true then
-				sendingTable[ key ] = true
-			end
-
-		end )
-
-	end
+	table.foreach( sv_PProtect.BlockedTools, function( key, value )	
+		if value == true then
+			sendingTable[ key ] = true
+		end
+	end )
 	
 	net.Start( "getBlockedToolData" )
 		net.WriteTable( sendingTable )
@@ -310,7 +298,19 @@ net.Receive( "sendNewBlockedToolTable", function( len, pl )
 
 	--Save into SQL-Table
 	sv_PProtect.saveBlockedData( sv_PProtect.BlockedTools, "tools" )
-	
 	sv_PProtect.InfoNotify( pl, "Saved new blocked Tool Table!" )
 	
+end )
+
+
+
+-------------------------
+--  ANTISPAMMED TOOLS  --
+-------------------------
+
+net.Receive( "sendNewAntiSpammedToolTable", function( len, pl )
+
+	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+	sv_PProtect.saveAntiSpammedTools( pl )
+
 end )

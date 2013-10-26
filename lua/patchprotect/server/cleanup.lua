@@ -5,9 +5,9 @@
 -- PLAYER LEFT SERVER
 function sv_PProtect.setCleanupProps( ply )
 	
-	if tonumber( sv_PProtect.Settings.PropProtection["use"] ) == 0 then return end
-	if tonumber( sv_PProtect.Settings.PropProtection["propdelete"] ) == 0 then return end
-	if tonumber( sv_PProtect.Settings.PropProtection["keepadminsprops"] ) == 1 then
+	if tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false then return end
+	if tobool( sv_PProtect.Settings.PropProtection[ "propdelete" ] ) == false then return end
+	if tobool( sv_PProtect.Settings.PropProtection[ "keepadminsprops" ] ) == true then
 		if ply:IsAdmin() or ply:IsSuperAdmin() then return end
 	end
 	
@@ -20,7 +20,7 @@ function sv_PProtect.setCleanupProps( ply )
 	end )
 	
 	--Create Timer
-	timer.Create( "CleanupPropsOf" .. ply:Nick(), tonumber( sv_PProtect.Settings.PropProtection["propdelete_delay"] ), 1, function()
+	timer.Create( "CleanupPropsOf" .. ply:Nick(), tonumber( sv_PProtect.Settings.PropProtection[ "propdelete_delay" ] ), 1, function()
 
 		table.foreach( ents.GetAll(), function( k, v )
 
@@ -39,7 +39,7 @@ hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.s
 -- PLAYER CAME BACK
 function sv_PProtect.checkComeback( ply )
 	
-	if tonumber( sv_PProtect.Settings.PropProtection["propdelete"] ) == 0 or tonumber( sv_PProtect.Settings.PropProtection["use"] ) == 0 then return end
+	if tobool( sv_PProtect.Settings.PropProtection[ "propdelete" ] ) == false or tobool( sv_PProtect.Settings.PropProtection["use"] ) == false then return end
 
 	if timer.Exists( "CleanupPropsOf" .. ply:Nick() ) then
 		print( "[PatchProtect - Cleanup] Aborded Cleanup! " .. ply:Nick() .. " came back!" )
@@ -102,22 +102,18 @@ concommand.Add( "btn_cleanup", sv_PProtect.CleanupEverything )
 function sv_PProtect.CleanupPlayersProps( ply, cmd, args )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
-	local count = 0
-	
-	table.foreach( ents.GetAll(), function( k, v )
 
-		if !v:IsValid() or v:IsPlayer() then return end
-		local Owner = v:CPPIGetOwner()
-		
-		if Owner != nil and Owner:GetName() == tostring( args[1] ) then
-			v:Remove()
-			count = count + 1
+	local cleanupdata = string.Split( args[1], "´´´" )
+	table.foreach( player.GetAll(), function( key, value )
+		if value:Nick() == cleanupdata[1] then
+			cleanupdata[1] = value
 		end
-
 	end )
 
-	sv_PProtect.InfoNotify( ply, "Cleaned " .. tostring( args[1] ) .. "'s Props! (" .. count .. ")" )
-	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed " .. count .. " Props from " .. tostring(args[1]) .. "!" )
+	cleanup.CC_Cleanup( cleanupdata[1], "", {} )
+
+	sv_PProtect.InfoNotify( ply, "Cleaned " .. cleanupdata[1]:GetName() .. "'s Props! (" .. cleanupdata[2] .. ")" )
+	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed " .. cleanupdata[2] .. " Props from " .. cleanupdata[1]:GetName() .. "!" )
 
 end
 concommand.Add( "btn_cleanup_player", sv_PProtect.CleanupPlayersProps )

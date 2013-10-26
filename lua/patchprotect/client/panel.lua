@@ -116,12 +116,10 @@ end
 function cl_PProtect.ShowToolsFrame( ply, cmd, args )
 
 	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
-	tlsFrm = cl_PProtect.addframe( 250, 350, "Set antispammed Tools:", true, true, false )
+	tlsFrm = cl_PProtect.addframe( 250, 350, "Set antispammed Tools:", false, true, false, "Save Tools", {}, "sendNewAntiSpammedToolTable" )
 
 	table.foreach( cl_PProtect.ConVars.PProtect_AS_tools, function( key, value )
-
 		cl_PProtect.addchk( tlsFrm, value, "tools", value )
-
 	end )
 
 end
@@ -147,7 +145,6 @@ net.Receive( "getBlockedPropData", function()
 				Icon:Remove()
 				psFrm:InvalidateLayout()
 			end )
-			
 			menu:Open()
 
 		end
@@ -162,6 +159,10 @@ net.Receive( "getBlockedPropData", function()
 		psFrm:AddItem( Icon )
 
 	end )
+
+	if table.Count( PropsTable ) == 0 then
+		cl_PProtect.addlbl( psFrm, "Nothing here...", "category" )
+	end
 
 end )
 
@@ -285,7 +286,7 @@ function cl_PProtect.CUMenu( Panel )
 
 		net.Receive( "sendCount", function()
 			local counter = net.ReadString()
-			cl_PProtect.addbtn( Panel, "Cleanup " .. value:GetName() .."  (" .. counter .. " Props)", "cleanup_player", value:GetName() )
+			cl_PProtect.addbtn( Panel, "Cleanup " .. value:GetName() .."  (" .. counter .. " Props)", "cleanup_player", value:GetName() .. "´´´" .. tostring( counter ) )
 		end )
 
 	end )

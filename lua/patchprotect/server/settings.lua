@@ -163,43 +163,6 @@ end
 
 
 
---------------------
---  BLOCKED DATA  --
---------------------
-
-function sv_PProtect.saveBlockedData( datatable, datatype )
-
-	local keys1 = {}
-	local keys2 = {}
-	local values = {}
-
-	if sql.TableExists( "pprotect_blocked" .. datatype ) then
-		sql.Query( "DROP TABLE pprotect_blocked" .. datatype )
-	end
-
-	if not sql.TableExists( "pprotect_blocked" .. datatype ) then
-
-		table.foreach( datatable, function( k, v )
-			if datatype == "props" then
-				table.insert( keys1, "prop_" .. k .. " VARCHAR(255)" )
-				table.insert( keys2, "'prop_" .. k .. "'" )
-				table.insert( values, "'" .. v .. "'" )
-			elseif datatype == "tools" then
-				table.insert( keys1, k .. " VARCHAR(255)" )
-				table.insert( keys2, "'" .. k .. "'" )
-				table.insert( values, "'" .. tostring( v ) .. "'" )
-			end
-		end )
-
-		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blocked" .. datatype .. "( " .. table.concat( keys1, ", " ) .. " );" )
-		sql.Query( "INSERT INTO pprotect_blocked" .. datatype .. "( " .. table.concat( keys2, ", " ) .. " ) VALUES( " .. table.concat( values, ", " ) .. " )" )
-
-	end
-	
-end
-
-
-
 -----------------------------------
 --  GET DATA FROM SQL DATABASES  --
 -----------------------------------
@@ -316,9 +279,9 @@ function sv_PProtect.reloadSettingsPlayer( ply )
 end
 
 -- FOR EVERYONE
-function sv_PProtect.reloadSettings()
+function sv_PProtect.reloadSettings( ply )
 
-	if ply then
+	if ply != nil and ply:IsPlayer() then
 
 		sv_PProtect.reloadSettingsPlayer( ply )
 
@@ -335,9 +298,9 @@ concommand.Add( "sh_PProtect.reloadSettings", sv_PProtect.reloadSettings )
 
 
 
----------------------
---  SAVE SETTINGS  --
----------------------
+------------------------------
+--  SAVE ANTISPAM SETTINGS  --
+------------------------------
 
 -- ANTI SPAM
 function sv_PProtect.Save( ply, cmd, args )
@@ -348,8 +311,6 @@ function sv_PProtect.Save( ply, cmd, args )
 	end
 
 	local s_value
-	local toolNames = {}
-	local toolValues = {}
 
 	--GENERAL
 	table.foreach( sv_PProtect.ConVars.PProtect_AS, function( key, value )
@@ -369,15 +330,23 @@ function sv_PProtect.Save( ply, cmd, args )
 	end )
 
 	sv_PProtect.Settings.AntiSpam_General = sql.QueryRow( "SELECT * FROM pprotect_antispam_general LIMIT 1" )
+		
+end
+concommand.Add( "btn_save", sv_PProtect.Save )
 
-	--TOOLS
+-- ANTISPAMMED TOOLS
+function sv_PProtect.saveAntiSpammedTools( ply )
+
+	local toolNames = {}
+	local toolValues = {}
+
 	table.foreach( weapons.GetList(), function( _, wep )
 
 		if wep.ClassName == "gmod_tool" then
 
-			table.foreach( wep.Tool, function(name, tool )
+			table.foreach( wep.Tool, function( name, tool )
 				table.insert( toolNames, name )
-				table.insert( toolValues, tonumber( ply:GetInfo("PProtect_AS_tools_" .. name) ) )
+				table.insert( toolValues, tonumber( ply:GetInfo("PProtect_AS_tools_" .. name ) ) )
 			end )
 
 		end
@@ -387,7 +356,7 @@ function sv_PProtect.Save( ply, cmd, args )
 	if sql.TableExists( "pprotect_antispam_tools" ) then
 
 		table.foreach( toolNames, function( key, value )
-			sql.Query( "UPDATE pprotect_antispam_tools SET " .. value .. " = " .. toolValues[key] )
+			sql.Query( "UPDATE pprotect_antispam_tools SET " .. value .. " = " .. toolValues[ key ] )
 		end )
 
 	end
@@ -407,9 +376,40 @@ function sv_PProtect.Save( ply, cmd, args )
 	sv_PProtect.Settings.AntiSpamTools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" )
 	sv_PProtect.setAntiSpamTools()
 	sv_PProtect.InfoNotify( ply, "Saved AntiSpam Settings" )
-		
+
 end
-concommand.Add( "btn_save", sv_PProtect.Save )
+
+-- BLOCKED DATA
+function sv_PProtect.saveBlockedData( datatable, datatype )
+
+	local keys1 = {}
+	local keys2 = {}
+	local values = {}
+
+	if sql.TableExists( "pprotect_blocked" .. datatype ) then
+		sql.Query( "DROP TABLE pprotect_blocked" .. datatype )
+	end
+
+	if not sql.TableExists( "pprotect_blocked" .. datatype ) then
+
+		table.foreach( datatable, function( k, v )
+			if datatype == "props" then
+				table.insert( keys1, "prop_" .. k .. " VARCHAR(255)" )
+				table.insert( keys2, "'prop_" .. k .. "'" )
+				table.insert( values, "'" .. v .. "'" )
+			elseif datatype == "tools" then
+				table.insert( keys1, k .. " VARCHAR(255)" )
+				table.insert( keys2, "'" .. k .. "'" )
+				table.insert( values, "'" .. tostring( v ) .. "'" )
+			end
+		end )
+
+		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blocked" .. datatype .. "( " .. table.concat( keys1, ", " ) .. " );" )
+		sql.Query( "INSERT INTO pprotect_blocked" .. datatype .. "( " .. table.concat( keys2, ", " ) .. " ) VALUES( " .. table.concat( values, ", " ) .. " )" )
+
+	end
+	
+end
 
 -- PROP PROTECTION
 function sv_PProtect.Save_PP( ply, cmd, args )
@@ -450,7 +450,7 @@ concommand.Add( "btn_save_pp", sv_PProtect.Save_PP )
 --  OTHER THINGS  --
 --------------------
 
--- RELOAD SETTINGS FOR EACH PLAYER
+-- SET INITIAL VARIABLES FOR EACH PLAYER
 local function initalSpawn( ply )
 
 	sv_PProtect.reloadSettings( ply )

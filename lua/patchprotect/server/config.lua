@@ -9,6 +9,7 @@ util.AddNetworkString( "getBlockedPropData" )
 util.AddNetworkString( "sendNewBlockedPropTable" )
 util.AddNetworkString( "getBlockedToolData" )
 util.AddNetworkString( "sendNewBlockedToolTable" )
+util.AddNetworkString( "sendNewAntiSpammedToolTable" )
 
 -- PROP PROTECTION
 util.AddNetworkString( "propProtectionSettings" )

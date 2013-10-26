@@ -58,7 +58,7 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 
 	function btn:OnMousePressed()
 
-		if btnarg == nil then return end
+		if btnarg == nil or type( btnarg ) != "table" then return end
 			
 		if type( btnarg ) == "table" then
 				
