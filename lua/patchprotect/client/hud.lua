@@ -76,7 +76,14 @@ function cl_PProtect.ShowOwner()
 	local OW, OH = surface.GetTextSize( ownerText )
 	OW = OW + 10
 	OH = OH + 10
-	draw.RoundedBox( 4, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, Color( 88, 144, 222, 200 ) )
+	local col
+	if Owner == LocalPlayer() or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+		col = Color( 128, 255, 0, 200 )
+	else
+		col = Color( 176, 0, 0, 200 )
+	end
+	draw.RoundedBox( 4, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, col )
+	draw.RoundedBox( 4, ScrW() - OW - 3, ScrH() / 2 - (OH / 2) + 2, OW - 4, OH - 4, Color( 240, 240, 240, 200 ) )
 	draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color( 0, 0, 0, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
@@ -148,9 +155,10 @@ local function PProtect_DrawNote( self, key, value )
 	
 	local xtext = ( x + w - 10 )
 	local ytext = ( y + ( h / 2 ) )
-	local coltext = Color( 0, 0, 0, 255 )
+	local coltext = Color( 75, 75, 75, 255 )
 	
 	draw.RoundedBox( 4, x, y, w, h, col )
+	draw.RoundedBox( 4, x + 3, y + 3, w - 6, h - 6, Color( 240, 240, 240, 200 ) )
 	draw.SimpleText( value.text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
