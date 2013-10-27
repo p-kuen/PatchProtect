@@ -346,7 +346,7 @@ function sv_PProtect.saveAntiSpammedTools( ply )
 
 			table.foreach( wep.Tool, function( name, tool )
 				table.insert( toolNames, name )
-				table.insert( toolValues, tonumber( ply:GetInfo("PProtect_AS_tools_" .. name ) ) )
+				table.insert( toolValues, tonumber( ply:GetInfo( "PProtect_AS_tools_" .. name ) ) )
 			end )
 
 		end
@@ -359,17 +359,10 @@ function sv_PProtect.saveAntiSpammedTools( ply )
 			sql.Query( "UPDATE pprotect_antispam_tools SET " .. value .. " = " .. toolValues[ key ] )
 		end )
 
-	end
-
-	if !sql.TableExists( "pprotect_antispam_tools" ) then
+	else
 
 		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_antispam_tools(" .. table.concat( toolNames, ", " ) .. ");" )
 		sql.Query( "INSERT INTO pprotect_antispam_tools(" .. table.concat( toolNames, ", " ) .. ") VALUES(" .. table.concat( toolValues, ", " ) .. ")" )
-
-		MsgC(
-			Color(0, 240, 100),
-			"[PatchProtect] Created new Tools-Settings-Table!\n"
-		)
 
 	end
 
