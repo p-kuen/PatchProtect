@@ -136,8 +136,9 @@ function sv_PProtect.CanDamage( ent, info )
 	local Owner = ent:CPPIGetOwner()
 	local Attacker = info:GetAttacker()
 
-	if !ent:IsValid() or ent:IsPlayer() or tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false or tobool( sv_PProtect.Settings.PropProtection["damageprotection"] ) == false then return end
-
+	if !ent:IsValid() or ent:IsPlayer() then return false end
+	if tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false or tobool( sv_PProtect.Settings.PropProtection[ "damageprotection" ] ) == false then return false end
+	
 	if Attacker:IsPlayer() and Owner != Attacker then
 		
 		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and tobool( sv_PProtect.Settings.PropProtection[ "noantiadmin" ] ) == true then return end
