@@ -127,21 +127,28 @@ concommand.Add( "btn_cleanup_player", sv_PProtect.CleanupPlayersProps )
 --Get request for counting props from a specific player
 net.Receive( "getCount", function( len, pl )
 	
-	local player = net.ReadEntity()
-	local count = 0
+	local playerents = {}
 
-	table.foreach( ents.GetAll(), function( k, v )
+	table.foreach( player.GetAll(), function( key, value )
 
-		local Owner = v:CPPIGetOwner()
-		if Owner != nil and Owner == player then
-			count = count + 1
-		end
+		local count = 0
+
+		table.foreach( ents.GetAll(), function( k, v )
+
+			local Owner = v:CPPIGetOwner()
+			if Owner == value then
+				count = count + 1
+			end
+
+		end )
+
+		playerents[value:Nick()] = tostring(count)
 
 	end )
 	
 	--Send the result back to the player
 	net.Start( "sendCount" )
-		net.WriteString( tostring( count ) )
+		net.WriteTable( playerents )
 	net.Send( pl )
 
 end )

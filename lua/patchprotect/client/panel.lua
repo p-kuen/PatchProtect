@@ -278,17 +278,19 @@ function cl_PProtect.CUMenu( Panel )
 	cl_PProtect.addbtn( Panel, "Cleanup all Props from disc. Players", "cleandiscprops" )
 
 	cl_PProtect.addlbl( Panel, "\nCleanup Player's props:", "panel" )
-	table.foreach( player.GetAll(), function( key, value )
+		
+	net.Start( "getCount" )
+		net.WriteString( "value" )
+	net.SendToServer()
 
-		net.Start( "getCount" )
-			net.WriteEntity( value )
-		net.SendToServer()
+	net.Receive( "sendCount", function()
 
-		net.Receive( "sendCount", function()
-			local counter = net.ReadString()
-			cl_PProtect.addbtn( Panel, "Cleanup " .. value:GetName() .."  (" .. counter .. " Props)", "cleanup_player", value:GetName() .. "´´´" .. tostring( counter ) )
+		local allents = net.ReadTable()
+
+		table.foreach( allents, function( key, value )
+			cl_PProtect.addbtn( Panel, "Cleanup " .. tostring( key ) .."  (" .. tostring( value ) .. " Props)", "cleanup_player", tostring( key ) .. "´´´" .. tostring( value ) )
 		end )
-
+	
 	end )
 
 end
