@@ -5,8 +5,7 @@
 -- PLAYER LEFT SERVER
 function sv_PProtect.setCleanupProps( ply )
 	
-	if tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false then return end
-	if tobool( sv_PProtect.Settings.PropProtection[ "propdelete" ] ) == false then return end
+	if tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false or tobool( sv_PProtect.Settings.PropProtection[ "propdelete" ] ) == false then return end
 	if tobool( sv_PProtect.Settings.PropProtection[ "keepadminsprops" ] ) == true then
 		if ply:IsAdmin() or ply:IsSuperAdmin() then return end
 	end

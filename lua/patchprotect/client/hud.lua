@@ -43,6 +43,7 @@ function cl_PProtect.ShowOwner()
 	-- Set Trace
 	local entity = LocalPlayer():GetEyeTrace().Entity
 
+	if entity:IsPlayer() then return end
 	if entity:IsValid() and stopsend == false then
 
 		net.Start( "getOwner" )
