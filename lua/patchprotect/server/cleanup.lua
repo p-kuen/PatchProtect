@@ -3,13 +3,15 @@
 -----------------------------------------
 
 -- PLAYER LEFT SERVER
-function sv_PProtect.setCleanupProps( ply )
+function sv_PProtect.SetCleanupProps( ply )
 	
-	if tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false or tobool( sv_PProtect.Settings.PropProtection[ "propdelete" ] ) == false then return end
-	if tobool( sv_PProtect.Settings.PropProtection[ "keepadminsprops" ] ) == true then
+	if tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false or tobool( sv_PProtect.Settings.PropProtection[ "use_propdelete" ] ) == false then return end
+	if tobool( sv_PProtect.Settings.PropProtection[ "keepadminsprops" ] ) then
 		if ply:IsAdmin() or ply:IsSuperAdmin() then return end
 	end
 	
+	local cleanupname = ply:Nick()
+
 	table.foreach( ents.GetAll(), function( k, v )
 		
 		if v.PatchPPOwnerID == ply:SteamID() then
@@ -23,22 +25,22 @@ function sv_PProtect.setCleanupProps( ply )
 
 		table.foreach( ents.GetAll(), function( k, v )
 
-			if v.PatchPPCleanup == ply:Nick() then
+			if v.PatchPPCleanup == cleanupname then
 				v:Remove()
 			end
 
 		end )
-		print( "[PatchProtect - Cleanup] Removed " .. ply:Nick() .. "'s Props!" )
+		print( "[PatchProtect - Cleanup] Removed " .. cleanupname .. "'s Props! (Reason: Left the Server)" )
 
 	end )
 
 end
-hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.setCleanupProps )
+hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.SetCleanupProps )
 
 -- PLAYER CAME BACK
 function sv_PProtect.checkComeback( ply )
 	
-	if tobool( sv_PProtect.Settings.PropProtection[ "propdelete" ] ) == false or tobool( sv_PProtect.Settings.PropProtection["use"] ) == false then return end
+	if tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false or tobool( sv_PProtect.Settings.PropProtection["use_propdelete"] ) == false then return end
 
 	if timer.Exists( "CleanupPropsOf" .. ply:Nick() ) then
 		print( "[PatchProtect - Cleanup] Aborded Cleanup! " .. ply:Nick() .. " came back!" )

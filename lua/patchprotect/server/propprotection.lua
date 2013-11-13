@@ -122,7 +122,7 @@ function sv_PProtect.CanDrive( ply, ent )
 		return false
 	end
 
-	if ply == ent:CPPIGetOwner then
+	if ply == ent:CPPIGetOwner() then
 		return true
 	else
 		return false
