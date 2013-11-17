@@ -44,16 +44,14 @@ function cl_PProtect.ShowOwner()
 	local entity = LocalPlayer():GetEyeTrace().Entity
 
 	if entity:IsPlayer() then return end
-	if entity:IsValid() and stopsend == false then
+	if entity:IsValid() and stopsend != entity:EntIndex() then
 
 		net.Start( "getOwner" )
 			net.WriteEntity( entity )
 		net.SendToServer()
 
-		stopsend = true
+		stopsend = entity:EntIndex()
 
-	elseif !entity:IsValid() then
-		stopsend = false
 	end
 	
 	if Owner == nil or IsWorld == nil or !entity:IsValid() then return end
