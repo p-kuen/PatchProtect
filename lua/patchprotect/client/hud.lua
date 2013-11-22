@@ -43,7 +43,7 @@ function cl_PProtect.ShowOwner()
 	-- Set Trace
 	local entity = LocalPlayer():GetEyeTrace().Entity
 
-	if entity:IsPlayer() then return end
+	if entity:IsPlayer() or !entity:IsValid() then return end
 	if entity:IsValid() and stopsend != entity:EntIndex() then
 
 		net.Start( "getOwner" )
@@ -117,7 +117,7 @@ properties.Add( "addblockedprop", {
 	end,
 
 	Action = function( self, ent )
-
+	
 		net.Start( "sendBlockedProp" )
 			net.WriteString( ent:GetModel() )
 		net.SendToServer()

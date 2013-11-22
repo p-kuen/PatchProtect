@@ -28,7 +28,7 @@ if cleanup then
 	local Clean = cleanup.Add
 
 	function cleanup.Add( ply, enttype, ent )
-
+		
 		if ply.duplicate == true then
 			if enttype != "duplicates" then
 				ply.duplicate = false
