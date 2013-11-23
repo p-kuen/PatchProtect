@@ -85,7 +85,7 @@ function sv_PProtect.CanSpawn( ply, mdl )
 	if ply.duplicate == true then return true end
 	
 	--Prop block
-	if tobool( sv_PProtect.Settings.AntiSpam_General["propblock"] ) and isstring( mdl ) and table.HasValue( sv_PProtect.BlockedProps, string.lower( mdl ) ) then
+	if tobool( sv_PProtect.Settings.AntiSpam_General["propblock"] ) and isstring( mdl ) and table.HasValue( sv_PProtect.BlockedProps, string.lower( mdl ) ) or string.find( mdl, "/../" ) then
 		sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
 		return false
 	end
