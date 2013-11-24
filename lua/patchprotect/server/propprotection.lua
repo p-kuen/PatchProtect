@@ -67,7 +67,7 @@ function sv_PProtect.CheckPlayer( ply, ent )
 end
 hook.Add( "PhysgunPickup", "AllowPhysPickup", sv_PProtect.CheckPlayer )
 hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CheckPlayer )
-hook.Add( "CanUse", "AllowUsing", sv_PProtect.CheckPlayer )
+hook.Add( "PlayerUse", "AllowUsing", sv_PProtect.CheckPlayer )
 
 
 
