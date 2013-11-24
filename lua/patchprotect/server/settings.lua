@@ -170,7 +170,7 @@ end
 function sv_PProtect.getData()
 
 	local SelectAntiSpam = "propblock"
-	local SelectPropProtection = "keepadminsprops"
+	local SelectPropProtection = "useprotection"
 
 	sv_PProtect.Settings.AntiSpam_General = sv_PProtect.SetupSQLSettings( "pprotect_antispam_general", "AntiSpam", sv_PProtect.ConVars.PProtect_AS, SelectAntiSpam )
 	sv_PProtect.Settings.AntiSpamTools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}

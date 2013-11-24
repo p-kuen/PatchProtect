@@ -62,7 +62,8 @@ sv_PProtect.ConVars.PProtect_PP = {
 	damageprotection = 1,
 	reloadprotection = 1,
 	gravgunprotection = 1,
-	blockcreatortool = 1
+	blockcreatortool = 1,
+	useprotection = 1
 }
 
 

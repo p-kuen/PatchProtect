@@ -67,7 +67,6 @@ function sv_PProtect.CheckPlayer( ply, ent )
 end
 hook.Add( "PhysgunPickup", "AllowPhysPickup", sv_PProtect.CheckPlayer )
 hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CheckPlayer )
-hook.Add( "PlayerUse", "AllowUsing", sv_PProtect.CheckPlayer )
 
 
 
@@ -96,6 +95,28 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	end
 
 end
+
+
+
+----
+--  USE PROP PROTECTION  --
+---------------------------
+
+function sv_PProtect.CanUse( ply, ent )
+	
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+	if tobool( sv_PProtect.Settings.PropProtection[ "useprotection" ] ) == false then return true end
+
+	if !ent:IsValid() then return false end
+
+	if ply == ent:CPPIGetOwner() then
+		return true
+	else
+		return false
+	end
+
+end
+hook.Add( "PlayerUse", "AllowUsing", sv_PProtect.CanUse )
 
 
 
