@@ -6,6 +6,12 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 
 	if tobool( sv_PProtect.Settings.PropProtection["use"] ) == false or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tobool( sv_PProtect.Settings.PropProtection["noantiadmin"] ) == true then
+		if ent:IsValid() then
+			if ent:CPPIGetOwner():IsSuperAdmin() == true then return false else return true end
+		else
+			return true
+		end
+	end
 	return false
 
 end
@@ -48,7 +54,7 @@ end
 -- GENERAL CHECK-PLAYER FUNCTION
 function sv_PProtect.CheckPlayer( ply, ent )
 
-	if sv_PProtect.CheckPPAdmin( ply ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
 	if !ent:IsValid() or ent:IsWorld() then return false end
 	if ply == ent:CPPIGetOwner() then
@@ -71,7 +77,7 @@ hook.Add( "CanUse", "AllowUsing", sv_PProtect.CheckPlayer )
 
 function sv_PProtect.CanToolProtection( ply, trace, tool )
 	
-	if sv_PProtect.CheckPPAdmin( ply ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, trace.Entity ) then return true end
 	if tool == "creator" and tobool( sv_PProtect.Settings.PropProtection[ "blockcreatortool" ] ) == true then return false end
 
 	local ent = trace.Entity
@@ -100,7 +106,7 @@ end
 -- CAN PROPERTY
 function sv_PProtect.CanProperty( ply, property, ent )
 
-	if sv_PProtect.CheckPPAdmin( ply ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 	
 	if ply == ent:CPPIGetOwner() and property != "persist" then
 		return true
@@ -115,7 +121,7 @@ hook.Add( "CanProperty", "AllowProperty", sv_PProtect.CanProperty )
 -- CAN DRIVE
 function sv_PProtect.CanDrive( ply, ent )
 	
-	if sv_PProtect.CheckPPAdmin( ply ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
 	if tobool( sv_PProtect.Settings.PropProtection[ "cdrive" ] ) == false then
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -171,9 +177,9 @@ hook.Add( "EntityTakeDamage", "AllowEntityDamage", sv_PProtect.CanDamage )
 
 function sv_PProtect.CanPhysReload( weapon, ply )
 	
-	if sv_PProtect.CheckPPAdmin( ply ) then return end
+	if sv_PProtect.CheckPPAdmin( ply, ply:GetEyeTrace().Entity ) then return end
 
-	if tobool( sv_PProtect.Settings.PropProtection[ "reloadprotection" ] ) == true then return false end
+	if tobool( sv_PProtect.Settings.PropProtection[ "reloadprotection" ] ) == false then return end
 	
 	local ent = ply:GetEyeTrace().Entity
 	
@@ -196,7 +202,7 @@ hook.Add( "OnPhysgunReload", "AllowPhysReload", sv_PProtect.CanPhysReload )
 
 function sv_PProtect.CanGravPunt( ply, ent )
 
-	if sv_PProtect.CheckPPAdmin( ply ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 	if tobool( sv_PProtect.Settings.PropProtection[ "gravgunprotection" ] ) == false then return false end
 
 	if !ent:IsValid() then return false end
