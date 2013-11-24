@@ -35,7 +35,7 @@ if cleanup then
 			end
 		end
 
-		if ent:IsValid() and ply:IsPlayer() then
+		if ent != nil and ent:IsValid() and ply:IsPlayer() then
 			ent:CPPISetOwner( ply )
 		end
 
