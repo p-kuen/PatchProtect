@@ -53,9 +53,9 @@ function cl_PProtect.ASMenu( Panel )
 	if GetConVarNumber( "PProtect_AS_use" ) == 1 then
 
 		cl_PProtect.addchk( Panel, "No AntiSpam for Admins", "general", "noantiadmin" )
-		cl_PProtect.addchk( Panel, "Use Tool-AntiSpam (Affected by AntiSpam)", "general", "toolprotection" )
-		cl_PProtect.addchk( Panel, "Use Tool-Block", "general", "toolblock" )
-		cl_PProtect.addchk( Panel, "Use Prop-Block", "general", "propblock" )
+		cl_PProtect.addchk( Panel, "Tool-AntiSpam (Affected by AntiSpam)", "general", "toolprotection" )
+		cl_PProtect.addchk( Panel, "Tool-Block", "general", "toolblock" )
+		cl_PProtect.addchk( Panel, "Prop-Block", "general", "propblock" )
 
 		--Tool Protection
 		if GetConVarNumber( "PProtect_AS_toolprotection" ) == 1 then
@@ -211,10 +211,10 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "No PropProtection for Admins", "propprotection", "noantiadmin" )
 
 		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
-		cl_PProtect.addchk( Panel, "Use Use-Protection", "propprotection", "useprotection" )
-		cl_PProtect.addchk( Panel, "Use Reload-Protection", "propprotection", "reloadprotection" )
-		cl_PProtect.addchk( Panel, "Use Damage-Protection", "propprotection", "damageprotection" )
-		cl_PProtect.addchk( Panel, "Use GravGun-Protection", "propprotection", "gravgunprotection" )
+		cl_PProtect.addchk( Panel, "Use-Protection", "propprotection", "useprotection" )
+		cl_PProtect.addchk( Panel, "Reload-Protection", "propprotection", "reloadprotection" )
+		cl_PProtect.addchk( Panel, "Damage-Protection", "propprotection", "damageprotection" )
+		cl_PProtect.addchk( Panel, "GravGun-Protection", "propprotection", "gravgunprotection" )
 
 		cl_PProtect.addlbl( Panel, "\nSpecial Restrictions:", "panel" )
 		cl_PProtect.addchk( Panel, "Block 'Creator'-Tool (e.g.: Spawn Weapons with Toolgun)", "propprotection", "blockcreatortool" )
@@ -222,12 +222,12 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "cdrive" )
 
 		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
-		cl_PProtect.addchk( Panel, "Use Prop-Delete on Disconnect", "propprotection", "use_propdelete" )
+		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "use_propdelete" )
 
 		--Prop Delete
 		if GetConVarNumber( "PProtect_PP_use_propdelete" ) == 1 then
-			cl_PProtect.addchk( Panel, "Keep Admin-Props on Disconnect", "propprotection", "keepadminsprops" )
-			cl_PProtect.addsldr( Panel, 1, 120, "Prop-Delete Delay (sec)", "propprotection", "propdelete_delay" )
+			cl_PProtect.addchk( Panel, "Keep Admin-Props", "propprotection", "keepadminsprops" )
+			cl_PProtect.addsldr( Panel, 1, 120, "Delay (sec)", "propprotection", "propdelete_delay" )
 		end
 
 	end

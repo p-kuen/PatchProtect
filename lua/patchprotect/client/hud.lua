@@ -40,11 +40,11 @@ function cl_PProtect.ShowOwner()
 	
 	if GetConVarNumber( "PProtect_PP_use" ) == 0 then return end
 
-	-- Set Trace
+	-- Check Entiy
 	local entity = LocalPlayer():GetEyeTrace().Entity
+	if !entity:IsValid() or entity:IsPlayer() then return end
 
-	if entity:IsPlayer() or !entity:IsValid() then return end
-	if entity:IsValid() and stopsend != entity:EntIndex() then
+	if stopsend != entity:EntIndex() then
 
 		net.Start( "getOwner" )
 			net.WriteEntity( entity )
@@ -58,17 +58,13 @@ function cl_PProtect.ShowOwner()
 
 	local ownerText
 	if IsWorld then
-
 		ownerText = "Owner: World Prop"
-
 	else
-
 		if Owner:IsPlayer() then
 			ownerText = "Owner: " .. Owner:GetName()
 		else
 			ownerText = "Owner: Disconnected Player"
 		end
-
 	end
 
 	surface.SetFont( "PatchProtectFont_small" )

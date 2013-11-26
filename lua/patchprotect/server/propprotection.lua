@@ -29,10 +29,8 @@ if cleanup then
 
 	function cleanup.Add( ply, enttype, ent )
 		
-		if ply.duplicate == true then
-			if enttype != "duplicates" then
-				ply.duplicate = false
-			end
+		if ply.duplicate == true and enttype != "duplicates" then
+			ply.duplicate = false
 		end
 
 		if ent != nil and ent:IsValid() and ply:IsPlayer() then
