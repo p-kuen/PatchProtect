@@ -42,7 +42,7 @@ function cl_PProtect.ShowOwner()
 
 	-- Check Entiy
 	local entity = LocalPlayer():GetEyeTrace().Entity
-	if !entity:IsValid() or entity:IsPlayer() then return end
+	if entity == nil or !entity:IsValid() or entity:IsPlayer() then return end
 
 	if stopsend != entity:EntIndex() then
 

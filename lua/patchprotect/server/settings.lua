@@ -330,7 +330,8 @@ function sv_PProtect.Save( ply, cmd, args )
 	end )
 
 	sv_PProtect.Settings.AntiSpam_General = sql.QueryRow( "SELECT * FROM pprotect_antispam_general LIMIT 1" )
-		
+	sv_PProtect.InfoNotify( ply, "Saved PropProtection Settings" )
+	
 end
 concommand.Add( "btn_save", sv_PProtect.Save )
 
