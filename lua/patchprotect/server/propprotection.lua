@@ -6,7 +6,7 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 
 	if tobool( sv_PProtect.Settings.PropProtection["use"] ) == false or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and tobool( sv_PProtect.Settings.PropProtection["noantiadmin"] ) == true then
-		if ent:IsValid() then
+		if ent:IsValid() and ent:CPPIGetOwner() != nil then
 			if ent:CPPIGetOwner():IsSuperAdmin() == true then return false else return true end
 		else
 			return true
