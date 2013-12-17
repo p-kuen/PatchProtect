@@ -16,23 +16,8 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 
 end
 
---[[
-Und jz?
-gespusht ^^
-aja und wo steat des "HIII PATCHER?" i find des nit :(((((((
-weil mir no nit gespeichert haben woasch..ah ok und wia geat det?
-ganz oanfach eig ^^
-wenn ma was geändert haben, dann schreibsch git add .
-in punkt nit vergessen :P
-dann schreibsch git commit -m "TEXT"
-dann schreibsch git push -u origin master
-FERTIG
-:OOOO so oanfach? pfff ^^ des isch ja voll kompli ^^
-iSCH OANFACH!
-naaa des lernsch oamal dann kann mas ^^
-WTF
-I will
-]]
+
+
 -----------------
 --  SET OWNER  --
 -----------------
