@@ -325,7 +325,7 @@ hook.Add( "PopulateToolMenu", "PProtectmakeMenus", CreateMenus )
 --  UPDATE MENUS  --
 --------------------
 
-local function UpdateMenus()
+function cl_PProtect.UpdateMenus()
 	
 	-- ANTISPAM
 	if cl_PProtect.ASCPanel then
@@ -346,7 +346,7 @@ local function UpdateMenus()
 	end
 
 end
-hook.Add( "SpawnMenuOpen", "PProtectMenus", UpdateMenus )
+hook.Add( "SpawnMenuOpen", "PProtectMenus", cl_PProtect.UpdateMenus )
 
 ------------------
 --  NETWORKING  --

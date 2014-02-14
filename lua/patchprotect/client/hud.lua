@@ -77,9 +77,15 @@ function cl_PProtect.ShowOwner()
 	else
 		col = Color( 176, 0, 0, 200 )
 	end
-	draw.RoundedBox( 4, ScrW() - OW - 5, ScrH() / 2 - (OH / 2), OW, OH, col )
-	draw.RoundedBox( 4, ScrW() - OW - 3, ScrH() / 2 - (OH / 2) + 2, OW - 4, OH - 4, Color( 240, 240, 240, 200 ) )
-	draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 10, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+
+	--Border
+	draw.RoundedBox( 0, ScrW() - OW - 15, ScrH() / 2 - (OH / 2), 5, OH, col )
+
+	--Textbox
+	draw.RoundedBox( 0, ScrW() - OW - 10, ScrH() / 2 - (OH / 2), OW, OH, Color( 240, 240, 240, 200 ) )
+	
+	--Text
+	draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 15, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
 hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner )
@@ -152,9 +158,14 @@ local function PProtect_DrawNote( self, key, value )
 	local ytext = ( y + ( h / 2 ) )
 	local coltext = Color( 75, 75, 75, 255 )
 	
-	draw.RoundedBox( 4, x, y, w, h, col )
-	draw.RoundedBox( 4, x + 3, y + 3, w - 6, h - 6, Color( 240, 240, 240, 200 ) )
-	draw.SimpleText( value.text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	--Border
+	draw.RoundedBox( 0, x - 20, y, 5, h, col )
+
+	--Textbox
+	draw.RoundedBox( 0, x - 15, y, w, h, Color( 240, 240, 240, 200 ) )
+
+	--Text
+	draw.SimpleText( value.text, "PatchProtectFont", xtext - 15, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
 

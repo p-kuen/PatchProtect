@@ -208,10 +208,16 @@ function cl_PProtect.addbtn( plist, text, cmd, args )
 	btn:SetText( text )
 	btn:SetDark( true )
 
-	if args != nil then
-		btn:SetConsoleCommand( "btn_" .. cmd, args )
-	else
-		btn:SetConsoleCommand( "btn_" .. cmd )
+	btn.DoClick = function()
+
+		if args != nil then
+			RunConsoleCommand( "btn_" .. cmd, args )
+		else
+			RunConsoleCommand( "btn_" .. cmd )
+		end
+
+		cl_PProtect.UpdateMenus()
+
 	end
 
 	plist:AddItem( btn )

@@ -91,7 +91,7 @@ function sv_PProtect.CleanupEverything( ply )
 	game.CleanUpMap()
 
 	--Define World-Props again!
-	sv_PProtect.setWorldProps()
+	sv_PProtect.SetWorldProps()
 
 	sv_PProtect.InfoNotify(ply, "Cleaned Map!")
 	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all Props!" )
