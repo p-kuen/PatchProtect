@@ -238,11 +238,11 @@ net.Receive( "PProtect_Notify", function( len )
 	curmsg.time = SysTime()
 	curmsg.mode = "normal"
 
-	table.foreach( PProtect_Notes, function(key, value)
+	table.foreach( PProtect_Notes, function( key, value )
 
 		if value.mode == "normal" then
 
-			table.remove(PProtect_Notes, key)
+			table.remove( PProtect_Notes, key )
 
 		end
 

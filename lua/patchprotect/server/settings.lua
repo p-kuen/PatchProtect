@@ -330,7 +330,7 @@ function sv_PProtect.Save( ply, cmd, args )
 	end )
 
 	sv_PProtect.Settings.AntiSpam_General = sql.QueryRow( "SELECT * FROM pprotect_antispam_general LIMIT 1" )
-	sv_PProtect.InfoNotify( ply, "Saved PropProtection Settings" )
+	sv_PProtect.InfoNotify( ply, "Saved AntiSpam-Settings" )
 	
 end
 concommand.Add( "btn_save", sv_PProtect.Save )
@@ -369,7 +369,7 @@ function sv_PProtect.saveAntiSpammedTools( ply )
 
 	sv_PProtect.Settings.AntiSpamTools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" )
 	sv_PProtect.setAntiSpamTools()
-	sv_PProtect.InfoNotify( ply, "Saved AntiSpam Settings" )
+	sv_PProtect.InfoNotify( ply, "Saved ToolProtection-Settings" )
 
 end
 
@@ -432,7 +432,7 @@ function sv_PProtect.Save_PP( ply, cmd, args )
 	end )
 
 	sv_PProtect.Settings.PropProtection = sql.QueryRow( "SELECT * FROM pprotect_propprotection LIMIT 1" )
-	sv_PProtect.InfoNotify( ply, "Saved PropProtection Settings" )
+	sv_PProtect.InfoNotify( ply, "Saved PropProtection-Settings" )
 
 end
 concommand.Add( "btn_save_pp", sv_PProtect.Save_PP )
