@@ -16,7 +16,7 @@ AddCSLuaFile()
 AddCSLuaFile("patchprotect/client/hud.lua")
 AddCSLuaFile("patchprotect/client/panel_functions.lua")
 AddCSLuaFile("patchprotect/client/panel.lua")
-
+AddCSLuaFile("patchprotect/client/buddy.lua")
 
 
 --------------------------------
@@ -36,5 +36,6 @@ else
 	include( "patchprotect/client/hud.lua" )
 	include( "patchprotect/client/panel_functions.lua" )
 	include( "patchprotect/client/panel.lua" )
+	include( "patchprotect/client/buddy.lua" )
 	
 end

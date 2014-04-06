@@ -126,6 +126,11 @@ function cl_PProtect.addchk( plist, text, typ, var, var2 )
 		end
 	elseif typ == "propprotection" then
 		chk:SetConVar( "PProtect_PP_" .. var )
+	elseif typ == "buddy" then
+		chk:SetChecked( false )
+		function chk:OnChange()
+			cl_PProtect.Buddy.RowType[tostring(var)] = tostring(chk:GetChecked())
+		end
 	end
 
 	function chk:PaintOver()
@@ -258,5 +263,48 @@ function cl_PProtect.addtext( plist, text )
 	local tentry = plist:Add( "DTextEntry" )
 	
 	tentry:SetText( text )
+
+end
+
+----------------
+--  LISTVIEW  --
+----------------
+
+function cl_PProtect.addlistview( plist, cols, filltype )
+
+	local lview = vgui.Create( "DListView" )
+	
+	lview:SetMultiSelect( false )
+	lview:SetSize(150, 200)
+	
+	table.foreach( cols, function( key, value )
+		lview:AddColumn( value )
+	end )
+	
+	if filltype == "my_buddies" then
+	
+		lview:AddLine("Buddy01", "TestPerm", "TestID")
+		
+	elseif filltype == "all_players" then
+	
+		table.foreach( player.GetAll(), function(key,value)
+			lview:AddLine(value:Nick(), value:SteamID())
+		end)
+		
+		function lview:OnClickLine( line, selected )
+			cl_PProtect.Buddy.CurrentBuddy[0] = tostring(line:GetValue(2))
+			lview:ClearSelection()
+			line:SetSelected(true)
+		end
+		
+	else
+	
+		lview:AddLine("Testname", "Testpermission", "TestID")
+		
+	end
+	
+	
+	
+	plist:AddItem( lview )
 
 end

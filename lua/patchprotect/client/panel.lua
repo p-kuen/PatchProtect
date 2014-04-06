@@ -299,6 +299,45 @@ function cl_PProtect.CUMenu( Panel )
 
 end
 
+------------------
+--  BUDDY MENU  --
+------------------
+
+function cl_PProtect.BMenu( Panel )
+
+	-- DELETE CONTROLS
+	Panel:ClearControls()
+
+	-- UPDATE PANELS
+	if not cl_PProtect.BCPanel then
+		cl_PProtect.BCPanel = Panel
+	end
+	
+	-- BUDDY PERMISSIONS
+	local buddy_permissions = {
+
+		"Use",
+		"PhysGun",
+		"ToolGun",
+		"Damage"
+	
+	}
+
+	-- BUDDY CONTROLS
+	cl_PProtect.addlbl( Panel, "Your Buddies:", "panel" )
+	cl_PProtect.addlistview( Panel, {"Name", "Permission", "SteamID"} , "my_buddies")
+	
+	cl_PProtect.addlbl( Panel, "Add a new buddy:", "panel" )
+	cl_PProtect.addlistview( Panel, {"Name", "SteamID"} , "all_players")
+	
+	table.foreach(buddy_permissions, function(key, value)
+		cl_PProtect.addchk( Panel, value, "buddy", string.lower(value) )
+	end)
+	
+	cl_PProtect.addbtn( Panel, "Add selected buddy" , "addbuddy" )
+
+end
+
 
 
 --------------------
@@ -315,6 +354,9 @@ local function CreateMenus()
 
 	-- CLEANUP
 	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPClientCleanup", "Cleanup", "", "", cl_PProtect.CUMenu)
+	
+	-- BUDDY
+	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPBuddyManager", "Buddy", "", "", cl_PProtect.BMenu)
 
 end
 hook.Add( "PopulateToolMenu", "PProtectmakeMenus", CreateMenus )
@@ -342,6 +384,12 @@ function cl_PProtect.UpdateMenus()
 	-- CLEANUP
 	if cl_PProtect.CUCPanel then
 		cl_PProtect.CUMenu(cl_PProtect.CUCPanel)
+		RunConsoleCommand("sh_PProtect.reloadSettings", LocalPlayer())
+	end
+	
+	-- BUDDY
+	if cl_PProtect.BCPanel then
+		cl_PProtect.BMenu(cl_PProtect.BCPanel)
 		RunConsoleCommand("sh_PProtect.reloadSettings", LocalPlayer())
 	end
 
