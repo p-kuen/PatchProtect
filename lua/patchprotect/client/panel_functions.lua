@@ -283,16 +283,38 @@ function cl_PProtect.addlistview( plist, cols, filltype )
 	
 	if filltype == "my_buddies" then
 	
-		lview:AddLine("Buddy01", "TestPerm", "TestID")
+		if cl_PProtect.Buddy.Buddies != nil then
+			table.foreach( cl_PProtect.Buddy.Buddies, function(key,value)
+				
+				lview:AddLine(tostring(value["nick"]), value["permission"], "testSID", value["uniqueid"])
+			
+			end)
+		end
 		
 	elseif filltype == "all_players" then
 	
 		table.foreach( player.GetAll(), function(key,value)
-			lview:AddLine(value:Nick(), value:SteamID())
+			--if value != LocalPlayer() then
+				if cl_PProtect.Buddy.Buddies != nil then
+					table.foreach( cl_PProtect.Buddy.Buddies, function(k,v)
+					
+						if value:UniqueID() != v["uniqueid"] then
+							lview:AddLine(value:Nick(), value:UniqueID())
+						end
+				
+					end)
+				else
+					lview:AddLine(value:Nick(), value:UniqueID())
+				end
+				
+				
+			--end
+			
 		end)
 		
 		function lview:OnClickLine( line, selected )
 			cl_PProtect.Buddy.CurrentBuddy[0] = tostring(line:GetValue(2))
+			cl_PProtect.Buddy.CurrentBuddy[1] = tostring(line:GetValue(1))
 			lview:ClearSelection()
 			line:SetSelected(true)
 		end

@@ -8,7 +8,7 @@ function cl_PProtect.SetupBuddySettings()
 
 	if !sql.TableExists( "pprotect_buddies" ) then
 
-		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_buddies('steamid' TEXT, 'nick' TEXT, 'option' TEXT);" )
+		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_buddies('uniqueid' TEXT, 'nick' TEXT, 'permission' TEXT);" )
 		
 		MsgC(
 			Color(50, 240, 0),
@@ -21,28 +21,27 @@ end
 
 cl_PProtect.SetupBuddySettings()
 
-cl_PProtect.Buddies = sql.Query("SELECT * FROM pprotect_buddies")
-
 cl_PProtect.Buddy = {}
-cl_PProtect.Buddy.RowType = {}
+cl_PProtect.Buddy.Buddies = sql.Query("SELECT * FROM pprotect_buddies")
+cl_PProtect.Buddy.RowType =
+{
+	use = false,
+	physgun = false,
+	toolgun = false,
+	damage = false
+}
 cl_PProtect.Buddy.CurrentBuddy = {}
 
 function cl_PProtect.Save_B( ply, cmd, args )
 
+	ply.Buddies = ply.Buddies or {}
+	sql.Query( "INSERT INTO pprotect_buddies('uniqueid', 'nick', 'permission' ) VALUES( '" .. cl_PProtect.Buddy.CurrentBuddy[0] .. "', '" .. cl_PProtect.Buddy.CurrentBuddy[1] .. "', '"..table.concat( table.KeysFromValue( cl_PProtect.Buddy.RowType, "true" ),", " ).."')" )
 	
-	print("current buddy:")
-	PrintTable(cl_PProtect.Buddy.CurrentBuddy)
-	print("current permissions:")
-	PrintTable(cl_PProtect.Buddy.RowType)
-	print("SAVED BUDDY!")
+	cl_PProtect.Buddy.Buddies = sql.Query("SELECT * FROM pprotect_buddies")
+	ply.Buddies = cl_PProtect.Buddy.Buddies
+	cl_PProtect.Info( "Added new buddy!" )
+	cl_PProtect.UpdateMenus()
 	
 
 end
 concommand.Add("btn_addbuddy", cl_PProtect.Save_B )
-
-function cl_PProtect.buddy_manager( ply, cmd, args )
-
-	print("OPENING!")
-
-end
-concommand.Add("btn_buddy", cl_PProtect.buddy_manager )

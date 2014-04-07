@@ -96,7 +96,7 @@ end
 
 
 
-----
+---------------------------
 --  USE PROP PROTECTION  --
 ---------------------------
 
@@ -107,7 +107,7 @@ function sv_PProtect.CanUse( ply, ent )
 
 	if !ent:IsValid() then return false end
 
-	if ply == ent:CPPIGetOwner() then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy(ent:CPPIGetOwner(), ply) then
 		return true
 	else
 		return false

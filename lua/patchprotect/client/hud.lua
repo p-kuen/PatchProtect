@@ -1,7 +1,8 @@
 local Owner
 local IsWorld
 local stopsend
-local PProtect_Notes = {}
+
+cl_PProtect.Notes = {}
 
 
 
@@ -40,9 +41,9 @@ function cl_PProtect.ShowOwner()
 	
 	if GetConVarNumber( "PProtect_PP_use" ) == 0 then return end
 
-	-- Check Entiy
-	local entity = LocalPlayer():GetEyeTrace().Entity
+	-- Check Entity
 	if entity == nil or !entity:IsValid() or entity:IsPlayer() then return end
+	local entity = LocalPlayer():GetEyeTrace().Entity
 
 	if stopsend != entity:EntIndex() then
 
@@ -58,13 +59,17 @@ function cl_PProtect.ShowOwner()
 
 	local ownerText
 	if IsWorld then
+
 		ownerText = "Owner: World Prop"
+
 	else
+
 		if Owner:IsPlayer() then
 			ownerText = "Owner: " .. Owner:GetName()
 		else
 			ownerText = "Owner: Disconnected Player"
 		end
+
 	end
 
 	surface.SetFont( "PatchProtectFont_small" )
@@ -77,7 +82,7 @@ function cl_PProtect.ShowOwner()
 	else
 		col = Color( 176, 0, 0, 200 )
 	end
-
+	
 	--Border
 	draw.RoundedBox( 0, ScrW() - OW - 15, ScrH() / 2 - (OH / 2), 5, OH, col )
 
@@ -86,6 +91,7 @@ function cl_PProtect.ShowOwner()
 	
 	--Text
 	draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 15, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+
 
 end
 hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner )
@@ -119,7 +125,7 @@ properties.Add( "addblockedprop", {
 	end,
 
 	Action = function( self, ent )
-	
+
 		net.Start( "sendBlockedProp" )
 			net.WriteString( ent:GetModel() )
 		net.SendToServer()
@@ -135,7 +141,7 @@ properties.Add( "addblockedprop", {
 ----------------
 
 -- CREATE INFO MESSAGE
-local function PProtect_DrawNote( self, key, value )
+function cl_PProtect.DrawNote( self, key, value )
 
 	surface.SetFont( "PatchProtectFont" )
 	local tsW, tsH = surface.GetTextSize( value.text )
@@ -167,6 +173,7 @@ local function PProtect_DrawNote( self, key, value )
 	--Text
 	draw.SimpleText( value.text, "PatchProtectFont", xtext - 15, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
+
 end
 
 
@@ -178,13 +185,13 @@ end
 -- SHOW MESSAGES
 local function Paint()
 
-	if not PProtect_Notes then return end
-	table.foreach( PProtect_Notes, function( key, value )
+	if not cl_PProtect.Notes then return end
+	table.foreach( cl_PProtect.Notes, function( key, value )
 
 		if SysTime() < value.time + 4 then
-			PProtect_DrawNote( self, key, value )
+			cl_PProtect.DrawNote( self, key, value )
 		else
-			table.remove( PProtect_Notes, key )
+			table.remove( cl_PProtect.Notes, key )
 		end
 
 	end )
@@ -192,7 +199,22 @@ local function Paint()
 end
 hook.Add( "HUDPaint", "RoundedBoxHud", Paint )
 
+----------------------------
+--  CLIENTSIDE FUNCTIONS  --
+----------------------------
 
+function cl_PProtect.Info( text )
+	
+	local curmsg = {}
+	curmsg.text = text
+	curmsg.time = SysTime()
+	curmsg.mode = "info"
+
+	table.insert( cl_PProtect.Notes, curmsg )
+
+	LocalPlayer():EmitSound("buttons/button9.wav", 100, 100)
+	
+end
 
 ------------------
 --  NETWORKING  --
@@ -206,7 +228,7 @@ net.Receive( "PProtect_InfoNotify", function( len )
 	curmsg.time = SysTime()
 	curmsg.mode = "info"
 
-	table.insert( PProtect_Notes, curmsg )
+	table.insert( cl_PProtect.Notes, curmsg )
 
 	LocalPlayer():EmitSound("buttons/button9.wav", 100, 100)
 
@@ -222,7 +244,7 @@ net.Receive( "PProtect_AdminNotify", function( len )
 		curmsg.time = SysTime()
 		curmsg.mode = "admin"
 
-		table.insert( PProtect_Notes, curmsg )
+		table.insert( cl_PProtect.Notes, curmsg )
 
 		LocalPlayer():EmitSound("ambient/alarms/klaxon1.wav", 100, 100)
 
@@ -238,17 +260,17 @@ net.Receive( "PProtect_Notify", function( len )
 	curmsg.time = SysTime()
 	curmsg.mode = "normal"
 
-	table.foreach( PProtect_Notes, function( key, value )
+	table.foreach( cl_PProtect.Notes, function(key, value)
 
 		if value.mode == "normal" then
 
-			table.remove( PProtect_Notes, key )
+			table.remove(cl_PProtect.Notes, key)
 
 		end
 
 	end)
 
-	table.insert( PProtect_Notes, curmsg )
+	table.insert( cl_PProtect.Notes, curmsg )
 
 end )
 

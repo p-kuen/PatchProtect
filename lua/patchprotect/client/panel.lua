@@ -325,10 +325,10 @@ function cl_PProtect.BMenu( Panel )
 
 	-- BUDDY CONTROLS
 	cl_PProtect.addlbl( Panel, "Your Buddies:", "panel" )
-	cl_PProtect.addlistview( Panel, {"Name", "Permission", "SteamID"} , "my_buddies")
+	cl_PProtect.addlistview( Panel, {"Name", "Permission", "SteamID", "UniqueID"} , "my_buddies")
 	
 	cl_PProtect.addlbl( Panel, "Add a new buddy:", "panel" )
-	cl_PProtect.addlistview( Panel, {"Name", "SteamID"} , "all_players")
+	cl_PProtect.addlistview( Panel, {"Name", "ID"} , "all_players")
 	
 	table.foreach(buddy_permissions, function(key, value)
 		cl_PProtect.addchk( Panel, value, "buddy", string.lower(value) )
