@@ -88,7 +88,7 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	if ply == Owner or ent:IsWorld() and ent.WorldOwned != true then
 		return true
 	else
-		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
+		sv_PProtect.Notify( ply, "You are not allowed to use " .. tool .. " on this object!" )
 		return false
 	end
 
@@ -110,6 +110,7 @@ function sv_PProtect.CanUse( ply, ent )
 	if ply == ent:CPPIGetOwner() then
 		return true
 	else
+		sv_PProtect.Notify( ply, "You are not allowed to use this object!" )
 		return false
 	end
 
@@ -130,7 +131,7 @@ function sv_PProtect.CanProperty( ply, property, ent )
 	if ply == ent:CPPIGetOwner() and property != "persist" then
 		return true
 	else
-		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
+		sv_PProtect.Notify( ply, "You are not allowed to change the propierties on this object!" )
 		return false
 	end
 
@@ -143,7 +144,7 @@ function sv_PProtect.CanDrive( ply, ent )
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
 	if tobool( sv_PProtect.Settings.PropProtection[ "cdrive" ] ) == false then
-		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
+		sv_PProtect.Notify( ply, "You are not allowed to drive this object!" )
 		return false
 	end
 
@@ -207,6 +208,7 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 	if ply == ent:CPPIGetOwner() then
 		return
 	else
+		sv_PProtect.Notify( ply, "You are not allowed to use the 'reload' function on this object!" )
 		return false
 	end
 
@@ -229,6 +231,7 @@ function sv_PProtect.CanGravPunt( ply, ent )
 	if ply == ent:CPPIGetOwner() then
 		return true
 	else
+		sv_PProtect.Notify( ply, "You are not allowed to use the Grav-Gun on this object!" )
 		return false
 	end
 
