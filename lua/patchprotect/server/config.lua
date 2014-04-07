@@ -20,6 +20,9 @@ util.AddNetworkString( "sendOwner" )
 util.AddNetworkString( "getCount" )
 util.AddNetworkString( "sendCount" )
 
+-- BUDDY
+util.AddNetworkString( "buddySend" )
+
 -- NOTIFICATIONS
 util.AddNetworkString( "PProtect_InfoNotify" )
 util.AddNetworkString( "PProtect_AdminNotify" )
