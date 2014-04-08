@@ -42,8 +42,8 @@ function cl_PProtect.ShowOwner()
 	if GetConVarNumber( "PProtect_PP_use" ) == 0 then return end
 
 	-- Check Entity
-	if entity == nil or !entity:IsValid() or entity:IsPlayer() then return end
 	local entity = LocalPlayer():GetEyeTrace().Entity
+	if entity == nil or !entity:IsValid() or entity:IsPlayer() then return end
 
 	if stopsend != entity:EntIndex() then
 
@@ -91,7 +91,6 @@ function cl_PProtect.ShowOwner()
 	
 	--Text
 	draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 15, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
-
 
 end
 hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner )

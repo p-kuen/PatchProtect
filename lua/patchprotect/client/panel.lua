@@ -84,17 +84,17 @@ function cl_PProtect.ASMenu( Panel )
 
 	-- SPAMACTION
 	if GetConVarNumber( "PProtect_AS_use" ) == 1 then
-		cl_PProtect.addcombo( saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction")
+		cl_PProtect.addcombo( saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction" )
 	end
 
 	local function spamactionChanged( CVar, PreviousValue, NewValue )
 		
 		saCat:Clear()
 		
-		cl_PProtect.addcombo(saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction")
+		cl_PProtect.addcombo( saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction" )
 
 		if tonumber( NewValue ) == 4 then
-			cl_PProtect.addsldr(saCat, 0, 60, "Ban Time (minutes)","general", "bantime")
+			cl_PProtect.addsldr( saCat, 0, 60, "Ban Time (minutes)","general", "bantime" )
 		elseif tonumber( NewValue ) == 5 then
 			cl_PProtect.addlbl( saCat, "Write a command. Use <player> for the Spammer", "category" )
 			cl_PProtect.addtext( saCat, GetConVarString( "PProtect_AS_concommand" ) )
@@ -422,7 +422,7 @@ end )
 
 -- PROP PROTECTION
 net.Receive( "propProtectionSettings", function( len )
-     
+	
 	cl_PProtect.ConVars.PProtect_PP = net.ReadTable()
 	createCCV()
 	
