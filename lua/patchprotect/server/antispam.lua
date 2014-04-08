@@ -107,7 +107,7 @@ function sv_PProtect.CanSpawn( ply, mdl )
 		end
 
 		--Block Prop-Spawning
-		sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.propcooldown - CurTime(), 1 ) )
+		sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.propcooldown - CurTime(), 1 ) .. " seconds" )
 		return false
 
 	end
@@ -180,7 +180,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 			end
 
 			--Block Toolgun-Firing
-			sv_PProtect.Notify( ply, "Wait: " .. math.Round( ply.toolcooldown - CurTime(), 1) )
+			sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.toolcooldown - CurTime(), 1) .. " seconds" )
 			return false
 
 		else
