@@ -50,7 +50,7 @@ end
 --------------------
 
 -- GENERAL CHECK-PLAYER FUNCTION
-function sv_PProtect.CheckPlayer( ply, ent )
+function sv_PProtect.CanTouch( ply, ent )
 
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
@@ -63,8 +63,8 @@ function sv_PProtect.CheckPlayer( ply, ent )
 	end
 
 end
-hook.Add( "PhysgunPickup", "AllowPhysPickup", sv_PProtect.CheckPlayer )
-hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CheckPlayer )
+hook.Add( "PhysgunPickup", "AllowPhysPickup", sv_PProtect.CanTouch )
+hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CanTouch )
 
 
 
