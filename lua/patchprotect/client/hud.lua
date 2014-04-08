@@ -58,11 +58,11 @@ function cl_PProtect.ShowOwner()
 
 	local ownerText
 	if IsWorld then
-		ownerText = "Owner: World Prop"
+		ownerText = "Owner: World"
 	else
-		if Owner:IsPlayer() then
+		if Owner:IsPlayer() and Owner:IsValid() then
 			ownerText = "Owner: " .. Owner:GetName()
-		else
+		elseif Owner:IsPlayer() then
 			ownerText = "Owner: Disconnected Player"
 		end
 	end

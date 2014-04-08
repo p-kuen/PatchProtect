@@ -311,8 +311,6 @@ function sv_PProtect.Save( ply, cmd, args )
 	end
 
 	local s_value
-
-	--GENERAL
 	table.foreach( sv_PProtect.ConVars.PProtect_AS, function( key, value )
 
 		s_value = tonumber( ply:GetInfo( "PProtect_AS_" .. key ) )
@@ -333,7 +331,7 @@ function sv_PProtect.Save( ply, cmd, args )
 	sv_PProtect.InfoNotify( ply, "Saved AntiSpam-Settings" )
 	
 end
-concommand.Add( "btn_save", sv_PProtect.Save )
+concommand.Add( "btn_save_as", sv_PProtect.Save )
 
 -- ANTISPAMMED TOOLS
 function sv_PProtect.saveAntiSpammedTools( ply )
@@ -414,7 +412,6 @@ function sv_PProtect.Save_PP( ply, cmd, args )
 	end
 
 	local s_value
-
 	table.foreach( sv_PProtect.ConVars.PProtect_PP, function( key, value )
 
 		s_value = tonumber( ply:GetInfo( "PProtect_PP_" .. key ) )

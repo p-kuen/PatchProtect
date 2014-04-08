@@ -80,7 +80,7 @@ function cl_PProtect.ASMenu( Panel )
 	end
 
 	-- SAVE SETTINGS
-	cl_PProtect.addbtn( Panel, "Save Settings", "save" )
+	cl_PProtect.addbtn( Panel, "Save Settings", "save_as" )
 
 	-- SPAMACTION
 	if GetConVarNumber( "PProtect_AS_use" ) == 1 then
@@ -374,7 +374,7 @@ end )
 
 -- PROP PROTECTION
 net.Receive( "propProtectionSettings", function( len )
-     
+	
 	cl_PProtect.ConVars.PProtect_PP = net.ReadTable()
 	createCCV()
 	
