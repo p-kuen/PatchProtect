@@ -1,18 +1,18 @@
-function sv_PProtect.isBuddy (source, buddy)
+function sv_PProtect.isBuddy( source, buddy, type )
+
+	if source == nil or buddy == nil then return false end
 	local isBuddy = false
 	if source.Buddies != nil then
-		print("checking started...")
-		table.foreach( source.Buddies, function(k,v)
-			print("comparing ".. buddy:UniqueID().. " with " .. v["uniqueid"])
+		table.foreach( source.Buddies, function( k, v )
 			if buddy:UniqueID() == v["uniqueid"] then
-				print("BUDDY!")
-				isBuddy = true;
+				if string.match(v["permission"], type) then
+
+					isBuddy = true;
+				end
 			end
 
 		end)
-		print("checking finished!")
 	end
-	print("nothing found!")
 	if isBuddy then
 		return true
 	else
@@ -20,8 +20,18 @@ function sv_PProtect.isBuddy (source, buddy)
 	end
 end
 
-net.Receive("buddySend", function(len, ply)
+net.Receive("PProtect_sendBuddy", function(len, ply)
 
 	ply.Buddies = net.ReadTable() or {}
+
+end)
+
+net.Receive("PProtect_sendOther", function(len, ply)
+
+	local text = net.ReadString()
+
+	net.Start("PProtect_Notify")
+		net.WriteString(ply:Nick() .. " added you as a buddy!")
+	net.Send(player.GetByUniqueID( tostring(text) ))
 
 end)

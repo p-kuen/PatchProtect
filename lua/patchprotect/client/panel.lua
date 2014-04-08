@@ -319,13 +319,15 @@ function cl_PProtect.BMenu( Panel )
 		"Use",
 		"PhysGun",
 		"ToolGun",
-		"Damage"
+		"Damage",
+		"Property"
 	
 	}
 
 	-- BUDDY CONTROLS
 	cl_PProtect.addlbl( Panel, "Your Buddies:", "panel" )
 	cl_PProtect.addlistview( Panel, {"Name", "Permission", "SteamID", "UniqueID"} , "my_buddies")
+	cl_PProtect.addbtn( Panel, "Delete selected buddy" , "deletebuddy" )
 	
 	cl_PProtect.addlbl( Panel, "Add a new buddy:", "panel" )
 	cl_PProtect.addlistview( Panel, {"Name", "ID"} , "all_players")

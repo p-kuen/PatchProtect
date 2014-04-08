@@ -54,7 +54,8 @@ function cl_PProtect.ShowOwner()
 		stopsend = entity:EntIndex()
 
 	end
-	
+
+	--Declared in the NETWORKING-section
 	if Owner == nil or IsWorld == nil or !entity:IsValid() then return end
 
 	local ownerText
@@ -64,9 +65,9 @@ function cl_PProtect.ShowOwner()
 
 	else
 
-		if Owner:IsPlayer() then
+		if Owner:IsPlayer() and Owner:IsValid() then
 			ownerText = "Owner: " .. Owner:GetName()
-		else
+		elseif Owner:IsPlayer() then
 			ownerText = "Owner: Disconnected Player"
 		end
 
@@ -207,7 +208,7 @@ function cl_PProtect.Info( text )
 	local curmsg = {}
 	curmsg.text = text
 	curmsg.time = SysTime()
-	curmsg.mode = "info"
+	curmsg.mode = "normal"
 
 	table.insert( cl_PProtect.Notes, curmsg )
 

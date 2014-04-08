@@ -55,7 +55,7 @@ function sv_PProtect.CheckPlayer( ply, ent )
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
 	if !ent:IsValid() or ent:IsWorld() then return false end
-	if ply == ent:CPPIGetOwner() then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy(ent:CPPIGetOwner(), ply, "physgun") then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -85,7 +85,7 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 
 	if ent:IsWorld() and tobool( sv_PProtect.Settings.PropProtection[ "tool_world" ] ) == false then return false end
 	
-	if ply == Owner or ent:IsWorld() and ent.WorldOwned != true then
+	if ply == Owner or ent:IsWorld() and ent.WorldOwned != true or sv_PProtect.isBuddy(ent:CPPIGetOwner(), ply, "toolgun") then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -107,7 +107,7 @@ function sv_PProtect.CanUse( ply, ent )
 
 	if !ent:IsValid() then return false end
 
-	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy(ent:CPPIGetOwner(), ply) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy(ent:CPPIGetOwner(), ply, "use") then
 		return true
 	else
 		return false
@@ -127,7 +127,7 @@ function sv_PProtect.CanProperty( ply, property, ent )
 
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 	
-	if ply == ent:CPPIGetOwner() and property != "persist" then
+	if ply == ent:CPPIGetOwner() and property != "persist" or sv_PProtect.isBuddy(ent:CPPIGetOwner(), ply, "property") then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
@@ -147,7 +147,7 @@ function sv_PProtect.CanDrive( ply, ent )
 		return false
 	end
 
-	if ply == ent:CPPIGetOwner() then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy(ent:CPPIGetOwner(), ply, "property") then
 		return true
 	else
 		return false
@@ -170,7 +170,7 @@ function sv_PProtect.CanDamage( ent, info )
 	if !ent:IsValid() or ent:IsPlayer() then return false end
 	if tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false or tobool( sv_PProtect.Settings.PropProtection[ "damageprotection" ] ) == false then return true end
 	
-	if Attacker:IsPlayer() and Owner != Attacker then
+	if Attacker:IsPlayer() and Owner != Attacker or Attacker:IsPlayer() and !sv_PProtect.isBuddy(Owner, Attacker, "damage") then
 		
 		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and tobool( sv_PProtect.Settings.PropProtection[ "noantiadmin" ] ) == true then return end
 
@@ -204,7 +204,7 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 	
 	if !ent:IsValid() then return false end
 
-	if ply == ent:CPPIGetOwner() then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy(ent:CPPIGetOwner(), ply, "physgun") then
 		return
 	else
 		return false

@@ -21,7 +21,8 @@ util.AddNetworkString( "getCount" )
 util.AddNetworkString( "sendCount" )
 
 -- BUDDY
-util.AddNetworkString( "buddySend" )
+util.AddNetworkString( "PProtect_sendBuddy" )
+util.AddNetworkString( "PProtect_sendOther" )
 
 -- NOTIFICATIONS
 util.AddNetworkString( "PProtect_InfoNotify" )
