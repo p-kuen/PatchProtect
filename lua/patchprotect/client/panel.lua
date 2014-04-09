@@ -48,11 +48,11 @@ function cl_PProtect.ASMenu( Panel )
 	end
 
 	-- MAIN SETTINGS
-	cl_PProtect.addchk( Panel, "Use AntiSpam", "general", "use" )
+	cl_PProtect.addchk( Panel, "Enable AntiSpam", "general", "enabled" )
 
-	if GetConVarNumber( "PProtect_AS_use" ) == 1 then
+	if GetConVarNumber( "PProtect_AS_enabled" ) == 1 then
 
-		cl_PProtect.addchk( Panel, "No AntiSpam for Admins", "general", "noantiadmin" )
+		cl_PProtect.addchk( Panel, "Ignore Admins", "general", "admins" )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam (Affected by AntiSpam)", "general", "toolprotection" )
 		cl_PProtect.addchk( Panel, "Tool-Block", "general", "toolblock" )
 		cl_PProtect.addchk( Panel, "Prop-Block", "general", "propblock" )
@@ -74,7 +74,7 @@ function cl_PProtect.ASMenu( Panel )
 
 		--Cooldown/Spamaction
 		cl_PProtect.addsldr( Panel, 0, 10, "Cooldown (Seconds)","general", "cooldown" )
-		cl_PProtect.addsldr( Panel, 0, 40, "Props until Admin-Message","general", "spamcount", 0 )
+		cl_PProtect.addsldr( Panel, 0, 40, "Props until Admin-Message","general", "spam", 0 )
 		SpamActionCat, saCat = cl_PProtect.makeCategory( Panel, "Spam Action:" )
 
 	end
@@ -204,11 +204,11 @@ function cl_PProtect.PPMenu( Panel )
 	end
 
 	-- MAIN SETTINGS
-	cl_PProtect.addchk( Panel, "Use PropProtection", "propprotection", "use" )
+	cl_PProtect.addchk( Panel, "Enable PropProtection", "propprotection", "enabled" )
 
-	if GetConVarNumber( "PProtect_PP_use" ) == 1 then
+	if GetConVarNumber( "PProtect_PP_enabled" ) == 1 then
 
-		cl_PProtect.addchk( Panel, "No PropProtection for Admins", "propprotection", "noantiadmin" )
+		cl_PProtect.addchk( Panel, "Ignore Admins", "propprotection", "admins" )
 
 		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
 		cl_PProtect.addchk( Panel, "Use-Protection", "propprotection", "useprotection" )
@@ -217,17 +217,16 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "GravGun-Protection", "propprotection", "gravgunprotection" )
 
 		cl_PProtect.addlbl( Panel, "\nSpecial Restrictions:", "panel" )
-		cl_PProtect.addchk( Panel, "Block 'Creator'-Tool (e.g.: Spawn Weapons with Toolgun)", "propprotection", "blockcreatortool" )
-		cl_PProtect.addchk( Panel, "Allow Toolgun on Map", "propprotection", "tool_world" )
-		cl_PProtect.addchk( Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "cdrive" )
+		cl_PProtect.addchk( Panel, "Block 'Creator'-Tool (e.g.: Spawn Weapons with Toolgun)", "propprotection", "creatorprotection" )
+		cl_PProtect.addchk( Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "propdriving" )
 
 		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
-		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "use_propdelete" )
+		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "propdelete" )
 
 		--Prop Delete
-		if GetConVarNumber( "PProtect_PP_use_propdelete" ) == 1 then
-			cl_PProtect.addchk( Panel, "Keep Admin-Props", "propprotection", "keepadminsprops" )
-			cl_PProtect.addsldr( Panel, 1, 120, "Delay (sec)", "propprotection", "propdelete_delay" )
+		if GetConVarNumber( "PProtect_PP_propdelete" ) == 1 then
+			cl_PProtect.addchk( Panel, "Keep Admin-Props", "propprotection", "adminprops" )
+			cl_PProtect.addsldr( Panel, 5, 300, "Delay (sec)", "propprotection", "delay" )
 		end
 
 	end
@@ -403,7 +402,7 @@ hook.Add( "SpawnMenuOpen", "PProtectMenus", cl_PProtect.UpdateMenus )
 ------------------
 
 -- ANTISPAM
-net.Receive( "generalSettings", function( len )
+net.Receive( "sendAntiSpamSettings", function( len )
      
 	cl_PProtect.ConVars.PProtect_AS = net.ReadTable()
 
@@ -423,7 +422,7 @@ net.Receive( "generalSettings", function( len )
 end )
 
 -- PROP PROTECTION
-net.Receive( "propProtectionSettings", function( len )
+net.Receive( "sendPropProtectionSettings", function( len )
 	
 	cl_PProtect.ConVars.PProtect_PP = net.ReadTable()
 	createCCV()

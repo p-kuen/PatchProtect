@@ -40,7 +40,7 @@ surface.CreateFont( "PatchProtectFont_small", {
 -- SHOW OWNER
 function cl_PProtect.ShowOwner()
 	
-	if GetConVarNumber( "PProtect_PP_use" ) == 0 then return end
+	if GetConVarNumber( "PProtect_PP_enabled" ) == 0 then return end
 
 	-- Check Entity
 	local entity = LocalPlayer():GetEyeTrace().Entity
@@ -118,7 +118,7 @@ properties.Add( "addblockedprop", {
 
 	Filter = function( self, ent, ply )
 
-		if GetConVarNumber( "PProtect_AS_use" ) == 0 or GetConVarNumber( "PProtect_AS_propblock" ) == 0 then return false end
+		if GetConVarNumber( "PProtect_AS_enabled" ) == 0 or GetConVarNumber( "PProtect_AS_propblock" ) == 0 then return false end
 		if !LocalPlayer():IsAdmin() or !LocalPlayer():IsSuperAdmin() then return false end
 		if !ent:IsValid() or ent:IsPlayer() then return false end
 		return true

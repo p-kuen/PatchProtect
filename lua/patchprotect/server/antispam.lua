@@ -20,8 +20,8 @@ hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
 -- CHECK ANTISPAM ADMIN
 function sv_PProtect.CheckASAdmin( ply )
 
-	if tobool( sv_PProtect.Settings.AntiSpam_General["use"] ) == false or ply:IsSuperAdmin() then return true end
-	if ply:IsAdmin() and tobool( sv_PProtect.Settings.AntiSpam_General["noantiadmin"] ) then return true end
+	if tobool( sv_PProtect.Settings.AntiSpam["enabled"] ) == false or ply:IsSuperAdmin() then return true end
+	if ply:IsAdmin() and tobool( sv_PProtect.Settings.AntiSpam["admins"] ) == true then return true end
 	return false
 
 end
@@ -35,7 +35,7 @@ end
 -- SET SPAM ACTION
 function sv_PProtect.spamaction( ply )
 
-	local action = tonumber( sv_PProtect.Settings.AntiSpam_General["spamaction"] )
+	local action = tonumber( sv_PProtect.Settings.AntiSpam["spamaction"] )
 
 	--Cleanup
 	if action == 2 then
@@ -55,7 +55,7 @@ function sv_PProtect.spamaction( ply )
 	--Ban
 	elseif action == 4 then
 
-		local banminutes = tonumber( sv_PProtect.Settings.AntiSpam_General["bantime"] )
+		local banminutes = tonumber( sv_PProtect.Settings.AntiSpam["bantime"] )
 		ply:Ban(banminutes, "Banned by PProtect: Spammer")
 		sv_PProtect.AdminNotify(ply:Nick() .. " was banned from the server for " .. banminutes .. " minutes! (Reason: Spam)")
 		print("[PatchProtect - AS] " .. ply:Nick() .. " was banned from the server for " .. banminutes .. " minutes!")
@@ -63,11 +63,11 @@ function sv_PProtect.spamaction( ply )
 	--ConCommand
 	elseif action == 5 then
 
-		local concommand = tostring( sv_PProtect.Settings.AntiSpam_General["concommand"] )
+		local concommand = tostring( sv_PProtect.Settings.AntiSpam["concommand"] )
 		concommand = string.Replace( concommand, "<player>", ply:Nick() )
 		local commands = string.Explode( " ", concommand )
 		RunConsoleCommand( commands[1], unpack( commands, 2 ) )
-		print( "[PatchProtect - AS] Ran console command " .. tostring( sv_PProtect.Settings.AntiSpam_General["concommand"] ) .. " on " .. ply:Nick() )
+		print( "[PatchProtect - AS] Ran console command " .. tostring( sv_PProtect.Settings.AntiSpam["concommand"] ) .. " on " .. ply:Nick() )
 
 	end
 
@@ -85,7 +85,7 @@ function sv_PProtect.CanSpawn( ply, mdl )
 	if ply.duplicate == true then return true end
 	
 	--Prop block
-	if tobool( sv_PProtect.Settings.AntiSpam_General["propblock"] ) and isstring( mdl ) and table.HasValue( sv_PProtect.BlockedProps, string.lower( mdl ) ) or string.find( mdl, "/../" ) then
+	if tobool( sv_PProtect.Settings.AntiSpam["propblock"] ) and isstring( mdl ) and table.HasValue( sv_PProtect.BlockedProps, string.lower( mdl ) ) or string.find( mdl, "/../" ) then
 		sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
 		return false
 	end
@@ -97,7 +97,7 @@ function sv_PProtect.CanSpawn( ply, mdl )
 		ply.props = ply.props + 1
 
 		--Notify Admin about the Spam
-		if ply.props >= tonumber( sv_PProtect.Settings.AntiSpam_General["spamcount"] ) then
+		if ply.props >= tonumber( sv_PProtect.Settings.AntiSpam["spam"] ) then
 					
 			sv_PProtect.AdminNotify( ply:Nick() .. " is spamming!" )
 			print( "[PatchProtect - AS] " .. ply:Nick() .. " is spamming!" )
@@ -114,7 +114,7 @@ function sv_PProtect.CanSpawn( ply, mdl )
 
 	--Set new Cooldown
 	ply.props = 0
-	ply.propcooldown = CurTime() + tonumber( sv_PProtect.Settings.AntiSpam_General["cooldown"] )
+	ply.propcooldown = CurTime() + tonumber( sv_PProtect.Settings.AntiSpam["cooldown"] )
 
 end
 hook.Add( "PlayerSpawnProp", "SpawningProp", sv_PProtect.CanSpawn )
@@ -149,7 +149,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	local IsBlockedTool = false
 	
 	--Tool-Block
-	if tobool( sv_PProtect.Settings.AntiSpam_General[ "toolblock" ] ) == true then
+	if tobool( sv_PProtect.Settings.AntiSpam[ "toolblock" ] ) == true then
 
 		table.foreach( sv_PProtect.BlockedTools, function( key, value )
 			if tool == key then
@@ -162,7 +162,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	if IsBlockedTool == true then return false end
 	
 	--Check AntiSpam if Tool is in the Block-List
-	if table.HasValue( sv_PProtect.AntiSpamTools, tool ) and tobool( sv_PProtect.Settings.AntiSpam_General[ "toolprotection" ] ) == true then
+	if table.HasValue( sv_PProtect.AntiSpamTools, tool ) and tobool( sv_PProtect.Settings.AntiSpam[ "toolprotection" ] ) == true then
 		
 		--Check Cooldown
 		if CurTime() < ply.toolcooldown then
@@ -171,7 +171,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 			ply.tools = ply.tools + 1
 
 			--Notify Admin about Tool-Spam
-			if ply.tools >= tonumber( sv_PProtect.Settings.AntiSpam_General["spamcount"] ) then
+			if ply.tools >= tonumber( sv_PProtect.Settings.AntiSpam["spam"] ) then
 
 				sv_PProtect.AdminNotify( "PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
 				ply.tools = 0
@@ -187,7 +187,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 
 			--Set new Cooldown
 			ply.tools = 0
-			ply.toolcooldown = CurTime() + tonumber( sv_PProtect.Settings.AntiSpam_General["cooldown"] )
+			ply.toolcooldown = CurTime() + tonumber( sv_PProtect.Settings.AntiSpam["cooldown"] )
 
 		end
 		

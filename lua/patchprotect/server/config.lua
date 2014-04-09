@@ -3,7 +3,7 @@
 ------------------
 
 -- ANTISPAM
-util.AddNetworkString( "generalSettings" )
+util.AddNetworkString( "sendAntiSpamSettings" )
 util.AddNetworkString( "sendBlockedProp" )
 util.AddNetworkString( "getBlockedPropData" )
 util.AddNetworkString( "sendNewBlockedPropTable" )
@@ -12,7 +12,7 @@ util.AddNetworkString( "sendNewBlockedToolTable" )
 util.AddNetworkString( "sendNewAntiSpammedToolTable" )
 
 -- PROP PROTECTION
-util.AddNetworkString( "propProtectionSettings" )
+util.AddNetworkString( "sendPropProtectionSettings" )
 util.AddNetworkString( "getOwner" )
 util.AddNetworkString( "sendOwner" )
 
@@ -35,39 +35,43 @@ util.AddNetworkString( "PProtect_Notify" )
 --  TABLES  --
 --------------
 
--- CONVARS
-sv_PProtect.ConVars = {}
+-- CONFIG
+sv_PProtect.Config = {}
 
 -- ANTI SPAM
-sv_PProtect.ConVars.PProtect_AS = {
-	use = 1,
-	cooldown = 3.5,
-	noantiadmin = 1,
-	spamcount = 20,
-	spamaction = 1,
-	bantime = 10.5,
-	concommand = "Put your command here",
+sv_PProtect.Config.AntiSpam = {
+
+	enabled = 1,
+	admins = 0,
 	toolprotection = 1,
 	toolblock = 1,
-	propblock = 1
+	propblock = 1,
+	cooldown = 0.5,
+	spam = 10,
+	spamaction = 1,
+	bantime = 10.5,
+	concommand = "Put your command here"
+
 }
 
-sv_PProtect.ConVars.PProtect_AS_tools = {}
+-- ANTISPAM TOOLS
+sv_PProtect.Config.AntiSpamTools = {}
 
 -- PROP PROTECTION
-sv_PProtect.ConVars.PProtect_PP = {
-	use = 1,
-	noantiadmin = 1,
-	use_propdelete = 1,
-	keepadminsprops = 0,
-	propdelete_delay = 120,
-	cdrive = 0,
-	tool_world = 1,
-	damageprotection = 1,
-	reloadprotection = 1,
+sv_PProtect.Config.PropProtection = {
+
+	enabled = 1,
+	admins = 0,
+	useprotection = 1,
+	creatorprotection = 1,
 	gravgunprotection = 1,
-	blockcreatortool = 1,
-	useprotection = 1
+	reloadprotection = 1,
+	damageprotection = 1,
+	propdriving = 0,
+	propdelete = 1,
+	adminprops = 0,
+	delay = 120
+
 }
 
 
@@ -76,15 +80,15 @@ sv_PProtect.ConVars.PProtect_PP = {
 --  SEND INFORMATION  --
 ------------------------
 
-function sendNetworks( ply )
+function sendConfig( ply )
  
-	net.Start( "generalSettings" )
-		net.WriteTable( sv_PProtect.ConVars.PProtect_AS )
+	net.Start( "sendAntiSpamSettings" )
+		net.WriteTable( sv_PProtect.Config.AntiSpam )
 	net.Send( ply )
 
-	net.Start( "propProtectionSettings" )
-		net.WriteTable( sv_PProtect.ConVars.PProtect_PP )
+	net.Start( "sendPropProtectionSettings" )
+		net.WriteTable( sv_PProtect.Config.PropProtection )
 	net.Send( ply )
  
 end
-hook.Add( "PlayerInitialSpawn", "sendNetworks", sendNetworks )
+hook.Add( "PlayerInitialSpawn", "sendConfig", sendConfig )
