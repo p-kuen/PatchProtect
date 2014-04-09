@@ -128,7 +128,7 @@ function sv_PProtect.CanProperty( ply, property, ent )
 
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 	
-	if ply == ent:CPPIGetOwner() and property != "persist" or sv_PProtect.isBuddy(ent:CPPIGetOwner(), ply, "property") then
+	if ply == ent:CPPIGetOwner() and property != "persist" or sv_PProtect.isBuddy(ent:CPPIGetOwner(), ply, "property") and property != "persist" then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to change the propierties on this object!" )
@@ -268,13 +268,20 @@ hook.Add( "PersistenceLoad", "SetWorldOwnedEnts", sv_PProtect.SetWorldProps )
 net.Receive( "getOwner", function( len, pl )
 	
 	local ent = net.ReadEntity()
-	local went = ""
+	local info = ""
 
-	if ent.WorldOwned == true then went = "World" end
+	if sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "physgun" ) == true or 
+	sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "use" ) == true or 
+	sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "toolgun" ) == true then
+		info = "buddy"
+	end
+
+	if ent.WorldOwned == true then info = "world" end
 
 	net.Start( "sendOwner" )
 		net.WriteEntity( ent:CPPIGetOwner() )
-		net.WriteString( went )
+		net.WriteString( info )
+		RunConsoleCommand("say", info)
 	net.Send( pl )
 
 end )

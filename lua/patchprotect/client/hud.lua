@@ -1,4 +1,5 @@
 local Owner
+local IsBuddy
 local IsWorld
 local stopsend
 
@@ -78,7 +79,7 @@ function cl_PProtect.ShowOwner()
 	OW = OW + 10
 	OH = OH + 10
 	local col
-	if Owner == LocalPlayer() or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+	if Owner == LocalPlayer() or IsBuddy or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
 		col = Color( 128, 255, 0, 200 )
 	else
 		col = Color( 176, 0, 0, 200 )
@@ -278,6 +279,8 @@ end )
 net.Receive( "sendOwner", function( len )
 
 	Owner = net.ReadEntity()
-	if net.ReadString() != "" then IsWorld = true else IsWorld = false end
-
+	local info = net.ReadString()
+	if info == "buddy" then IsBuddy = true else IsBuddy = false end
+	if info == "world" then IsWorld = true else IsWorld = false end
+	
 end )

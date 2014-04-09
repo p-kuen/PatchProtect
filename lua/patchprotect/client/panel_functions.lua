@@ -129,7 +129,7 @@ function cl_PProtect.addchk( plist, text, typ, var, var2 )
 	elseif typ == "buddy" then
 		chk:SetChecked( false )
 		function chk:OnChange()
-			cl_PProtect.Buddy.RowType[tostring(var)] = tostring(chk:GetChecked())
+			cl_PProtect.Buddy.RowType[tostring( var )] = tostring( chk:GetChecked() )
 		end
 	end
 
@@ -275,7 +275,7 @@ function cl_PProtect.addlistview( plist, cols, filltype )
 	local lview = vgui.Create( "DListView" )
 	
 	lview:SetMultiSelect( false )
-	lview:SetSize(150, 200)
+	lview:SetSize( 150, 200 )
 	
 	table.foreach( cols, function( key, value )
 		lview:AddColumn( value )
@@ -285,51 +285,54 @@ function cl_PProtect.addlistview( plist, cols, filltype )
 	
 		if cl_PProtect.Buddy.Buddies != nil then
 			
-			table.foreach( cl_PProtect.Buddy.Buddies, function(key,value)
-				
-				lview:AddLine(tostring(value["nick"]), value["permission"], "testSID", value["uniqueid"])
-			
-			end)
+			table.foreach( cl_PProtect.Buddy.Buddies, function( key, value )
+				lview:AddLine( tostring( value["nick"] ), value["permission"], "testSID", value["uniqueid"] )
+			end )
+
 		end
 
 		function lview:OnClickLine( line, selected )
-			cl_PProtect.Buddy.BuddyToRemove[0] = tostring(line:GetValue(4))
+			cl_PProtect.Buddy.BuddyToRemove[0] = tostring( line:GetValue(4) )
 			lview:ClearSelection()
-			line:SetSelected(true)
+			line:SetSelected( true )
 		end
 		
 	elseif filltype == "all_players" then
 	
-		table.foreach( player.GetAll(), function(key,value)
-			if value != LocalPlayer() then
-				if cl_PProtect.Buddy.Buddies != nil and table.Count(cl_PProtect.Buddy.Buddies) > 0 then
+		table.foreach( player.GetAll(), function( key, value )
 
-					table.foreach( cl_PProtect.Buddy.Buddies, function(k,v)
-					
+			if value != LocalPlayer() then
+
+				if cl_PProtect.Buddy.Buddies != nil and table.Count( cl_PProtect.Buddy.Buddies ) > 0 then
+
+					table.foreach( cl_PProtect.Buddy.Buddies, function( k, v )
+
 						if value:UniqueID() != v["uniqueid"] then
-							lview:AddLine(value:Nick(), value:UniqueID())
+							lview:AddLine( value:Nick(), value:UniqueID() )
 						end
-				
-					end)
+
+					end )
 				else
-					lview:AddLine(value:Nick(), value:UniqueID())
+					lview:AddLine( value:Nick(), value:UniqueID() )
 				end
 				
 				
 			end
 			
-		end)
+		end )
 		
 		function lview:OnClickLine( line, selected )
-			cl_PProtect.Buddy.CurrentBuddy[0] = tostring(line:GetValue(2))
-			cl_PProtect.Buddy.CurrentBuddy[1] = tostring(line:GetValue(1))
+
+			cl_PProtect.Buddy.CurrentBuddy[0] = tostring( line:GetValue(2) )
+			cl_PProtect.Buddy.CurrentBuddy[1] = tostring( line:GetValue(1) )
 			lview:ClearSelection()
-			line:SetSelected(true)
+			line:SetSelected( true )
+
 		end
 		
 	else
 	
-		lview:AddLine("Testname", "Testpermission", "TestID")
+		lview:AddLine( "Testname", "Testpermission", "TestID" )
 		
 	end
 	

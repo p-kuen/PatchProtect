@@ -6,7 +6,7 @@ sv_PProtect.Settings = sv_PProtect.Settings or {}
 --  LOAD/WRITE SQL SETTINGS  --
 -------------------------------
 
-function sv_PProtect.SetupSQLSettings( sqlname, name, sqltable, checking )
+function sv_PProtect.setupSQLSettings( sqlname, name, sqltable, checking )
 
 	if name == "PropProtection" then
 		MsgC(
@@ -172,12 +172,12 @@ function sv_PProtect.getData()
 	local SelectAntiSpam = "propblock"
 	local SelectPropProtection = "useprotection"
 
-	sv_PProtect.Settings.AntiSpam_General = sv_PProtect.SetupSQLSettings( "pprotect_antispam_general", "AntiSpam", sv_PProtect.ConVars.PProtect_AS, SelectAntiSpam )
+	sv_PProtect.Settings.AntiSpam_General = sv_PProtect.setupSQLSettings( "pprotect_antispam_general", "AntiSpam", sv_PProtect.ConVars.PProtect_AS, SelectAntiSpam )
 	sv_PProtect.Settings.AntiSpamTools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}
 	sv_PProtect.setAntiSpamTools()
 	sv_PProtect.setBlockedTools()
 	sv_PProtect.setBlockedProps()
-	sv_PProtect.Settings.PropProtection = sv_PProtect.SetupSQLSettings( "pprotect_propprotection", "PropProtection", sv_PProtect.ConVars.PProtect_PP, SelectPropProtection )
+	sv_PProtect.Settings.PropProtection = sv_PProtect.setupSQLSettings( "pprotect_propprotection", "PropProtection", sv_PProtect.ConVars.PProtect_PP, SelectPropProtection )
 
 end
 sv_PProtect.getData()
@@ -303,7 +303,7 @@ concommand.Add( "sh_PProtect.reloadSettings", sv_PProtect.reloadSettings )
 ------------------------------
 
 -- ANTI SPAM
-function sv_PProtect.Save( ply, cmd, args )
+function sv_PProtect.saveAntiSpam( ply, cmd, args )
 
 	if !ply:IsSuperAdmin() and !ply:IsAdmin() then
 		sv_PProtect.Notify(ply, "You are not an Admin!")
@@ -331,7 +331,7 @@ function sv_PProtect.Save( ply, cmd, args )
 	sv_PProtect.InfoNotify( ply, "Saved AntiSpam-Settings" )
 	
 end
-concommand.Add( "btn_save_as", sv_PProtect.Save )
+concommand.Add( "btn_save_as", sv_PProtect.saveAntiSpam )
 
 -- ANTISPAMMED TOOLS
 function sv_PProtect.saveAntiSpammedTools( ply )
@@ -404,7 +404,7 @@ function sv_PProtect.saveBlockedData( datatable, datatype )
 end
 
 -- PROP PROTECTION
-function sv_PProtect.Save_PP( ply, cmd, args )
+function sv_PProtect.savePropProtection( ply, cmd, args )
 
 	if !ply:IsSuperAdmin() and !ply:IsAdmin() then
 		sv_PProtect.Notify( ply, "You are not an Admin!" )
@@ -432,7 +432,7 @@ function sv_PProtect.Save_PP( ply, cmd, args )
 	sv_PProtect.InfoNotify( ply, "Saved PropProtection-Settings" )
 
 end
-concommand.Add( "btn_save_pp", sv_PProtect.Save_PP )
+concommand.Add( "btn_save_pp", sv_PProtect.savePropProtection )
 
 
 
