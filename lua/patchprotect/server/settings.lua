@@ -127,7 +127,7 @@ end
 
 -- LOAD COMMANDS
 sv_PProtect.Settings.AntiSpam = sv_PProtect.loadSQLSettings( "enabled", "pprotect_antispam", sv_PProtect.Config.AntiSpam, "AntiSpam" )
-sv_PProtect.Settings.PropProtection = sv_PProtect.loadSQLSettings( "reloadprotection", "pprotect_propprotection", sv_PProtect.Config.PropProtection, "PropProtection" )
+sv_PProtect.Settings.PropProtection = sv_PProtect.loadSQLSettings( "enabled", "pprotect_propprotection", sv_PProtect.Config.PropProtection, "PropProtection" )
 sv_PProtect.Config.AntiSpamTools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}
 sv_PProtect.setAntiSpamTools()
 sv_PProtect.setBlockedTools()
