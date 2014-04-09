@@ -281,7 +281,6 @@ net.Receive( "getOwner", function( len, pl )
 	net.Start( "sendOwner" )
 		net.WriteEntity( ent:CPPIGetOwner() )
 		net.WriteString( info )
-		RunConsoleCommand("say", info)
 	net.Send( pl )
 
 end )
