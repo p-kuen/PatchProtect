@@ -83,15 +83,15 @@ function cl_PProtect.ASMenu( Panel )
 	cl_PProtect.addbtn( Panel, "Save Settings", "save_as" )
 
 	-- SPAMACTION
-	if GetConVarNumber( "PProtect_AS_use" ) == 1 then
-		cl_PProtect.addcombo( saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction" )
+	if GetConVarNumber( "PProtect_AS_enabled" ) == 1 then
+		cl_PProtect.addcombo( saCat, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction" )
 	end
 
 	local function spamactionChanged( CVar, PreviousValue, NewValue )
 		
 		saCat:Clear()
 		
-		cl_PProtect.addcombo( saCat, {"Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]]}, "spamaction" )
+		cl_PProtect.addcombo( saCat, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction" )
 
 		if tonumber( NewValue ) == 4 then
 			cl_PProtect.addsldr( saCat, 0, 60, "Ban Time (minutes)","general", "bantime" )
