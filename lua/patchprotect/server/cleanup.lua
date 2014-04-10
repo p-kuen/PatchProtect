@@ -5,8 +5,8 @@
 -- PLAYER LEFT SERVER
 function sv_PProtect.SetCleanupProps( ply )
 	
-	if tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false or tobool( sv_PProtect.Settings.PropProtection[ "use_propdelete" ] ) == false then return end
-	if tobool( sv_PProtect.Settings.PropProtection[ "keepadminsprops" ] ) then
+	if tobool( sv_PProtect.Settings.PropProtection[ "enabled" ] ) == false or tobool( sv_PProtect.Settings.PropProtection[ "use_propdelete" ] ) == false then return end
+	if tobool( sv_PProtect.Settings.PropProtection[ "adminprops" ] ) then
 		if ply:IsAdmin() or ply:IsSuperAdmin() then return end
 	end
 	
@@ -21,7 +21,7 @@ function sv_PProtect.SetCleanupProps( ply )
 	end )
 	
 	--Create Timer
-	timer.Create( "CleanupPropsOf" .. ply:Nick(), tonumber( sv_PProtect.Settings.PropProtection[ "propdelete_delay" ] ), 1, function()
+	timer.Create( "CleanupPropsOf" .. ply:Nick(), tonumber( sv_PProtect.Settings.PropProtection[ "delay" ] ), 1, function()
 
 		table.foreach( ents.GetAll(), function( k, v )
 
@@ -40,7 +40,7 @@ hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.S
 -- PLAYER CAME BACK
 function sv_PProtect.checkComeback( ply )
 	
-	if tobool( sv_PProtect.Settings.PropProtection[ "use" ] ) == false or tobool( sv_PProtect.Settings.PropProtection["use_propdelete"] ) == false then return end
+	if tobool( sv_PProtect.Settings.PropProtection[ "enabled" ] ) == false or tobool( sv_PProtect.Settings.PropProtection["propdelete"] ) == false then return end
 
 	if timer.Exists( "CleanupPropsOf" .. ply:Nick() ) then
 		print( "[PatchProtect - Cleanup] Aborded Cleanup! " .. ply:Nick() .. " came back!" )
