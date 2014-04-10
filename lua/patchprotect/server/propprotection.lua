@@ -270,9 +270,9 @@ net.Receive( "getOwner", function( len, pl )
 	local ent = net.ReadEntity()
 	local info = ""
 
-	if sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "physgun" ) == true or 
-	sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "use" ) == true or 
-	sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "toolgun" ) == true then
+	if sv_PProtect.isBuddy( ent:CPPIGetOwner(), pl, "physgun" ) == true or 
+	sv_PProtect.isBuddy( ent:CPPIGetOwner(), pl, "use" ) == true or 
+	sv_PProtect.isBuddy( ent:CPPIGetOwner(), pl, "toolgun" ) == true then
 		info = "buddy"
 	end
 
