@@ -38,7 +38,7 @@ function cl_PProtect.ASMenu( Panel )
 
 	-- CHECK ADMIN
 	if not LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl( Panel, "You are not an admin!", "panel" )
+		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!", "panel" )
 		return
 	end
 
@@ -194,7 +194,7 @@ function cl_PProtect.PPMenu( Panel )
 
 	-- CHECK ADMIN
 	if !LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl( Panel, "You are not an admin!", "panel" )
+		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!", "panel" )
 		return
 	end
 
@@ -264,7 +264,7 @@ function cl_PProtect.CUMenu( Panel )
 
 	-- CHECK ADMIN
 	if !LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl( Panel, "You are not an admin!", "panel" )
+		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!", "panel" )
 		return
 	end
 
