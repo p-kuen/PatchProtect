@@ -5,6 +5,14 @@
 -- ANTISPAM AND PROP PROTECTION
 function sv_PProtect.loadSQLSettings( sqlselect, sqltable, localtable, name )
 
+	if sql.Query( "SELECT * FROM " .. sqltable ) == nil and sql.TableExists( sqltable ) then
+		sql.Query( "DROP TABLE " .. sqltable )
+		MsgC(
+			Color(255, 0, 0),
+			"[PatchProtect] There was an error with the " .. name .. "-Table. We deleted it to make a new working one!\n"
+		)
+	end
+
 	if !sql.TableExists( sqltable ) then
 		
 		local settings = {}
@@ -14,13 +22,9 @@ function sv_PProtect.loadSQLSettings( sqlselect, sqltable, localtable, name )
 		table.foreach( localtable, function( k, v )
 
 			local Type = type( v )
-
 			if Type == "number" then
-
 				if v > math.floor( v ) then Type = string.gsub( Type, "number", "DOUBLE" ) else Type = string.gsub( Type, "number", "INTEGER" ) end
-					
 			end
-
 			Type = string.gsub( Type, "string", "VARCHAR(255)" )
 
 			table.insert( values2, tostring( k ) .. " " .. Type )
@@ -29,7 +33,7 @@ function sv_PProtect.loadSQLSettings( sqlselect, sqltable, localtable, name )
 			table.insert( values, v )
 				
 		end )
-
+		
 		sql.Query( "CREATE TABLE IF NOT EXISTS " .. sqltable .. "(" .. table.concat( values2, ", " ) .. ");" )
 		sql.Query( "INSERT INTO " .. sqltable .. "(" .. table.concat( settings, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")" )
 		
@@ -39,7 +43,7 @@ function sv_PProtect.loadSQLSettings( sqlselect, sqltable, localtable, name )
 		)
 
 	end
-	
+
 	return sql.QueryRow( "SELECT * FROM " .. sqltable .. " LIMIT 1" )
 	
 end
@@ -47,18 +51,27 @@ end
 -- ANTISPAMMED TOOLS
 function sv_PProtect.setAntiSpamTools()
 
-	local sql_as_tools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}
-	local as_tools = {}
+	if sql.TableExists( "pprotect_antispam_tools" ) then
 
-	table.foreach( sql_as_tools, function( tool, blocked )
+		local antispam_tools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}
+		
+		table.foreach( antispam_tools, function( key, value )
 
-		if tonumber( blocked ) == 1 then
-			table.insert( as_tools, tool )
-		end
+			if value == "true" then
+				antispam_tools[ key ] = true
+			else
+				antispam_tools[ key ] = false
+			end
 
-	end )
+		end )
 
-	return as_tools
+		return antispam_tools or {}
+
+	else
+
+		return {}
+
+	end
 
 end
 
@@ -124,49 +137,121 @@ MsgC(
 	"\n[PatchProtect] Successfully loaded!\n\n"
 )
 
---print("\nHier sind alle anzeigen:\n\n")
---print("AntiSpam:")
---PrintTable( sv_PProtect.Settings.AntiSpam )
---print("\nAntiSpamTools:")
---PrintTable( sv_PProtect.Settings.AntiSpamTools )
---print("\nPropProtection:")
---PrintTable( sv_PProtect.Settings.PropProtection )
---print("\nBlockedProps:")
---PrintTable( sv_PProtect.Settings.BlockedProps )
---print("\nBlockedTools:")
---PrintTable( sv_PProtect.Settings.BlockedTools )
---print("\n\n")
+
 
 ---------------------
 --  SAVE SETTINGS  --
 ---------------------
 
 -- ANTI SPAM
-function sv_PProtect.saveAntiSpam( ply, cmd, args )
+net.Receive( "save_antispam_settings", function( len, pl )
 
-end
---NET RECEIVE NEW ANTISPAM SETTINGS TABLE
+	sv_PProtect.Settings.AntiSpam = net.ReadTable()
+	sv_PProtect.Settings.AntiSpam[ "cooldown" ] = math.Round( sv_PProtect.Settings.AntiSpam[ "cooldown" ], 1 )
+	sv_PProtect.broadcastSettings()
+
+	-- SAVE TO SQL TABLES
+	table.foreach( sv_PProtect.Settings.AntiSpam, function( key, value )
+		if sv_PProtect.Settings.AntiSpam[ key ] == "1" or "0" then
+			sql.Query( "UPDATE pprotect_antispam SET " .. key .. " = " .. value )
+		else
+			sql.Query( "UPDATE pprotect_antispam SET " .. key .. " = '" .. value .. "'" )
+		end
+	end )
+
+	sv_PProtect.InfoNotify( pl, "Saved the new AntiSpam-Settings" )
+	print( "[PatchProtect - AS] " .. pl:Nick() .. " saved the new AntiSpam-Settings!" )
+
+end )
 
 -- PROP PROTECTION
-function sv_PProtect.savePropProtection( ply, cmd, args )
+net.Receive( "save_propprotection_settings", function( len, pl )
 
-end
---NET RECEIVE NEW PROP PROTECTION SETTINGS TABLE
+	sv_PProtect.Settings.PropProtection = net.ReadTable()
+	sv_PProtect.broadcastSettings()
+
+	-- SAVE TO SQL TABLES
+	table.foreach( sv_PProtect.Settings.PropProtection, function( key, value )
+		if sv_PProtect.Settings.PropProtection[ key ] == "0" or "1" or "2" or "3" or "4" or "5" or "6" then
+			sql.Query( "UPDATE pprotect_propprotection SET " .. key .. " = " .. value )
+		else
+			sql.Query( "UPDATE pprotect_propprotection SET " .. key .. " = '" .. value .. "'" )
+		end
+	end )
+
+	sv_PProtect.InfoNotify( pl, "Saved the new PropProtection-Settings" )
+	print( "[PatchProtect - PP] " .. pl:Nick() .. " saved the new PropProtection-Settings!" )
+
+end )
 
 -- ANTISPAMED TOOLS
-function sv_PProtect.saveAntiSpammedTools( ply )
+function sv_PProtect.saveAntiSpamTools( datatable )
 
+	local keys1 = {}
+	local keys2 = {}
+	local values = {}
+
+	if sql.TableExists( "pprotect_antispam_tools" ) then
+		sql.Query( "DROP TABLE pprotect_antispam_tools" )
+	end
+
+	if not sql.TableExists( "pprotect_antispam_tools" ) then
+
+		table.foreach( datatable, function( k, v )
+			
+			table.insert( keys1, k .. " VARCHAR(255)" )
+			table.insert( keys2, "'" .. k .. "'" )
+			table.insert( values, "'" .. tostring( v ) .. "'" )
+
+		end )
+
+		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_antispam_tools( " .. table.concat( keys1, ", " ) .. " );" )
+		sql.Query( "INSERT INTO pprotect_antispam_tools( " .. table.concat( keys2, ", " ) .. " ) VALUES( " .. table.concat( values, ", " ) .. " )" )
+
+	end
+	
 end
---NET RECEIVE NEW ANTISPAMMED TOOLS TABLE
+
+-- BLOCKED DATA
+function sv_PProtect.saveBlockedData( datatable, datatype )
+
+	local keys1 = {}
+	local keys2 = {}
+	local values = {}
+
+	if sql.TableExists( "pprotect_blocked" .. datatype ) then
+		sql.Query( "DROP TABLE pprotect_blocked" .. datatype )
+	end
+
+	if not sql.TableExists( "pprotect_blocked" .. datatype ) then
+
+		table.foreach( datatable, function( k, v )
+			if datatype == "props" then
+				table.insert( keys1, "prop_" .. k .. " VARCHAR(255)" )
+				table.insert( keys2, "'prop_" .. k .. "'" )
+				table.insert( values, "'" .. v .. "'" )
+			elseif datatype == "tools" then
+				table.insert( keys1, k .. " VARCHAR(255)" )
+				table.insert( keys2, "'" .. k .. "'" )
+				table.insert( values, "'" .. tostring( v ) .. "'" )
+			end
+		end )
+
+		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blocked" .. datatype .. "( " .. table.concat( keys1, ", " ) .. " );" )
+		sql.Query( "INSERT INTO pprotect_blocked" .. datatype .. "( " .. table.concat( keys2, ", " ) .. " ) VALUES( " .. table.concat( values, ", " ) .. " )" )
+
+	end
+	
+end
 
 
 
------------------------
---  RELOAD SETTINGS  --
------------------------
+---------------------------
+--  SEND SETTING-TABLES  --
+---------------------------
 
--- FOR A SPECIFIC PLAYER
-local function sendPlayerSettings( ply )
+-- TO A SPECIFIC PLAYER
+local function sendPlayerSettings( ply, cmd, args )
 
 	local new_settings = {}
 	new_settings.AntiSpam = sv_PProtect.Settings.AntiSpam
@@ -174,14 +259,15 @@ local function sendPlayerSettings( ply )
 
 	net.Start( "new_client_settings" )
 		net.WriteTable( new_settings )
+		if args != nil then net.WriteString( args[1] ) end
 	net.Send( ply )
 
 end
 hook.Add( "PlayerInitialSpawn", "sendPlayerSettings", sendPlayerSettings )
 concommand.Add( "request_newest_settings", sendPlayerSettings )
 
--- FOR EVERYONE
-local function broadcastSettings()
+-- TO EVERY PLAYER
+function sv_PProtect.broadcastSettings()
 
 	local new_settings = {}
 	new_settings.AntiSpam = sv_PProtect.Settings.AntiSpam
@@ -189,6 +275,37 @@ local function broadcastSettings()
 
 	net.Start( "new_client_settings" )
 		net.WriteTable( new_settings )
+		net.WriteString( "broadcast" )
+	net.Broadcast()
+
+end
+
+
+
+---------------------
+--  NOTIFICATIONS  --
+---------------------
+
+function sv_PProtect.Notify( ply, text )
+
+	net.Start( "PProtect_Notify" )
+		net.WriteString( text )
+	net.Send( ply )
+
+end
+
+function sv_PProtect.InfoNotify( ply, text )
+
+	net.Start( "PProtect_InfoNotify" )
+		net.WriteString( text )
+	net.Send( ply )
+
+end
+
+function sv_PProtect.AdminNotify( text )
+
+	net.Start( "PProtect_AdminNotify" )
+		net.WriteString( text )
 	net.Broadcast()
 
 end

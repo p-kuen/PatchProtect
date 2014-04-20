@@ -2,7 +2,47 @@
 --  NETWORK STRINGS  --
 -----------------------
 
+-- SETTINGS
 util.AddNetworkString( "new_client_settings" )
+util.AddNetworkString( "save_antispam_settings" )
+util.AddNetworkString( "save_propprotection_settings" )
+
+-- CLEANUP
+util.AddNetworkString( "cleanup_map" )
+util.AddNetworkString( "cleanup_disconnected_player" )
+util.AddNetworkString( "cleanup_player" )
+
+util.AddNetworkString( "get_player_props_count" )
+util.AddNetworkString( "send_player_props_count" )
+
+-- BUDDY
+util.AddNetworkString( "add_buddy" )
+util.AddNetworkString( "delete_buddy" )
+util.AddNetworkString( "send_buddy" )
+util.AddNetworkString( "send_other_buddy" )
+
+-- HUD
+util.AddNetworkString( "get_owner" )
+util.AddNetworkString( "send_owner" )
+
+-- ANTISPAMED TOOLS, BLOCKED PROPS, BLOCKED TOOLS
+util.AddNetworkString( "open_antispam_tool" )
+util.AddNetworkString( "open_blocked_prop" )
+util.AddNetworkString( "open_blocked_tool" )
+
+util.AddNetworkString( "send_antispam_tool" )
+util.AddNetworkString( "send_blocked_prop" )
+util.AddNetworkString( "send_blocked_prop_cpanel" )
+util.AddNetworkString( "send_blocked_tool" )
+
+util.AddNetworkString( "get_antispam_tool" )
+util.AddNetworkString( "get_blocked_prop" )
+util.AddNetworkString( "get_blocked_tool" )
+
+-- NOTIFICATIONS
+util.AddNetworkString( "PProtect_InfoNotify" )
+util.AddNetworkString( "PProtect_AdminNotify" )
+util.AddNetworkString( "PProtect_Notify" )
 
 
 
