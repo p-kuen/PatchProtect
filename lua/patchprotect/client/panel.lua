@@ -1,36 +1,3 @@
-----------------
---  SETTINGS  --
-----------------
-
-cl_PProtect.ConVars = {}
-cl_PProtect.ConVars.PProtect_AS = {}
-cl_PProtect.ConVars.PProtect_AS_tools = {}
-cl_PProtect.ConVars.PProtect_PP = {}
-
-local function createCCV()
-
-	table.foreach( cl_PProtect.ConVars, function( p, cvar )
-
-		table.foreach( cvar, function ( k, v )
-
-			if type( k ) == "number" then
-				CreateClientConVar( p .. "_" .. v, 0, false, true )
-			else
-				CreateClientConVar( p .. "_" .. k, v, false, true )
-			end
-
-		end )
-
-	end )
-
-end
-
-
-
----------------------
---  ANTISPAM MENU  --
----------------------
-
 function cl_PProtect.ASMenu( Panel )
 
 	-- DELETE CONTROLS
@@ -38,304 +5,71 @@ function cl_PProtect.ASMenu( Panel )
 
 	-- CHECK ADMIN
 	if not LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!", "panel" )
+		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
+		print("nosuperadmin!")
 		return
 	end
 
 	-- UPDATE PANEL
-	if not cl_PProtect.ASCPanel then
+	if !cl_PProtect.ASCPanel then
 		cl_PProtect.ASCPanel = Panel
 	end
 
 	-- MAIN SETTINGS
-	cl_PProtect.addchk( Panel, "Enable AntiSpam", "general", "enabled" )
+	cl_PProtect.addchk( Panel, "Enable AntiSpam", "antispam", "enabled" )
 
-	if GetConVarNumber( "PProtect_AS_enabled" ) == 1 then
+	if tonumber( cl_PProtect.Settings.AntiSpam[ "enabled" ] ) == 1 then
 
-		cl_PProtect.addchk( Panel, "Ignore Admins", "general", "admins" )
-		cl_PProtect.addchk( Panel, "Tool-AntiSpam (Affected by AntiSpam)", "general", "toolprotection" )
-		cl_PProtect.addchk( Panel, "Tool-Block", "general", "toolblock" )
-		cl_PProtect.addchk( Panel, "Prop-Block", "general", "propblock" )
+		cl_PProtect.addchk( Panel, "Ignore Admins", "antispam", "admins" )
+		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
+		cl_PProtect.addchk( Panel, "Tool-Block", "antispam", "toolblock" )
+		cl_PProtect.addchk( Panel, "Prop-Block", "antispam", "propblock" )
 
 		--Tool Protection
-		if GetConVarNumber( "PProtect_AS_toolprotection" ) == 1 then
+		if tonumber( cl_PProtect.Settings.AntiSpam[ "toolprotection" ] ) == 1 then
 			cl_PProtect.addbtn( Panel, "Set antispammed Tools", "tools" )
 		end
 
 		--Tool Block
-		if GetConVarNumber( "PProtect_AS_toolblock" ) == 1 then
+		if tonumber( cl_PProtect.Settings.AntiSpam[ "toolblock" ] ) == 1 then
 			cl_PProtect.addbtn( Panel, "Set blocked Tools", "btools" )
 		end
 
 		--Prop Block
-		if GetConVarNumber( "PProtect_AS_propblock" ) == 1 then
+		if tonumber( cl_PProtect.Settings.AntiSpam[ "propblock" ] ) == 1 then
 			cl_PProtect.addbtn( Panel, "Set blocked Props", "bprops" )
 		end
 
 		--Cooldown/Spamaction
-		cl_PProtect.addsldr( Panel, 0, 10, "Cooldown (Seconds)","general", "cooldown" )
-		cl_PProtect.addsldr( Panel, 0, 40, "Props until Admin-Message","general", "spam", 0 )
-		SpamActionCat, saCat = cl_PProtect.makeCategory( Panel, "Spam Action:" )
+		cl_PProtect.addsld( Panel, 0, 10, "Cooldown (Seconds)", "antispam", tonumber( cl_PProtect.Settings.AntiSpam[ "cooldown" ] ), 1, "cooldown" )
+		cl_PProtect.addsld( Panel, 0, 40, "Props until Admin-Message", "antispam", tonumber( cl_PProtect.Settings.AntiSpam[ "spam" ] ), 0, "spam" )
+		--SpamActionCat, saCat = cl_PProtect.makeCategory( Panel, "Spam Action:" )
 
 	end
 
 	-- SAVE SETTINGS
-	cl_PProtect.addbtn( Panel, "Save Settings", "save_as" )
+	--cl_PProtect.addbtn( Panel, "Save Settings", "save_as" )
 
 	-- SPAMACTION
-	if GetConVarNumber( "PProtect_AS_enabled" ) == 1 then
-		cl_PProtect.addcombo( saCat, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction" )
-	end
+	--if GetConVarNumber( "PProtect_AS_enabled" ) == 1 then
+	--	cl_PProtect.addcombo( saCat, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction" )
+	--end
 
-	local function spamactionChanged( CVar, PreviousValue, NewValue )
+	--local function spamactionChanged( CVar, PreviousValue, NewValue )
 		
-		saCat:Clear()
+	--	saCat:Clear()
 		
-		cl_PProtect.addcombo( saCat, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction" )
-
-		if tonumber( NewValue ) == 4 then
-			cl_PProtect.addsldr( saCat, 0, 60, "Ban Time (minutes)","general", "bantime" )
-		elseif tonumber( NewValue ) == 5 then
-			cl_PProtect.addlbl( saCat, "Write a command. Use <player> for the Spammer", "category" )
-			cl_PProtect.addtext( saCat, GetConVarString( "PProtect_AS_concommand" ) )
-		end
-
-	end
-	cvars.AddChangeCallback( "PProtect_AS_spamaction", spamactionChanged )
-
-end
-
-
-
-
---------------
---  FRAMES  --
---------------
-
--- ANTISPAMED TOOLS
-function cl_PProtect.ShowToolsFrame( ply, cmd, args )
-
-	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
-	tlsFrm = cl_PProtect.addframe( 250, 350, "Set antispammed Tools:", false, true, false, "Save Tools", {}, "sendNewAntiSpammedToolTable" )
-
-	table.foreach( cl_PProtect.ConVars.PProtect_AS_tools, function( key, value )
-		cl_PProtect.addchk( tlsFrm, value, "tools", value )
-	end )
-
-end
-concommand.Add( "btn_tools", cl_PProtect.ShowToolsFrame )
-
--- BLOCKED PROPS
-net.Receive( "getBlockedPropData", function()
-
-	local PropsTable = net.ReadTable()
-
-	psFrm = cl_PProtect.addframe( 800, 600, "Set blocked Props:", false, false, true, "Save Props", PropsTable, "sendNewBlockedPropTable" )
-
-	table.foreach( PropsTable, function( key, value )
-
-		local Icon = vgui.Create( "SpawnIcon", psFrm )
-		Icon:SetModel( value )
-
-		Icon.DoClick = function()
-
-			local menu = DermaMenu()
-			menu:AddOption( "Remove from blocked Props", function()
-				table.RemoveByValue( PropsTable, value )
-				Icon:Remove()
-				psFrm:InvalidateLayout()
-			end )
-			menu:Open()
-
-		end
-
-		function Icon:Paint()
-
-			draw.RoundedBox( 4, 0, 0, Icon:GetWide(), Icon:GetTall(), Color( 200, 200, 200, 255 ) )
-			draw.RoundedBox( 4, 3, 3, Icon:GetWide() - 6, Icon:GetTall() - 6, Color( 240, 240, 240, 255 ) )
-			
-		end
-
-		psFrm:AddItem( Icon )
-
-	end )
-
-	if table.Count( PropsTable ) == 0 then
-		cl_PProtect.addlbl( psFrm, "Nothing here...", "category" )
-	end
-
-end )
-
--- BLOCKED TOOLS
-net.Receive( "getBlockedToolData", function()
-
-	ToolsTable = net.ReadTable()
-
-	tsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", false, true, false, "Save Tools", ToolsTable, "sendNewBlockedToolTable" )
-
-	for key, value in SortedPairs( ToolsTable ) do
-
-		cl_PProtect.addchk( tsFrm, key, "blockedtools", key, value )
-
-	end
-
-end )
-
-
-
-----------------------------
---  PROP PROTECTION MENU  --
-----------------------------
-
-function cl_PProtect.PPMenu( Panel )
-
-	-- DELETE CONTROLS
-	Panel:ClearControls()
-
-	-- CHECK ADMIN
-	if !LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!", "panel" )
-		return
-	end
-
-	-- UPDATE PANEL
-	if not cl_PProtect.PPCPanel then
-		cl_PProtect.PPCPanel = Panel
-	end
-
-	-- MAIN SETTINGS
-	cl_PProtect.addchk( Panel, "Enable PropProtection", "propprotection", "enabled" )
-
-	if GetConVarNumber( "PProtect_PP_enabled" ) == 1 then
-
-		cl_PProtect.addchk( Panel, "Ignore Admins", "propprotection", "admins" )
-
-		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
-		cl_PProtect.addchk( Panel, "Use-Protection", "propprotection", "useprotection" )
-		cl_PProtect.addchk( Panel, "Reload-Protection", "propprotection", "reloadprotection" )
-		cl_PProtect.addchk( Panel, "Damage-Protection", "propprotection", "damageprotection" )
-		cl_PProtect.addchk( Panel, "GravGun-Protection", "propprotection", "gravgunprotection" )
-
-		cl_PProtect.addlbl( Panel, "\nSpecial Restrictions:", "panel" )
-		cl_PProtect.addchk( Panel, "Block 'Creator'-Tool (e.g.: Spawn Weapons with Toolgun)", "propprotection", "creatorprotection" )
-		cl_PProtect.addchk( Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "propdriving" )
-
-		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
-		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "propdelete" )
-
-		--Prop Delete
-		if GetConVarNumber( "PProtect_PP_propdelete" ) == 1 then
-			cl_PProtect.addchk( Panel, "Keep Admin-Props", "propprotection", "adminprops" )
-			cl_PProtect.addsldr( Panel, 5, 300, "Delay (sec)", "propprotection", "delay" )
-		end
-
-	end
-
-	-- SAVE SETTINGS
-	cl_PProtect.addbtn( Panel, "Save Settings", "save_pp" )
-
-end
-
-
-
---------------------
---  CLEANUP MENU  --
---------------------
-
-function cl_PProtect.GetCount()
-
-	local count = 0
-	
-	table.foreach( ents.GetAll(), function( key, value )
-		if value:IsValid() and value:GetClass() == "prop_physics" then
-			count = count + 1
-		end
-		
-	end )
-
-	return count
-
-end
-
-function cl_PProtect.CUMenu( Panel )
-
-	-- DELETE CONTROLS
-	Panel:ClearControls()
-
-	-- CHECK ADMIN
-	if !LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!", "panel" )
-		return
-	end
-
-	-- UPDATE PANELS
-	if not cl_PProtect.CUCPanel then
-		cl_PProtect.CUCPanel = Panel
-	end
-
-	-- CLEANUP CONTROLS
-	cl_PProtect.addlbl( Panel, "Cleanup everything: (Including World Props)", "panel" )
-	cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring( cl_PProtect.GetCount() ) .. " Props)", "cleanup" )
-
-	cl_PProtect.addlbl( Panel, "\nCleanup props of disconnected Players:", "panel" )
-	cl_PProtect.addbtn( Panel, "Cleanup all Props from disc. Players", "cleandiscprops" )
-
-	cl_PProtect.addlbl( Panel, "\nCleanup Player's props:", "panel" )
-		
-	net.Start( "getCount" )
-		net.WriteString( "value" )
-	net.SendToServer()
-
-	net.Receive( "sendCount", function()
-
-		local allents = net.ReadTable()
-
-		table.foreach( allents, function( key, value )
-			cl_PProtect.addbtn( Panel, "Cleanup " .. tostring( key ) .."  (" .. tostring( value ) .. " Props)", "cleanup_player", tostring( key ) .. "´´´" .. tostring( value ) )
-		end )
-	
-	end )
-
-end
-
-------------------
---  BUDDY MENU  --
-------------------
-
-function cl_PProtect.BMenu( Panel )
-
-	-- DELETE CONTROLS
-	Panel:ClearControls()
-
-	-- UPDATE PANELS
-	if not cl_PProtect.BCPanel then
-		cl_PProtect.BCPanel = Panel
-	end
-	
-	-- BUDDY PERMISSIONS
-	local buddy_permissions = {
-
-		"Use",
-		"PhysGun",
-		"ToolGun",
-		"Damage",
-		"Property"
-	
-	}
-
-	-- BUDDY CONTROLS
-	cl_PProtect.addlbl( Panel, "Your Buddies:", "panel" )
-	cl_PProtect.addlistview( Panel, { "Name", "Permission", "SteamID", "UniqueID" } , "my_buddies")
-	cl_PProtect.addbtn( Panel, "Delete selected buddy" , "deletebuddy" )
-	
-	cl_PProtect.addlbl( Panel, "Add a new buddy:", "panel" )
-	cl_PProtect.addlistview( Panel, { "Name", "ID" } , "all_players")
-	
-	table.foreach( buddy_permissions, function( key, value )
-		cl_PProtect.addchk( Panel, value, "buddy", string.lower( value ) )
-	end )
-	
-	cl_PProtect.addbtn( Panel, "Add selected buddy" , "addbuddy" )
+	--	cl_PProtect.addcombo( saCat, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction" )
+
+	--	if tonumber( NewValue ) == 4 then
+	--		cl_PProtect.addsldr( saCat, 0, 60, "Ban Time (minutes)","general", "bantime" )
+	--	elseif tonumber( NewValue ) == 5 then
+	--		cl_PProtect.addlbl( saCat, "Write a command. Use <player> for the Spammer", "category" )
+	--		cl_PProtect.addtext( saCat, GetConVarString( "PProtect_AS_concommand" ) )
+	--	end
+
+	--end
+	--cvars.AddChangeCallback( "PProtect_AS_spamaction", spamactionChanged )
 
 end
 
@@ -348,16 +82,16 @@ end
 local function CreateMenus()
 
 	-- ANTISPAM
-	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPAntiSpam", "AntiSpam", "", "", cl_PProtect.ASMenu)
+	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPAntiSpam", "AntiSpam", "", "", cl_PProtect.ASMenu )
 
 	-- PROP PROTECTION
-	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPPropProtection", "PropProtection", "", "", cl_PProtect.PPMenu)
+	--spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPPropProtection", "PropProtection", "", "", cl_PProtect.PPMenu)
 
 	-- CLEANUP
-	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPClientCleanup", "Cleanup", "", "", cl_PProtect.CUMenu)
+	--spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPClientCleanup", "Cleanup", "", "", cl_PProtect.CUMenu)
 	
 	-- BUDDY
-	spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPBuddyManager", "Buddy", "", "", cl_PProtect.BMenu)
+	--spawnmenu.AddToolMenuOption("Utilities", "PatchProtect", "PPBuddyManager", "Buddy", "", "", cl_PProtect.BMenu)
 
 end
 hook.Add( "PopulateToolMenu", "PProtectmakeMenus", CreateMenus )
@@ -372,10 +106,12 @@ function cl_PProtect.UpdateMenus()
 	
 	-- ANTISPAM
 	if cl_PProtect.ASCPanel then
-		cl_PProtect.ASMenu(cl_PProtect.ASCPanel)
-		RunConsoleCommand("sh_PProtect.reloadSettings", LocalPlayer())
+		RunConsoleCommand( "request_newest_settings", LocalPlayer() )
+		timer.Simple( 0.05, function()
+			cl_PProtect.ASMenu( cl_PProtect.ASCPanel )
+		end )
 	end
-	
+	--[[
 	-- PROP PROTECTION
 	if cl_PProtect.PPCPanel then
 		cl_PProtect.PPMenu(cl_PProtect.PPCPanel)
@@ -391,40 +127,18 @@ function cl_PProtect.UpdateMenus()
 	-- BUDDY
 	if cl_PProtect.BCPanel then
 		cl_PProtect.BMenu(cl_PProtect.BCPanel)
-		RunConsoleCommand("sh_PProtect.reloadSettings", LocalPlayer())
 	end
-
+]]
 end
 hook.Add( "SpawnMenuOpen", "PProtectMenus", cl_PProtect.UpdateMenus )
 
-------------------
---  NETWORKING  --
-------------------
 
--- ANTISPAM
-net.Receive( "sendAntiSpamSettings", function( len )
-     
-	cl_PProtect.ConVars.PProtect_AS = net.ReadTable()
 
-	table.foreach( weapons.GetList(), function( _, wep )
-
-		if wep.Tool != nil then
-
-			table.foreach( wep.Tool, function( name, tool )
-				table.insert( cl_PProtect.ConVars.PProtect_AS_tools, name )
-			end )
-
-		end
-
-	end )
-	table.sort( cl_PProtect.ConVars.PProtect_AS_tools )
-
-end )
-
--- PROP PROTECTION
-net.Receive( "sendPropProtectionSettings", function( len )
+net.Receive( "new_client_settings", function()
 	
-	cl_PProtect.ConVars.PProtect_PP = net.ReadTable()
-	createCCV()
-	
+	local received_settings = net.ReadTable()
+
+	cl_PProtect.Settings.AntiSpam = received_settings["AntiSpam"]
+	cl_PProtect.Settings.PropProtection = received_settings["PropProtection"]
+
 end )
