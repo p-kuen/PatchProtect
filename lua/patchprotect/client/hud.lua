@@ -40,7 +40,7 @@ surface.CreateFont( "PatchProtectFont_small", {
 -- SHOW OWNER
 function cl_PProtect.ShowOwner()
 	
-	if tonumber( cl_PProtect.Settings.PropProtection[ "enabled" ] ) == 0 then return end
+	if cl_PProtect.Settings.PropProtection[ "enabled" ] == 0 then return end
 
 	-- Check Entity
 	local entity = LocalPlayer():GetEyeTrace().Entity
@@ -118,7 +118,7 @@ properties.Add( "addblockedprop", {
 
 	Filter = function( self, ent, ply )
 
-		if tonumber( cl_PProtect.Settings.AntiSpam[ "enabled" ] ) == 0 or tonumber( cl_PProtect.Settings.AntiSpam[ "propblock" ] ) == 0 then return false end
+		if cl_PProtect.Settings.AntiSpam[ "enabled" ] == 0 or cl_PProtect.Settings.AntiSpam[ "propblock" ] == 0 then return false end
 		if !LocalPlayer():IsAdmin() or !LocalPlayer():IsSuperAdmin() then return false end
 		if !ent:IsValid() or ent:IsPlayer() then return false end
 		return true

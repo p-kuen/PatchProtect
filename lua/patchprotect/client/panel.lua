@@ -22,7 +22,7 @@ function cl_PProtect.ASMenu( Panel )
 	cl_PProtect.addlbl( Panel, "Main switch:" )
 	cl_PProtect.addchk( Panel, "Enable AntiSpam", "antispam", "enabled" )
 
-	if tonumber( cl_PProtect.Settings.AntiSpam[ "enabled" ] ) == 1 then
+	if cl_PProtect.Settings.AntiSpam[ "enabled" ] == 1 then
 
 		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:" )
 		cl_PProtect.addchk( Panel, "Ignore Admins", "antispam", "admins" )
@@ -31,31 +31,31 @@ function cl_PProtect.ASMenu( Panel )
 		cl_PProtect.addchk( Panel, "Prop-Block", "antispam", "propblock" )
 
 		--Tool Protection
-		if tonumber( cl_PProtect.Settings.AntiSpam[ "toolprotection" ] ) == 1 then
+		if cl_PProtect.Settings.AntiSpam[ "toolprotection" ] == 1 then
 			cl_PProtect.addbtn( Panel, "Set antispamed Tools", "open_antispam_tool" )
 		end
 
 		--Tool Block
-		if tonumber( cl_PProtect.Settings.AntiSpam[ "toolblock" ] ) == 1 then
+		if cl_PProtect.Settings.AntiSpam[ "toolblock" ] == 1 then
 			cl_PProtect.addbtn( Panel, "Set blocked Tools", "open_blocked_tool" )
 		end
 
 		--Prop Block
-		if tonumber( cl_PProtect.Settings.AntiSpam[ "propblock" ] ) == 1 then
+		if cl_PProtect.Settings.AntiSpam[ "propblock" ] == 1 then
 			cl_PProtect.addbtn( Panel, "Set blocked Props", "open_blocked_prop" )
 		end
 
 		--Cooldown/Spamaction
 		cl_PProtect.addlbl( Panel, "\nHow many seconds to wait, till the next prop-spawn/tool-fire:" )
-		cl_PProtect.addsld( Panel, 0, 10, "Cooldown (Seconds)", "antispam", tonumber( cl_PProtect.Settings.AntiSpam[ "cooldown" ] ), 1, "cooldown" )
+		cl_PProtect.addsld( Panel, 0, 10, "Cooldown (Seconds)", "antispam", cl_PProtect.Settings.AntiSpam[ "cooldown" ], 1, "cooldown" )
 		cl_PProtect.addlbl( Panel, "How many props, till admins and superadmins get informed:" )
-		cl_PProtect.addsld( Panel, 0, 40, "Amount", "antispam", tonumber( cl_PProtect.Settings.AntiSpam[ "spam" ] ), 0, "spam" )
+		cl_PProtect.addsld( Panel, 0, 40, "Amount", "antispam", cl_PProtect.Settings.AntiSpam[ "spam" ], 0, "spam" )
 		cl_PProtect.addlbl( Panel, "What should happen, if the player topped the spam-limit:" )
-		cl_PProtect.addcmb( Panel, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction", tonumber( cl_PProtect.Settings.AntiSpam[ "spamaction" ] ) )
+		cl_PProtect.addcmb( Panel, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction", cl_PProtect.Settings.AntiSpam[ "spamaction" ] )
 
-		if tonumber( cl_PProtect.Settings.AntiSpam[ "spamaction" ] ) == 4 then
-			cl_PProtect.addsld( Panel, 0, 60, "Ban (Minutes)", "antispam", tonumber( cl_PProtect.Settings.AntiSpam[ "bantime" ] ), 0, "bantime" )
-		elseif tonumber( cl_PProtect.Settings.AntiSpam[ "spamaction" ] ) == 5 then
+		if cl_PProtect.Settings.AntiSpam[ "spamaction" ] == 4 then
+			cl_PProtect.addsld( Panel, 0, 60, "Ban (Minutes)", "antispam", cl_PProtect.Settings.AntiSpam[ "bantime" ], 0, "bantime" )
+		elseif cl_PProtect.Settings.AntiSpam[ "spamaction" ] == 5 then
 			cl_PProtect.addlbl( Panel, "This doesn't work yet, sorry!" )
 			--cl_PProtect.addtext( saCat, GetConVarString( "PProtect_AS_concommand" ) )
 		end
@@ -170,7 +170,7 @@ function cl_PProtect.PPMenu( Panel )
 	cl_PProtect.addlbl( Panel, "Main switch:" )
 	cl_PProtect.addchk( Panel, "Enable PropProtection", "propprotection", "enabled" )
 
-	if tonumber( cl_PProtect.Settings.PropProtection[ "enabled" ] ) == 1 then
+	if cl_PProtect.Settings.PropProtection[ "enabled" ] == 1 then
 
 		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
 		cl_PProtect.addchk( Panel, "Ignore Admins", "propprotection", "admins" )
@@ -187,9 +187,9 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "propdelete" )
 
 		--Prop Delete
-		if tonumber( cl_PProtect.Settings.PropProtection[ "propdelete" ] ) == 1 then
+		if cl_PProtect.Settings.PropProtection[ "propdelete" ] == 1 then
 			cl_PProtect.addchk( Panel, "Keep Admin-Props", "propprotection", "adminprops" )
-			cl_PProtect.addsld( Panel, 5, 300, "Delay (Seconds)", "propprotection", tonumber( cl_PProtect.Settings.PropProtection[ "delay" ] ), 0, "delay" )
+			cl_PProtect.addsld( Panel, 5, 300, "Delay (Seconds)", "propprotection", cl_PProtect.Settings.PropProtection[ "delay" ], 0, "delay" )
 		end
 
 	end

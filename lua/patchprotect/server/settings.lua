@@ -44,7 +44,14 @@ function sv_PProtect.loadSQLSettings( sqlselect, sqltable, localtable, name )
 
 	end
 
-	return sql.QueryRow( "SELECT * FROM " .. sqltable .. " LIMIT 1" )
+	local SQLSettingsTable = sql.QueryRow( "SELECT * FROM " .. sqltable .. " LIMIT 1" )
+	table.foreach( SQLSettingsTable, function( setting, value )
+
+		if tonumber( value ) != nil then SQLSettingsTable[ setting ] = tonumber( value ) end
+
+	end )
+
+	return SQLSettingsTable
 	
 end
 
@@ -152,7 +159,7 @@ net.Receive( "save_antispam_settings", function( len, pl )
 
 	-- SAVE TO SQL TABLES
 	table.foreach( sv_PProtect.Settings.AntiSpam, function( key, value )
-		if sv_PProtect.Settings.AntiSpam[ key ] == "1" or "0" then
+		if type( sv_PProtect.Settings.AntiSpam[ key ] ) == "number" then
 			sql.Query( "UPDATE pprotect_antispam SET " .. key .. " = " .. value )
 		else
 			sql.Query( "UPDATE pprotect_antispam SET " .. key .. " = '" .. value .. "'" )
@@ -172,7 +179,7 @@ net.Receive( "save_propprotection_settings", function( len, pl )
 
 	-- SAVE TO SQL TABLES
 	table.foreach( sv_PProtect.Settings.PropProtection, function( key, value )
-		if sv_PProtect.Settings.PropProtection[ key ] == "0" or "1" or "2" or "3" or "4" or "5" or "6" then
+		if type( sv_PProtect.Settings.PropProtection[ key ] ) == "number" then
 			sql.Query( "UPDATE pprotect_propprotection SET " .. key .. " = " .. value )
 		else
 			sql.Query( "UPDATE pprotect_propprotection SET " .. key .. " = '" .. value .. "'" )

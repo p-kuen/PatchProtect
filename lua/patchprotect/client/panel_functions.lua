@@ -132,9 +132,9 @@ function cl_PProtect.addchk( derma, text, setting_type, setting )
 	function chk:OnChange()
 
 		if setting_type == "antispam" then
-			cl_PProtect.Settings.AntiSpam[ setting ] = chk:GetChecked() and "1" or "0"
+			cl_PProtect.Settings.AntiSpam[ setting ] = chk:GetChecked() and 1 or 0
 		elseif setting_type == "propprotection" then
-			cl_PProtect.Settings.PropProtection[ setting ] = chk:GetChecked() and "1" or "0"
+			cl_PProtect.Settings.PropProtection[ setting ] = chk:GetChecked() and 1 or 0
 		elseif setting_type == "blockedtools" then
 			cl_PProtect.Settings.BlockedTools[ setting ] = chk:GetChecked() and true or false
 		elseif setting_type == "antispamtools" then
