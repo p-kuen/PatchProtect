@@ -125,6 +125,8 @@ function cl_PProtect.addchk( derma, text, setting_type, setting )
 		chk:SetChecked( tobool( cl_PProtect.Settings.BlockedTools[ setting ] ) )
 	elseif setting_type == "antispamtools" then
 		chk:SetChecked( tobool( cl_PProtect.Settings.AntiSpamTools[ setting ] ) )
+	elseif setting_type == "buddy" then
+		chk:SetChecked( false )
 	end
 
 	function chk:OnChange()
@@ -137,6 +139,8 @@ function cl_PProtect.addchk( derma, text, setting_type, setting )
 			cl_PProtect.Settings.BlockedTools[ setting ] = chk:GetChecked() and true or false
 		elseif setting_type == "antispamtools" then
 			cl_PProtect.Settings.AntiSpamTools[ setting ] = chk:GetChecked() and true or false
+		elseif setting_type == "buddy" then
+			cl_PProtect.Buddy.RowType[ setting ] = chk:GetChecked() and "true" or "false"
 		end
 
 	end
@@ -270,7 +274,7 @@ function cl_PProtect.addlvw( derma, cols, filltype )
 		if cl_PProtect.Buddy.Buddies != nil then
 			
 			table.foreach( cl_PProtect.Buddy.Buddies, function( key, value )
-				lvw:AddLine( tostring( value["nick"] ), value["permission"], "testSID", value["uniqueid"] )
+				lvw:AddLine( tostring( value[ "nick" ] ), value[ "permission" ], "testSID", value[ "uniqueid" ] )
 			end )
 
 		end
@@ -291,7 +295,7 @@ function cl_PProtect.addlvw( derma, cols, filltype )
 
 					table.foreach( cl_PProtect.Buddy.Buddies, function( k, v )
 
-						if value:UniqueID() != v["uniqueid"] then
+						if value:UniqueID() != v[ "uniqueid" ] then
 							lvw:AddLine( value:Nick(), value:UniqueID() )
 						end
 
@@ -299,7 +303,6 @@ function cl_PProtect.addlvw( derma, cols, filltype )
 				else
 					lvw:AddLine( value:Nick(), value:UniqueID() )
 				end
-				
 				
 			end
 			
@@ -313,11 +316,7 @@ function cl_PProtect.addlvw( derma, cols, filltype )
 			line:SetSelected( true )
 
 		end
-		
-	else
-	
-		lvw:AddLine( "Testname", "Testpermission", "TestID" )
-		
+
 	end
 	
 	derma:AddItem( lvw )
