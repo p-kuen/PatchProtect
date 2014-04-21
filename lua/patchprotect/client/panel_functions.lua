@@ -85,20 +85,22 @@ end
 
 
 
-----------------
---  CATEGORY  --
-----------------
+-------------
+--  LABEL  --
+-------------
 
-function cl_PProtect.makeCategory( plist, name )
+function cl_PProtect.addlbl( derma, text )
 
-	local cat = vgui.Create( "DCollapsibleCategory" )
-	local pan = vgui.Create( "DListLayout" )
-	
-	cat:SetLabel( name )
-	cat:SetContents( pan )
+	local lbl = vgui.Create( "DLabel" )
 
-	plist:AddItem( cat )
-	return cat, pan
+	--lbl:SetColor( Color( 255, 255, 255, 255 ) )
+	--lbl:SetFont( "default" )
+	lbl:SetText( text )
+	lbl:SetDark( true )
+	lbl:SizeToContents()
+	--lbl:SetWrap( true )
+
+	derma:AddItem( lbl )
 
 end
 
@@ -108,29 +110,39 @@ end
 --  CHECKBOX  --
 ----------------
 
-function cl_PProtect.addchk( plist, text, typ, var, var2 )
+function cl_PProtect.addchk( derma, text, setting_type, setting )
 
 	local chk = vgui.Create( "DCheckBoxLabel" )
 
 	chk:SetText( text )
 	chk:SetDark( true )
 
-	if typ == "general" then
-		chk:SetConVar( "PProtect_AS_" .. var )
-	elseif typ == "tools" then
-		chk:SetConVar( "PProtect_AS_tools_" .. var )
-	elseif typ == "blockedtools" then
-		chk:SetChecked( var2 )
-		function chk:OnChange()
-			ToolsTable[var] = chk:GetChecked()
-		end
-	elseif typ == "propprotection" then
-		chk:SetConVar( "PProtect_PP_" .. var )
-	elseif typ == "buddy" then
+	if setting_type == "antispam" then
+		chk:SetChecked( tobool( cl_PProtect.Settings.AntiSpam[ setting ] ) )
+	elseif setting_type == "propprotection" then
+		chk:SetChecked( tobool( cl_PProtect.Settings.PropProtection[ setting ] ) )
+	elseif setting_type == "blockedtools" then
+		chk:SetChecked( tobool( cl_PProtect.Settings.BlockedTools[ setting ] ) )
+	elseif setting_type == "antispamtools" then
+		chk:SetChecked( tobool( cl_PProtect.Settings.AntiSpamTools[ setting ] ) )
+	elseif setting_type == "buddy" then
 		chk:SetChecked( false )
-		function chk:OnChange()
-			cl_PProtect.Buddy.RowType[tostring( var )] = tostring( chk:GetChecked() )
+	end
+
+	function chk:OnChange()
+
+		if setting_type == "antispam" then
+			cl_PProtect.Settings.AntiSpam[ setting ] = chk:GetChecked() and 1 or 0
+		elseif setting_type == "propprotection" then
+			cl_PProtect.Settings.PropProtection[ setting ] = chk:GetChecked() and 1 or 0
+		elseif setting_type == "blockedtools" then
+			cl_PProtect.Settings.BlockedTools[ setting ] = chk:GetChecked() and true or false
+		elseif setting_type == "antispamtools" then
+			cl_PProtect.Settings.AntiSpamTools[ setting ] = chk:GetChecked() and true or false
+		elseif setting_type == "buddy" then
+			cl_PProtect.Buddy.RowType[ setting ] = chk:GetChecked() and "true" or "false"
 		end
+
 	end
 
 	function chk:PaintOver()
@@ -142,7 +154,52 @@ function cl_PProtect.addchk( plist, text, typ, var, var2 )
 
 	end
 
-	plist:AddItem( chk )
+	derma:AddItem( chk )
+
+end
+
+
+
+----------------
+--   BUTTON   --
+----------------
+
+function cl_PProtect.addbtn( derma, text, nettext, args, ccmd )
+
+	if ccmd == nil then ccmd = false end
+	local btn = vgui.Create( "DButton" )
+
+	btn:Center()
+	btn:SetText( text )
+	btn:SetDark( true )
+
+	btn.DoClick = function()
+
+		if !ccmd then
+
+			net.Start( nettext )
+			
+				if args != nil then
+					net.WriteTable( args )
+				else
+					net.WriteString( "noargs" )
+				end
+
+			net.SendToServer()
+
+		else
+			if args != nil then
+				RunConsoleCommand( "btn_" .. nettext, args )
+			else
+				RunConsoleCommand( "btn_" .. nettext )
+			end
+		end
+
+		if string.find( nettext, "save" ) then cl_PProtect.UpdateMenus() end
+
+	end
+
+	derma:AddItem( btn )
 
 end
 
@@ -152,80 +209,34 @@ end
 --  SLIDER  --
 --------------
 
-function cl_PProtect.addsldr( plist, min, max, text, typ, var, decimals )
+function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, sld_type2 )
 
-	local sldr
-	if var == "bantime" then sldr = plist:Add( "DNumSlider" ) else sldr = vgui.Create( "DNumSlider" ) end
+	local sld = vgui.Create( "DNumSlider" )
 
-	sldr:SetMin( min )
-	sldr:SetMax( max )
-	decimals = decimals or 1
-	sldr:SetDecimals( decimals )
-	sldr:SetText( text )
-	sldr:SetDark( true )
+	sld:SetMin( min )
+	sld:SetMax( max )
+	sld:SetDecimals( decimals )
+	sld:SetText( text )
+	sld:SetDark( true )
+	sld:SetValue( value )
 
-	if typ == "general" then
-		sldr:SetConVar( "PProtect_AS_" .. var )
-	elseif typ == "propprotection" then
-		sldr:SetConVar( "PProtect_PP_" .. var )
-	else
-		sldr:SetConVar( "PProtect_AS_" .. var )
-	end
-
-	if var != "bantime" then plist:AddItem( sldr ) end
-
-end
-
-
-
--------------
---  LABEL  --
--------------
-
-function cl_PProtect.addlbl( plist, text, typ )
-
-	if typ == "category" then
-
-		local lbl = plist:Add( "DLabel" )
-
-		lbl:SetText( text )
-		lbl:SetDark( true )
-
-	elseif typ == "panel" then
-
-		plist:AddControl( "Label", { Text = text } )
-
-	end
-	
-end
-
-
-
-----------------
---   BUTTON   --
-----------------
-
-function cl_PProtect.addbtn( plist, text, cmd, args )
-
-	local btn = vgui.Create( "DButton" )
-
-	btn:Center()
-	btn:SetText( text )
-	btn:SetDark( true )
-
-	btn.DoClick = function()
-
-		if args != nil then
-			RunConsoleCommand( "btn_" .. cmd, args )
-		else
-			RunConsoleCommand( "btn_" .. cmd )
+	sld.ValueChanged = function( self, number )
+		
+		if sld_type == "antispam" then
+			if sld_type2 == "cooldown" then
+				cl_PProtect.Settings.AntiSpam[ "cooldown" ] = math.Round( number, 1 )
+			elseif sld_type2 == "spam" or "bantime" then
+				cl_PProtect.Settings.AntiSpam[ sld_type2 ] = math.Round( number, 0 )
+			end
+		elseif sld_type == "propprotection" then
+			if sld_type2 == "delay" then
+				cl_PProtect.Settings.PropProtection[ "delay" ] = math.Round( number, 0 )
+			end
 		end
 
-		cl_PProtect.UpdateMenus()
-
 	end
 
-	plist:AddItem( btn )
+	derma:AddItem( sld )
 
 end
 
@@ -235,50 +246,38 @@ end
 --  COMBOBOX  --
 ----------------
 
-function cl_PProtect.addcombo( plist, choices, var )
+function cl_PProtect.addcmb( derma, items, cmb_type, value )
 	
-	local combo = plist:Add( "DComboBox" )
+	local cmb = vgui.Create( "DComboBox" )
 
-	table.foreach( choices, function( key, value )
-		combo:AddChoice( value )
+	table.foreach( items, function( key, choice )
+		cmb:AddChoice( choice )
 	end )
-	combo:ChooseOptionID( GetConVarNumber( "PProtect_AS_" .. var ) )
+	cmb:ChooseOptionID( value )
 
-	function combo:OnSelect( index, value, data )
-
-		RunConsoleCommand( "PProtect_AS_" .. var, index )
-
+	cmb.OnSelect = function( panel, index, value, data )
+		cl_PProtect.Settings.AntiSpam[ cmb_type ] = index
 	end
 
-end
-
-
-
-----------------
---  TEXTBOX  --
-----------------
-
-function cl_PProtect.addtext( plist, text )
-
-	local tentry = plist:Add( "DTextEntry" )
-	
-	tentry:SetText( text )
+	derma:AddItem( cmb )
 
 end
+
+
 
 ----------------
 --  LISTVIEW  --
 ----------------
 
-function cl_PProtect.addlistview( plist, cols, filltype )
+function cl_PProtect.addlvw( derma, cols, filltype )
 
-	local lview = vgui.Create( "DListView" )
+	local lvw = vgui.Create( "DListView" )
 	
-	lview:SetMultiSelect( false )
-	lview:SetSize( 150, 200 )
+	lvw:SetMultiSelect( false )
+	lvw:SetSize( 150, 200 )
 	
 	table.foreach( cols, function( key, value )
-		lview:AddColumn( value )
+		lvw:AddColumn( value )
 	end )
 	
 	if filltype == "my_buddies" then
@@ -286,14 +285,14 @@ function cl_PProtect.addlistview( plist, cols, filltype )
 		if cl_PProtect.Buddy.Buddies != nil then
 			
 			table.foreach( cl_PProtect.Buddy.Buddies, function( key, value )
-				lview:AddLine( tostring( value["nick"] ), value["permission"], "testSID", value["uniqueid"] )
+				lvw:AddLine( tostring( value[ "nick" ] ), value[ "permission" ], "testSID", value[ "uniqueid" ] )
 			end )
 
 		end
 
-		function lview:OnClickLine( line, selected )
+		function lvw:OnClickLine( line, selected )
 			cl_PProtect.Buddy.BuddyToRemove[0] = tostring( line:GetValue(4) )
-			lview:ClearSelection()
+			lvw:ClearSelection()
 			line:SetSelected( true )
 		end
 		
@@ -307,37 +306,30 @@ function cl_PProtect.addlistview( plist, cols, filltype )
 
 					table.foreach( cl_PProtect.Buddy.Buddies, function( k, v )
 
-						if value:UniqueID() != v["uniqueid"] then
-							lview:AddLine( value:Nick(), value:UniqueID() )
+						if value:UniqueID() != v[ "uniqueid" ] then
+							lvw:AddLine( value:Nick(), value:UniqueID() )
 						end
 
 					end )
 				else
-					lview:AddLine( value:Nick(), value:UniqueID() )
+					lvw:AddLine( value:Nick(), value:UniqueID() )
 				end
-				
 				
 			end
 			
 		end )
 		
-		function lview:OnClickLine( line, selected )
+		function lvw:OnClickLine( line, selected )
 
 			cl_PProtect.Buddy.CurrentBuddy[0] = tostring( line:GetValue(2) )
 			cl_PProtect.Buddy.CurrentBuddy[1] = tostring( line:GetValue(1) )
-			lview:ClearSelection()
+			lvw:ClearSelection()
 			line:SetSelected( true )
 
 		end
-		
-	else
-	
-		lview:AddLine( "Testname", "Testpermission", "TestID" )
-		
+
 	end
 	
-	
-	
-	plist:AddItem( lview )
+	derma:AddItem( lvw )
 
 end

@@ -5,6 +5,7 @@
 sh_PProtect = {}
 sv_PProtect = {}
 cl_PProtect = {}
+cl_PProtect.Settings = {}
 
 
 
@@ -13,10 +14,10 @@ cl_PProtect = {}
 -------------------------
 
 AddCSLuaFile()
-AddCSLuaFile("patchprotect/client/hud.lua")
-AddCSLuaFile("patchprotect/client/panel_functions.lua")
-AddCSLuaFile("patchprotect/client/panel.lua")
-AddCSLuaFile("patchprotect/client/buddy.lua")
+AddCSLuaFile( "patchprotect/client/hud.lua" )
+AddCSLuaFile( "patchprotect/client/panel_functions.lua" )
+AddCSLuaFile( "patchprotect/client/panel.lua" )
+AddCSLuaFile( "patchprotect/client/buddy.lua" )
 
 
 --------------------------------
@@ -38,5 +39,5 @@ else
 	include( "patchprotect/client/panel_functions.lua" )
 	include( "patchprotect/client/panel.lua" )
 	include( "patchprotect/client/buddy.lua" )
-	
+
 end

@@ -40,7 +40,7 @@ surface.CreateFont( "PatchProtectFont_small", {
 -- SHOW OWNER
 function cl_PProtect.ShowOwner()
 	
-	if GetConVarNumber( "PProtect_PP_enabled" ) == 0 then return end
+	if cl_PProtect.Settings.PropProtection[ "enabled" ] == 0 then return end
 
 	-- Check Entity
 	local entity = LocalPlayer():GetEyeTrace().Entity
@@ -48,7 +48,7 @@ function cl_PProtect.ShowOwner()
 
 	if stopsend != entity:EntIndex() then
 
-		net.Start( "getOwner" )
+		net.Start( "get_owner" )
 			net.WriteEntity( entity )
 		net.SendToServer()
 
@@ -74,6 +74,8 @@ function cl_PProtect.ShowOwner()
 
 	end
 
+	if ownerText == nil then return end
+
 	surface.SetFont( "PatchProtectFont_small" )
 	local OW, OH = surface.GetTextSize( ownerText )
 	OW = OW + 10
@@ -98,10 +100,10 @@ end
 hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner )
 
 -- SET DISABLED PHYSBEAM IF NOT ALLOWED TO PICKUP
-function cl_PProtect.SetClientPhysBeam( ply, ent )
+function cl_PProtect.SetClientBeam( ply, ent )
 	return false
 end
-hook.Add( "PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam )
+hook.Add( "PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientBeam )
 
 
 
@@ -118,7 +120,7 @@ properties.Add( "addblockedprop", {
 
 	Filter = function( self, ent, ply )
 
-		if GetConVarNumber( "PProtect_AS_enabled" ) == 0 or GetConVarNumber( "PProtect_AS_propblock" ) == 0 then return false end
+		if cl_PProtect.Settings.AntiSpam[ "enabled" ] == 0 or cl_PProtect.Settings.AntiSpam[ "propblock" ] == 0 then return false end
 		if !LocalPlayer():IsAdmin() or !LocalPlayer():IsSuperAdmin() then return false end
 		if !ent:IsValid() or ent:IsPlayer() then return false end
 		return true
@@ -127,7 +129,7 @@ properties.Add( "addblockedprop", {
 
 	Action = function( self, ent )
 
-		net.Start( "sendBlockedProp" )
+		net.Start( "send_blocked_prop_cpanel" )
 			net.WriteString( ent:GetModel() )
 		net.SendToServer()
 		
@@ -276,7 +278,7 @@ net.Receive( "PProtect_Notify", function( len )
 end )
 
 -- RECEIVE OWNER
-net.Receive( "sendOwner", function( len )
+net.Receive( "send_owner", function( len )
 
 	Owner = net.ReadEntity()
 	local info = net.ReadString()

@@ -60,7 +60,7 @@ end
 -- SEND BUDDIES
 function cl_PProtect.sendBuddies( buddytable )
 	
-	net.Start("PProtect_sendBuddy")
+	net.Start( "send_buddy" )
         net.WriteTable( buddytable )
     net.SendToServer()
 	
@@ -86,7 +86,7 @@ function cl_PProtect.AddBuddy( ply, cmd, args )
 
 	cl_PProtect.Info( "Added new buddy!" )
 
-	net.Start( "PProtect_sendOther" )
+	net.Start( "send_other_buddy" )
 		net.WriteString( tostring( cl_PProtect.Buddy.CurrentBuddy[0] ) )
 	net.SendToServer()
 	
@@ -95,15 +95,15 @@ function cl_PProtect.AddBuddy( ply, cmd, args )
 	
 
 end
-concommand.Add( "btn_addbuddy", cl_PProtect.AddBuddy )
+concommand.Add( "btn_add_buddy", cl_PProtect.AddBuddy )
 
 -- DELETE BUDDY
 function cl_PProtect.DeleteBuddy( ply, cmd, args )
-
+	
 	ply.Buddies = ply.Buddies or {}
 	sql.Query( "DELETE FROM pprotect_buddies WHERE uniqueid = '" .. cl_PProtect.Buddy.BuddyToRemove[0] .. "'" )
 	
-	cl_PProtect.Buddy.Buddies = sql.Query("SELECT * FROM pprotect_buddies")
+	cl_PProtect.Buddy.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
 
 	if cl_PProtect.Buddy.Buddies == nil then
 		cl_PProtect.Buddy.Buddies = {}
@@ -116,13 +116,12 @@ function cl_PProtect.DeleteBuddy( ply, cmd, args )
 
 	cl_PProtect.SetBuddyVars( "delete" )
 	
-
 end
-concommand.Add( "btn_deletebuddy", cl_PProtect.DeleteBuddy )
+concommand.Add( "btn_delete_buddy", cl_PProtect.DeleteBuddy )
 
 -- IF PLAYER JOINS THE SERVER -> SEND BUDDIES
 function cl_PProtect.OnPlayerBuddyIPE()
 
-	cl_PProtect.sendBuddies(cl_PProtect.Buddy.Buddies)
+	cl_PProtect.sendBuddies( cl_PProtect.Buddy.Buddies )
 end
 hook.Add( "InitPostEntity", "PlayerBuddyIPE", cl_PProtect.OnPlayerBuddyIPE )
