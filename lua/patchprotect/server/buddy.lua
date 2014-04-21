@@ -2,7 +2,7 @@
 --  CHECK BUDDY  --
 -------------------
 
-function sv_PProtect.isBuddy( source, buddy, type )
+function sv_PProtect.isBuddy( source, buddy, mode )
 
 	if source == nil or buddy == nil then return false end
 
@@ -10,9 +10,9 @@ function sv_PProtect.isBuddy( source, buddy, type )
 	if source.Buddies != nil then
 
 		table.foreach( source.Buddies, function( k, v )
-
+			
 			if buddy:UniqueID() == v["uniqueid"] then
-				if string.match( v["permission"], type ) then
+				if string.match( v["permission"], mode ) then
 					isBuddy = true;
 				end
 			end
@@ -32,14 +32,14 @@ end
 --------------------
 
 -- SEND BUDDY
-net.Receive( "PProtect_sendBuddy", function( len, ply )
+net.Receive( "send_buddy", function( len, ply )
 
 	ply.Buddies = net.ReadTable() or {}
 
 end )
 
 -- NOTIFICATION
-net.Receive( "PProtect_sendOther", function( len, ply )
+net.Receive( "send_other_buddy", function( len, ply )
 
 	local text = net.ReadString()
 

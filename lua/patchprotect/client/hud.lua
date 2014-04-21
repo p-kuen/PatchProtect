@@ -74,6 +74,8 @@ function cl_PProtect.ShowOwner()
 
 	end
 
+	if ownerText == nil then return end
+
 	surface.SetFont( "PatchProtectFont_small" )
 	local OW, OH = surface.GetTextSize( ownerText )
 	OW = OW + 10
@@ -98,10 +100,10 @@ end
 hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner )
 
 -- SET DISABLED PHYSBEAM IF NOT ALLOWED TO PICKUP
-function cl_PProtect.SetClientPhysBeam( ply, ent )
+function cl_PProtect.SetClientBeam( ply, ent )
 	return false
 end
-hook.Add( "PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientPhysBeam )
+hook.Add( "PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientBeam )
 
 
 

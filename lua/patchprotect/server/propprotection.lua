@@ -131,7 +131,7 @@ function sv_PProtect.CanProperty( ply, property, ent )
 	if ply == ent:CPPIGetOwner() and property != "persist" or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "property" ) and property != "persist" then
 		return true
 	else
-		sv_PProtect.Notify( ply, "You are not allowed to change the propierties on this object!" )
+		sv_PProtect.Notify( ply, "You are not allowed to change the properties on this object!" )
 		return false
 	end
 
@@ -169,10 +169,11 @@ function sv_PProtect.CanDamage( ent, info )
 	local Attacker = info:GetAttacker()
 
 	if !ent:IsValid() or ent:IsPlayer() then return false end
-	if sv_PProtect.Settings.PropProtection[ "enabled" ] == 0 or sv_PProtect.Settings.PropProtection[ "damageprotection" ] == 0 then return true end
+
+	if sv_PProtect.Settings.PropProtection[ "enabled" ] == 0 or sv_PProtect.Settings.PropProtection[ "damageprotection" ] == 0 then return end
 	
-	if Attacker:IsPlayer() and Owner != Attacker or Attacker:IsPlayer() and !sv_PProtect.isBuddy( Owner, Attacker, "damage" ) then
-		
+	if Attacker:IsPlayer() and Owner != Attacker and !sv_PProtect.isBuddy( Owner, Attacker, "damage" ) then
+
 		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and sv_PProtect.Settings.PropProtection[ "admins" ] == 1 then return end
 
 		info:SetDamage( 0 )
@@ -183,6 +184,14 @@ function sv_PProtect.CanDamage( ent, info )
 			end
 
 		end )
+
+	elseif !Attacker:IsPlayer() then 
+
+		return false
+
+	elseif Attacker:IsPlayer() and Owner == Attacker then 
+
+		return
 
 	end
 
@@ -237,6 +246,21 @@ function sv_PProtect.CanGravPunt( ply, ent )
 
 end
 hook.Add( "GravGunPunt", "AllowGravPunt", sv_PProtect.CanGravPunt )
+
+function sv_PProtect.CanGravPickup( ply, ent )
+
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+	if sv_PProtect.Settings.PropProtection[ "gravgunprotection" ] == 0 then return false end
+
+	if !ent:IsValid() then return false end
+
+	if ply != ent:CPPIGetOwner() then
+		sv_PProtect.Notify( ply, "You are not allowed to use the Grav-Gun on this object!" )
+		ply:DropObject()
+	end
+
+end
+hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CanGravPickup )
 
 
 
