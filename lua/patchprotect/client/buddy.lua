@@ -60,7 +60,7 @@ end
 -- SEND BUDDIES
 function cl_PProtect.sendBuddies( buddytable )
 	
-	net.Start( "send_buddy" )
+	net.Start( "pprotect_send_buddy" )
         net.WriteTable( buddytable )
     net.SendToServer()
 	
@@ -75,18 +75,20 @@ cl_PProtect.SetBuddyVars( "add" )
 cl_PProtect.SetBuddyVars( "delete" )
 
 -- ADD BUDDY
-function cl_PProtect.AddBuddy( ply, cmd, args )
+function cl_PProtect.AddBuddy( ply )
+
+	if args == nil then return end
 
 	ply.Buddies = ply.Buddies or {}
 	sql.Query( "INSERT INTO pprotect_buddies('uniqueid', 'nick', 'permission' ) VALUES( '" .. cl_PProtect.Buddy.CurrentBuddy[0] .. "', '" .. cl_PProtect.Buddy.CurrentBuddy[1] .. "', '"..table.concat( table.KeysFromValue( cl_PProtect.Buddy.RowType, "true" ),", " ).."')" )
 	
-	cl_PProtect.Buddy.Buddies = sql.Query("SELECT * FROM pprotect_buddies")
+	cl_PProtect.Buddy.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
 
 	cl_PProtect.sendBuddies( cl_PProtect.Buddy.Buddies )
 
 	cl_PProtect.Info( "Added new buddy!" )
 
-	net.Start( "send_other_buddy" )
+	net.Start( "pprotect_send_other_buddy" )
 		net.WriteString( tostring( cl_PProtect.Buddy.CurrentBuddy[0] ) )
 	net.SendToServer()
 	
@@ -95,10 +97,9 @@ function cl_PProtect.AddBuddy( ply, cmd, args )
 	
 
 end
-concommand.Add( "btn_add_buddy", cl_PProtect.AddBuddy )
 
 -- DELETE BUDDY
-function cl_PProtect.DeleteBuddy( ply, cmd, args )
+function cl_PProtect.DeleteBuddy( ply )
 	
 	ply.Buddies = ply.Buddies or {}
 	sql.Query( "DELETE FROM pprotect_buddies WHERE uniqueid = '" .. cl_PProtect.Buddy.BuddyToRemove[0] .. "'" )
@@ -117,7 +118,6 @@ function cl_PProtect.DeleteBuddy( ply, cmd, args )
 	cl_PProtect.SetBuddyVars( "delete" )
 	
 end
-concommand.Add( "btn_delete_buddy", cl_PProtect.DeleteBuddy )
 
 -- IF PLAYER JOINS THE SERVER -> SEND BUDDIES
 function cl_PProtect.OnPlayerBuddyIPE()

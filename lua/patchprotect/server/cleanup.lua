@@ -3,7 +3,7 @@
 -------------------
 
 --Get request for counting props from a specific player
-net.Receive( "get_player_props_count", function( len, pl )
+net.Receive( "pprotect_get_propcount", function( len, pl )
 	
 	local playerents = {}
 
@@ -24,7 +24,7 @@ net.Receive( "get_player_props_count", function( len, pl )
 
 	end )
 
-	net.Start( "send_player_props_count" )
+	net.Start( "pprotect_send_propcount" )
 		net.WriteTable( playerents )
 	net.Send( pl )
 
@@ -37,7 +37,7 @@ end )
 ---------------------------------
 
 -- CLEANUP EVERYTHING
-net.Receive( "cleanup_map", function( len, pl )
+net.Receive( "pprotect_cleanup_map", function( len, pl )
 
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
 
@@ -47,7 +47,7 @@ net.Receive( "cleanup_map", function( len, pl )
 	sv_PProtect.SetWorldProps()
 
 	sv_PProtect.InfoNotify( pl, "Cleaned Map!" )
-	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all Props!" )
+	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all props!" )
 
 end )
 
@@ -115,9 +115,9 @@ end
 hook.Add( "PlayerSpawn", "CheckAbortCleanup", sv_PProtect.checkComeback )
 
 -- CLEAN ALL DISCONNECTED PLAYERS PROPS (BUTTON)
-function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
+net.Receive( "pprotect_cleanup_disconnected_player", function( len, pl )
 
-	if !ply:IsAdmin() and !ply:IsSuperAdmin() then return end
+	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
 
 	table.foreach( ents.GetAll(), function( k, v )
 
@@ -126,14 +126,13 @@ function sv_PProtect.CleanAllDisconnectedPlayersProps( ply )
 		end
 
 	end )
-	sv_PProtect.InfoNotify( ply, "Cleaned all disconnected Players Props!" )
-	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all Props from disconnected Players!" )
+	sv_PProtect.InfoNotify( pl, "Removed all props from disconnected players!" )
+	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all props from disconnected players!" )
 
-end
-concommand.Add( "btn_cleandiscprops", sv_PProtect.CleanAllDisconnectedPlayersProps )
+end )
 
 -- CLEANUP PLAYERS PROPS
-net.Receive( "cleanup_player", function( len, pl )
+net.Receive( "pprotect_cleanup_player", function( len, pl )
 
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
 
@@ -146,7 +145,7 @@ net.Receive( "cleanup_player", function( len, pl )
 
 	cleanup.CC_Cleanup( cleanupdata[1], "", {} )
 
-	sv_PProtect.InfoNotify( pl, "Cleaned " .. cleanupdata[1]:GetName() .. "'s Props! (" .. cleanupdata[2] .. ")" )
-	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed " .. cleanupdata[2] .. " Props from " .. cleanupdata[1]:GetName() .. "!" )
+	sv_PProtect.InfoNotify( pl, "Cleaned " .. cleanupdata[1]:GetName() .. "'s props! (" .. cleanupdata[2] .. ")" )
+	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed " .. cleanupdata[2] .. " props from " .. cleanupdata[1]:GetName() .. "!" )
 
 end )

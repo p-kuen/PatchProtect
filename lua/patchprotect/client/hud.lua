@@ -48,7 +48,7 @@ function cl_PProtect.ShowOwner()
 
 	if stopsend != entity:EntIndex() then
 
-		net.Start( "get_owner" )
+		net.Start( "pprotect_get_owner" )
 			net.WriteEntity( entity )
 		net.SendToServer()
 
@@ -129,7 +129,7 @@ properties.Add( "addblockedprop", {
 
 	Action = function( self, ent )
 
-		net.Start( "send_blocked_prop_cpanel" )
+		net.Start( "pprotect_send_blocked_props_cpanel" )
 			net.WriteString( ent:GetModel() )
 		net.SendToServer()
 		
@@ -224,7 +224,7 @@ end
 ------------------
 
 -- INFO NOTIFY
-net.Receive( "PProtect_InfoNotify", function( len )
+net.Receive( "pprotect_notify_info", function( len )
     
    	local curmsg = {}
 	curmsg.text = net.ReadString()
@@ -238,7 +238,7 @@ net.Receive( "PProtect_InfoNotify", function( len )
 end )
 
 -- ADMIN NOTIFY
-net.Receive( "PProtect_AdminNotify", function( len )
+net.Receive( "pprotect_notify_admin", function( len )
 
     if LocalPlayer():IsAdmin() then
 
@@ -256,7 +256,7 @@ net.Receive( "PProtect_AdminNotify", function( len )
 end )
 
 -- NOTIFY
-net.Receive( "PProtect_Notify", function( len )
+net.Receive( "pprotect_notify_normal", function( len )
     
 	local curmsg = {}
 	curmsg.text = net.ReadString()
@@ -278,7 +278,7 @@ net.Receive( "PProtect_Notify", function( len )
 end )
 
 -- RECEIVE OWNER
-net.Receive( "send_owner", function( len )
+net.Receive( "pprotect_send_owner", function( len )
 
 	Owner = net.ReadEntity()
 	local info = net.ReadString()

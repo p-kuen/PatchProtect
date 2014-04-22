@@ -164,9 +164,8 @@ end
 --   BUTTON   --
 ----------------
 
-function cl_PProtect.addbtn( derma, text, nettext, args, ccmd )
+function cl_PProtect.addbtn( derma, text, nettext, args )
 
-	if ccmd == nil then ccmd = false end
 	local btn = vgui.Create( "DButton" )
 
 	btn:Center()
@@ -175,7 +174,11 @@ function cl_PProtect.addbtn( derma, text, nettext, args, ccmd )
 
 	btn.DoClick = function()
 
-		if !ccmd then
+		if type( args ) == "function" then
+
+			args()
+
+		else
 
 			net.Start( nettext )
 			
@@ -187,12 +190,6 @@ function cl_PProtect.addbtn( derma, text, nettext, args, ccmd )
 
 			net.SendToServer()
 
-		else
-			if args != nil then
-				RunConsoleCommand( "btn_" .. nettext, args )
-			else
-				RunConsoleCommand( "btn_" .. nettext )
-			end
 		end
 
 		if string.find( nettext, "save" ) then cl_PProtect.UpdateMenus() end

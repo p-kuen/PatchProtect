@@ -151,7 +151,7 @@ MsgC(
 ---------------------
 
 -- ANTI SPAM
-net.Receive( "save_antispam_settings", function( len, pl )
+net.Receive( "pprotect_save_antispam", function( len, pl )
 
 	sv_PProtect.Settings.AntiSpam = net.ReadTable()
 	sv_PProtect.Settings.AntiSpam[ "cooldown" ] = math.Round( sv_PProtect.Settings.AntiSpam[ "cooldown" ], 1 )
@@ -166,13 +166,13 @@ net.Receive( "save_antispam_settings", function( len, pl )
 		end
 	end )
 
-	sv_PProtect.InfoNotify( pl, "Saved the new AntiSpam-Settings" )
-	print( "[PatchProtect - AS] " .. pl:Nick() .. " saved the new AntiSpam-Settings!" )
+	sv_PProtect.InfoNotify( pl, "Saved new AntiSpam-Settings" )
+	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved new AntiSpam-Settings!" )
 
 end )
 
 -- PROP PROTECTION
-net.Receive( "save_propprotection_settings", function( len, pl )
+net.Receive( "pprotect_save_propprotection", function( len, pl )
 
 	sv_PProtect.Settings.PropProtection = net.ReadTable()
 	sv_PProtect.broadcastSettings()
@@ -186,8 +186,8 @@ net.Receive( "save_propprotection_settings", function( len, pl )
 		end
 	end )
 
-	sv_PProtect.InfoNotify( pl, "Saved the new PropProtection-Settings" )
-	print( "[PatchProtect - PP] " .. pl:Nick() .. " saved the new PropProtection-Settings!" )
+	sv_PProtect.InfoNotify( pl, "Saved new PropProtection-Settings" )
+	print( "[PatchProtect - PropProtection] " .. pl:Nick() .. " saved new PropProtection-Settings!" )
 
 end )
 
@@ -264,7 +264,7 @@ local function sendPlayerSettings( ply, cmd, args )
 	new_settings.AntiSpam = sv_PProtect.Settings.AntiSpam
 	new_settings.PropProtection = sv_PProtect.Settings.PropProtection
 
-	net.Start( "new_client_settings" )
+	net.Start( "pprotect_new_settings" )
 		net.WriteTable( new_settings )
 		if args != nil then net.WriteString( args[1] ) end
 	net.Send( ply )
@@ -280,7 +280,7 @@ function sv_PProtect.broadcastSettings()
 	new_settings.AntiSpam = sv_PProtect.Settings.AntiSpam
 	new_settings.PropProtection = sv_PProtect.Settings.PropProtection
 
-	net.Start( "new_client_settings" )
+	net.Start( "pprotect_new_settings" )
 		net.WriteTable( new_settings )
 		net.WriteString( "broadcast" )
 	net.Broadcast()
@@ -295,7 +295,7 @@ end
 
 function sv_PProtect.Notify( ply, text )
 
-	net.Start( "PProtect_Notify" )
+	net.Start( "pprotect_notify_normal" )
 		net.WriteString( text )
 	net.Send( ply )
 
@@ -303,7 +303,7 @@ end
 
 function sv_PProtect.InfoNotify( ply, text )
 
-	net.Start( "PProtect_InfoNotify" )
+	net.Start( "pprotect_notify_info" )
 		net.WriteString( text )
 	net.Send( ply )
 
@@ -311,7 +311,7 @@ end
 
 function sv_PProtect.AdminNotify( text )
 
-	net.Start( "PProtect_AdminNotify" )
+	net.Start( "pprotect_notify_admin" )
 		net.WriteString( text )
 	net.Broadcast()
 
