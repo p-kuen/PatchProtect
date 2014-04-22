@@ -32,17 +32,17 @@ function cl_PProtect.ASMenu( Panel )
 
 		--Tool Protection
 		if cl_PProtect.Settings.AntiSpam[ "toolprotection" ] == 1 then
-			cl_PProtect.addbtn( Panel, "Set antispamed Tools", "open_antispam_tool" )
+			cl_PProtect.addbtn( Panel, "Set antispamed Tools", "pprotect_antispamed_tools" )
 		end
 
 		--Tool Block
 		if cl_PProtect.Settings.AntiSpam[ "toolblock" ] == 1 then
-			cl_PProtect.addbtn( Panel, "Set blocked Tools", "open_blocked_tool" )
+			cl_PProtect.addbtn( Panel, "Set blocked Tools", "pprotect_blocked_tools" )
 		end
 
 		--Prop Block
 		if cl_PProtect.Settings.AntiSpam[ "propblock" ] == 1 then
-			cl_PProtect.addbtn( Panel, "Set blocked Props", "open_blocked_prop" )
+			cl_PProtect.addbtn( Panel, "Set blocked Props", "pprotect_blocked_props" )
 		end
 
 		--Cooldown/Spamaction
@@ -57,13 +57,13 @@ function cl_PProtect.ASMenu( Panel )
 			cl_PProtect.addsld( Panel, 0, 60, "Ban (Minutes)", "antispam", cl_PProtect.Settings.AntiSpam[ "bantime" ], 0, "bantime" )
 		elseif cl_PProtect.Settings.AntiSpam[ "spamaction" ] == 5 then
 			cl_PProtect.addlbl( Panel, "This doesn't work yet, sorry!" )
-			--cl_PProtect.addtext( saCat, GetConVarString( "PProtect_AS_concommand" ) )
+			--cl_PProtect.addtext()
 		end
 
 	end
 
 	-- SAVE SETTINGS
-	cl_PProtect.addbtn( Panel, "Save Settings", "save_antispam_settings", cl_PProtect.Settings.AntiSpam )
+	cl_PProtect.addbtn( Panel, "Save Settings", "pprotect_save_antispam", cl_PProtect.Settings.AntiSpam )
 
 end
 
@@ -78,7 +78,7 @@ net.Receive( "get_antispam_tool", function()
 
 	cl_PProtect.Settings.AntiSpamTools = net.ReadTable()
 
-	tsFrm = cl_PProtect.addframe( 250, 350, "Set antispamed Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.AntiSpamTools, "send_antispam_tool" )
+	tsFrm = cl_PProtect.addframe( 250, 350, "Set antispamed Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.AntiSpamTools, "pprotect_send_antispamed_tools" )
 
 	for key, value in SortedPairs( cl_PProtect.Settings.AntiSpamTools ) do
 
@@ -93,7 +93,7 @@ net.Receive( "get_blocked_prop", function()
 
 	cl_PProtect.Settings.BlockedProps = net.ReadTable()
 
-	psFrm = cl_PProtect.addframe( 800, 600, "Set blocked Props:", false, false, true, "Save Props", cl_PProtect.Settings.BlockedProps, "send_blocked_prop" )
+	psFrm = cl_PProtect.addframe( 800, 600, "Set blocked Props:", false, false, true, "Save Props", cl_PProtect.Settings.BlockedProps, "pprotect_send_blocked_props" )
 
 	table.foreach( cl_PProtect.Settings.BlockedProps, function( key, value )
 
@@ -134,7 +134,7 @@ net.Receive( "get_blocked_tool", function()
 
 	cl_PProtect.Settings.BlockedTools = net.ReadTable()
 
-	tsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.BlockedTools, "send_blocked_tool" )
+	tsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.BlockedTools, "pprotect_send_blocked_tools" )
 
 	for key, value in SortedPairs( cl_PProtect.Settings.BlockedTools ) do
 
@@ -195,7 +195,7 @@ function cl_PProtect.PPMenu( Panel )
 	end
 
 	-- SAVE SETTINGS
-	cl_PProtect.addbtn( Panel, "Save Settings", "save_propprotection_settings", cl_PProtect.Settings.PropProtection )
+	cl_PProtect.addbtn( Panel, "Save Settings", "pprotect_save_propprotection", cl_PProtect.Settings.PropProtection )
 
 end
 
@@ -229,7 +229,7 @@ function cl_PProtect.BMenu( Panel )
 	-- BUDDY CONTROLS
 	cl_PProtect.addlbl( Panel, "Your Buddies:" )
 	cl_PProtect.addlvw( Panel, { "Name", "Permission", "SteamID", "UniqueID" } , "my_buddies" )
-	cl_PProtect.addbtn( Panel, "Delete selected buddy" , "delete_buddy", nil, true )
+	cl_PProtect.addbtn( Panel, "Delete selected buddy" , "delete_buddy", function() cl_PProtect.DeleteBuddy( LocalPlayer() ) end )
 	
 	cl_PProtect.addlbl( Panel, "\nAdd a new buddy:" )
 	cl_PProtect.addlvw( Panel, { "Name", "ID" } , "all_players" )
@@ -238,7 +238,7 @@ function cl_PProtect.BMenu( Panel )
 		cl_PProtect.addchk( Panel, value, "buddy", string.lower( value ) )
 	end )
 	
-	cl_PProtect.addbtn( Panel, "Add selected buddy" , "add_buddy", nil, true )
+	cl_PProtect.addbtn( Panel, "Add selected buddy" , "add_buddy", function() cl_PProtect.AddBuddy( LocalPlayer() ) end )
 
 end
 
@@ -273,23 +273,23 @@ function cl_PProtect.CUMenu( Panel )
 
 	-- CLEANUP CONTROLS
 	cl_PProtect.addlbl( Panel, "Cleanup everything: (Including World Props)" )
-	cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring( global_count ) .. " Props)", "cleanup_map" )
+	cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring( global_count ) .. " Props)", "pprotect_cleanup_map" )
 
 	cl_PProtect.addlbl( Panel, "\nCleanup props of disconnected Players:" )
-	cl_PProtect.addbtn( Panel, "Cleanup all Props from disc. Players", "cleanup_disconnected_player" )
+	cl_PProtect.addbtn( Panel, "Cleanup all Props from disc. Players", "pprotect_cleanup_disconnected_player" )
 
 	cl_PProtect.addlbl( Panel, "\nCleanup Player's props:", "panel" )
 		
-	net.Start( "get_player_props_count" )
+	net.Start( "pprotect_get_propcount" )
 		net.WriteString( "value" )
 	net.SendToServer()
 
-	net.Receive( "send_player_props_count", function()
+	net.Receive( "pprotect_send_propcount", function()
 
 		local allents = net.ReadTable()
 
 		table.foreach( allents, function( key, value )
-			cl_PProtect.addbtn( Panel, "Cleanup " .. tostring( key ) .."  (" .. tostring( value ) .. " Props)", "cleanup_player", { tostring( key ), tostring( value ) } )
+			cl_PProtect.addbtn( Panel, "Cleanup " .. tostring( key ) .."  (" .. tostring( value ) .. " Props)", "pprotect_cleanup_player", { tostring( key ), tostring( value ) } )
 		end )
 	
 	end )
@@ -352,7 +352,7 @@ hook.Add( "SpawnMenuOpen", "PProtectMenus", cl_PProtect.UpdateMenus )
 
 
 
-net.Receive( "new_client_settings", function()
+net.Receive( "pprotect_new_settings", function()
 	
 	local settings = net.ReadTable()
 	local settings_type = net.ReadString()

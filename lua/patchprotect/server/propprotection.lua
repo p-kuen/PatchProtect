@@ -289,7 +289,7 @@ hook.Add( "PersistenceLoad", "SetWorldOwnedEnts", sv_PProtect.SetWorldProps )
 ------------------
 
 -- SEND THE OWNER TO THE CLIENT
-net.Receive( "get_owner", function( len, pl )
+net.Receive( "pprotect_get_owner", function( len, pl )
 	
 	local ent = net.ReadEntity()
 	local info = ""
@@ -302,7 +302,7 @@ net.Receive( "get_owner", function( len, pl )
 
 	if ent.WorldOwned == true then info = "world" end
 
-	net.Start( "send_owner" )
+	net.Start( "pprotect_send_owner" )
 		net.WriteEntity( ent:CPPIGetOwner() )
 		net.WriteString( info )
 	net.Send( pl )
