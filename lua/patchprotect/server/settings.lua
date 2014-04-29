@@ -271,7 +271,7 @@ local function sendPlayerSettings( ply, cmd, args )
 
 end
 hook.Add( "PlayerInitialSpawn", "sendPlayerSettings", sendPlayerSettings )
-concommand.Add( "request_newest_settings", sendPlayerSettings )
+concommand.Add( "pprotect_request_newest_settings", sendPlayerSettings )
 
 -- TO EVERY PLAYER
 function sv_PProtect.broadcastSettings()

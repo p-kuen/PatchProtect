@@ -12,8 +12,7 @@ util.AddNetworkString( "pprotect_cleanup_map" )
 util.AddNetworkString( "pprotect_cleanup_disconnected_player" )
 util.AddNetworkString( "pprotect_cleanup_player" )
 
-util.AddNetworkString( "pprotect_get_propcount" )
-util.AddNetworkString( "pprotect_send_propcount" )
+util.AddNetworkString( "pprotect_new_counts" )
 
 -- BUDDY
 util.AddNetworkString( "pprotect_send_buddy" )

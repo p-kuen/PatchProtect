@@ -251,6 +251,7 @@ end
 function cl_PProtect.CUMenu( Panel )
 
 	-- DELETE CONTROLS
+	RunConsoleCommand( "pprotect_request_newest_counts" )
 	Panel:ClearControls()
 
 	-- CHECK ADMIN
@@ -264,35 +265,21 @@ function cl_PProtect.CUMenu( Panel )
 		cl_PProtect.CUCPanel = Panel
 	end
 
-	local global_count = 0
-	table.foreach( ents.GetAll(), function( key, value )
-		if value:IsValid() and value:GetClass() == "prop_physics" then
-			global_count = global_count + 1
-		end
-	end )
+	function pprotect_write_cleanup_menu( global, players )
 
-	-- CLEANUP CONTROLS
-	cl_PProtect.addlbl( Panel, "Cleanup everything: (Including World Props)" )
-	cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring( global_count ) .. " Props)", "pprotect_cleanup_map" )
+		-- CLEANUP CONTROLS
+		cl_PProtect.addlbl( Panel, "Cleanup everything: (Including World Props)" )
+		cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring( global ) .. " Props)", "pprotect_cleanup_map" )
 
-	cl_PProtect.addlbl( Panel, "\nCleanup props of disconnected Players:" )
-	cl_PProtect.addbtn( Panel, "Cleanup all Props from disc. Players", "pprotect_cleanup_disconnected_player" )
+		cl_PProtect.addlbl( Panel, "\nCleanup props of disconnected Players:" )
+		cl_PProtect.addbtn( Panel, "Cleanup all Props from disc. Players", "pprotect_cleanup_disconnected_player" )
 
-	cl_PProtect.addlbl( Panel, "\nCleanup Player's props:", "panel" )
-		
-	net.Start( "pprotect_get_propcount" )
-		net.WriteString( "value" )
-	net.SendToServer()
-
-	net.Receive( "pprotect_send_propcount", function()
-
-		local allents = net.ReadTable()
-
-		table.foreach( allents, function( key, value )
-			cl_PProtect.addbtn( Panel, "Cleanup " .. tostring( key ) .."  (" .. tostring( value ) .. " Props)", "pprotect_cleanup_player", { tostring( key ), tostring( value ) } )
+		cl_PProtect.addlbl( Panel, "\nCleanup Player's props:", "panel" )
+		table.foreach( players, function( p, c )
+			cl_PProtect.addbtn( Panel, "Cleanup " .. p:Nick() .."  (" .. tostring( c ) .. " Props)", "pprotect_cleanup_player", { p:Nick(), tostring( c ) } )
 		end )
-	
-	end )
+
+	end
 
 end
 
@@ -317,7 +304,7 @@ local function CreateMenus()
 	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPBuddyManager", "Buddy", "", "", cl_PProtect.BMenu )
 
 end
-hook.Add( "PopulateToolMenu", "PProtectmakeMenus", CreateMenus )
+hook.Add( "PopulateToolMenu", "pprotect_make_menus", CreateMenus )
 
 
 
@@ -329,12 +316,12 @@ function cl_PProtect.UpdateMenus()
 	
 	-- ANTISPAM
 	if cl_PProtect.ASCPanel then
-		RunConsoleCommand( "request_newest_settings", "antispam" )
+		RunConsoleCommand( "pprotect_request_newest_settings", "antispam" )
 	end
 	
 	-- PROP PROTECTION
 	if cl_PProtect.PPCPanel then
-		RunConsoleCommand( "request_newest_settings", "propprotection" )
+		RunConsoleCommand( "pprotect_request_newest_settings", "propprotection" )
 	end
 
 	-- CLEANUP
@@ -348,9 +335,13 @@ function cl_PProtect.UpdateMenus()
 	end
 
 end
-hook.Add( "SpawnMenuOpen", "PProtectMenus", cl_PProtect.UpdateMenus )
+hook.Add( "SpawnMenuOpen", "pprotect_update_menus", cl_PProtect.UpdateMenus )
 
 
+
+------------------------
+--  GET NEW SETTINGS  --
+------------------------
 
 net.Receive( "pprotect_new_settings", function()
 	
@@ -365,5 +356,13 @@ net.Receive( "pprotect_new_settings", function()
 	elseif settings_type == "propprotection" then
 		cl_PProtect.PPMenu( cl_PProtect.PPCPanel )
 	end
+
+end )
+
+net.Receive( "pprotect_new_counts", function()
+
+	local counts = net.ReadTable()
+
+	pprotect_write_cleanup_menu( counts[ "global" ], counts[ "players" ] )
 
 end )

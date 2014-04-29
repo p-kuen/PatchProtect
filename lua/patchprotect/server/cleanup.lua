@@ -2,33 +2,48 @@
 --  COUNT PROPS  --
 -------------------
 
---Get request for counting props from a specific player
-net.Receive( "pprotect_get_propcount", function( len, pl )
-	
-	local playerents = {}
+function pprotect_count_props( ply )
 
-	table.foreach( player.GetAll(), function( key, value )
+	local count = 0
 
-		local count = 0
-
-		table.foreach( ents.GetAll(), function( k, v )
-
-			local Owner = v:CPPIGetOwner()
-			if Owner == value then
-				count = count + 1
-			end
-
-		end )
-
-		playerents[ value:Nick() ] = count
-
+	table.foreach( ents.GetAll(), function( key, value )
+		
+		if value:IsValid() and ply == value:CPPIGetOwner() then
+			count = count + 1
+		end
+		
 	end )
 
-	net.Start( "pprotect_send_propcount" )
-		net.WriteTable( playerents )
-	net.Send( pl )
+	return count
 
-end )
+end
+
+function pprotect_new_counts( ply, cmd, args )
+
+	local counts = {}
+
+	-- GLOBAL COUNT
+	local global_count = 0
+	table.foreach( ents.GetAll(), function( key, value )
+		if value:IsValid() and value:GetClass() == "prop_physics" and value.WorldOwned != true then
+			global_count = global_count + 1
+		end
+	end )
+	counts[ "global" ] = global_count
+
+	-- PLAYER COUNT
+	local player_counts = {}
+	table.foreach( player.GetAll(), function( key, player )
+		player_counts[ player ] = pprotect_count_props( player )
+	end )
+	counts[ "players" ] = player_counts
+
+	net.Start( "pprotect_new_counts" )
+		net.WriteTable( counts )
+	net.Send( ply )
+
+end
+concommand.Add( "pprotect_request_newest_counts", pprotect_new_counts )
 
 
 

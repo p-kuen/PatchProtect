@@ -192,7 +192,10 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 
 		end
 
-		if string.find( nettext, "save" ) then cl_PProtect.UpdateMenus() end
+		if string.find( nettext, "pprotect_save_" ) then cl_PProtect.UpdateMenus() end
+		if string.find( nettext, "pprotect_cleanup_" ) then
+			cl_PProtect.UpdateMenus()
+		end
 
 	end
 
