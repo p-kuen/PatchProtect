@@ -118,13 +118,13 @@ function cl_PProtect.addchk( derma, text, setting_type, setting )
 	chk:SetDark( true )
 
 	if setting_type == "antispam" then
-		chk:SetChecked( tobool( cl_PProtect.Settings.AntiSpam[ setting ] ) )
+		chk:SetChecked( tobool( cl_PProtect.Settings.Antispam[ setting ] ) )
 	elseif setting_type == "propprotection" then
-		chk:SetChecked( tobool( cl_PProtect.Settings.PropProtection[ setting ] ) )
+		chk:SetChecked( tobool( cl_PProtect.Settings.Propprotection[ setting ] ) )
 	elseif setting_type == "blockedtools" then
-		chk:SetChecked( tobool( cl_PProtect.Settings.BlockedTools[ setting ] ) )
+		chk:SetChecked( tobool( cl_PProtect.Settings.Blockedtools[ setting ] ) )
 	elseif setting_type == "antispamtools" then
-		chk:SetChecked( tobool( cl_PProtect.Settings.AntiSpamTools[ setting ] ) )
+		chk:SetChecked( tobool( cl_PProtect.Settings.Antispamtools[ setting ] ) )
 	elseif setting_type == "buddy" then
 		chk:SetChecked( false )
 	end
@@ -132,13 +132,13 @@ function cl_PProtect.addchk( derma, text, setting_type, setting )
 	function chk:OnChange()
 
 		if setting_type == "antispam" then
-			cl_PProtect.Settings.AntiSpam[ setting ] = chk:GetChecked() and 1 or 0
+			cl_PProtect.Settings.Antispam[ setting ] = chk:GetChecked() and 1 or 0
 		elseif setting_type == "propprotection" then
-			cl_PProtect.Settings.PropProtection[ setting ] = chk:GetChecked() and 1 or 0
+			cl_PProtect.Settings.Propprotection[ setting ] = chk:GetChecked() and 1 or 0
 		elseif setting_type == "blockedtools" then
-			cl_PProtect.Settings.BlockedTools[ setting ] = chk:GetChecked() and true or false
+			cl_PProtect.Settings.Blockedtools[ setting ] = chk:GetChecked() and true or false
 		elseif setting_type == "antispamtools" then
-			cl_PProtect.Settings.AntiSpamTools[ setting ] = chk:GetChecked() and true or false
+			cl_PProtect.Settings.Antispamtools[ setting ] = chk:GetChecked() and true or false
 		elseif setting_type == "buddy" then
 			cl_PProtect.Buddy.RowType[ setting ] = chk:GetChecked() and "true" or "false"
 		end
@@ -180,10 +180,25 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 
 		else
 
+			local savetable = {}
+
 			net.Start( nettext )
-			
-				if args != nil then
-					net.WriteTable( args )
+
+				if string.find( nettext, "pprotect_save_" ) then
+					
+					local a, b = string.find( nettext, "pprotect_save_" )
+					local tabletext = string.sub( nettext, b + 1, string.len( nettext ) )
+					tabletext = string.upper( string.sub( tabletext, 1, 1) ) .. string.sub( tabletext, 2, string.len( tabletext ) )
+					savetable = cl_PProtect.Settings[tabletext]
+
+				else
+					
+					savetable = args
+
+				end
+					
+				if savetable != nil then
+					net.WriteTable( savetable )
 				else
 					net.WriteString( "noargs" )
 				end
@@ -192,10 +207,7 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 
 		end
 
-		if string.find( nettext, "pprotect_save_" ) then cl_PProtect.UpdateMenus() end
-		if string.find( nettext, "pprotect_cleanup_" ) then
-			cl_PProtect.UpdateMenus()
-		end
+		if string.find( nettext, "pprotect_save_" ) or string.find( nettext, "pprotect_cleanup_" ) then cl_PProtect.UpdateMenus() end
 
 	end
 
@@ -224,13 +236,13 @@ function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, s
 		
 		if sld_type == "antispam" then
 			if sld_type2 == "cooldown" then
-				cl_PProtect.Settings.AntiSpam[ "cooldown" ] = math.Round( number, 1 )
+				cl_PProtect.Settings.Antispam[ "cooldown" ] = math.Round( number, 1 )
 			elseif sld_type2 == "spam" or "bantime" then
-				cl_PProtect.Settings.AntiSpam[ sld_type2 ] = math.Round( number, 0 )
+				cl_PProtect.Settings.Antispam[ sld_type2 ] = math.Round( number, 0 )
 			end
 		elseif sld_type == "propprotection" then
 			if sld_type2 == "delay" then
-				cl_PProtect.Settings.PropProtection[ "delay" ] = math.Round( number, 0 )
+				cl_PProtect.Settings.Propprotection[ "delay" ] = math.Round( number, 0 )
 			end
 		end
 
@@ -256,7 +268,7 @@ function cl_PProtect.addcmb( derma, items, cmb_type, value )
 	cmb:ChooseOptionID( value )
 
 	cmb.OnSelect = function( panel, index, value, data )
-		cl_PProtect.Settings.AntiSpam[ cmb_type ] = index
+		cl_PProtect.Settings.Antispam[ cmb_type ] = index
 	end
 
 	derma:AddItem( cmb )

@@ -22,7 +22,7 @@ function cl_PProtect.ASMenu( Panel )
 	cl_PProtect.addlbl( Panel, "Main switch:" )
 	cl_PProtect.addchk( Panel, "Enable AntiSpam", "antispam", "enabled" )
 
-	if cl_PProtect.Settings.AntiSpam[ "enabled" ] == 1 then
+	if cl_PProtect.Settings.Antispam[ "enabled" ] == 1 then
 
 		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:" )
 		cl_PProtect.addchk( Panel, "Ignore Admins", "antispam", "admins" )
@@ -31,31 +31,31 @@ function cl_PProtect.ASMenu( Panel )
 		cl_PProtect.addchk( Panel, "Prop-Block", "antispam", "propblock" )
 
 		--Tool Protection
-		if cl_PProtect.Settings.AntiSpam[ "toolprotection" ] == 1 then
-			cl_PProtect.addbtn( Panel, "Set antispamed Tools", "pprotect_antispamed_tools" )
+		if cl_PProtect.Settings.Antispam[ "toolprotection" ] == 1 then
+			cl_PProtect.addbtn( Panel, "Set antispamed Tools", "pprotect_antispamtools" )
 		end
 
 		--Tool Block
-		if cl_PProtect.Settings.AntiSpam[ "toolblock" ] == 1 then
-			cl_PProtect.addbtn( Panel, "Set blocked Tools", "pprotect_blocked_tools" )
+		if cl_PProtect.Settings.Antispam[ "toolblock" ] == 1 then
+			cl_PProtect.addbtn( Panel, "Set blocked Tools", "pprotect_blockedtools" )
 		end
 
 		--Prop Block
-		if cl_PProtect.Settings.AntiSpam[ "propblock" ] == 1 then
-			cl_PProtect.addbtn( Panel, "Set blocked Props", "pprotect_blocked_props" )
+		if cl_PProtect.Settings.Antispam[ "propblock" ] == 1 then
+			cl_PProtect.addbtn( Panel, "Set blocked Props", "pprotect_blockedprops" )
 		end
 
 		--Cooldown/Spamaction
 		cl_PProtect.addlbl( Panel, "\nHow many seconds to wait, till the next prop-spawn/tool-fire:" )
-		cl_PProtect.addsld( Panel, 0, 10, "Cooldown (Seconds)", "antispam", cl_PProtect.Settings.AntiSpam[ "cooldown" ], 1, "cooldown" )
+		cl_PProtect.addsld( Panel, 0, 10, "Cooldown (Seconds)", "antispam", cl_PProtect.Settings.Antispam[ "cooldown" ], 1, "cooldown" )
 		cl_PProtect.addlbl( Panel, "How many props, till admins and superadmins get informed:" )
-		cl_PProtect.addsld( Panel, 0, 40, "Amount", "antispam", cl_PProtect.Settings.AntiSpam[ "spam" ], 0, "spam" )
+		cl_PProtect.addsld( Panel, 0, 40, "Amount", "antispam", cl_PProtect.Settings.Antispam[ "spam" ], 0, "spam" )
 		cl_PProtect.addlbl( Panel, "What should happen, if the player topped the spam-limit:" )
-		cl_PProtect.addcmb( Panel, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction", cl_PProtect.Settings.AntiSpam[ "spamaction" ] )
+		cl_PProtect.addcmb( Panel, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction", cl_PProtect.Settings.Antispam[ "spamaction" ] )
 
-		if cl_PProtect.Settings.AntiSpam[ "spamaction" ] == 4 then
-			cl_PProtect.addsld( Panel, 0, 60, "Ban (Minutes)", "antispam", cl_PProtect.Settings.AntiSpam[ "bantime" ], 0, "bantime" )
-		elseif cl_PProtect.Settings.AntiSpam[ "spamaction" ] == 5 then
+		if cl_PProtect.Settings.Antispam[ "spamaction" ] == 4 then
+			cl_PProtect.addsld( Panel, 0, 60, "Ban (Minutes)", "antispam", cl_PProtect.Settings.Antispam[ "bantime" ], 0, "bantime" )
+		elseif cl_PProtect.Settings.Antispam[ "spamaction" ] == 5 then
 			cl_PProtect.addlbl( Panel, "This doesn't work yet, sorry!" )
 			--cl_PProtect.addtext()
 		end
@@ -63,7 +63,7 @@ function cl_PProtect.ASMenu( Panel )
 	end
 
 	-- SAVE SETTINGS
-	cl_PProtect.addbtn( Panel, "Save Settings", "pprotect_save_antispam", cl_PProtect.Settings.AntiSpam )
+	cl_PProtect.addbtn( Panel, "Save Settings", "pprotect_save_antispam" )
 
 end
 
@@ -76,11 +76,11 @@ end
 -- ANTISPAMED TOOLS
 net.Receive( "get_antispam_tool", function()
 
-	cl_PProtect.Settings.AntiSpamTools = net.ReadTable()
+	cl_PProtect.Settings.Antispamtools = net.ReadTable()
 
-	tsFrm = cl_PProtect.addframe( 250, 350, "Set antispamed Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.AntiSpamTools, "pprotect_send_antispamed_tools" )
+	tsFrm = cl_PProtect.addframe( 250, 350, "Set antispamed Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.Antispamtools, "pprotect_send_antispamed_tools" )
 
-	for key, value in SortedPairs( cl_PProtect.Settings.AntiSpamTools ) do
+	for key, value in SortedPairs( cl_PProtect.Settings.Antispamtools ) do
 
 		cl_PProtect.addchk( tsFrm, key, "antispamtools", key )
 
@@ -91,11 +91,11 @@ end )
 -- BLOCKED PROPS
 net.Receive( "get_blocked_prop", function()
 
-	cl_PProtect.Settings.BlockedProps = net.ReadTable()
+	cl_PProtect.Settings.Blockedprops = net.ReadTable()
 
-	psFrm = cl_PProtect.addframe( 800, 600, "Set blocked Props:", false, false, true, "Save Props", cl_PProtect.Settings.BlockedProps, "pprotect_send_blocked_props" )
+	psFrm = cl_PProtect.addframe( 800, 600, "Set blocked Props:", false, false, true, "Save Props", cl_PProtect.Settings.Blockedprops, "pprotect_send_blocked_props" )
 
-	table.foreach( cl_PProtect.Settings.BlockedProps, function( key, value )
+	table.foreach( cl_PProtect.Settings.Blockedprops, function( key, value )
 
 		local Icon = vgui.Create( "SpawnIcon", psFrm )
 		Icon:SetModel( value )
@@ -104,7 +104,7 @@ net.Receive( "get_blocked_prop", function()
 
 			local menu = DermaMenu()
 			menu:AddOption( "Remove from blocked Props", function()
-				table.RemoveByValue( cl_PProtect.Settings.BlockedProps, value )
+				table.RemoveByValue( cl_PProtect.Settings.Blockedprops, value )
 				Icon:Remove()
 				psFrm:InvalidateLayout()
 			end )
@@ -123,7 +123,7 @@ net.Receive( "get_blocked_prop", function()
 
 	end )
 
-	if table.Count( cl_PProtect.Settings.BlockedProps ) == 0 then
+	if table.Count( cl_PProtect.Settings.Blockedprops ) == 0 then
 		cl_PProtect.addlbl( psFrm, "Nothing here..." )
 	end
 
@@ -132,11 +132,11 @@ end )
 -- BLOCKED TOOLS
 net.Receive( "get_blocked_tool", function()
 
-	cl_PProtect.Settings.BlockedTools = net.ReadTable()
+	cl_PProtect.Settings.Blockedtools = net.ReadTable()
 
-	tsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.BlockedTools, "pprotect_send_blocked_tools" )
+	tsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.Blockedtools, "pprotect_send_blocked_tools" )
 
-	for key, value in SortedPairs( cl_PProtect.Settings.BlockedTools ) do
+	for key, value in SortedPairs( cl_PProtect.Settings.Blockedtools ) do
 
 		cl_PProtect.addchk( tsFrm, key, "blockedtools", key )
 
@@ -170,7 +170,7 @@ function cl_PProtect.PPMenu( Panel )
 	cl_PProtect.addlbl( Panel, "Main switch:" )
 	cl_PProtect.addchk( Panel, "Enable PropProtection", "propprotection", "enabled" )
 
-	if cl_PProtect.Settings.PropProtection[ "enabled" ] == 1 then
+	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 1 then
 
 		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
 		cl_PProtect.addchk( Panel, "Ignore Admins", "propprotection", "admins" )
@@ -187,15 +187,15 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "propdelete" )
 
 		--Prop Delete
-		if cl_PProtect.Settings.PropProtection[ "propdelete" ] == 1 then
+		if cl_PProtect.Settings.Propprotection[ "propdelete" ] == 1 then
 			cl_PProtect.addchk( Panel, "Keep Admin-Props", "propprotection", "adminprops" )
-			cl_PProtect.addsld( Panel, 5, 300, "Delay (Seconds)", "propprotection", cl_PProtect.Settings.PropProtection[ "delay" ], 0, "delay" )
+			cl_PProtect.addsld( Panel, 5, 300, "Delay (Seconds)", "propprotection", cl_PProtect.Settings.Propprotection[ "delay" ], 0, "delay" )
 		end
 
 	end
 
 	-- SAVE SETTINGS
-	cl_PProtect.addbtn( Panel, "Save Settings", "pprotect_save_propprotection", cl_PProtect.Settings.PropProtection )
+	cl_PProtect.addbtn( Panel, "Save Settings", "pprotect_save_propprotection" )
 
 end
 
@@ -348,8 +348,8 @@ net.Receive( "pprotect_new_settings", function()
 	local settings = net.ReadTable()
 	local settings_type = net.ReadString()
 
-	cl_PProtect.Settings.AntiSpam = settings[ "AntiSpam" ]
-	cl_PProtect.Settings.PropProtection = settings[ "PropProtection" ]
+	cl_PProtect.Settings.Antispam = settings[ "AntiSpam" ]
+	cl_PProtect.Settings.Propprotection = settings[ "PropProtection" ]
 
 	if settings_type == "antispam" then
 		cl_PProtect.ASMenu( cl_PProtect.ASCPanel )

@@ -4,8 +4,8 @@
 
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
-	if sv_PProtect.Settings.PropProtection[ "enabled" ] == 0 or ply:IsSuperAdmin() then return true end
-	if ply:IsAdmin() and sv_PProtect.Settings.PropProtection[ "admins" ] == 1 then
+	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or ply:IsSuperAdmin() then return true end
+	if ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then
 		if ent:IsValid() and ent:CPPIGetOwner() != nil then
 			if ent:CPPIGetOwner():IsSuperAdmin() == true then return false else return true end
 		else
@@ -75,7 +75,7 @@ hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CanTouch )
 function sv_PProtect.CanToolProtection( ply, trace, tool )
 	
 	if sv_PProtect.CheckPPAdmin( ply, trace.Entity ) then return true end
-	if tool == "creator" and sv_PProtect.Settings.PropProtection[ "creatorprotection" ] == 1 then return false end
+	if tool == "creator" and sv_PProtect.Settings.Propprotection[ "creatorprotection" ] == 1 then return false end
 
 	local ent = trace.Entity
 	if !ent:IsValid() and !ent:IsWorld() then return false end
@@ -103,7 +103,7 @@ end
 function sv_PProtect.CanUse( ply, ent )
 	
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
-	if sv_PProtect.Settings.PropProtection[ "useprotection" ] == 0 then return true end
+	if sv_PProtect.Settings.Propprotection[ "useprotection" ] == 0 then return true end
 
 	if !ent:IsValid() then return false end
 
@@ -143,7 +143,7 @@ function sv_PProtect.CanDrive( ply, ent )
 	
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
-	if sv_PProtect.Settings.PropProtection[ "propdriving" ] == 0 then
+	if sv_PProtect.Settings.Propprotection[ "propdriving" ] == 0 then
 		sv_PProtect.Notify( ply, "You are not allowed to drive this object!" )
 		return false
 	end
@@ -170,11 +170,11 @@ function sv_PProtect.CanDamage( ent, info )
 
 	if !ent:IsValid() or ent:IsPlayer() then return false end
 
-	if sv_PProtect.Settings.PropProtection[ "enabled" ] == 0 or sv_PProtect.Settings.PropProtection[ "damageprotection" ] == 0 then return end
+	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or sv_PProtect.Settings.Propprotection[ "damageprotection" ] == 0 then return end
 	
 	if Attacker:IsPlayer() and Owner != Attacker and !sv_PProtect.isBuddy( Owner, Attacker, "damage" ) then
 
-		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and sv_PProtect.Settings.PropProtection[ "admins" ] == 1 then return end
+		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then return end
 
 		info:SetDamage( 0 )
 		timer.Simple( 0.1, function()
@@ -208,7 +208,7 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 	
 	if sv_PProtect.CheckPPAdmin( ply, ply:GetEyeTrace().Entity ) then return end
 
-	if sv_PProtect.Settings.PropProtection[ "reloadprotection" ] == 0 then return end
+	if sv_PProtect.Settings.Propprotection[ "reloadprotection" ] == 0 then return end
 	
 	local ent = ply:GetEyeTrace().Entity
 	
@@ -233,7 +233,7 @@ hook.Add( "OnPhysgunReload", "AllowPhysReload", sv_PProtect.CanPhysReload )
 function sv_PProtect.CanGravPunt( ply, ent )
 
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
-	if sv_PProtect.Settings.PropProtection[ "gravgunprotection" ] == 0 then return false end
+	if sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] == 0 then return false end
 
 	if !ent:IsValid() then return false end
 
@@ -250,7 +250,7 @@ hook.Add( "GravGunPunt", "AllowGravPunt", sv_PProtect.CanGravPunt )
 function sv_PProtect.CanGravPickup( ply, ent )
 
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
-	if sv_PProtect.Settings.PropProtection[ "gravgunprotection" ] == 0 then return false end
+	if sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] == 0 then return false end
 
 	if !ent:IsValid() then return false end
 

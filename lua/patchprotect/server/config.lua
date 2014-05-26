@@ -23,9 +23,9 @@ util.AddNetworkString( "pprotect_get_owner" )
 util.AddNetworkString( "pprotect_send_owner" )
 
 -- ANTISPAMED TOOLS, BLOCKED PROPS, BLOCKED TOOLS
-util.AddNetworkString( "pprotect_antispamed_tools" )
-util.AddNetworkString( "pprotect_blocked_props" )
-util.AddNetworkString( "pprotect_blocked_tools" )
+util.AddNetworkString( "pprotect_antispamtools" )
+util.AddNetworkString( "pprotect_blockedprops" )
+util.AddNetworkString( "pprotect_blockedtools" )
 
 util.AddNetworkString( "get_antispam_tool" )
 util.AddNetworkString( "get_blocked_prop" )

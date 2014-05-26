@@ -133,11 +133,11 @@ end
 
 -- LOAD SETTINGS
 sv_PProtect.Settings = {}
-sv_PProtect.Settings.AntiSpam = sv_PProtect.loadSQLSettings( "enabled", "pprotect_antispam", sv_PProtect.Config.AntiSpam, "AntiSpam" )
-sv_PProtect.Settings.AntiSpamTools = sv_PProtect.setAntiSpamTools()
-sv_PProtect.Settings.PropProtection = sv_PProtect.loadSQLSettings( "enabled", "pprotect_propprotection", sv_PProtect.Config.PropProtection, "PropProtection" )
-sv_PProtect.Settings.BlockedProps = sv_PProtect.setBlockedProps()
-sv_PProtect.Settings.BlockedTools = sv_PProtect.setBlockedTools()
+sv_PProtect.Settings.Antispam = sv_PProtect.loadSQLSettings( "enabled", "pprotect_antispam", sv_PProtect.Config.AntiSpam, "AntiSpam" )
+sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntiSpamTools()
+sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "enabled", "pprotect_propprotection", sv_PProtect.Config.PropProtection, "PropProtection" )
+sv_PProtect.Settings.Blockedprops = sv_PProtect.setBlockedProps()
+sv_PProtect.Settings.Blockedtools = sv_PProtect.setBlockedTools()
 
 MsgC(
 	Color(0, 255, 0),
@@ -153,13 +153,13 @@ MsgC(
 -- ANTI SPAM
 net.Receive( "pprotect_save_antispam", function( len, pl )
 
-	sv_PProtect.Settings.AntiSpam = net.ReadTable()
-	sv_PProtect.Settings.AntiSpam[ "cooldown" ] = math.Round( sv_PProtect.Settings.AntiSpam[ "cooldown" ], 1 )
+	sv_PProtect.Settings.Antispam = net.ReadTable()
+	sv_PProtect.Settings.Antispam[ "cooldown" ] = math.Round( sv_PProtect.Settings.Antispam[ "cooldown" ], 1 )
 	sv_PProtect.broadcastSettings()
 
 	-- SAVE TO SQL TABLES
-	table.foreach( sv_PProtect.Settings.AntiSpam, function( key, value )
-		if type( sv_PProtect.Settings.AntiSpam[ key ] ) == "number" then
+	table.foreach( sv_PProtect.Settings.Antispam, function( key, value )
+		if type( sv_PProtect.Settings.Antispam[ key ] ) == "number" then
 			sql.Query( "UPDATE pprotect_antispam SET " .. key .. " = " .. value )
 		else
 			sql.Query( "UPDATE pprotect_antispam SET " .. key .. " = '" .. value .. "'" )
@@ -174,12 +174,12 @@ end )
 -- PROP PROTECTION
 net.Receive( "pprotect_save_propprotection", function( len, pl )
 
-	sv_PProtect.Settings.PropProtection = net.ReadTable()
+	sv_PProtect.Settings.Propprotection = net.ReadTable()
 	sv_PProtect.broadcastSettings()
 
 	-- SAVE TO SQL TABLES
-	table.foreach( sv_PProtect.Settings.PropProtection, function( key, value )
-		if type( sv_PProtect.Settings.PropProtection[ key ] ) == "number" then
+	table.foreach( sv_PProtect.Settings.Propprotection, function( key, value )
+		if type( sv_PProtect.Settings.Propprotection[ key ] ) == "number" then
 			sql.Query( "UPDATE pprotect_propprotection SET " .. key .. " = " .. value )
 		else
 			sql.Query( "UPDATE pprotect_propprotection SET " .. key .. " = '" .. value .. "'" )
@@ -261,8 +261,8 @@ end
 local function sendPlayerSettings( ply, cmd, args )
 
 	local new_settings = {}
-	new_settings.AntiSpam = sv_PProtect.Settings.AntiSpam
-	new_settings.PropProtection = sv_PProtect.Settings.PropProtection
+	new_settings.AntiSpam = sv_PProtect.Settings.Antispam
+	new_settings.PropProtection = sv_PProtect.Settings.Propprotection
 
 	net.Start( "pprotect_new_settings" )
 		net.WriteTable( new_settings )
@@ -277,8 +277,8 @@ concommand.Add( "pprotect_request_newest_settings", sendPlayerSettings )
 function sv_PProtect.broadcastSettings()
 
 	local new_settings = {}
-	new_settings.AntiSpam = sv_PProtect.Settings.AntiSpam
-	new_settings.PropProtection = sv_PProtect.Settings.PropProtection
+	new_settings.AntiSpam = sv_PProtect.Settings.Antispam
+	new_settings.PropProtection = sv_PProtect.Settings.Propprotection
 
 	net.Start( "pprotect_new_settings" )
 		net.WriteTable( new_settings )

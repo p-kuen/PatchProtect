@@ -19,8 +19,8 @@ hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
 
 -- CHECK ANTISPAM ADMIN
 function sv_PProtect.CheckASAdmin( ply )
-	if sv_PProtect.Settings.AntiSpam[ "enabled" ] == 0 or ply:IsSuperAdmin() then return true end
-	if ply:IsAdmin() and sv_PProtect.Settings.AntiSpam[ "admins" ] == 1 then return true end
+	if sv_PProtect.Settings.Antispam[ "enabled" ] == 0 or ply:IsSuperAdmin() then return true end
+	if ply:IsAdmin() and sv_PProtect.Settings.Antispam[ "admins" ] == 1 then return true end
 	return false
 
 end
@@ -34,7 +34,7 @@ end
 -- SET SPAM ACTION
 function sv_PProtect.spamaction( ply )
 
-	local action = sv_PProtect.Settings.AntiSpam[ "spamaction" ]
+	local action = sv_PProtect.Settings.Antispam[ "spamaction" ]
 
 	--Cleanup
 	if action == 2 then
@@ -54,7 +54,7 @@ function sv_PProtect.spamaction( ply )
 	--Ban
 	elseif action == 4 then
 
-		local banminutes = sv_PProtect.Settings.AntiSpam[ "bantime" ]
+		local banminutes = sv_PProtect.Settings.Antispam[ "bantime" ]
 		ply:Ban(banminutes, "Banned by PProtect: Spammer")
 		sv_PProtect.AdminNotify(ply:Nick() .. " was banned from the server for " .. banminutes .. " minutes! (Reason: Spam)")
 		print("[PatchProtect - AntiSpam] " .. ply:Nick() .. " was banned from the server for " .. banminutes .. " minutes!")
@@ -63,11 +63,11 @@ function sv_PProtect.spamaction( ply )
 	elseif action == 5 then
 
 		--[[
-		local concommand = tostring( sv_PProtect.Settings.AntiSpam["concommand"] )
+		local concommand = tostring( sv_PProtect.Settings.Antispam["concommand"] )
 		concommand = string.Replace( concommand, "<player>", ply:Nick() )
 		local commands = string.Explode( " ", concommand )
 		RunConsoleCommand( commands[1], unpack( commands, 2 ) )
-		print( "[PatchProtect - AntiSpam] Ran console command " .. tostring( sv_PProtect.Settings.AntiSpam["concommand"] ) .. " on " .. ply:Nick() )
+		print( "[PatchProtect - AntiSpam] Ran console command " .. tostring( sv_PProtect.Settings.Antispam["concommand"] ) .. " on " .. ply:Nick() )
 		]]
 
 	end
@@ -86,7 +86,7 @@ function sv_PProtect.CanSpawn( ply, mdl )
 	if ply.duplicate == true then return true end
 	
 	--Prop block
-	if sv_PProtect.Settings.AntiSpam[ "propblock" ] == 1 and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.BlockedProps, string.lower( mdl ) ) or string.find( mdl, "/../" ) then
+	if sv_PProtect.Settings.Antispam[ "propblock" ] == 1 and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, string.lower( mdl ) ) or string.find( mdl, "/../" ) then
 		sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
 		return false
 	end
@@ -98,7 +98,7 @@ function sv_PProtect.CanSpawn( ply, mdl )
 		ply.props = ply.props + 1
 
 		--Notify Admin about the Spam
-		if ply.props >= sv_PProtect.Settings.AntiSpam[ "spam" ] then
+		if ply.props >= sv_PProtect.Settings.Antispam[ "spam" ] then
 					
 			sv_PProtect.AdminNotify( ply:Nick() .. " is spamming!" )
 			print( "[PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming!" )
@@ -115,7 +115,7 @@ function sv_PProtect.CanSpawn( ply, mdl )
 
 	--Set new Cooldown
 	ply.props = 0
-	ply.propcooldown = CurTime() + sv_PProtect.Settings.AntiSpam[ "cooldown" ]
+	ply.propcooldown = CurTime() + sv_PProtect.Settings.Antispam[ "cooldown" ]
 
 end
 hook.Add( "PlayerSpawnProp", "SpawningProp", sv_PProtect.CanSpawn )
@@ -152,14 +152,14 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	local isAntiSpam = false
 
 	--Tool-Block
-	if sv_PProtect.Settings.AntiSpam[ "toolblock" ] == 1 then
-		isBlocked = sv_PProtect.Settings.BlockedTools[ tool ]
+	if sv_PProtect.Settings.Antispam[ "toolblock" ] == 1 then
+		isBlocked = sv_PProtect.Settings.Blockedtools[ tool ]
 	end
 	if isBlocked == true then return false end
 
 	--Tool-Antispam
-	if sv_PProtect.Settings.AntiSpam[ "toolprotection" ] == 1 then
-		isAntiSpam = sv_PProtect.Settings.AntiSpamTools[ tool ]
+	if sv_PProtect.Settings.Antispam[ "toolprotection" ] == 1 then
+		isAntiSpam = sv_PProtect.Settings.Antispamtools[ tool ]
 	end
 
 	if isAntiSpam then
@@ -171,7 +171,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 			ply.tools = ply.tools + 1
 
 			--Notify Admin about Tool-Spam
-			if ply.tools >= sv_PProtect.Settings.AntiSpam[ "spam" ] then
+			if ply.tools >= sv_PProtect.Settings.Antispam[ "spam" ] then
 
 				sv_PProtect.AdminNotify( "PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
 				ply.tools = 0
@@ -187,7 +187,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 
 			--Set new Cooldown
 			ply.tools = 0
-			ply.toolcooldown = CurTime() + sv_PProtect.Settings.AntiSpam[ "cooldown" ]
+			ply.toolcooldown = CurTime() + sv_PProtect.Settings.Antispam[ "cooldown" ]
 
 		end
 		
@@ -206,11 +206,11 @@ hook.Add( "CanTool", "FiringToolgun", sv_PProtect.CanTool )
 ---------------------
 
 -- SEND BLOCKEDPROPS-TABLE TO CLIENT
-net.Receive( "pprotect_blocked_props", function( len, pl )
+net.Receive( "pprotect_blockedprops", function( len, pl )
 
 	if sv_PProtect.CheckASAdmin( pl ) == false then return end
 	net.Start( "get_blocked_prop" )
-		net.WriteTable( sv_PProtect.Settings.BlockedProps )
+		net.WriteTable( sv_PProtect.Settings.Blockedprops )
 	net.Send( pl )
 
 end )
@@ -225,12 +225,12 @@ net.Receive( "pprotect_send_blocked_props_cpanel", function( len, pl )
 
 	local Prop = net.ReadString()
 
-	if !table.HasValue( sv_PProtect.Settings.BlockedProps, string.lower( Prop ) ) then
+	if !table.HasValue( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) ) then
 
-		table.insert( sv_PProtect.Settings.BlockedProps, string.lower( Prop ) )
+		table.insert( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) )
 
 		--Save into SQL-Table
-		sv_PProtect.saveBlockedData( sv_PProtect.Settings.BlockedProps, "props" )
+		sv_PProtect.saveBlockedData( sv_PProtect.Settings.Blockedprops, "props" )
 		
 		sv_PProtect.InfoNotify( pl, "Saved " .. Prop .. " to blocked props!" )
 		print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " added " .. Prop .. " to the blocked props!" )
@@ -247,8 +247,8 @@ end )
 net.Receive( "pprotect_send_blocked_props", function( len, pl )
 	
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
-	sv_PProtect.Settings.BlockedProps = net.ReadTable()
-	sv_PProtect.saveBlockedData( sv_PProtect.Settings.BlockedProps, "props" )
+	sv_PProtect.Settings.Blockedprops = net.ReadTable()
+	sv_PProtect.saveBlockedData( sv_PProtect.Settings.Blockedprops, "props" )
 
 	sv_PProtect.InfoNotify( pl, "Saved all blocked props!" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-prop list!" )
@@ -262,7 +262,7 @@ end )
 ---------------------
 
 -- SEND BLOCKEDTOOLS-TABLE TO CLIENT
-net.Receive( "pprotect_blocked_tools", function( len, pl )
+net.Receive( "pprotect_blockedtools", function( len, pl )
 
 	if sv_PProtect.CheckASAdmin( pl ) == false then return end
 	local sendingTable = {}
@@ -278,7 +278,7 @@ net.Receive( "pprotect_blocked_tools", function( len, pl )
 
 	end )
 
-	table.foreach( sv_PProtect.Settings.BlockedTools, function( key, value )
+	table.foreach( sv_PProtect.Settings.Blockedtools, function( key, value )
 
 		if value == true then
 			sendingTable[ key ] = true
@@ -296,8 +296,8 @@ end )
 net.Receive( "pprotect_send_blocked_tools", function( len, pl )
 	
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
-	sv_PProtect.Settings.BlockedTools = net.ReadTable()
-	sv_PProtect.saveBlockedData( sv_PProtect.Settings.BlockedTools, "tools" )
+	sv_PProtect.Settings.Blockedtools = net.ReadTable()
+	sv_PProtect.saveBlockedData( sv_PProtect.Settings.Blockedtools, "tools" )
 
 	sv_PProtect.InfoNotify( pl, "Saved all blocked Tools!" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-tools list!" )
@@ -310,7 +310,7 @@ end )
 --  ANTISPAMED TOOLS  --
 ------------------------
 
-net.Receive( "pprotect_antispamed_tools", function( len, pl )
+net.Receive( "pprotect_antispamtools", function( len, pl )
 
 	if sv_PProtect.CheckASAdmin( pl ) == false then return end
 	local sendingTable = {}
@@ -326,7 +326,7 @@ net.Receive( "pprotect_antispamed_tools", function( len, pl )
 
 	end )
 
-	table.foreach( sv_PProtect.Settings.AntiSpamTools, function( key, value )
+	table.foreach( sv_PProtect.Settings.Antispamtools, function( key, value )
 
 		if value == true then
 			sendingTable[ key ] = true
@@ -343,8 +343,8 @@ end )
 net.Receive( "pprotect_send_antispamed_tools", function( len, pl )
 
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
-	sv_PProtect.Settings.AntiSpamTools = net.ReadTable()
-	sv_PProtect.saveAntiSpamTools( sv_PProtect.Settings.AntiSpamTools )
+	sv_PProtect.Settings.Antispamtools = net.ReadTable()
+	sv_PProtect.saveAntiSpamTools( sv_PProtect.Settings.Antispamtools )
 
 	sv_PProtect.InfoNotify( pl, "Saved all antispamed tools!" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the antispamed-tools list!" )
