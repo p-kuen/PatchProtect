@@ -57,6 +57,9 @@ function sv_PProtect.CanTouch( ply, ent )
 	-- Check Entity
 	if !ent:IsValid() or ent:IsWorld() then return false end
 
+	-- Player-Pickup
+	if ent:IsPlayer() and sv_PProtect.Settings.Propprotection[ "playerpickup" ] == 1 then return true end
+
 	-- World-Entity
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 
@@ -98,8 +101,7 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 
 	-- Check Owner
-	local Owner = ent:CPPIGetOwner()
-	if ply == Owner or ent:IsWorld() and ent.World != true or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "toolgun" ) then
+	if ply == ent:CPPIGetOwner() or ent:IsWorld() and ent.World != true or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "toolgun" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to use " .. tool .. " on this object!" )
@@ -324,10 +326,9 @@ hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CanGravPickup )
 
 function sv_PProtect.SetWorldProps()
 
-	table.foreach( ents:GetAll(), function( key, value )
+	table.foreach( ents:GetAll(), function( id, ent )
 
-		if value:IsValid() and value:GetClass() == "prop_physics" then 
-			local ent = value
+		if ent:IsValid() and ent:GetClass() == "prop_physics" then 
 			ent.World = true
 		end
 		

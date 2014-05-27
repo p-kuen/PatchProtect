@@ -70,6 +70,7 @@ sv_PProtect.Config.PropProtection = {
 
 	enabled = 1,
 	admins = 0,
+	playerpickup = 1,
 	useprotection = 1,
 	creatorprotection = 1,
 	gravgunprotection = 1,
@@ -79,6 +80,7 @@ sv_PProtect.Config.PropProtection = {
 	propdelete = 1,
 	adminprops = 0,
 	delay = 120,
-	worldprops = 0
+	worldprops = 0,
+	fppmode = 0
 
 }

@@ -62,7 +62,7 @@ function cl_PProtect.ShowOwner()
 	local ownerText
 	if IsWorld then
 
-		ownerText = "Owner: World Prop"
+		ownerText = "Owner: World"
 
 	else
 
@@ -87,14 +87,22 @@ function cl_PProtect.ShowOwner()
 		col = Color( 176, 0, 0, 200 )
 	end
 	
-	--Border
-	draw.RoundedBox( 0, ScrW() - OW - 15, ScrH() / 2 - (OH / 2), 5, OH, col )
-
-	--Textbox
-	draw.RoundedBox( 0, ScrW() - OW - 10, ScrH() / 2 - (OH / 2), OW, OH, Color( 240, 240, 240, 200 ) )
-	
-	--Text
-	draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 15, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	-- Check Draw-Mode ( FPP-Mode or not )
+	if cl_PProtect.Settings.Propprotection[ "fppmode" ] == 0 then
+		--Border
+		draw.RoundedBox( 0, ScrW() - OW - 15, ScrH() / 2 - (OH / 2), 5, OH, col )
+		--Textbox
+		draw.RoundedBox( 0, ScrW() - OW - 10, ScrH() / 2 - (OH / 2), OW, OH, Color( 240, 240, 240, 200 ) )
+		--Text
+		draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 15, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	else
+		ownerText = string.Replace( ownerText, "Owner: ", "" )
+		local w, h = surface.GetTextSize( ownerText )
+		--Textbox
+		draw.RoundedBox( 2, ScrW() / 2 - ( w / 2 ) - 3, ScrH() / 2 + 19 - 2, w + 6, h + 4, Color( 0, 0, 0, 100 ) )
+		--Text
+		draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() / 2, ScrH() / 2 + 20, col, TEXT_ALIGN_CENTER, 0 )
+	end
 
 end
 hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner )

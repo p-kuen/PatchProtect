@@ -25,7 +25,7 @@ function cl_PProtect.ASMenu( Panel )
 	if cl_PProtect.Settings.Antispam[ "enabled" ] == 1 then
 
 		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:" )
-		cl_PProtect.addchk( Panel, "Ignore Admins", "antispam", "admins" )
+		cl_PProtect.addchk( Panel, "Ignore Admins (SuperAdmins are not effected!)", "antispam", "admins" )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
 		cl_PProtect.addchk( Panel, "Tool-Block", "antispam", "toolblock" )
 		cl_PProtect.addchk( Panel, "Prop-Block", "antispam", "propblock" )
@@ -173,13 +173,15 @@ function cl_PProtect.PPMenu( Panel )
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 1 then
 
 		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
-		cl_PProtect.addchk( Panel, "Ignore Admins", "propprotection", "admins" )
+		cl_PProtect.addchk( Panel, "Ignore Admins (SuperAdmins are not effected!)", "propprotection", "admins" )
 		cl_PProtect.addchk( Panel, "Use-Protection", "propprotection", "useprotection" )
 		cl_PProtect.addchk( Panel, "Reload-Protection", "propprotection", "reloadprotection" )
 		cl_PProtect.addchk( Panel, "Damage-Protection", "propprotection", "damageprotection" )
 		cl_PProtect.addchk( Panel, "GravGun-Protection", "propprotection", "gravgunprotection" )
+		cl_PProtect.addchk( Panel, "FPP-Mode (HUD)", "propprotection", "fppmode" )
 
 		cl_PProtect.addlbl( Panel, "\nSpecial Restrictions:", "panel" )
+		cl_PProtect.addchk( Panel, "Allow Player-Pickup for Admins (SuperAdmins are not effected!)", "propprotection", "playerpickup" )
 		cl_PProtect.addchk( Panel, "Allow Creator-Tool (spawn weapons with toolgun)", "propprotection", "creatorprotection" )
 		cl_PProtect.addchk( Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "propdriving" )
 		cl_PProtect.addchk( Panel, "Allow World Props to Non-Admins (Physgun, Toolgun, ...)", "propprotection", "worldprops" )
