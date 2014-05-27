@@ -7,15 +7,15 @@ function cl_PProtect.ASMenu( Panel )
 	-- DELETE CONTROLS
 	Panel:ClearControls()
 
-	-- CHECK ADMIN
-	if not LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
-		return
-	end
-
-	-- UPDATE PANEL
+	-- UPDATE MENU
 	if !cl_PProtect.ASCPanel then
 		cl_PProtect.ASCPanel = Panel
+	end
+
+	-- CHECK ADMIN
+	if !LocalPlayer():IsSuperAdmin() then
+		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
+		return
 	end
 
 	-- MAIN SETTINGS
@@ -155,15 +155,15 @@ function cl_PProtect.PPMenu( Panel )
 	-- DELETE CONTROLS
 	Panel:ClearControls()
 
+	-- UPDATE MENU
+	if !cl_PProtect.PPCPanel then
+		cl_PProtect.PPCPanel = Panel
+	end
+
 	-- CHECK ADMIN
 	if !LocalPlayer():IsSuperAdmin() then
 		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
 		return
-	end
-
-	-- UPDATE PANEL
-	if not cl_PProtect.PPCPanel then
-		cl_PProtect.PPCPanel = Panel
 	end
 
 	-- MAIN SETTINGS
@@ -180,8 +180,9 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "GravGun-Protection", "propprotection", "gravgunprotection" )
 
 		cl_PProtect.addlbl( Panel, "\nSpecial Restrictions:", "panel" )
-		cl_PProtect.addchk( Panel, "Block 'Creator'-Tool (e.g.: Spawn Weapons with Toolgun)", "propprotection", "creatorprotection" )
+		cl_PProtect.addchk( Panel, "Allow Creator-Tool (spawn weapons with toolgun)", "propprotection", "creatorprotection" )
 		cl_PProtect.addchk( Panel, "Allow Prop-Driving for Non-Admins", "propprotection", "propdriving" )
+		cl_PProtect.addchk( Panel, "Allow World Props to Non-Admins (Physgun, Toolgun, ...)", "propprotection", "worldprops" )
 
 		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
 		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "propdelete" )
@@ -210,8 +211,8 @@ function cl_PProtect.BMenu( Panel )
 	-- DELETE CONTROLS
 	Panel:ClearControls()
 
-	-- UPDATE PANELS
-	if not cl_PProtect.BCPanel then
+	-- UPDATE MENU
+	if !cl_PProtect.BCPanel then
 		cl_PProtect.BCPanel = Panel
 	end
 	
@@ -254,15 +255,15 @@ function cl_PProtect.CUMenu( Panel )
 	RunConsoleCommand( "pprotect_request_newest_counts" )
 	Panel:ClearControls()
 
+	-- UPDATE MENU
+	if !cl_PProtect.CUCPanel then
+		cl_PProtect.CUCPanel = Panel
+	end
+
 	-- CHECK ADMIN
 	if !LocalPlayer():IsSuperAdmin() then
 		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
 		return
-	end
-
-	-- UPDATE PANELS
-	if not cl_PProtect.CUCPanel then
-		cl_PProtect.CUCPanel = Panel
 	end
 
 	function pprotect_write_cleanup_menu( global, players )
@@ -360,6 +361,8 @@ net.Receive( "pprotect_new_settings", function()
 end )
 
 net.Receive( "pprotect_new_counts", function()
+
+	if !LocalPlayer():IsSuperAdmin() then return end
 
 	local counts = net.ReadTable()
 

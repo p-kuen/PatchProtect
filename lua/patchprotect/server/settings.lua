@@ -5,11 +5,11 @@
 -- ANTISPAM AND PROP PROTECTION
 function sv_PProtect.loadSQLSettings( sqlselect, sqltable, localtable, name )
 
-	if sql.Query( "SELECT * FROM " .. sqltable ) == nil and sql.TableExists( sqltable ) then
+	if !sql.Query( "SELECT * FROM " .. sqltable ) or !sql.Query( "SELECT " .. sqlselect .. " FROM " .. sqltable ) then
 		sql.Query( "DROP TABLE " .. sqltable )
 		MsgC(
 			Color(255, 0, 0),
-			"[PatchProtect] There was an error with the " .. name .. "-Table. We deleted it to make a new working one!\n"
+			"[PatchProtect] Removed old " .. name .. "-Table to get the new version of it!\n"
 		)
 	end
 
@@ -135,7 +135,7 @@ end
 sv_PProtect.Settings = {}
 sv_PProtect.Settings.Antispam = sv_PProtect.loadSQLSettings( "enabled", "pprotect_antispam", sv_PProtect.Config.AntiSpam, "AntiSpam" )
 sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntiSpamTools()
-sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "enabled", "pprotect_propprotection", sv_PProtect.Config.PropProtection, "PropProtection" )
+sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "worldprops", "pprotect_propprotection", sv_PProtect.Config.PropProtection, "PropProtection" )
 sv_PProtect.Settings.Blockedprops = sv_PProtect.setBlockedProps()
 sv_PProtect.Settings.Blockedtools = sv_PProtect.setBlockedTools()
 

@@ -78,6 +78,7 @@ sv_PProtect.Config.PropProtection = {
 	propdriving = 0,
 	propdelete = 1,
 	adminprops = 0,
-	delay = 120
+	delay = 120,
+	worldprops = 0
 
 }

@@ -28,8 +28,8 @@ if cleanup then
 	local Clean = cleanup.Add
 
 	function cleanup.Add( ply, enttype, ent )
-		
-		if ply.duplicate == true and enttype != "duplicates" then
+
+		if ply.duplicate == true and enttype != "duplicates" and enttype != "AdvDupe2" then
 			ply.duplicate = false
 		end
 
@@ -54,11 +54,17 @@ function sv_PProtect.CanTouch( ply, ent )
 
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
+	-- Check Entity
 	if !ent:IsValid() or ent:IsWorld() then return false end
+
+	-- World-Entity
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+
+	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "physgun" ) then
 		return true
 	else
-		sv_PProtect.Notify( ply, "You are not allowed to do this!" )
+		sv_PProtect.Notify( ply, "You are not allowed to hold this object!" )
 		return false
 	end
 
@@ -75,17 +81,25 @@ hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CanTouch )
 function sv_PProtect.CanToolProtection( ply, trace, tool )
 	
 	if sv_PProtect.CheckPPAdmin( ply, trace.Entity ) then return true end
-	if tool == "creator" and sv_PProtect.Settings.Propprotection[ "creatorprotection" ] == 1 then return false end
 
+	-- Check Creatorprotection
+	if tool == "creator" and sv_PProtect.Settings.Propprotection[ "creatorprotection" ] == 1 then
+		return true
+	elseif tool == "creator" and sv_PProtect.Settings.Propprotection[ "creatorprotection" ] == 0 then
+		sv_PProtect.Notify( ply, "You are not allowed to use the creator tool!" )
+		return false
+	end
+
+	-- Check Entity
 	local ent = trace.Entity
 	if !ent:IsValid() and !ent:IsWorld() then return false end
-	
-	local Owner = ent:CPPIGetOwner()
-	if ply != Owner and !ent:IsWorld() then return false end
 
-	if ent:IsWorld() then return false end
-	
-	if ply == Owner or ent:IsWorld() and ent.WorldOwned != true or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "toolgun" ) then
+	-- World-Entity
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+
+	-- Check Owner
+	local Owner = ent:CPPIGetOwner()
+	if ply == Owner or ent:IsWorld() and ent.World != true or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "toolgun" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to use " .. tool .. " on this object!" )
@@ -105,8 +119,13 @@ function sv_PProtect.CanUse( ply, ent )
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 	if sv_PProtect.Settings.Propprotection[ "useprotection" ] == 0 then return true end
 
+	-- Check Entity
 	if !ent:IsValid() then return false end
 
+	-- World-Entity
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+
+	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "use" ) then
 		return true
 	else
@@ -127,8 +146,16 @@ hook.Add( "PlayerUse", "AllowUsing", sv_PProtect.CanUse )
 function sv_PProtect.CanProperty( ply, property, ent )
 
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+
+	-- Check Entity
+	if !ent:IsValid() then return false end
+	if property == "persist" then return false end
+
+	-- World-Entity
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 	
-	if ply == ent:CPPIGetOwner() and property != "persist" or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "property" ) and property != "persist" then
+	-- Check Owner
+	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "property" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to change the properties on this object!" )
@@ -143,14 +170,20 @@ function sv_PProtect.CanDrive( ply, ent )
 	
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
-	if sv_PProtect.Settings.Propprotection[ "propdriving" ] == 0 then
-		sv_PProtect.Notify( ply, "You are not allowed to drive this object!" )
-		return false
-	end
+	-- Check Entity
+	if !ent:IsValid() then return false end
 
+	-- Check Driveprotection
+	if sv_PProtect.Settings.Propprotection[ "propdriving" ] == 0 then return false end
+
+	-- World-Entity
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+
+	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "property" ) then
 		return true
 	else
+		sv_PProtect.Notify( ply, "You are not allowed to drive this object!" )
 		return false
 	end
 
@@ -208,16 +241,21 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 	
 	if sv_PProtect.CheckPPAdmin( ply, ply:GetEyeTrace().Entity ) then return end
 
+	-- Check Reloadprotection
 	if sv_PProtect.Settings.Propprotection[ "reloadprotection" ] == 0 then return end
 	
+	-- Check Entity
 	local ent = ply:GetEyeTrace().Entity
-	
 	if !ent:IsValid() then return false end
 
+	-- World-Entity
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return end
+
+	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "physgun" ) then
 		return
 	else
-		sv_PProtect.Notify( ply, "You are not allowed to use the 'reload' function on this object!" )
+		sv_PProtect.Notify( ply, "You are not allowed to unfreeze this object!" )
 		return false
 	end
 
@@ -233,14 +271,21 @@ hook.Add( "OnPhysgunReload", "AllowPhysReload", sv_PProtect.CanPhysReload )
 function sv_PProtect.CanGravPunt( ply, ent )
 
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+
+	-- Check Gravgunprotection
 	if sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] == 0 then return false end
 
+	-- Check Entity
 	if !ent:IsValid() then return false end
 
+	-- World-Entity
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+
+	-- Check Owner
 	if ply == ent:CPPIGetOwner() then
 		return true
 	else
-		sv_PProtect.Notify( ply, "You are not allowed to use the Grav-Gun on this object!" )
+		sv_PProtect.Notify( ply, "You are not allowed to punt this object!" )
 		return false
 	end
 
@@ -250,11 +295,20 @@ hook.Add( "GravGunPunt", "AllowGravPunt", sv_PProtect.CanGravPunt )
 function sv_PProtect.CanGravPickup( ply, ent )
 
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+
+	-- Check Gravgunprotection
 	if sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] == 0 then return false end
 
+	-- Check Entity
 	if !ent:IsValid() then return false end
 
-	if ply != ent:CPPIGetOwner() then
+	-- World-Entity
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 0 then
+		local worlddrop = true
+	end
+
+	-- Check Owner
+	if ply != ent:CPPIGetOwner() or worlddrop then
 		sv_PProtect.Notify( ply, "You are not allowed to use the Grav-Gun on this object!" )
 		ply:DropObject()
 	end
@@ -274,7 +328,7 @@ function sv_PProtect.SetWorldProps()
 
 		if value:IsValid() and value:GetClass() == "prop_physics" then 
 			local ent = value
-			ent.WorldOwned = true
+			ent.World = true
 		end
 		
 	end )
@@ -300,7 +354,7 @@ net.Receive( "pprotect_get_owner", function( len, pl )
 		info = "buddy"
 	end
 
-	if ent.WorldOwned == true then info = "world" end
+	if ent.World == true then info = "world" end
 
 	net.Start( "pprotect_send_owner" )
 		net.WriteEntity( ent:CPPIGetOwner() )
