@@ -15,11 +15,11 @@ You can control the Settings in the <b>Q-Menu > Utilities</b> (mostly the second
 It is very important for us, to code a prop protection, which doesn't need that much resources from the cpu.
 Everybody hates lags and we too, so we want to save some resources for other addons or for the server itself.
 
-<h2>Simple but functional</h2>
+<h2>Simple but functional:</h2>
 Also we are pleased to keep the code as simple as possible, to prevent confusions or other similar things.
 On the other hand we keep adding new functions to give you more freedom to control and more abilties to set things up like you whish to.
 
-<h2>4 Panels for a good overview</h2>
+<h2>4 Panels for a good overview:</h2>
 The Panels are <b>AntiSpam, Prop Protection, Buddy and Cleanup</b>.
 
 Every Panel has Labels to split the functions in there specific sections. This helps, to keep a good overview over all controls, which are available to you.
@@ -29,7 +29,7 @@ Every Panel has Labels to split the functions in there specific sections. This h
 - Cleanup ( cleanup everything, cleaning all disconnected player's props and cleanup player's props )
 - PropProtection ( main switch, protections, special protection settings and prop cleanup on disconnect )
 
-<h3>Modern Design</h3>
+<h3>Modern Design:</h3>
 Patchprotect is not just a functional addon. No, it also looks pretty. We gave PatchProtect a nice modern design, which makes it easy to see, what you can do or not. Also the checkboxes, as well as as other control elements have their own modern design.
 If you don't like something on the design, you can post a comment on GitHub or on Workshop.
 
@@ -40,73 +40,67 @@ If you don't like something on the design, you can post a comment on GitHub or o
 <h3>AntiSpam</h3>
 We offer a nice working <b>AntiSpam-Feature</b>, so that people are not able to spam around.
 
-- It prevents people, spawning props too fast
-- If you use a duplicator, like the default one or AdvancedDuplicator 1/2, there will be an exception. So you can still spawn them!
-- It prevents people, firing the toolgun too fast
-- If someone tries to spam, they will get an information, how long they have to wait till the next spawn/toolgunfire
-- If someone tries to spam, all admins, which are online on the server getting informed about the spamer ( There is also a little sound, which should make attention to the message )
-- You can change the <i>spam-action</i> to set, what should happen, if someone is spaming ( nothing, message, kick, ban, ... )
-- You can enable/disable Toolgun-AntiSpam for each Tool ( i.e. you can use the 'remover' as fast as you can, but you are not able to spam 'thrusters' )
-- You can block tools, which you don't want to be used on your server
-- You can block props, which you don't want on your server ( hold <i>c-key</i> to open the <i>context-menu</i> of a prop. There you will find an entry to add the viewing prop to blocked props. You can remove it again over the <i>q-menu</i>. )
+- You can <b>enable/disable that Admins</b> (not SuperAdmins!) can do everything on the server, so all AntiSpam-Functions will be ignored
+- It prevents people, <b>spawning props too fast</b>
+- It prevents people, <b>firing the toolgun too fast</b>
+- If you use a <b>duplicator, like the default one or AdvancedDuplicator 1/2</b>, there is an <b>exception</b>. <i>So you can still spawn dupes!</i>
+- You can set the <b>length of the 'cooldown'</b>
+- Players, who try to spam will get an information, <b>how long they have to wait</b> till the next prop spawn/tool fire
+- Admins are getting <b>informed if someone is spaming</b> ( There is also a little sound, which should make attention to the message )
+- You can change the <b>spam-action</b> - What should happen, if someone is spaming <i>( nothing, message, kick, ban, ... )</i>
+- You can <b>enable/disable Toolgun-AntiSpam</b> for each Tool ( i.e. you can use the 'remover' as fast as you can, but you are not able to spam 'thrusters' )
+- You can <b>block tools</b>, which you don't want to be used on your server
+- You can <b>block props</b>, which you don't want on your server
+- Hold <i>c-key</i> to open the <i>context-menu</i> of a prop. There you will find an entry to add the viewing prop to blocked props. You can remove it again over the <i>q-menu</i>.
 
-- You can disable AntiSpam completely, if you don't want to use this feature
-- Prop-Block, Tool-Block and Tool-AntiSpam can be completely disabled if you don't want to use it
-- Prop-Block, Tool-Block and Tool-AntiSpam have a nice panel, which are easy to understand
+- You can <b>disable AntiSpam completely</b>, if you don't want to use this feature
+- <b>Prop-Block, Tool-Block and Tool-AntiSpam can be completely disabled</b> if you don't want to use it
+- <b>Prop-Block, Tool-Block and Tool-AntiSpam have a nice panel</b>, which are easy to understand
 
-<b>Also you can change following things:</b>
-- Enable/Disable AntiSpam
-- Enable/Disable Admin-AntiSpam
-- Enable/Disable Tool-AntiSpam
-- Set Tool-AntiSpam only for chosen tools (Controlled by a nice panel)
-- Enable/Disable Prop-Block
-- Enable/Disable Tool-Block
-- Set 'cooldown' till next Prop-Spawn/Tool-Fire
-
-<h3>PropProtection:</h3>
+<h3>PropProtection</h3>
 The main thing of PatchProtect.
 Here are all features of our PropProtection:
 
-- You can enable/disable that Admins (not SuperAdmins!) can do everything on the server, so all protection-funcitons will be ignored
-- Other players can't physgun, toolgun, use, property, damage, ... your props ( except players, which you added on your buddy-list )
-- You can enable a reload-protection to keep prevent players using the 'r-key' when using the physgun
-- You can enable/disable a world protection, which prevents people, interacting with world props (if you are looking on a world prop, you will get informed about it)
-- A smart HUD showes the Owner of the currently looking prop
-- You can switch between two HUD-Modes:
+- You can <b>enable/disable that Admins</b> (not SuperAdmins!) can do everything on the server, so all PropProtection-Functions will be ignored
+- Other players <b>can't physgun, toolgun, use, property, damage, ... your props</b> ( except players, which you added on your buddy-list )
+- You can <b>enable a reload-protection</b> to keep prevent players using the 'r-key' when using the physgun
+- You can <b>enable/disable a world protection</b>, which prevents people, interacting with world props (if you are looking on a world prop, you will get informed about it)
+- A smart <b>HUD showes the Owner</b> of the currently viewing prop
+- You can <b>switch between two HUD-Modes</b>:
 	- First, there is our own design (little box with white background on the right-middle position on the screen)
 	- Secondly you can change in the PropProtection-Settings to the 'FPP-Mode' (little box with the owner in it under the crosshair)
 	- The color showes you, if you are allowed to interact with the viewing prop or not
-- If you disconnect, your props will be on the server, but if you enalbed prop-cleanup, your props will be deleted after your configured time (If you rejoin between this time, your props won't get deleted)
+- If you <b>disconnect</b>, your props will be on the server, but if you enalbed prop-cleanup, your <b>props will be deleted after a configured time</b> ( If you rejoin between this time, your props won't get deleted )
 
-<h3>Cleanup:</h3>
+<h3>Cleanup</h3>
 We have added some cleanup-features to allow SuperAdmins to clear props very fast.
 You have following posibilities:
 
-- Cleanup the whole map with just one click (all world props will be resetted)
-- Cleanup everything from one specific player
-- You also get informed, how many props are currently on the server (complete map and each player)
-- Cleanup disconnected players props
+- <b>Cleanup the whole map</b> ( all world props will be resetted )
+- <b>Cleanup everything from a specific player</b>
+- You also get informed, <b>how many props are currently on the server</b> ( complete map and each player )
+- <b>Cleanup disconnected players props</b>
 
-<h3>Buddy:</h3>
-You can add buddies to a buddie list, to share your prop with other players. It is very easy to understand.
-You are also able to set only specific rights to other players. (i.e. another player can use it but he is not able to pick it up with the physgun)
+<h3>Buddy</h3>
+You can <b>add buddies to a buddie list</b>, to share your prop with other players. It is very easy to understand.
+You are also able to <b>set only specific rights to other players</b>. (i.e. another player can use it but he is not able to pick it up with the physgun)
 
-<h3>Other Features</h3>
+<h3>Other Features:</h3>
 
-- CPPI Implementation, to use PatchProtect also in other Addons/Pugins/Gamemodes
+- <b>CPPI Implementation</b>, to use PatchProtect also in other Addons/Pugins/Gamemodes
 - some other features we can't remember at the moment
 
 
-Ok, that was pretty much information for now. We hope, that you like all mentioned features here. As I said, this is only a list of the most important things of PatchProtect. There are also many background-functions which are really important to get all above mentioned features to work.
+Ok, that was pretty much information for now. We hope, that you like all mentioned features here. As I said, this is only a list of the most important things of PatchProtect. There are also many background-functions which are really important for all above mentioned features.
 
 
 
 <h1>Some other important information:</h1>
 
-<h2>Bug fixing</h2>
-We try to keep PatchProtect as bugfree as possible.
+<h2>Bug fixing:</h2>
+<b>We try to keep PatchProtect as bugfree as possible.</b>
 If someone posts an error on GitHub or on Workshop, we try to fix the problem as soon as possible. But please have in mind, that we are students, so it could happen that the bugfix would take some time.
 
 
-<h3>Final words:</h3>
+<h2>Final words:</h2>
 We hope, that you enjoy <b>PatchProtect</b> on your server! ;)
