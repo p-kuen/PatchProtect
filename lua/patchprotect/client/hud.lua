@@ -7,16 +7,14 @@ cl_PProtect.Notes = {}
 
 
 
-------------
---  FONT  --
-------------
+-------------
+--  FONTS  --
+-------------
 
 surface.CreateFont( "PatchProtectFont", {
 	font 		= "Roboto",
 	size 		= 15,
 	weight 		= 750,
-	blursize 	= 0,
-	scanlines 	= 0,
 	antialias 	= true,
 	shadow 		= false
 } )
@@ -25,8 +23,6 @@ surface.CreateFont( "PatchProtectFont_small", {
 	font 		= "Roboto",
 	size 		= 14,
 	weight 		= 500,
-	blursize 	= 0,
-	scanlines 	= 0,
 	antialias 	= true,
 	shadow 		= false
 } )
@@ -38,26 +34,26 @@ surface.CreateFont( "PatchProtectFont_small", {
 ------------------
 
 -- SHOW OWNER
-function cl_PProtect.ShowOwner()
+function cl_PProtect.showOwner()
 	
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 0 then return end
 
 	-- Check Entity
-	local entity = LocalPlayer():GetEyeTrace().Entity
-	if entity == nil or !entity:IsValid() or entity:IsPlayer() then return end
+	local ent = LocalPlayer():GetEyeTrace().ent
+	if ent == nil or !ent:IsValid() or ent:IsPlayer() then return end
 
-	if stopsend != entity:EntIndex() then
+	if stopsend != ent:EntIndex() then
 
 		net.Start( "pprotect_get_owner" )
-			net.WriteEntity( entity )
+			net.WriteEntity( ent )
 		net.SendToServer()
 
-		stopsend = entity:EntIndex()
+		stopsend = ent:EntIndex()
 
 	end
 
-	--Declared in the NETWORKING-section
-	if Owner == nil or IsWorld == nil or !entity:IsValid() then return end
+	-- Check Owner ( Owner is set at the bottom of the file! )
+	if Owner == nil or IsWorld == nil or !ent:IsValid() then return end
 
 	local ownerText
 	if IsWorld then
@@ -67,7 +63,7 @@ function cl_PProtect.ShowOwner()
 	else
 
 		if Owner:IsPlayer() and Owner:IsValid() then
-			ownerText = "Owner: " .. Owner:GetName()
+			ownerText = "Owner: " .. Owner:Nick()
 		elseif Owner:IsPlayer() then
 			ownerText = "Owner: Disconnected Player"
 		end
@@ -76,10 +72,13 @@ function cl_PProtect.ShowOwner()
 
 	if ownerText == nil then return end
 
+	-- Get textsize
 	surface.SetFont( "PatchProtectFont_small" )
 	local OW, OH = surface.GetTextSize( ownerText )
 	OW = OW + 10
 	OH = OH + 10
+
+	-- Set color
 	local col
 	if Owner == LocalPlayer() or IsBuddy or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
 		col = Color( 128, 255, 0, 200 )
@@ -89,25 +88,35 @@ function cl_PProtect.ShowOwner()
 	
 	-- Check Draw-Mode ( FPP-Mode or not )
 	if cl_PProtect.Settings.Propprotection[ "fppmode" ] == 0 then
+
 		--Border
 		draw.RoundedBox( 0, ScrW() - OW - 15, ScrH() / 2 - (OH / 2), 5, OH, col )
 		--Textbox
 		draw.RoundedBox( 0, ScrW() - OW - 10, ScrH() / 2 - (OH / 2), OW, OH, Color( 240, 240, 240, 200 ) )
 		--Text
 		draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 15, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	
 	else
+
 		ownerText = string.Replace( ownerText, "Owner: ", "" )
 		local w, h = surface.GetTextSize( ownerText )
+
 		--Textbox
 		draw.RoundedBox( 2, ScrW() / 2 - ( w / 2 ) - 3, ScrH() / 2 + 19 - 2, w + 6, h + 4, Color( 0, 0, 0, 100 ) )
 		--Text
 		draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() / 2, ScrH() / 2 + 20, col, TEXT_ALIGN_CENTER, 0 )
+
 	end
 
 end
-hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.ShowOwner )
+hook.Add( "HUDPaint", "ShowingOwner", cl_PProtect.showOwner )
 
--- SET DISABLED PHYSBEAM IF NOT ALLOWED TO PICKUP
+
+
+------------------------
+--  PHYSGUN BEAM FIX  --
+------------------------
+
 function cl_PProtect.SetClientBeam( ply, ent )
 	return false
 end
@@ -184,7 +193,6 @@ function cl_PProtect.DrawNote( self, key, value )
 	--Text
 	draw.SimpleText( value.text, "PatchProtectFont", xtext - 15, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
-
 end
 
 
@@ -210,6 +218,8 @@ local function Paint()
 end
 hook.Add( "HUDPaint", "RoundedBoxHud", Paint )
 
+
+
 ----------------------------
 --  CLIENTSIDE FUNCTIONS  --
 ----------------------------
@@ -226,6 +236,8 @@ function cl_PProtect.Info( text )
 	LocalPlayer():EmitSound("buttons/button9.wav", 100, 100)
 	
 end
+
+
 
 ------------------
 --  NETWORKING  --
@@ -285,7 +297,7 @@ net.Receive( "pprotect_notify_normal", function( len )
 
 end )
 
--- RECEIVE OWNER
+-- OWNER
 net.Receive( "pprotect_send_owner", function( len )
 
 	Owner = net.ReadEntity()
