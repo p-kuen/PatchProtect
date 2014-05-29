@@ -100,6 +100,8 @@ end
 
 -- DELETE BUDDY
 function cl_PProtect.DeleteBuddy( ply )
+
+	if !ply then return end
 	
 	ply.Buddies = ply.Buddies or {}
 	sql.Query( "DELETE FROM pprotect_buddies WHERE uniqueid = '" .. cl_PProtect.Buddy.BuddyToRemove[0] .. "'" )

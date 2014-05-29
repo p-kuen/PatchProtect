@@ -85,10 +85,11 @@ You have following posibilities:
 You can <b>add buddies to a buddie list</b>, to share your prop with other players. It is very easy to understand.
 You are also able to <b>set only specific rights to other players</b>. (i.e. another player can use it but he is not able to pick it up with the physgun)
 
-<h3>Other Features:</h3>
+<h3>Other</h3>
 
 - <b>CPPI Implementation</b>, to use PatchProtect also in other Addons/Pugins/Gamemodes
 - some other features we can't remember at the moment
+
 
 
 Ok, that was pretty much information for now. We hope, that you like all mentioned features here. As I said, this is only a list of the most important things of PatchProtect. There are also many background-functions which are really important for all above mentioned features.
