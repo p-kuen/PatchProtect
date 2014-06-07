@@ -39,21 +39,21 @@ function cl_PProtect.showOwner()
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 0 then return end
 
 	-- Check Entity
-	local ent = LocalPlayer():GetEyeTrace().ent
-	if ent == nil or !ent:IsValid() or ent:IsPlayer() then return end
-
-	if stopsend != ent:EntIndex() then
+	local entity = LocalPlayer():GetEyeTrace().Entity
+	if entity == nil or !entity:IsValid() or entity:IsPlayer() then return end
+	
+	if stopsend != entity:EntIndex() then
 
 		net.Start( "pprotect_get_owner" )
-			net.WriteEntity( ent )
+			net.WriteEntity( entity )
 		net.SendToServer()
 
-		stopsend = ent:EntIndex()
-
+		stopsend = entity:EntIndex()
+		
 	end
 
 	-- Check Owner ( Owner is set at the bottom of the file! )
-	if Owner == nil or IsWorld == nil or !ent:IsValid() then return end
+	if Owner == nil or IsWorld == nil or !entity:IsValid() then return end
 
 	local ownerText
 	if IsWorld then
