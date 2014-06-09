@@ -70,7 +70,10 @@ function sv_PProtect.CanTouch( ply, ent )
 	if !ent:IsValid() or ent:IsWorld() then return false end
 
 	-- Player-Pickup
-	if ent:IsPlayer() and sv_PProtect.Settings.Propprotection[ "playerpickup" ] == 1 then return true end
+	if ent:IsPlayer() and sv_PProtect.Settings.Propprotection[ "playerpickup" ] == 1 then
+		sv_PProtect.Notify( ply, "You are not allowed to move other players!" )
+		return false
+	end
 
 	-- World-Entity
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
