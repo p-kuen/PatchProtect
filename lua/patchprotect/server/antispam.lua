@@ -19,6 +19,7 @@ hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
 
 -- CHECK ANTISPAM ADMIN
 function sv_PProtect.CheckASAdmin( ply )
+
 	if sv_PProtect.Settings.Antispam[ "enabled" ] == 0 or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and sv_PProtect.Settings.Antispam[ "admins" ] == 1 then return true end
 	return false
@@ -84,12 +85,6 @@ function sv_PProtect.CanSpawn( ply, mdl )
 
 	if sv_PProtect.CheckASAdmin( ply ) == true then return true end
 	if ply.duplicate == true then return true end
-	
-	--Prop block
-	if sv_PProtect.Settings.Antispam[ "propblock" ] == 1 and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, string.lower( mdl ) ) or string.find( mdl, "/../" ) then
-		sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
-		return false
-	end
 	
 	--Check Cooldown
 	if CurTime() < ply.propcooldown then

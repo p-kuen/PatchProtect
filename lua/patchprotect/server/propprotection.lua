@@ -29,10 +29,22 @@ if cleanup then
 
 	function cleanup.Add( ply, enttype, ent )
 
+		-- Prop-Block
+		if ent:GetModel() != nil then
+			local mdl = string.lower( ent:GetModel() )
+			if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] == 1 and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, mdl ) or string.find( mdl, "/../" ) then
+				sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
+				ent:Remove()
+				return false
+			end
+		end
+		
+		-- Duplicator exception
 		if ply.duplicate == true and enttype != "duplicates" and enttype != "AdvDupe2" then
 			ply.duplicate = false
 		end
 
+		-- Set owner of the entity
 		if ent != nil and ent:IsValid() and ply:IsPlayer() then
 			ent:CPPISetOwner( ply )
 		end
