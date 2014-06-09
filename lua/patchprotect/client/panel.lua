@@ -19,13 +19,13 @@ function cl_PProtect.ASMenu( Panel )
 	end
 
 	-- MAIN SETTINGS
-	cl_PProtect.addlbl( Panel, "Main switch:" )
+	cl_PProtect.addlbl( Panel, "General Settings:" )
 	cl_PProtect.addchk( Panel, "Enable AntiSpam", "antispam", "enabled" )
+	cl_PProtect.addchk( Panel, "Ignore Admins (no SuperAdmins)", "antispam", "admins" )
 
 	if cl_PProtect.Settings.Antispam[ "enabled" ] == 1 then
 
 		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:" )
-		cl_PProtect.addchk( Panel, "Ignore Admins ( no SuperAdmins )", "antispam", "admins" )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
 		cl_PProtect.addchk( Panel, "Tool-Block", "antispam", "toolblock" )
 		cl_PProtect.addchk( Panel, "Prop-Block", "antispam", "propblock" )
@@ -167,19 +167,19 @@ function cl_PProtect.PPMenu( Panel )
 	end
 
 	-- MAIN SETTINGS
-	cl_PProtect.addlbl( Panel, "Main switch:" )
+	cl_PProtect.addlbl( Panel, "General Settings:" )
 	cl_PProtect.addchk( Panel, "Enable PropProtection", "propprotection", "enabled" )
-
+	cl_PProtect.addchk( Panel, "Ignore Admins (no SuperAdmins)", "propprotection", "admins" )
+	cl_PProtect.addchk( Panel, "FPP-Mode (Owner under crosshair)", "propprotection", "fppmode" )
+	
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 1 then
 
 		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
-		cl_PProtect.addchk( Panel, "Ignore Admins ( no SuperAdmins )", "propprotection", "admins" )
 		cl_PProtect.addchk( Panel, "Use-Protection", "propprotection", "useprotection" )
 		cl_PProtect.addchk( Panel, "Reload-Protection", "propprotection", "reloadprotection" )
 		cl_PProtect.addchk( Panel, "Damage-Protection", "propprotection", "damageprotection" )
 		cl_PProtect.addchk( Panel, "GravGun-Protection", "propprotection", "gravgunprotection" )
-		cl_PProtect.addchk( Panel, "Player-Pickup Protection", "propprotection", "playerpickup" )
-		cl_PProtect.addchk( Panel, "FPP-Mode (HUD - Owner under crosshair)", "propprotection", "fppmode" )
+		cl_PProtect.addchk( Panel, "PlayerPickup-Protection", "propprotection", "playerpickup" )
 
 		cl_PProtect.addlbl( Panel, "\nSpecial User-Restrictions:", "panel" )
 		cl_PProtect.addchk( Panel, "Allow Creator-Tool (spawn weapons with toolgun)", "propprotection", "creatorprotection" )
