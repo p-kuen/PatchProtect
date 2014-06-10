@@ -54,11 +54,17 @@ concommand.Add( "pprotect_request_newest_counts", pprotect_new_counts )
 -- CLEANUP EVERYTHING
 net.Receive( "pprotect_cleanup_map", function( len, pl )
 
-	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+	-- Check Permissions
+	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
+		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+	elseif sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 then
+		if !pl:IsSuperAdmin() then return end
+	end
 
+	-- Cleanup Map
 	game.CleanUpMap()
 
-	--Define World-Props again!
+	-- Define World-Props again!
 	sv_PProtect.SetWorldProps()
 
 	sv_PProtect.InfoNotify( pl, "Cleaned Map!" )
@@ -132,8 +138,14 @@ hook.Add( "PlayerSpawn", "CheckAbortCleanup", sv_PProtect.checkComeback )
 -- CLEAN ALL DISCONNECTED PLAYERS PROPS (BUTTON)
 net.Receive( "pprotect_cleanup_disconnected_player", function( len, pl )
 
-	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+	-- Check Permissions
+	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
+		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+	elseif sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 then
+		if !pl:IsSuperAdmin() then return end
+	end
 
+	-- Remove all props from disconnected players
 	table.foreach( ents.GetAll(), function( k, v )
 
 		if v.PatchPPCleanup != nil and v.PatchPPCleanup != "" then
@@ -141,6 +153,7 @@ net.Receive( "pprotect_cleanup_disconnected_player", function( len, pl )
 		end
 
 	end )
+
 	sv_PProtect.InfoNotify( pl, "Removed all props from disconnected players!" )
 	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all props from disconnected players!" )
 
@@ -149,8 +162,14 @@ end )
 -- CLEANUP PLAYERS PROPS
 net.Receive( "pprotect_cleanup_player", function( len, pl )
 
-	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+	-- Check Permissions
+	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
+		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+	elseif sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 then
+		if !pl:IsSuperAdmin() then return end
+	end
 
+	-- Find all props from a special player
 	local cleanupdata = net.ReadTable()
 	table.foreach( player.GetAll(), function( key, value )
 		if value:Nick() == cleanupdata[1] then
@@ -158,6 +177,7 @@ net.Receive( "pprotect_cleanup_player", function( len, pl )
 		end
 	end )
 
+	-- Remove them all
 	cleanup.CC_Cleanup( cleanupdata[1], "", {} )
 
 	sv_PProtect.InfoNotify( pl, "Cleaned " .. cleanupdata[1]:GetName() .. "'s props! (" .. cleanupdata[2] .. ")" )

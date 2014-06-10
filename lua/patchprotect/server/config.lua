@@ -72,6 +72,7 @@ sv_PProtect.Config.PropProtection = {
 
 	enabled = 1,
 	admins = 0,
+	adminscleanup = 0,
 	fppmode = 0,
 
 	useprotection = 1,

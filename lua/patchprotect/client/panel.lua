@@ -170,6 +170,7 @@ function cl_PProtect.PPMenu( Panel )
 	cl_PProtect.addlbl( Panel, "General Settings:" )
 	cl_PProtect.addchk( Panel, "Enable PropProtection", "propprotection", "enabled" )
 	cl_PProtect.addchk( Panel, "Ignore Admins (no SuperAdmins)", "propprotection", "admins" )
+	cl_PProtect.addchk( Panel, "Allow Admins to use the Cleanup-Panel", "propprotection", "adminscleanup" )
 	cl_PProtect.addchk( Panel, "FPP-Mode (Owner under crosshair)", "propprotection", "fppmode" )
 	
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 1 then
@@ -263,9 +264,16 @@ function cl_PProtect.CUMenu( Panel )
 	end
 
 	-- CHECK ADMIN
-	if !LocalPlayer():IsSuperAdmin() then
-		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
-		return
+	if cl_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
+		if !LocalPlayer():IsAdmin() and !LocalPlayer():IsSuperAdmin() then
+			cl_PProtect.addlbl( Panel, "Sorry, you need to be an Admin to change the settings!" )
+			return
+		end
+	elseif cl_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 then
+		if !LocalPlayer():IsSuperAdmin() then
+			cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
+			return
+		end
 	end
 
 	function pprotect_write_cleanup_menu( global, players )
@@ -364,7 +372,12 @@ end )
 
 net.Receive( "pprotect_new_counts", function()
 
-	if !LocalPlayer():IsSuperAdmin() then return end
+	-- Check Permissions
+	if cl_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
+		if !LocalPlayer():IsAdmin() and !LocalPlayer():IsSuperAdmin() then return end
+	elseif cl_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 then
+		if !LocalPlayer():IsSuperAdmin() then return end
+	end
 
 	local counts = net.ReadTable()
 
