@@ -168,8 +168,8 @@ function cl_PProtect.DrawNote( self, key, value )
 	
 	local w = tsW + 20
 	local h = tsH + 15
-	local x = ScrW() - w - 15
-	local y = ScrH() - h - 35 * key
+	local x = ScrW() - w - 20
+	local y = ScrH() - h - 40 * key + 20
 
 	local col
 	if value.mode == "normal" then
@@ -185,13 +185,13 @@ function cl_PProtect.DrawNote( self, key, value )
 	local coltext = Color( 75, 75, 75, 255 )
 	
 	--Border
-	draw.RoundedBox( 0, x - 20, y, 5, h, col )
+	draw.RoundedBox( 0, x - 5, y, 5, h, col )
 
 	--Textbox
-	draw.RoundedBox( 0, x - 15, y, w, h, Color( 240, 240, 240, 200 ) )
+	draw.RoundedBox( 0, x, y, w, h, Color( 240, 240, 240, 200 ) )
 
 	--Text
-	draw.SimpleText( value.text, "PatchProtectFont", xtext - 15, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	draw.SimpleText( value.text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 
 end
 
@@ -224,12 +224,12 @@ hook.Add( "HUDPaint", "RoundedBoxHud", Paint )
 --  CLIENTSIDE FUNCTIONS  --
 ----------------------------
 
-function cl_PProtect.Info( text )
+function cl_PProtect.Info( text, mode )
 	
 	local curmsg = {}
 	curmsg.text = text
 	curmsg.time = SysTime()
-	curmsg.mode = "normal"
+	curmsg.mode = mode
 
 	table.insert( cl_PProtect.Notes, curmsg )
 
@@ -245,8 +245,8 @@ end
 
 -- INFO NOTIFY
 net.Receive( "pprotect_notify_info", function( len )
-    
-   	local curmsg = {}
+	
+	local curmsg = {}
 	curmsg.text = net.ReadString()
 	curmsg.time = SysTime()
 	curmsg.mode = "info"
@@ -260,7 +260,7 @@ end )
 -- ADMIN NOTIFY
 net.Receive( "pprotect_notify_admin", function( len )
 
-    if LocalPlayer():IsAdmin() then
+	if LocalPlayer():IsAdmin() then
 
 		local curmsg = {}
 		curmsg.text = net.ReadString()
@@ -277,7 +277,7 @@ end )
 
 -- NOTIFY
 net.Receive( "pprotect_notify_normal", function( len )
-    
+
 	local curmsg = {}
 	curmsg.text = net.ReadString()
 	curmsg.time = SysTime()

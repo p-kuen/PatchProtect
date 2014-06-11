@@ -4,9 +4,6 @@
 
 function cl_PProtect.SetupBuddySettings()
 
-	--For debug
-	--sql.Query( "DROP TABLE pprotect_buddies" )
-
 	if !sql.TableExists( "pprotect_buddies" ) then
 
 		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_buddies('uniqueid' TEXT, 'nick' TEXT, 'permission' TEXT);" )
@@ -18,6 +15,19 @@ function cl_PProtect.SetupBuddySettings()
 
 	end
 	
+end
+
+function cl_PProtect.resetBuddySettings()
+
+	-- Delete whole Buddy-List
+	sql.Query( "DROP TABLE pprotect_buddies" )
+	-- Create new clear Buddy-List
+	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_buddies('uniqueid' TEXT, 'nick' TEXT, 'permission' TEXT);" )
+
+	cl_PProtect.Buddy.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
+	cl_PProtect.UpdateMenus()
+	cl_PProtect.Info( "Cleared Buddy-List", "info" )
+
 end
 
 
@@ -67,7 +77,6 @@ function cl_PProtect.sendBuddies( buddytable )
 end
 
 cl_PProtect.SetupBuddySettings()
-
 cl_PProtect.Buddy = {}
 cl_PProtect.Buddy.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" ) or {}
 
@@ -81,20 +90,17 @@ function cl_PProtect.AddBuddy( ply )
 
 	ply.Buddies = ply.Buddies or {}
 	sql.Query( "INSERT INTO pprotect_buddies('uniqueid', 'nick', 'permission' ) VALUES( '" .. cl_PProtect.Buddy.CurrentBuddy[0] .. "', '" .. cl_PProtect.Buddy.CurrentBuddy[1] .. "', '"..table.concat( table.KeysFromValue( cl_PProtect.Buddy.RowType, "true" ),", " ).."')" )
-	
 	cl_PProtect.Buddy.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
 
 	cl_PProtect.sendBuddies( cl_PProtect.Buddy.Buddies )
-
-	cl_PProtect.Info( "Added new buddy!" )
 
 	net.Start( "pprotect_send_other_buddy" )
 		net.WriteString( tostring( cl_PProtect.Buddy.CurrentBuddy[0] ) )
 	net.SendToServer()
 	
+	cl_PProtect.Info( "Added " .. ply:Nick() .. " to the Buddy-List", "info" )
 	cl_PProtect.UpdateMenus()
 	cl_PProtect.SetBuddyVars( "add" )
-	
 
 end
 
@@ -105,7 +111,6 @@ function cl_PProtect.DeleteBuddy( ply )
 	
 	ply.Buddies = ply.Buddies or {}
 	sql.Query( "DELETE FROM pprotect_buddies WHERE uniqueid = '" .. cl_PProtect.Buddy.BuddyToRemove[0] .. "'" )
-	
 	cl_PProtect.Buddy.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
 
 	if cl_PProtect.Buddy.Buddies == nil then
@@ -114,9 +119,8 @@ function cl_PProtect.DeleteBuddy( ply )
 
 	cl_PProtect.sendBuddies( cl_PProtect.Buddy.Buddies )
 
-	cl_PProtect.Info( "Deleted buddy!" )
+	cl_PProtect.Info( "Deleted " .. ply:Nick() .. " from the Buddy-List", "info" )
 	cl_PProtect.UpdateMenus()
-
 	cl_PProtect.SetBuddyVars( "delete" )
 	
 end
