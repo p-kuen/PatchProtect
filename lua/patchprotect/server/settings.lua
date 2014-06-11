@@ -266,7 +266,7 @@ local function sendPlayerSettings( ply, cmd, args )
 
 	net.Start( "pprotect_new_settings" )
 		net.WriteTable( new_settings )
-		if args != nil then net.WriteString( args[1] ) end
+		if args != nil and args[1] != nil then net.WriteString( args[1] ) end
 	net.Send( ply )
 
 end
