@@ -182,7 +182,6 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "Reload-Protection", "propprotection", "reloadprotection" )
 		cl_PProtect.addchk( Panel, "Damage-Protection", "propprotection", "damageprotection" )
 		cl_PProtect.addchk( Panel, "GravGun-Protection", "propprotection", "gravgunprotection" )
-		cl_PProtect.addchk( Panel, "PlayerPickup-Protection", "propprotection", "playerpickup" )
 		cl_PProtect.addchk( Panel, "PropPickup-Protection", "propprotection", "proppickup", "Pick up props with 'use'-key" )
 
 		cl_PProtect.addlbl( Panel, "\nSpecial User-Restrictions:", "panel" )

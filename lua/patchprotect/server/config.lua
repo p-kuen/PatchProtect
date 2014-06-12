@@ -79,7 +79,6 @@ sv_PProtect.Config.PropProtection = {
 	reloadprotection = 1,
 	damageprotection = 1,
 	gravgunprotection = 1,
-	playerpickup = 1,
 	proppickup = 1,
 
 	creatorprotection = 0,
