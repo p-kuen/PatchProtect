@@ -21,9 +21,10 @@ function cl_PProtect.ASMenu( Panel )
 	-- MAIN SETTINGS
 	cl_PProtect.addlbl( Panel, "General Settings:" )
 	cl_PProtect.addchk( Panel, "Enable AntiSpam", "antispam", "enabled" )
-	cl_PProtect.addchk( Panel, "Ignore Admins (no SuperAdmins)", "antispam", "admins" )
 
 	if cl_PProtect.Settings.Antispam[ "enabled" ] == 1 then
+
+		cl_PProtect.addchk( Panel, "Ignore Admins (no SuperAdmins)", "antispam", "admins" )
 
 		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:" )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
@@ -169,11 +170,12 @@ function cl_PProtect.PPMenu( Panel )
 	-- MAIN SETTINGS
 	cl_PProtect.addlbl( Panel, "General Settings:" )
 	cl_PProtect.addchk( Panel, "Enable PropProtection", "propprotection", "enabled" )
-	cl_PProtect.addchk( Panel, "Ignore Admins (no SuperAdmins)", "propprotection", "admins" )
-	cl_PProtect.addchk( Panel, "Allow Admins to use the Cleanup-Panel", "propprotection", "adminscleanup" )
-	cl_PProtect.addchk( Panel, "FPP-Mode (Owner under crosshair)", "propprotection", "fppmode" )
 	
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 1 then
+
+		cl_PProtect.addchk( Panel, "Ignore Admins (no SuperAdmins)", "propprotection", "admins" )
+		cl_PProtect.addchk( Panel, "Allow Admins to use the Cleanup-Panel", "propprotection", "adminscleanup" )
+		cl_PProtect.addchk( Panel, "FPP-Mode", "propprotection", "fppmode", "Owner will be shown under the crosshair" )
 
 		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
 		cl_PProtect.addchk( Panel, "Use-Protection", "propprotection", "useprotection" )
@@ -181,11 +183,13 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "Damage-Protection", "propprotection", "damageprotection" )
 		cl_PProtect.addchk( Panel, "GravGun-Protection", "propprotection", "gravgunprotection" )
 		cl_PProtect.addchk( Panel, "PlayerPickup-Protection", "propprotection", "playerpickup" )
+		cl_PProtect.addchk( Panel, "PropPickup-Protection", "propprotection", "proppickup", "Pick up props with 'use'-key" )
 
 		cl_PProtect.addlbl( Panel, "\nSpecial User-Restrictions:", "panel" )
-		cl_PProtect.addchk( Panel, "Allow Creator-Tool (spawn weapons with toolgun)", "propprotection", "creatorprotection" )
-		cl_PProtect.addchk( Panel, "Allow Prop-Driving", "propprotection", "propdriving" )
-		cl_PProtect.addchk( Panel, "Allow World Props (Physgun, Toolgun, ...)", "propprotection", "worldprops" )
+		cl_PProtect.addchk( Panel, "Allow Creator-Tool", "propprotection", "creatorprotection", "ie. Spawning weapons with the toolgun" )
+		cl_PProtect.addchk( Panel, "Allow Prop-Driving", "propprotection", "propdriving", "Allow Users to drive props over the context menu (c-key)" )
+		cl_PProtect.addchk( Panel, "Allow World Props", "propprotection", "worldprops", "Physgun, Toolgun, Use, ..." )
+		cl_PProtect.addchk( Panel, "Allow World Buttons/Doors", "propprotection", "worldbutton", "Allow Users to press World-Buttons/Doors" )
 
 		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
 		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "propdelete" )

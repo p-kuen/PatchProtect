@@ -80,10 +80,12 @@ sv_PProtect.Config.PropProtection = {
 	damageprotection = 1,
 	gravgunprotection = 1,
 	playerpickup = 1,
+	proppickup = 1,
 
 	creatorprotection = 0,
 	propdriving = 0,
 	worldprops = 0,
+	worldbutton = 0,
 
 	propdelete = 1,
 	adminprops = 0,

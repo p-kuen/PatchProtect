@@ -140,6 +140,7 @@ function sv_PProtect.CanUse( ply, ent )
 	if !ent:IsValid() then return false end
 
 	-- World-Entity
+	if ent.World and string.find( ent:GetClass(), "func_" ) and sv_PProtect.Settings.Propprotection[ "worldbutton" ] == 1 then return true end
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 
 	-- Check Owner
@@ -152,6 +153,33 @@ function sv_PProtect.CanUse( ply, ent )
 
 end
 hook.Add( "PlayerUse", "AllowUsing", sv_PProtect.CanUse )
+
+
+
+------------------------------
+--  PROP PICKUP PROTECTION  --
+------------------------------
+function sv_PProtect.CanPickup( ply, ent )
+
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+	if sv_PProtect.Settings.Propprotection[ "proppickup" ] == 0 then return true end
+
+	-- Check Entity
+	if !ent:IsValid() then return false end
+
+	-- World-Entity
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+
+	-- Check Owner
+	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "use" ) then
+		return true
+	else
+		sv_PProtect.Notify( ply, "You are not allowed to pickup this object!" )
+		return false
+	end
+
+end
+hook.Add( "AllowPlayerPickup", "PropPickup", sv_PProtect.CanPickup )
 
 
 
@@ -343,11 +371,13 @@ function sv_PProtect.SetWorldProps()
 
 	table.foreach( ents:GetAll(), function( id, ent )
 
-		if ent:IsValid() and ent:GetClass() == "prop_physics" then 
+		if string.find( tostring( ent:GetClass() ), "func_" ) or string.find( tostring( ent:GetClass() ), "prop_" ) then
 			ent.World = true
 		end
 		
 	end )
+
+	PrintTable( test )
 
 end
 hook.Add( "PersistenceLoad", "SetWorldOwnedEnts", sv_PProtect.SetWorldProps )

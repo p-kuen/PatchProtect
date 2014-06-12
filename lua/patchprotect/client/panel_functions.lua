@@ -110,12 +110,13 @@ end
 --  CHECKBOX  --
 ----------------
 
-function cl_PProtect.addchk( derma, text, setting_type, setting )
+function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip )
 
 	local chk = vgui.Create( "DCheckBoxLabel" )
 
 	chk:SetText( text )
 	chk:SetDark( true )
+	if isstring( tooltip ) then chk:SetTooltip( tooltip ) end
 
 	if setting_type == "antispam" then
 		chk:SetChecked( tobool( cl_PProtect.Settings.Antispam[ setting ] ) )
