@@ -24,7 +24,7 @@ function cl_PProtect.ASMenu( Panel )
 
 	if cl_PProtect.Settings.Antispam[ "enabled" ] == 1 then
 
-		cl_PProtect.addchk( Panel, "Ignore Admins (no SuperAdmins)", "antispam", "admins" )
+		cl_PProtect.addchk( Panel, "Ignore Admins (not SuperAdmins)", "antispam", "admins" )
 
 		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:" )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
@@ -173,9 +173,9 @@ function cl_PProtect.PPMenu( Panel )
 	
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 1 then
 
-		cl_PProtect.addchk( Panel, "Ignore Admins (no SuperAdmins)", "propprotection", "admins" )
-		cl_PProtect.addchk( Panel, "Allow Admins to use the Cleanup-Panel", "propprotection", "adminscleanup" )
-		cl_PProtect.addchk( Panel, "FPP-Mode", "propprotection", "fppmode", "Owner will be shown under the crosshair" )
+		cl_PProtect.addchk( Panel, "Ignore Admins (not SuperAdmins)", "propprotection", "admins" )
+		cl_PProtect.addchk( Panel, "Admins can use Cleanup-Menu", "propprotection", "adminscleanup" )
+		cl_PProtect.addchk( Panel, "FPP-Mode (Owner HUD)", "propprotection", "fppmode", "Owner will be shown under the crosshair" )
 
 		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
 		cl_PProtect.addchk( Panel, "Use-Protection", "propprotection", "useprotection" )

@@ -377,8 +377,6 @@ function sv_PProtect.SetWorldProps()
 		
 	end )
 
-	PrintTable( test )
-
 end
 hook.Add( "PersistenceLoad", "SetWorldOwnedEnts", sv_PProtect.SetWorldProps )
 
