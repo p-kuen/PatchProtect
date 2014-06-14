@@ -1,18 +1,31 @@
-----------------
---  SETTINGS  --
-----------------
+--------------------------
+--  ADMIN/SHARED CHECK  --
+--------------------------
 
+-- Check Admin
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
 	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or ply:IsSuperAdmin() then return true end
+
 	if ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then
+
 		if ent:IsValid() and ent:CPPIGetOwner() != nil then
 			if ent:CPPIGetOwner():IsSuperAdmin() == true then return false else return true end
 		else
 			return true
 		end
+
 	end
+
 	return false
+
+end
+
+-- Check Shared
+function sv_PProtect.isShared( ent, mode )
+
+	if ent.share == nil then return false end
+	if ent.share[ mode ] == true then return true else return false end
 
 end
 
@@ -64,12 +77,16 @@ end
 -- GENERAL CHECK-PLAYER FUNCTION
 function sv_PProtect.CanTouch( ply, ent )
 
+	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
 	-- Check Entity
 	if !ent:IsValid() or ent:IsWorld() then return false end
 
-	-- World-Entity
+	-- Check Shared
+	if sv_PProtect.isShared( ent, "phys" ) then return true end
+
+	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 
 	-- Check Owner
@@ -92,9 +109,15 @@ hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CanTouch )
 
 function sv_PProtect.CanToolProtection( ply, trace, tool )
 	
-	if sv_PProtect.CheckPPAdmin( ply, trace.Entity ) then return true end
+	local ent = trace.Entity
 
-	-- Check Creatorprotection
+	-- Check Admin
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+
+	-- Check Entity
+	if !ent:IsValid() and !ent:IsWorld() then return false end
+
+	-- Check Protection
 	if tool == "creator" and sv_PProtect.Settings.Propprotection[ "creatorprotection" ] == 1 then
 		return true
 	elseif tool == "creator" and sv_PProtect.Settings.Propprotection[ "creatorprotection" ] == 0 then
@@ -102,11 +125,10 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 		return false
 	end
 
-	-- Check Entity
-	local ent = trace.Entity
-	if !ent:IsValid() and !ent:IsWorld() then return false end
+	-- Check Shared
+	if sv_PProtect.isShared( ent, "tool" ) then return true end
 
-	-- World-Entity
+	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 
 	-- Check Owner
@@ -127,13 +149,19 @@ end
 
 function sv_PProtect.CanUse( ply, ent )
 	
+	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
-	if sv_PProtect.Settings.Propprotection[ "useprotection" ] == 0 then return true end
 
 	-- Check Entity
 	if !ent:IsValid() then return false end
 
-	-- World-Entity
+	-- Check Protection
+	if sv_PProtect.Settings.Propprotection[ "useprotection" ] == 0 then return true end
+
+	-- Check Shared
+	if sv_PProtect.isShared( ent, "use" ) then return true end
+
+	-- Check World
 	if ent.World and string.find( ent:GetClass(), "func_" ) and sv_PProtect.Settings.Propprotection[ "worldbutton" ] == 1 then return true end
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 
@@ -155,13 +183,16 @@ hook.Add( "PlayerUse", "AllowUsing", sv_PProtect.CanUse )
 ------------------------------
 function sv_PProtect.CanPickup( ply, ent )
 
+	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
-	if sv_PProtect.Settings.Propprotection[ "proppickup" ] == 0 then return true end
 
 	-- Check Entity
 	if !ent:IsValid() then return false end
 
-	-- World-Entity
+	-- Check Protection
+	if sv_PProtect.Settings.Propprotection[ "proppickup" ] == 0 then return true end
+
+	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 
 	-- Check Owner
@@ -184,13 +215,16 @@ hook.Add( "AllowPlayerPickup", "PropPickup", sv_PProtect.CanPickup )
 -- CAN PROPERTY
 function sv_PProtect.CanProperty( ply, property, ent )
 
+	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
 	-- Check Entity
 	if !ent:IsValid() then return false end
+
+	-- Check Persist
 	if property == "persist" then return false end
 
-	-- World-Entity
+	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 	
 	-- Check Owner
@@ -207,15 +241,13 @@ hook.Add( "CanProperty", "AllowProperty", sv_PProtect.CanProperty )
 -- CAN DRIVE
 function sv_PProtect.CanDrive( ply, ent )
 	
+	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
-	-- Check Entity
-	if !ent:IsValid() then return false end
-
-	-- Check Driveprotection
+	-- Check Protection
 	if sv_PProtect.Settings.Propprotection[ "propdriving" ] == 0 then return false end
 
-	-- World-Entity
+	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 
 	-- Check Owner
@@ -278,16 +310,18 @@ hook.Add( "EntityTakeDamage", "AllowEntityDamage", sv_PProtect.CanDamage )
 
 function sv_PProtect.CanPhysReload( weapon, ply )
 	
-	if sv_PProtect.CheckPPAdmin( ply, ply:GetEyeTrace().Entity ) then return end
-
-	-- Check Reloadprotection
-	if sv_PProtect.Settings.Propprotection[ "reloadprotection" ] == 0 then return end
-	
-	-- Check Entity
 	local ent = ply:GetEyeTrace().Entity
+
+	-- Check Admin
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
+
+	-- Check Entity
 	if !ent:IsValid() then return false end
 
-	-- World-Entity
+	-- Check Protection
+	if sv_PProtect.Settings.Propprotection[ "reloadprotection" ] == 0 then return end
+	
+	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return end
 
 	-- Check Owner
@@ -309,15 +343,16 @@ hook.Add( "OnPhysgunReload", "AllowPhysReload", sv_PProtect.CanPhysReload )
 
 function sv_PProtect.CanGravPunt( ply, ent )
 
+	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
-
-	-- Check Gravgunprotection
-	if sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] == 0 then return false end
 
 	-- Check Entity
 	if !ent:IsValid() then return false end
 
-	-- World-Entity
+	-- Check Protection
+	if sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] == 0 then return false end
+
+	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 
 	-- Check Owner
@@ -333,15 +368,16 @@ hook.Add( "GravGunPunt", "AllowGravPunt", sv_PProtect.CanGravPunt )
 
 function sv_PProtect.CanGravPickup( ply, ent )
 
+	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
-
-	-- Check Gravgunprotection
-	if sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] == 0 then return false end
 
 	-- Check Entity
 	if !ent:IsValid() then return false end
 
-	-- World-Entity
+	-- Check Protection
+	if sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] == 0 then return false end
+
+	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 0 then
 		local worlddrop = true
 	end
@@ -398,5 +434,33 @@ net.Receive( "pprotect_get_owner", function( len, pl )
 		net.WriteEntity( ent:CPPIGetOwner() )
 		net.WriteString( info )
 	net.Send( pl )
+
+end )
+
+-- SEND NEW SHARED ENTITY INFORMAITON TO THE CLIENT
+sv_PProtect.shared = nil
+net.Receive( "pprotect_get_sharedEntity", function( len, pl )
+	
+	local entity = net.ReadEntity()
+	sv_PProtect.shared = entity
+
+	net.Start( "pprotect_send_sharedEntity" )
+
+		if istable( entity.share ) then
+			net.WriteTable( entity.share )
+		else
+			net.WriteTable( {} )
+		end
+
+	net.Send( pl )
+
+end )
+
+-- SAVE NEW SHARED ENTITY
+net.Receive( "pprotect_save_sharedEntity", function( len, pl )
+	
+	local entity = sv_PProtect.shared
+	local info = net.ReadTable()
+	if istable( info ) then entity.share = info end
 
 end )

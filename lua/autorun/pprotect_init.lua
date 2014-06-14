@@ -15,7 +15,7 @@ cl_PProtect.Settings = {}
 
 AddCSLuaFile()
 AddCSLuaFile( "patchprotect/client/hud.lua" )
-AddCSLuaFile( "patchprotect/client/panel_functions.lua" )
+AddCSLuaFile( "patchprotect/client/derma.lua" )
 AddCSLuaFile( "patchprotect/client/panel.lua" )
 AddCSLuaFile( "patchprotect/client/buddy.lua" )
 
@@ -36,7 +36,7 @@ if SERVER then
 else
 
 	include( "patchprotect/client/hud.lua" )
-	include( "patchprotect/client/panel_functions.lua" )
+	include( "patchprotect/client/derma.lua" )
 	include( "patchprotect/client/panel.lua" )
 	include( "patchprotect/client/buddy.lua" )
 

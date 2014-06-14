@@ -126,9 +126,9 @@ hook.Add( "PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientBeam )
 
 
 
----------------------
---  PROPERTY MENU  --
----------------------
+------------------------
+--  ADD BLOCKED PROP  --
+------------------------
 
 -- ADD TO BLOCKED PROPS
 properties.Add( "addblockedprop", {
@@ -155,6 +155,72 @@ properties.Add( "addblockedprop", {
 	end
 
 } )
+
+
+
+---------------------
+--  SHARED ENTITY  --
+---------------------
+
+cl_PProtect.shared = nil
+cl_PProtect.sharedEnt = {
+	phys = false,
+	tool = false,
+	use = false
+}
+
+properties.Add( "shareprops", {
+
+	MenuLabel = "Share entity",
+	Order = 2003,
+	MenuIcon = "icon16/group.png",
+
+	Filter = function( self, ent, ply )
+
+		if !ent:IsValid() or cl_PProtect.Settings.Propprotection[ "enabled" ] == 0 or ent:IsPlayer() then return false end
+		if LocalPlayer():IsSuperAdmin() or Owner == LocalPlayer() then return true else return false end
+
+	end,
+
+	Action = function( self, ent )
+
+		net.Start( "pprotect_get_sharedEntity" )
+			net.WriteEntity( ent )
+		net.SendToServer()
+
+		cl_PProtect.shared = ent
+		
+	end
+
+} )
+
+-- SHARE ENTITY PANEL
+net.Receive( "pprotect_send_sharedEntity", function( len )
+
+	-- Receive Table
+	local entity = cl_PProtect.shared
+	local info = net.ReadTable()
+	local model = entity:GetModel()
+
+	if table.Count( info ) != 0 then
+		cl_PProtect.sharedEnt = info
+	else
+		cl_PProtect.sharedEnt = {
+			phys = false,
+			use = false,
+			tool = false
+		}
+	end
+
+	-- Frame
+	local frame = cl_PProtect.addframe2( 150, 150, "Share Prop: " .. model )
+
+	-- Checkboxes
+	cl_PProtect.addchk2( frame, "Physgun", 10, 30, cl_PProtect.sharedEnt.phys, "phys" )
+	cl_PProtect.addchk2( frame, "Toolgun", 10, 55, cl_PProtect.sharedEnt.tool, "tool" )
+	cl_PProtect.addchk2( frame, "Use", 10, 80, cl_PProtect.sharedEnt.use, "use" )
+	
+end )
 
 
 
@@ -197,13 +263,7 @@ function cl_PProtect.DrawNote( self, key, value )
 
 end
 
-
-
-----------------
---  PAINTING  --
-----------------
-
--- SHOW MESSAGES
+-- PAINTING
 local function Paint()
 
 	if not cl_PProtect.Notes then return end
@@ -220,12 +280,7 @@ local function Paint()
 end
 hook.Add( "HUDPaint", "RoundedBoxHud", Paint )
 
-
-
-----------------------------
---  CLIENTSIDE FUNCTIONS  --
-----------------------------
-
+-- ADD MESSAGES
 function cl_PProtect.Info( text, mode )
 	
 	local curmsg = {}

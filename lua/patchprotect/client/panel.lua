@@ -47,11 +47,11 @@ function cl_PProtect.ASMenu( Panel )
 		end
 
 		--Cooldown/Spamaction
-		cl_PProtect.addlbl( Panel, "\nHow many seconds to wait, till the next prop-spawn/tool-fire:" )
+		cl_PProtect.addlbl( Panel, "\nDuration till the next prop-spawn/tool-fire:" )
 		cl_PProtect.addsld( Panel, 0, 10, "Cooldown (Seconds)", "antispam", cl_PProtect.Settings.Antispam[ "cooldown" ], 1, "cooldown" )
-		cl_PProtect.addlbl( Panel, "How many props, till admins and superadmins get informed:" )
+		cl_PProtect.addlbl( Panel, "Number of props till admins get warned:" )
 		cl_PProtect.addsld( Panel, 0, 40, "Amount", "antispam", cl_PProtect.Settings.Antispam[ "spam" ], 0, "spam" )
-		cl_PProtect.addlbl( Panel, "What should happen, if the player topped the spam-limit:" )
+		cl_PProtect.addlbl( Panel, "Autotmatic action after spaming:" )
 		cl_PProtect.addcmb( Panel, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction", cl_PProtect.Settings.Antispam[ "spamaction" ] )
 
 		if cl_PProtect.Settings.Antispam[ "spamaction" ] == 4 then

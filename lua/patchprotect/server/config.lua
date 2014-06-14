@@ -18,9 +18,14 @@ util.AddNetworkString( "pprotect_new_counts" )
 util.AddNetworkString( "pprotect_send_buddy" )
 util.AddNetworkString( "pprotect_send_other_buddy" )
 
--- HUD
+-- OWNER
 util.AddNetworkString( "pprotect_get_owner" )
 util.AddNetworkString( "pprotect_send_owner" )
+
+-- SHARED ENTITY
+util.AddNetworkString( "pprotect_get_sharedEntity" )
+util.AddNetworkString( "pprotect_send_sharedEntity" )
+util.AddNetworkString( "pprotect_save_sharedEntity" )
 
 -- ANTISPAMED TOOLS, BLOCKED PROPS, BLOCKED TOOLS
 util.AddNetworkString( "pprotect_antispamtools" )
