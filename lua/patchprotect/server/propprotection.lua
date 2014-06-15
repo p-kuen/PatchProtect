@@ -43,7 +43,7 @@ if cleanup then
 	function cleanup.Add( ply, enttype, ent )
 
 		-- Prop-Block
-		if ent:GetModel() != nil then
+		if ent != nil and ent:IsValid() and ent:GetModel() != nil then
 			local mdl = string.lower( ent:GetModel() )
 			if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] == 1 and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, mdl ) or string.find( mdl, "/../" ) then
 				sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
