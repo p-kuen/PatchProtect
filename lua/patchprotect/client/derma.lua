@@ -6,7 +6,6 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 
 	-- FRAME
 	local frm = vgui.Create( "DFrame" )
-
 	frm:SetPos( surface.ScreenWidth() / 2 - ( w / 2 ), surface.ScreenHeight() / 2 - ( h / 2 ) )
 	frm:SetSize( w, h )
 	frm:SetTitle( title )
@@ -18,8 +17,9 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	
 	function frm:Paint()
 
-		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 255, 150, 0, 255 ) )
-		draw.RoundedBox( 0, 2, 22, frm:GetWide() - 4, frm:GetTall() - 24, Color( 220, 220, 220, 255 ) )
+		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 200, 150, 30, 255 ) )
+		draw.RoundedBox( 0, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 150, 0, 255 ) )
+		draw.RoundedBox( 0, 5, 25, frm:GetWide() - 10, frm:GetTall() - 30, Color( 255, 255, 255, 255 ) )
 
 	end
 
@@ -28,19 +28,23 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 
 		local btn = vgui.Create( "DButton", frm )
 		btn:Center()
-		btn:SetPos( w - 42, 0 )
-		btn:SetSize( 40, 18 )
+		btn:SetPos( w - 50, 0 )
+		btn:SetSize( 45, 20 )
 		btn:SetText( "x" )
 		btn:SetDark( false )
 		btn:SetColor( Color( 255, 255, 255, 255 ) )
 		btn:SetFont( "PatchProtectFont" )
 
 		function btn:Paint()
-			draw.RoundedBox( 0, 0, 0, 40, 18, Color( 200, 50, 0, 255 ) )
+
+			draw.RoundedBox( 0, 0, 1, 45, 20, Color( 199, 80, 80, 255 ) )
+
 		end
 
 		function btn:OnMousePressed()
+
 			frm:Close()
+
 		end
 
 	end
@@ -54,7 +58,21 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	list:SetSpacing( 5 )
 	list:EnableHorizontal( horizontal )
 	list:EnableVerticalScrollbar( true )
+	list.VBar.btnUp:SetVisible( false )
+	list.VBar.btnDown:SetVisible( false )
 	if btntext == nil then return list end
+
+	function list.VBar:Paint()
+
+		draw.RoundedBox( 0, 0, 0, 20, list.VBar:GetTall(), Color( 255, 255, 255, 255 ) )
+
+	end
+
+	function list.VBar.btnGrip:Paint()
+
+		draw.RoundedBox( 0, 8, 0, 5, list.VBar.btnGrip:GetTall(), Color( 0, 0, 0, 150 ) )
+
+	end
 
 	-- Save Button
 	local btn = vgui.Create( "DButton", frm )
@@ -63,9 +81,10 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	btn:SetSize( 100, 25 )
 	btn:SetText( btntext )
 	btn:SetDark( true )
-	btn:SetFont( "PatchProtectFont" )
+	btn:SetFont( "PatchProtectFont_small" )
+	btn:SetColor( Color( 50, 50, 50 ) )
 
-	function btn:OnMousePressed()
+	btn.DoClick = function()
 
 		if btnarg == nil or type( btnarg ) != "table" then return end
 			
@@ -83,8 +102,13 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 
 	function btn:Paint()
 
-		draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 255, 150, 0, 255 ) )
-		draw.RoundedBox( 0, 1, 1, btn:GetWide() - 2, btn:GetTall() - 2, Color( 255, 255, 255, 255 ) )
+		if btn.Depressed then
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0, 255 ) )
+		elseif btn.Hovered then
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220, 255 ) )
+		else
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200, 255 ) )
+		end
 
 	end
 
@@ -95,7 +119,6 @@ end
 function cl_PProtect.addframe2( w, h, title )
 
 	local frm = vgui.Create( "DFrame" )
-
 	frm:SetSize( w, h )
 	frm:SetPos( surface.ScreenWidth() / 2 - ( w / 2 ), surface.ScreenHeight() / 2 - ( h / 2 ) )
 	frm:SetTitle( title )
@@ -118,9 +141,10 @@ function cl_PProtect.addframe2( w, h, title )
 	btn:SetSize( 70, 20 )
 	btn:SetText( "Save" )
 	btn:SetDark( true )
-	btn:SetFont( "PatchProtectFont" )
+	btn:SetFont( "PatchProtectFont_small" )
+	btn:SetColor( Color( 50, 50, 50 ) )
 
-	function btn:OnMousePressed()
+	btn.DoClick = function()
 
 		net.Start( "pprotect_save_sharedEntity" )
 			net.WriteTable( cl_PProtect.sharedEnt )
@@ -132,8 +156,13 @@ function cl_PProtect.addframe2( w, h, title )
 
 	function btn:Paint()
 
-		draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 255, 150, 0, 255 ) )
-		draw.RoundedBox( 0, 1, 1, btn:GetWide() - 2, btn:GetTall() - 2, Color( 255, 255, 255, 255 ) )
+		if btn.Depressed then
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0, 255 ) )
+		elseif btn.Hovered then
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220, 255 ) )
+		else
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200, 255 ) )
+		end
 
 	end
 
@@ -170,6 +199,7 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip )
 	chk:SetText( text )
 	chk:SetDark( true )
 	if isstring( tooltip ) then chk:SetTooltip( tooltip ) end
+	chk.Label:SetFont( "PatchProtectFont_small" )
 
 	if setting_type == "antispam" then
 		chk:SetChecked( tobool( cl_PProtect.Settings.Antispam[ setting ] ) )
@@ -219,6 +249,7 @@ function cl_PProtect.addchk2( derma, text, x, y, checked, mode )
 	chk:SetText( text )
 	chk:SetChecked( checked )
 	chk:SetDark( true )
+	chk.Label:SetFont( "PatchProtectFont_small" )
 	
 	function chk:OnChange()
 
@@ -246,11 +277,11 @@ end
 function cl_PProtect.addbtn( derma, text, nettext, args )
 
 	local btn = vgui.Create( "DButton" )
-
 	btn:Center()
 	btn:SetText( text )
 	btn:SetDark( true )
 	btn:SetFont( "PatchProtectFont_small" )
+	btn:SetColor( Color( 50, 50, 50 ) )
 
 	btn.DoClick = function()
 
@@ -295,8 +326,13 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 
 	function btn:Paint()
 
-		draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 255, 150, 0, 255 ) )
-		draw.RoundedBox( 0, 1, 1, btn:GetWide() - 2, btn:GetTall() - 2, Color( 255, 255, 255, 255 ) )
+		if btn.Depressed then
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0, 255 ) )
+		elseif btn.Hovered then
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220, 255 ) )
+		else
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200, 255 ) )
+		end
 
 	end
 
@@ -318,6 +354,10 @@ function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, s
 	sld:SetText( text )
 	sld:SetDark( true )
 	sld:SetValue( value )
+	sld.TextArea:SetFont( "PatchProtectFont_small" )
+	sld.Label:SetFont( "PatchProtectFont_small" )
+	sld.Scratch:SetVisible( false )
+	sld.Slider:SetNotches( nil )
 
 	sld.ValueChanged = function( self, number )
 		
@@ -336,6 +376,18 @@ function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, s
 	end
 
 	derma:AddItem( sld )
+
+	function sld.Slider.Knob:Paint()
+
+		draw.RoundedBox( 0, 0, sld.Slider.Knob:GetTall() * 0.1, sld.Slider.Knob:GetWide() * 0.75, sld.Slider.Knob:GetTall() * 0.75, Color( 255, 150, 0, 255 ) )
+	
+	end
+
+	function sld.Slider:Paint()
+
+		draw.RoundedBox( 0, sld.Slider.Knob:GetTall() * 0.25, sld.Slider:GetTall() / 2 - ( sld.Slider:GetTall() / 16 ), sld.Slider:GetWide() - sld.Slider.Knob:GetTall(), sld.Slider:GetTall() / 8, Color( 150, 150, 150, 255 ) )
+	
+	end
 
 end
 
