@@ -118,8 +118,9 @@ function cl_PProtect.addframe2( w, h, title )
 	frm:MakePopup()
 
 	function frm:Paint()
-		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 255, 150, 0, 255 ) )
-		draw.RoundedBox( 0, 2, 22, frm:GetWide() - 4, frm:GetTall() - 24, Color( 220, 220, 220, 255 ) )
+		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 200, 150, 30, 255 ) )
+		draw.RoundedBox( 0, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 150, 0, 255 ) )
+		draw.RoundedBox( 0, 5, 25, frm:GetWide() - 10, frm:GetTall() - 30, Color( 255, 255, 255, 255 ) )
 	end
 
 	-- Save Button
@@ -234,6 +235,7 @@ function cl_PProtect.addchk2( derma, text, x, y, checked, mode )
 	chk:SetChecked( checked )
 	chk:SetDark( true )
 	chk.Label:SetFont( "PatchProtectFont_small" )
+	chk:SizeToContents()
 	
 	function chk:OnChange()
 
@@ -375,10 +377,10 @@ end
 function cl_PProtect.addcmb( derma, items, cmb_type, value )
 	
 	local cmb = vgui.Create( "DComboBox" )
-	cmb:ChooseOptionID( value )
 	table.foreach( items, function( key, choice )
 		cmb:AddChoice( choice )
 	end )
+	cmb:ChooseOptionID( value )
 	
 	cmb.OnSelect = function( panel, index, value, data )
 		cl_PProtect.Settings.Antispam[ cmb_type ] = index

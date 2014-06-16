@@ -41,24 +41,24 @@ function sv_PProtect.spamaction( ply )
 	if action == 2 then
 
 		cleanup.CC_Cleanup( ply, "", {} )
-		sv_PProtect.InfoNotify( ply, "Cleaned all your props! (Reason: Spam)" )
-		sv_PProtect.AdminNotify( "Cleaned " .. ply:Nick() .. "s props! (Reason: Spam)" )
-		print( "[PatchProtect - AntiSpam] Cleaned " .. ply:Nick() .. "s props! (Reason: Spam)" )
+		sv_PProtect.InfoNotify( ply, "Cleaned all your props! ( Reason: spamming )" )
+		sv_PProtect.AdminNotify( "Cleaned " .. ply:Nick() .. "s props! ( Reason: spamming )" )
+		print( "[PatchProtect - AntiSpam] Cleaned " .. ply:Nick() .. "s props! ( Reason: spamming )" )
 
 	--Kick
 	elseif action == 3 then
 
-		ply:Kick( "Kicked by PProtect: Spammer" )
-		sv_PProtect.AdminNotify( ply:Nick() .. " was kicked from the server! (Reason: Spam)" )
-		print( "[PatchProtect - AntiSpam] " .. ply:Nick() .. " was kicked from the server!" )
+		ply:Kick( "Kicked by PatchProtect! ( Reason: spamming )" )
+		sv_PProtect.AdminNotify( "Kicked " .. ply:Nick() .. "! ( Reason: spamming )" )
+		print( "[PatchProtect - AntiSpam] Kicked " .. ply:Nick() .. "! ( Reason: spamming )" )
 
 	--Ban
 	elseif action == 4 then
 
-		local banminutes = sv_PProtect.Settings.Antispam[ "bantime" ]
-		ply:Ban(banminutes, "Banned by PProtect: Spammer")
-		sv_PProtect.AdminNotify(ply:Nick() .. " was banned from the server for " .. banminutes .. " minutes! (Reason: Spam)")
-		print("[PatchProtect - AntiSpam] " .. ply:Nick() .. " was banned from the server for " .. banminutes .. " minutes!")
+		local mins = sv_PProtect.Settings.Antispam[ "bantime" ]
+		ply:Ban( mins, "Banned by PatchProtect! ( Reason: spamming )" )
+		sv_PProtect.AdminNotify( "Banned " .. ply:Nick() .. " for " .. mins .. " minutes! ( Reason: spamming )" )
+		print( "[PatchProtect - AntiSpam] Banned " .. ply:Nick() .. " for " .. mins .. " minutes! ( Reason: spamming )" )
 
 	--ConCommand
 	elseif action == 5 then
@@ -83,16 +83,15 @@ end
 
 function sv_PProtect.CanSpawn( ply, mdl )
 
-	if sv_PProtect.CheckASAdmin( ply ) == true then return true end
-	if ply.duplicate == true then return true end
+	if sv_PProtect.CheckASAdmin( ply ) then return true end
+	if ply.duplicate then return true end
 	
-	--Check Cooldown
+	-- Cooldown
 	if CurTime() < ply.propcooldown then
 		
-		--Add one Prop to the Warning-List
 		ply.props = ply.props + 1
 
-		--Notify Admin about the Spam
+		-- Notify admin
 		if ply.props >= sv_PProtect.Settings.Antispam[ "spam" ] then
 					
 			sv_PProtect.AdminNotify( ply:Nick() .. " is spamming!" )
@@ -102,13 +101,12 @@ function sv_PProtect.CanSpawn( ply, mdl )
 
 		end
 
-		--Block Prop-Spawning
 		sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.propcooldown - CurTime(), 1 ) .. " seconds" )
 		return false
 
 	end
 
-	--Set new Cooldown
+	-- Reset cooldown
 	ply.props = 0
 	ply.propcooldown = CurTime() + sv_PProtect.Settings.Antispam[ "cooldown" ]
 
@@ -141,46 +139,38 @@ end
 -- TOOL-ANTISPAM
 function sv_PProtect.CanTool( ply, trace, tool )
 	
-	if sv_PProtect.CheckASAdmin( ply ) == true then return true end
-	
-	local isBlocked = false
-	local isAntiSpam = false
+	if sv_PProtect.CheckASAdmin( ply ) then return true end
 
-	--Tool-Block
-	if sv_PProtect.Settings.Antispam[ "toolblock" ] == 1 then
-		isBlocked = sv_PProtect.Settings.Blockedtools[ tool ]
-	end
-	if isBlocked == true then return false end
-
-	--Tool-Antispam
-	if sv_PProtect.Settings.Antispam[ "toolprotection" ] == 1 then
-		isAntiSpam = sv_PProtect.Settings.Antispamtools[ tool ]
+	-- Block
+	if sv_PProtect.Settings.Antispam[ "toolblock" ] == 1 and sv_PProtect.Settings.Blockedtools[ tool ] then
+		sv_PProtect.Notify( ply, "This tool is in the blacklist!" )
+		return false
 	end
 
-	if isAntiSpam then
+	-- Antispam
+	if sv_PProtect.Settings.Antispam[ "toolprotection" ] == 1 and sv_PProtect.Settings.Antispamtools[ tool ] then
 		
-		--Check Cooldown
+		-- Cooldown
 		if CurTime() < ply.toolcooldown then
 
-			--Add one Tool-Action to the Warning-List
 			ply.tools = ply.tools + 1
 
-			--Notify Admin about Tool-Spam
+			-- Notify admin
 			if ply.tools >= sv_PProtect.Settings.Antispam[ "spam" ] then
 
-				sv_PProtect.AdminNotify( "PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
+				sv_PProtect.AdminNotify( ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
+				print( "PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
 				ply.tools = 0
-				spamaction( ply )
+				sv_PProtect.spamaction( ply )
 
 			end
 
-			--Block Toolgun-Firing
-			sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.toolcooldown - CurTime(), 1) .. " seconds" )
+			sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.toolcooldown - CurTime(), 1 ) .. " seconds" )
 			return false
 
 		else
 
-			--Set new Cooldown
+			-- Reset cooldown
 			ply.tools = 0
 			ply.toolcooldown = CurTime() + sv_PProtect.Settings.Antispam[ "cooldown" ]
 
@@ -189,7 +179,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	end
 	
  	sv_PProtect.CheckDupe( ply, tool )
-	if sv_PProtect.CanToolProtection( ply, trace, tool ) == false then return false end
+	if !sv_PProtect.CanToolProtection( ply, trace, tool ) then return false end
 
 end
 hook.Add( "CanTool", "FiringToolgun", sv_PProtect.CanTool )

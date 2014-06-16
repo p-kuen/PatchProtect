@@ -1,19 +1,16 @@
---------------------------
---  ADMIN/SHARED CHECK  --
---------------------------
+----------------------
+--  GENERAL CHECKS  --
+----------------------
 
--- Check Admin
+-- CHECK ADMIN
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
 	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or ply:IsSuperAdmin() then return true end
 
 	if ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then
 
-		if ent:IsValid() and ent:CPPIGetOwner() != nil then
-			if ent:CPPIGetOwner():IsSuperAdmin() == true then return false else return true end
-		else
-			return true
-		end
+		if ent:IsValid() and ent:CPPIGetOwner() != nil and ent:CPPIGetOwner():IsSuperAdmin() then return false end
+		return true
 
 	end
 
@@ -21,7 +18,7 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 
 end
 
--- Check Shared
+-- CHECK SHARED
 function sv_PProtect.isShared( ent, mode )
 
 	if ent.share == nil then return false end
@@ -46,7 +43,7 @@ if cleanup then
 		if ent != nil and ent:IsValid() and ent:GetModel() != nil then
 			local mdl = string.lower( ent:GetModel() )
 			if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] == 1 and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, mdl ) or string.find( mdl, "/../" ) then
-				sv_PProtect.Notify( ply, "This Prop is in the Blacklist!" )
+				sv_PProtect.Notify( ply, "This prop is in the blacklist!" )
 				ent:Remove()
 				return false
 			end
@@ -118,9 +115,7 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	if !ent:IsValid() and !ent:IsWorld() then return false end
 
 	-- Check Protection
-	if tool == "creator" and sv_PProtect.Settings.Propprotection[ "creatorprotection" ] == 1 then
-		return true
-	elseif tool == "creator" and sv_PProtect.Settings.Propprotection[ "creatorprotection" ] == 0 then
+	if tool == "creator" and sv_PProtect.Settings.Propprotection[ "creatorprotection" ] == 0 then
 		sv_PProtect.Notify( ply, "You are not allowed to use the creator tool!" )
 		return false
 	end
@@ -181,6 +176,7 @@ hook.Add( "PlayerUse", "AllowUsing", sv_PProtect.CanUse )
 ------------------------------
 --  PROP PICKUP PROTECTION  --
 ------------------------------
+
 function sv_PProtect.CanPickup( ply, ent )
 
 	-- Check Admin
@@ -272,10 +268,13 @@ function sv_PProtect.CanDamage( ent, info )
 	local Owner = ent:CPPIGetOwner()
 	local Attacker = info:GetAttacker()
 
+	-- Check Entity
 	if !ent:IsValid() or ent:IsPlayer() then return false end
 
+	-- Check Protection
 	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or sv_PProtect.Settings.Propprotection[ "damageprotection" ] == 0 then return end
 	
+	-- Check Owner
 	if Attacker:IsPlayer() and Owner != Attacker and !sv_PProtect.isBuddy( Owner, Attacker, "damage" ) then
 
 		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then return end
@@ -289,13 +288,9 @@ function sv_PProtect.CanDamage( ent, info )
 
 		end )
 
-	elseif !Attacker:IsPlayer() then 
+	elseif !Attacker:IsPlayer() then return false
 
-		return false
-
-	elseif Attacker:IsPlayer() and Owner == Attacker then 
-
-		return
+	elseif Attacker:IsPlayer() and Owner == Attacker then return
 
 	end
 
@@ -379,11 +374,11 @@ function sv_PProtect.CanGravPickup( ply, ent )
 
 	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 0 then
-		local worlddrop = true
+		local worldprop = true
 	end
 
 	-- Check Owner
-	if ply != ent:CPPIGetOwner() or worlddrop then
+	if ply != ent:CPPIGetOwner() or worldprop then
 		sv_PProtect.Notify( ply, "You are not allowed to use the Grav-Gun on this object!" )
 		ply:DropObject()
 	end
@@ -401,7 +396,7 @@ function sv_PProtect.SetWorldProps()
 
 	table.foreach( ents:GetAll(), function( id, ent )
 
-		if string.find( tostring( ent:GetClass() ), "func_" ) or string.find( tostring( ent:GetClass() ), "prop_" ) then
+		if string.find( ent:GetClass(), "func_" ) or string.find( ent:GetClass(), "prop_" ) then
 			ent.World = true
 		end
 		
