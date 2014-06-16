@@ -1,14 +1,3 @@
----------------------
---  CREATE TABLES  --
----------------------
-
-sh_PProtect = {}
-sv_PProtect = {}
-cl_PProtect = {}
-cl_PProtect.Settings = {}
-
-
-
 -------------------------
 --  LOAD CLIENT FILES  --
 -------------------------
@@ -26,6 +15,11 @@ AddCSLuaFile( "patchprotect/client/buddy.lua" )
 
 if SERVER then
 
+	-- Create tables
+	sv_PProtect = {}
+	sv_PProtect.Settings = {}
+
+	-- Include server-files
 	include( "patchprotect/server/config.lua" )
 	include( "patchprotect/server/settings.lua" )
 	include( "patchprotect/server/antispam.lua" )
@@ -35,6 +29,11 @@ if SERVER then
 
 else
 
+	-- Create tables
+	cl_PProtect = {}
+	cl_PProtect.Settings = {}
+
+	-- Include client-files
 	include( "patchprotect/client/hud.lua" )
 	include( "patchprotect/client/derma.lua" )
 	include( "patchprotect/client/panel.lua" )

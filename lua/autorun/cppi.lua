@@ -1,6 +1,6 @@
 CPPI = CPPI or {}
-CPPI.CPPI_DEFER = 102013 --October 2013, 
-CPPI.CPPI_NOTIMPLEMENTED = 8084 --PT (Patcher and Ted)
+CPPI.CPPI_DEFER = 062014 -- July 2014
+CPPI.CPPI_NOTIMPLEMENTED = 8084 -- PT ( Patcher and Ted )
 
 -- NAME
 function CPPI:GetName()
@@ -12,7 +12,7 @@ end
 -- VERSION
 function CPPI:GetVersion()
 
-	return "1.0.1"
+	return "1.2"
 
 end
 
@@ -30,21 +30,23 @@ function CPPI:GetNameFromUID( uid )
 
 end
 
--- PLAYER (METATABLE)
+-- PLAYER ( METATABLE )
 local PLAYER = FindMetaTable( "Player" )
+
 function PLAYER:CPPIGetFriends()
 
 	return CPPI.CPPI_DEFER
 
 end
 
--- ENTITY (METATABLE)
+-- ENTITY ( METATABLE )
 local ENTITY = FindMetaTable( "Entity" )
+
 function ENTITY:CPPIGetOwner()
 
 	local Owner = self.PatchPPOwner
 
-	if not IsValid( Owner ) or not Owner:IsPlayer() then return Owner, self.PatchPPOwnerID end
+	if not Owner:IsValid() or not Owner:IsPlayer() then return Owner, self.PatchPPOwnerID end
 	return Owner, Owner:UniqueID()
 
 end
@@ -110,32 +112,28 @@ if SERVER then
 	-- CAN TOOL
 	function ENTITY:CPPICanTool( ply, tool )
 
-		local Value = sv_PProtect.canTool( ply, nil, tool, self )
-
-		if Value != false and Value != true then Value = true end
-
-		return Value -- fourth argument is entity, to avoid traces.
+		return sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool )
 
 	end
 
 	-- CAN PHYSGUN
 	function ENTITY:CPPICanPhysgun( ply )
 
-		return sv_PProtect.checkPlayer(ply, self)
+		return sv_PProtect.CanTouch( ply, self )
 
 	end
 
 	-- CAN PICKUP
 	function ENTITY:CPPICanPickup( ply )
 
-		return sv_PProtect.checkPlayer(ply, self)
+		return sv_PProtect.CanPickup( ply, self )
 
 	end
 
 	-- CAN PUNT
 	function ENTITY:CPPICanPunt( ply )
 
-		return sv_PProtect.checkPlayer(ply, self)
+		return sv_PProtect.CanGravPunt( ply, self )
 
 	end
 

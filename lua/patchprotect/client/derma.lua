@@ -16,11 +16,9 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	frm:MakePopup()
 	
 	function frm:Paint()
-
 		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 200, 150, 30, 255 ) )
 		draw.RoundedBox( 0, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 150, 0, 255 ) )
 		draw.RoundedBox( 0, 5, 25, frm:GetWide() - 10, frm:GetTall() - 30, Color( 255, 255, 255, 255 ) )
-
 	end
 
 	-- Close Button
@@ -36,9 +34,7 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 		btn:SetFont( "PatchProtectFont" )
 
 		function btn:Paint()
-
 			draw.RoundedBox( 0, 0, 1, 45, 20, Color( 199, 80, 80, 255 ) )
-
 		end
 
 		function btn:OnMousePressed()
@@ -63,15 +59,11 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	if btntext == nil then return list end
 
 	function list.VBar:Paint()
-
 		draw.RoundedBox( 0, 0, 0, 20, list.VBar:GetTall(), Color( 255, 255, 255, 255 ) )
-
 	end
 
 	function list.VBar.btnGrip:Paint()
-
 		draw.RoundedBox( 0, 8, 0, 5, list.VBar.btnGrip:GetTall(), Color( 0, 0, 0, 150 ) )
-
 	end
 
 	-- Save Button
@@ -101,7 +93,6 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	end
 
 	function btn:Paint()
-
 		if btn.Depressed then
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0, 255 ) )
 		elseif btn.Hovered then
@@ -109,7 +100,6 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 		else
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200, 255 ) )
 		end
-
 	end
 
 	return list
@@ -128,10 +118,8 @@ function cl_PProtect.addframe2( w, h, title )
 	frm:MakePopup()
 
 	function frm:Paint()
-
 		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 255, 150, 0, 255 ) )
 		draw.RoundedBox( 0, 2, 22, frm:GetWide() - 4, frm:GetTall() - 24, Color( 220, 220, 220, 255 ) )
-
 	end
 
 	-- Save Button
@@ -155,7 +143,6 @@ function cl_PProtect.addframe2( w, h, title )
 	end
 
 	function btn:Paint()
-
 		if btn.Depressed then
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0, 255 ) )
 		elseif btn.Hovered then
@@ -163,7 +150,6 @@ function cl_PProtect.addframe2( w, h, title )
 		else
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200, 255 ) )
 		end
-
 	end
 
 	return frm
@@ -230,12 +216,10 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip )
 	end
 
 	function chk:PaintOver()
-
 		draw.RoundedBox( 0, 0, 0, chk:GetTall(), chk:GetTall(), Color( 150, 150, 150, 255 ) )
 		draw.RoundedBox( 0, 1, 1, chk:GetTall() - 2, chk:GetTall() - 2, Color( 240, 240, 240, 255 ) )
 		if chk:GetChecked() == false then return end
 		draw.RoundedBox( 0, 2, 2, chk:GetTall() - 4, chk:GetTall() - 4, Color( 255, 150, 0, 255 ) )
-
 	end
 
 	derma:AddItem( chk )
@@ -258,12 +242,10 @@ function cl_PProtect.addchk2( derma, text, x, y, checked, mode )
 	end
 
 	function chk:PaintOver()
-
 		draw.RoundedBox( 0, 0, 0, chk:GetTall(), chk:GetTall(), Color( 150, 150, 150, 255 ) )
 		draw.RoundedBox( 0, 1, 1, chk:GetTall() - 2, chk:GetTall() - 2, Color( 240, 240, 240, 255 ) )
 		if chk:GetChecked() == false then return end
 		draw.RoundedBox( 0, 2, 2, chk:GetTall() - 4, chk:GetTall() - 4, Color( 255, 150, 0, 255 ) )
-
 	end
 
 end
@@ -325,7 +307,6 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 	derma:AddItem( btn )
 
 	function btn:Paint()
-
 		if btn.Depressed then
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0, 255 ) )
 		elseif btn.Hovered then
@@ -333,7 +314,6 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 		else
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200, 255 ) )
 		end
-
 	end
 
 end
@@ -347,7 +327,6 @@ end
 function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, sld_type2 )
 
 	local sld = vgui.Create( "DNumSlider" )
-
 	sld:SetMin( min )
 	sld:SetMax( max )
 	sld:SetDecimals( decimals )
@@ -378,15 +357,11 @@ function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, s
 	derma:AddItem( sld )
 
 	function sld.Slider.Knob:Paint()
-
 		draw.RoundedBox( 0, 0, sld.Slider.Knob:GetTall() * 0.1, sld.Slider.Knob:GetWide() * 0.75, sld.Slider.Knob:GetTall() * 0.75, Color( 255, 150, 0, 255 ) )
-	
 	end
 
 	function sld.Slider:Paint()
-
 		draw.RoundedBox( 0, sld.Slider.Knob:GetTall() * 0.25, sld.Slider:GetTall() / 2 - ( sld.Slider:GetTall() / 16 ), sld.Slider:GetWide() - sld.Slider.Knob:GetTall(), sld.Slider:GetTall() / 8, Color( 150, 150, 150, 255 ) )
-	
 	end
 
 end
@@ -400,12 +375,11 @@ end
 function cl_PProtect.addcmb( derma, items, cmb_type, value )
 	
 	local cmb = vgui.Create( "DComboBox" )
-
+	cmb:ChooseOptionID( value )
 	table.foreach( items, function( key, choice )
 		cmb:AddChoice( choice )
 	end )
-	cmb:ChooseOptionID( value )
-
+	
 	cmb.OnSelect = function( panel, index, value, data )
 		cl_PProtect.Settings.Antispam[ cmb_type ] = index
 	end
@@ -423,10 +397,8 @@ end
 function cl_PProtect.addlvw( derma, cols, filltype )
 
 	local lvw = vgui.Create( "DListView" )
-	
 	lvw:SetMultiSelect( false )
 	lvw:SetSize( 150, 200 )
-	
 	table.foreach( cols, function( key, value )
 		lvw:AddColumn( value )
 	end )
@@ -442,9 +414,11 @@ function cl_PProtect.addlvw( derma, cols, filltype )
 		end
 
 		function lvw:OnClickLine( line, selected )
+
 			cl_PProtect.Buddy.BuddyToRemove[0] = tostring( line:GetValue(4) )
 			lvw:ClearSelection()
 			line:SetSelected( true )
+			
 		end
 		
 	elseif filltype == "all_players" then
