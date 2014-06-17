@@ -74,6 +74,9 @@ end
 -- GENERAL CHECK-PLAYER FUNCTION
 function sv_PProtect.CanTouch( ply, ent )
 
+	-- Check Player
+	if ent:IsPlayer() then return end
+	
 	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
