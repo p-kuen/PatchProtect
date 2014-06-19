@@ -21,20 +21,22 @@ end
 function pprotect_new_counts( ply, cmd, args )
 
 	local counts = {}
-	counts[ "global" ] = 0
-	counts[ "players" ] = {}
 
 	-- GLOBAL COUNT
+	local global_count = 0
 	table.foreach( ents.GetAll(), function( key, value )
 		if value:IsValid() and value:GetClass() == "prop_physics" and value.World != true then
-			counts[ "global" ] = counts[ "global" ] + 1
+			global_count = global_count + 1
 		end
 	end )
+	counts[ "global" ] = global_count
 
 	-- PLAYER COUNT
+	local player_counts = {}
 	table.foreach( player.GetAll(), function( key, player )
-		counts.players[ player ] = pprotect_count_props( player )
+		player_counts[ player ] = pprotect_count_props( player )
 	end )
+	counts[ "players" ] = player_counts
 
 	net.Start( "pprotect_new_counts" )
 		net.WriteTable( counts )

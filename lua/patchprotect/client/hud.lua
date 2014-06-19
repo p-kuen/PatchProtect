@@ -310,7 +310,7 @@ net.Receive( "pprotect_notify_info", function( len )
 
 	table.insert( cl_PProtect.Notes, curmsg )
 
-	LocalPlayer():EmitSound("buttons/button9.wav", 100, 100)
+	LocalPlayer():EmitSound( "buttons/button9.wav", 100, 100 )
 
 end )
 
@@ -326,7 +326,8 @@ net.Receive( "pprotect_notify_admin", function( len )
 
 		table.insert( cl_PProtect.Notes, curmsg )
 
-		LocalPlayer():EmitSound("ambient/alarms/klaxon1.wav", 100, 100)
+		if cl_PProtect.Settings.Antispam[ "adminalertsound" ] == 0 then return end
+		LocalPlayer():EmitSound( "ambient/alarms/klaxon1.wav", 100, 100 )
 
 	end
 
@@ -340,15 +341,15 @@ net.Receive( "pprotect_notify_normal", function( len )
 	curmsg.time = SysTime()
 	curmsg.mode = "normal"
 
-	table.foreach( cl_PProtect.Notes, function(key, value)
+	table.foreach( cl_PProtect.Notes, function( key, value )
 
 		if value.mode == "normal" then
 
-			table.remove(cl_PProtect.Notes, key)
+			table.remove( cl_PProtect.Notes, key)
 
 		end
 
-	end)
+	end )
 
 	table.insert( cl_PProtect.Notes, curmsg )
 
