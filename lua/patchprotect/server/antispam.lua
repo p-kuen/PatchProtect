@@ -128,7 +128,7 @@ hook.Add( "PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.CanSpawn )
 -- CHECK IF THE PLAYER FIRED WITH THE DUPLICATOR OR WITH A SIMILAR TOOL
 function sv_PProtect.CheckDupe( ply, tool )
 
-	if tool == "duplicator" or tool == "adv_duplicator" or tool == "advdupe2" then
+	if tool == "duplicator" or tool == "adv_duplicator" or tool == "advdupe2" or tool == "wire_adv" then
 		ply.duplicate = true
 	else
 		ply.duplicate = false
