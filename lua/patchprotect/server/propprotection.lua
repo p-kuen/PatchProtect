@@ -50,7 +50,7 @@ if cleanup then
 		end
 		
 		-- Duplicator exception
-		if ply.duplicate == true and enttype != "duplicates" and enttype != "AdvDupe2" then
+		if ply.duplicate == true and enttype != "duplicates" and enttype != "AdvDupe2" and !string.find( enttype, "wire_" ) then
 			ply.duplicate = false
 		end
 
