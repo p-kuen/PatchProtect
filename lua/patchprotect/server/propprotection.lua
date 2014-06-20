@@ -285,6 +285,8 @@ function sv_PProtect.CanDamage( ent, info )
 		info:SetDamage( 0 )
 		timer.Simple( 0.1, function()
 
+			if !ent:IsValid() then return end
+
 			if ent:IsOnFire() then
 				ent:Extinguish()
 			end
