@@ -36,7 +36,7 @@ surface.CreateFont( "PatchProtectFont_small", {
 -- SHOW OWNER
 function cl_PProtect.showOwner()
 	
-	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 0 then return end
+	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 0 or LocalPlayer():Alive() then return end
 
 	-- Check Entity
 	local entity = LocalPlayer():GetEyeTrace().Entity
