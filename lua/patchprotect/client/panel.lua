@@ -80,7 +80,7 @@ net.Receive( "get_antispam_tool", function()
 
 	cl_PProtect.Settings.Antispamtools = net.ReadTable()
 
-	tsFrm = cl_PProtect.addframe( 250, 350, "Set antispamed Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.Antispamtools, "pprotect_send_antispamed_tools" )
+	tsFrm = cl_PProtect.addfrm( 250, 350, "Set antispamed Tools:", true, true, false, "Save Tools", cl_PProtect.Settings.Antispamtools, "pprotect_send_antispamed_tools" )
 
 	for key, value in SortedPairs( cl_PProtect.Settings.Antispamtools ) do
 
@@ -95,7 +95,7 @@ net.Receive( "get_blocked_prop", function()
 
 	cl_PProtect.Settings.Blockedprops = net.ReadTable()
 
-	psFrm = cl_PProtect.addframe( 800, 600, "Set blocked Props:", false, false, true, "Save Props", cl_PProtect.Settings.Blockedprops, "pprotect_send_blocked_props" )
+	psFrm = cl_PProtect.addfrm( 800, 600, "Set blocked Props:", true, true, true, "Save Props", cl_PProtect.Settings.Blockedprops, "pprotect_send_blocked_props" )
 
 	table.foreach( cl_PProtect.Settings.Blockedprops, function( key, value )
 
@@ -115,10 +115,7 @@ net.Receive( "get_blocked_prop", function()
 		end
 
 		function Icon:Paint()
-
-			draw.RoundedBox( 4, 0, 0, Icon:GetWide(), Icon:GetTall(), Color( 200, 200, 200, 255 ) )
-			draw.RoundedBox( 4, 3, 3, Icon:GetWide() - 6, Icon:GetTall() - 6, Color( 240, 240, 240, 255 ) )
-			
+			draw.RoundedBox( 0, 0, 0, Icon:GetWide(), Icon:GetTall(), Color( 200, 200, 200, 255 ) )
 		end
 
 		psFrm:AddItem( Icon )
@@ -136,7 +133,7 @@ net.Receive( "get_blocked_tool", function()
 
 	cl_PProtect.Settings.Blockedtools = net.ReadTable()
 
-	tsFrm = cl_PProtect.addframe( 250, 350, "Set blocked Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.Blockedtools, "pprotect_send_blocked_tools" )
+	tsFrm = cl_PProtect.addfrm( 250, 350, "Set blocked Tools:", true, true, false, "Save Tools", cl_PProtect.Settings.Blockedtools, "pprotect_send_blocked_tools" )
 
 	for key, value in SortedPairs( cl_PProtect.Settings.Blockedtools ) do
 

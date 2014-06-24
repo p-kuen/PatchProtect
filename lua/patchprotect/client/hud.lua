@@ -213,12 +213,12 @@ net.Receive( "pprotect_send_sharedEntity", function( len )
 	end
 
 	-- Frame
-	local frame = cl_PProtect.addframe2( 150, 150, "Share Prop: " .. model )
+	local frame = cl_PProtect.addfrm( 175, 175, "Share Prop: " .. model, false, true, false, "Save", cl_PProtect.sharedEnt, "pprotect_save_sharedEntity" )
 
 	-- Checkboxes
-	cl_PProtect.addchk2( frame, "Physgun", 10, 30, cl_PProtect.sharedEnt.phys, "phys" )
-	cl_PProtect.addchk2( frame, "Toolgun", 10, 55, cl_PProtect.sharedEnt.tool, "tool" )
-	cl_PProtect.addchk2( frame, "Use", 10, 80, cl_PProtect.sharedEnt.use, "use" )
+	cl_PProtect.addchk( frame, "Physgun", "share", "phys" )
+	cl_PProtect.addchk( frame, "Toolgun", "share", "tool" )
+	cl_PProtect.addchk( frame, "Use", "share", "use" )
 	
 end )
 

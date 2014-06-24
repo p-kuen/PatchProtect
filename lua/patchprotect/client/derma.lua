@@ -2,7 +2,7 @@
 --  FRAME  --
 -------------
 
-function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, btnarg, nettext )
+function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, btnarg, nettext )
 
 	-- FRAME
 	local frm = vgui.Create( "DFrame" )
@@ -12,13 +12,14 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 	frm:SetVisible( true )
 	frm:SetDraggable( drag )
 	frm:ShowCloseButton( false )
-	frm:SetBackgroundBlur( true )
+	frm.lblTitle:SetColor( Color( 75, 75, 75 ) )
+	frm.lblTitle:SetFont( "PatchProtectFont" )
 	frm:MakePopup()
 	
 	function frm:Paint()
 		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 200, 150, 30, 255 ) )
-		draw.RoundedBox( 0, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 150, 0, 255 ) )
-		draw.RoundedBox( 0, 5, 25, frm:GetWide() - 10, frm:GetTall() - 30, Color( 255, 255, 255, 255 ) )
+		draw.RoundedBox( 0, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 175, 0, 255 ) )
+		draw.RoundedBox( 0, 6, 24, frm:GetWide() - 12, frm:GetTall() - 30, Color( 255, 255, 255, 255 ) )
 	end
 
 	-- Close Button
@@ -26,7 +27,7 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 
 		local btn = vgui.Create( "DButton", frm )
 		btn:Center()
-		btn:SetPos( w - 50, 0 )
+		btn:SetPos( w - 51, 0 )
 		btn:SetSize( 45, 20 )
 		btn:SetText( "x" )
 		btn:SetDark( false )
@@ -34,42 +35,18 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 		btn:SetFont( "PatchProtectFont" )
 
 		function btn:Paint()
-			draw.RoundedBox( 0, 0, 1, 45, 20, Color( 199, 80, 80, 255 ) )
+			draw.RoundedBox( 0, 0, 0, 45, 20, Color( 199, 80, 80, 255 ) )
 		end
-
 		function btn:OnMousePressed()
-
 			frm:Close()
-
 		end
 
-	end
-
-	-- Category
-	local list = vgui.Create( "DPanelList", frm )
-	local ButtonSize = 0
-	list:SetPos( 10, 30 )
-	if btntext != nil then ButtonSize = 40 end
-	list:SetSize( w - 20, h - 40 - ButtonSize )
-	list:SetSpacing( 5 )
-	list:EnableHorizontal( horizontal )
-	list:EnableVerticalScrollbar( true )
-	list.VBar.btnUp:SetVisible( false )
-	list.VBar.btnDown:SetVisible( false )
-	if btntext == nil then return list end
-
-	function list.VBar:Paint()
-		draw.RoundedBox( 0, 0, 0, 20, list.VBar:GetTall(), Color( 255, 255, 255, 255 ) )
-	end
-
-	function list.VBar.btnGrip:Paint()
-		draw.RoundedBox( 0, 8, 0, 5, list.VBar.btnGrip:GetTall(), Color( 0, 0, 0, 150 ) )
 	end
 
 	-- Save Button
 	local btn = vgui.Create( "DButton", frm )
 	btn:Center()
-	btn:SetPos( w - 110, h - 35 )
+	btn:SetPos( w - 116, h - 41 )
 	btn:SetSize( 100, 25 )
 	btn:SetText( btntext )
 	btn:SetDark( true )
@@ -102,58 +79,28 @@ function cl_PProtect.addframe( w, h, title, drag, close, horizontal, btntext, bt
 		end
 	end
 
-	return list
+	-- Category
+	if category then
 
-end
+		local list = vgui.Create( "DPanelList", frm )
+		list:SetPos( 16, 34 )
+		list:SetSize( w - 32, h - 34 - 51 )
+		list:SetSpacing( 5 )
+		list:EnableHorizontal( horizontal )
+		list:EnableVerticalScrollbar( true )
+		list.VBar.btnUp:SetVisible( false )
+		list.VBar.btnDown:SetVisible( false )
 
-function cl_PProtect.addframe2( w, h, title )
-
-	local frm = vgui.Create( "DFrame" )
-	frm:SetSize( w, h )
-	frm:SetPos( surface.ScreenWidth() / 2 - ( w / 2 ), surface.ScreenHeight() / 2 - ( h / 2 ) )
-	frm:SetTitle( title )
-	frm:SetVisible( true )
-	frm:SetDraggable( false )
-	frm:ShowCloseButton( false )
-	frm:MakePopup()
-
-	function frm:Paint()
-		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 200, 150, 30, 255 ) )
-		draw.RoundedBox( 0, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 150, 0, 255 ) )
-		draw.RoundedBox( 0, 5, 25, frm:GetWide() - 10, frm:GetTall() - 30, Color( 255, 255, 255, 255 ) )
-	end
-
-	-- Save Button
-	local btn = vgui.Create( "DButton", frm )
-	btn:Center()
-	btn:SetPos( w - 80, h - 30 )
-	btn:SetSize( 70, 20 )
-	btn:SetText( "Save" )
-	btn:SetDark( true )
-	btn:SetFont( "PatchProtectFont_small" )
-	btn:SetColor( Color( 50, 50, 50 ) )
-
-	btn.DoClick = function()
-
-		net.Start( "pprotect_save_sharedEntity" )
-			net.WriteTable( cl_PProtect.sharedEnt )
-		net.SendToServer()
-
-		frm:Close()
-
-	end
-
-	function btn:Paint()
-		if btn.Depressed then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0, 255 ) )
-		elseif btn.Hovered then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220, 255 ) )
-		else
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200, 255 ) )
+		function list.VBar:Paint()
+			draw.RoundedBox( 0, 0, 0, 20, list.VBar:GetTall(), Color( 255, 255, 255, 255 ) )
 		end
-	end
+		function list.VBar.btnGrip:Paint()
+			draw.RoundedBox( 0, 8, 0, 5, list.VBar.btnGrip:GetTall(), Color( 0, 0, 0, 150 ) )
+		end
 
-	return frm
+		return list
+
+	end
 
 end
 
@@ -198,6 +145,8 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip )
 		chk:SetChecked( tobool( cl_PProtect.Settings.Antispamtools[ setting ] ) )
 	elseif setting_type == "buddy" then
 		chk:SetChecked( false )
+	elseif setting_type == "share" then
+		chk:SetChecked( cl_PProtect.sharedEnt[ setting ] )
 	end
 
 	function chk:OnChange()
@@ -212,6 +161,8 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip )
 			cl_PProtect.Settings.Antispamtools[ setting ] = chk:GetChecked() and true or false
 		elseif setting_type == "buddy" then
 			cl_PProtect.Buddy.RowType[ setting ] = chk:GetChecked() and "true" or "false"
+		elseif setting_type == "share" then
+			cl_PProtect.sharedEnt[ setting ] = chk:GetChecked()
 		end
 
 	end
@@ -224,31 +175,6 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip )
 	end
 
 	derma:AddItem( chk )
-
-end
-
-function cl_PProtect.addchk2( derma, text, x, y, checked, mode )
-
-	local chk = vgui.Create( "DCheckBoxLabel", derma )
-	chk:SetPos( x, y )
-	chk:SetText( text )
-	chk:SetChecked( checked )
-	chk:SetDark( true )
-	chk.Label:SetFont( "PatchProtectFont_small" )
-	chk:SizeToContents()
-	
-	function chk:OnChange()
-
-		cl_PProtect.sharedEnt[ mode ] = chk:GetChecked()
-
-	end
-
-	function chk:PaintOver()
-		draw.RoundedBox( 0, 0, 0, chk:GetTall(), chk:GetTall(), Color( 150, 150, 150, 255 ) )
-		draw.RoundedBox( 0, 1, 1, chk:GetTall() - 2, chk:GetTall() - 2, Color( 240, 240, 240, 255 ) )
-		if chk:GetChecked() == false then return end
-		draw.RoundedBox( 0, 2, 2, chk:GetTall() - 4, chk:GetTall() - 4, Color( 255, 150, 0, 255 ) )
-	end
 
 end
 
@@ -276,20 +202,16 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 		else
 
 			local savetable = {}
-
+			
 			net.Start( nettext )
 
 				if string.find( nettext, "pprotect_save_" ) then
-					
 					local a, b = string.find( nettext, "pprotect_save_" )
 					local tabletext = string.sub( nettext, b + 1, string.len( nettext ) )
 					tabletext = string.upper( string.sub( tabletext, 1, 1) ) .. string.sub( tabletext, 2, string.len( tabletext ) )
 					savetable = cl_PProtect.Settings[tabletext]
-
 				else
-					
 					savetable = args
-
 				end
 					
 				if savetable != nil then
