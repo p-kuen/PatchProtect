@@ -188,6 +188,7 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 
 	local btn = vgui.Create( "DButton" )
 	btn:Center()
+	btn:SetTall( 25 )
 	btn:SetText( text )
 	btn:SetDark( true )
 	btn:SetFont( "PatchProtectFont_small" )

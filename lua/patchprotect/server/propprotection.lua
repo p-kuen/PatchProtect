@@ -160,7 +160,8 @@ function sv_PProtect.CanUse( ply, ent )
 	if sv_PProtect.isShared( ent, "use" ) then return true end
 
 	-- Check World
-	if ent.World and string.find( ent:GetClass(), "func_" ) and sv_PProtect.Settings.Propprotection[ "worldbutton" ] == 1 then return true end
+	RunConsoleCommand( "say", ent:GetClass() )
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldbutton" ] == 1 then return true end
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
 
 	-- Check Owner
