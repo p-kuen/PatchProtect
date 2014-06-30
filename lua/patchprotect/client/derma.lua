@@ -341,6 +341,7 @@ function cl_PProtect.addlvw( derma, cols, filltype )
 		function lvw:OnClickLine( line, selected )
 
 			cl_PProtect.Buddy.BuddyToRemove[0] = tostring( line:GetValue(4) )
+			cl_PProtect.Buddy.BuddyToRemove[1] = tostring( line:GetValue(1) )
 			lvw:ClearSelection()
 			line:SetSelected( true )
 			

@@ -98,7 +98,7 @@ function cl_PProtect.AddBuddy( ply )
 		net.WriteString( tostring( cl_PProtect.Buddy.CurrentBuddy[0] ) )
 	net.SendToServer()
 	
-	cl_PProtect.Info( "Added " .. ply:Nick() .. " to the Buddy-List", "info" )
+	cl_PProtect.Info( "Added " .. cl_PProtect.Buddy.CurrentBuddy[1] .. " to the Buddy-List", "info" )
 	cl_PProtect.UpdateMenus()
 	cl_PProtect.SetBuddyVars( "add" )
 
@@ -119,7 +119,7 @@ function cl_PProtect.DeleteBuddy( ply )
 
 	cl_PProtect.sendBuddies( cl_PProtect.Buddy.Buddies )
 
-	cl_PProtect.Info( "Deleted " .. ply:Nick() .. " from the Buddy-List", "info" )
+	cl_PProtect.Info( "Deleted " .. cl_PProtect.Buddy.BuddyToRemove[1] .. " from the Buddy-List", "info" )
 	cl_PProtect.UpdateMenus()
 	cl_PProtect.SetBuddyVars( "delete" )
 	
