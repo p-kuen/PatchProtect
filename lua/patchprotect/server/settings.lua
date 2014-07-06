@@ -134,7 +134,7 @@ end
 -- LOAD SETTINGS
 sv_PProtect.Settings.Antispam = sv_PProtect.loadSQLSettings( "adminalertsound", "pprotect_antispam", sv_PProtect.Config.AntiSpam, "AntiSpam" )
 sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntiSpamTools()
-sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "proppickup", "pprotect_propprotection", sv_PProtect.Config.PropProtection, "PropProtection" )
+sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "adminssuperadmins", "pprotect_propprotection", sv_PProtect.Config.PropProtection, "PropProtection" )
 sv_PProtect.Settings.Blockedprops = sv_PProtect.setBlockedProps()
 sv_PProtect.Settings.Blockedtools = sv_PProtect.setBlockedTools()
 

@@ -172,6 +172,9 @@ function cl_PProtect.PPMenu( Panel )
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 1 then
 
 		cl_PProtect.addchk( Panel, "Ignore Admins (not SuperAdmins)", "propprotection", "admins" )
+		if cl_PProtect.Settings.Propprotection[ "admins" ] == 1 then
+			cl_PProtect.addchk( Panel, "Admins can use SuperAdmins-Props", "propprotection", "adminssuperadmins", "Touch, Tool, Use, ..." )
+		end
 		cl_PProtect.addchk( Panel, "Admins can use Cleanup-Menu", "propprotection", "adminscleanup" )
 		cl_PProtect.addchk( Panel, "FPP-Mode (Owner HUD)", "propprotection", "fppmode", "Owner will be shown under the crosshair" )
 
