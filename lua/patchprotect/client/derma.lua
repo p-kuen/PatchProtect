@@ -333,14 +333,14 @@ function cl_PProtect.addlvw( derma, cols, filltype )
 		if cl_PProtect.Buddy.Buddies != nil then
 			
 			table.foreach( cl_PProtect.Buddy.Buddies, function( key, value )
-				lvw:AddLine( tostring( value[ "nick" ] ), value[ "permission" ], "testSID", value[ "uniqueid" ] )
+				lvw:AddLine( tostring( value[ "nick" ] ), value[ "permission" ], value[ "uniqueid" ] )
 			end )
 
 		end
 
 		function lvw:OnClickLine( line, selected )
 
-			cl_PProtect.Buddy.BuddyToRemove[0] = tostring( line:GetValue(4) )
+			cl_PProtect.Buddy.BuddyToRemove[0] = tostring( line:GetValue(3) )
 			cl_PProtect.Buddy.BuddyToRemove[1] = tostring( line:GetValue(1) )
 			lvw:ClearSelection()
 			line:SetSelected( true )

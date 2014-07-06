@@ -233,7 +233,7 @@ function cl_PProtect.BMenu( Panel )
 
 	-- BUDDY CONTROLS
 	cl_PProtect.addlbl( Panel, "Your Buddies:" )
-	cl_PProtect.addlvw( Panel, { "Name", "Permission", "SteamID", "UniqueID" } , "my_buddies" )
+	cl_PProtect.addlvw( Panel, { "Name", "Permission", "UniqueID" } , "my_buddies" )
 	cl_PProtect.addbtn( Panel, "Delete selected buddy" , "", function() cl_PProtect.DeleteBuddy( LocalPlayer() ) end )
 	
 	cl_PProtect.addlbl( Panel, "\nAdd a new buddy:" )
