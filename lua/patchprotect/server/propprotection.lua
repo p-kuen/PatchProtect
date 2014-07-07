@@ -221,7 +221,10 @@ function sv_PProtect.CanProperty( ply, property, ent )
 	if !ent:IsValid() then return false end
 
 	-- Check Persist
-	if property == "persist" then return false end
+	if property == "persist" and !ply:IsSuperAdmin() then
+		sv_PProtect.Notify( ply, "You are not allowed to make this object persistant!" )
+		return false
+	end
 
 	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
