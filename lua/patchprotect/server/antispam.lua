@@ -211,11 +211,13 @@ net.Receive( "pprotect_send_blocked_props_cpanel", function( len, pl )
 	local Prop = net.ReadString()
 
 	if !table.HasValue( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) ) then
-
+		print("vorher")
+		PrintTable( sv_PProtect.Settings.Blockedprops )
 		table.insert( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) )
-
+		print("nachher")
+PrintTable( sv_PProtect.Settings.Blockedprops )
 		--Save into SQL-Table
-		sv_PProtect.saveBlockedData( sv_PProtect.Settings.Blockedprops, "props" )
+		sv_PProtect.saveBlockedProps( sv_PProtect.Settings.Blockedprops )
 		
 		sv_PProtect.InfoNotify( pl, "Saved " .. Prop .. " to blocked props!" )
 		print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " added " .. Prop .. " to the blocked props!" )
@@ -233,7 +235,7 @@ net.Receive( "pprotect_send_blocked_props", function( len, pl )
 	
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
 	sv_PProtect.Settings.Blockedprops = net.ReadTable()
-	sv_PProtect.saveBlockedData( sv_PProtect.Settings.Blockedprops, "props" )
+	sv_PProtect.saveBlockedProps( sv_PProtect.Settings.Blockedprops )
 
 	sv_PProtect.InfoNotify( pl, "Saved all blocked props!" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-prop list!" )
@@ -282,7 +284,7 @@ net.Receive( "pprotect_send_blocked_tools", function( len, pl )
 	
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
 	sv_PProtect.Settings.Blockedtools = net.ReadTable()
-	sv_PProtect.saveBlockedData( sv_PProtect.Settings.Blockedtools, "tools" )
+	sv_PProtect.saveBlockedTools( sv_PProtect.Settings.Blockedtools )
 
 	sv_PProtect.InfoNotify( pl, "Saved all blocked Tools!" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-tools list!" )

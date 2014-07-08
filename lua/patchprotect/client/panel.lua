@@ -80,7 +80,7 @@ net.Receive( "get_antispam_tool", function()
 
 	cl_PProtect.Settings.Antispamtools = net.ReadTable()
 
-	tsFrm = cl_PProtect.addfrm( 250, 350, "Set antispamed Tools:", true, true, false, "Save Tools", cl_PProtect.Settings.Antispamtools, "pprotect_send_antispamed_tools" )
+	tsFrm = cl_PProtect.addfrm( 250, 350, "Set antispamed Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.Antispamtools, "pprotect_send_antispamed_tools" )
 
 	for key, value in SortedPairs( cl_PProtect.Settings.Antispamtools ) do
 
@@ -94,8 +94,8 @@ end )
 net.Receive( "get_blocked_prop", function()
 
 	cl_PProtect.Settings.Blockedprops = net.ReadTable()
-
-	psFrm = cl_PProtect.addfrm( 800, 600, "Set blocked Props:", true, true, true, "Save Props", cl_PProtect.Settings.Blockedprops, "pprotect_send_blocked_props" )
+	
+	psFrm = cl_PProtect.addfrm( 800, 600, "Set blocked Props:", false, true, true, "Save Props", cl_PProtect.Settings.Blockedprops, "pprotect_send_blocked_props" )
 
 	table.foreach( cl_PProtect.Settings.Blockedprops, function( key, value )
 
@@ -123,7 +123,7 @@ net.Receive( "get_blocked_prop", function()
 	end )
 
 	if table.Count( cl_PProtect.Settings.Blockedprops ) == 0 then
-		cl_PProtect.addlbl( psFrm, "Nothing here..." )
+		cl_PProtect.addlbl( psFrm, "Nothing..." )
 	end
 
 end )
@@ -133,7 +133,7 @@ net.Receive( "get_blocked_tool", function()
 
 	cl_PProtect.Settings.Blockedtools = net.ReadTable()
 
-	tsFrm = cl_PProtect.addfrm( 250, 350, "Set blocked Tools:", true, true, false, "Save Tools", cl_PProtect.Settings.Blockedtools, "pprotect_send_blocked_tools" )
+	tsFrm = cl_PProtect.addfrm( 250, 350, "Set blocked Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.Blockedtools, "pprotect_send_blocked_tools" )
 
 	for key, value in SortedPairs( cl_PProtect.Settings.Blockedtools ) do
 

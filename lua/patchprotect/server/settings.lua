@@ -32,85 +32,57 @@ function sv_PProtect.loadSQLSettings( sqltable, name )
 end
 
 -- ANTISPAMMED TOOLS
-function sv_PProtect.setAntiSpamTools()
+function sv_PProtect.setAntispamTools()
 
-	if sql.TableExists( "pprotect_antispam_tools" ) then
+	if !sql.TableExists( "pprotect_antispamtools" ) or !sql.Query( "SELECT tool FROM pprotect_antispamtools" ) then return {} end
 
-		local antispam_tools = sql.QueryRow( "SELECT * FROM pprotect_antispam_tools LIMIT 1" ) or {}
-		
-		table.foreach( antispam_tools, function( key, value )
+	local sql_tools = {}
+	table.foreach( sql.Query( "SELECT * FROM pprotect_antispamtools" ), function( ind, tool )
 
-			if value == "true" then
-				antispam_tools[ key ] = true
-			else
-				antispam_tools[ key ] = false
-			end
+		sql_tools[ tool.tool ] = tobool( tool.antispam )
 
-		end )
+	end )
 
-		return antispam_tools or {}
-
-	else
-
-		return {}
-
-	end
+	return sql_tools
 
 end
 
 -- BLOCKED PROPS
 function sv_PProtect.setBlockedProps()
 
-	if sql.TableExists( "pprotect_blockedprops" ) then
+	if !sql.TableExists( "pprotect_blockedprops" ) or !sql.Query( "SELECT id FROM pprotect_blockedprops" ) then return {} end
 
-		local sql_blocked_props = sql.QueryRow( "SELECT * FROM pprotect_blockedprops LIMIT 1" ) or {}
-		local blocked_props = {}
+	local sql_props = {}
+	table.foreach( sql.Query( "SELECT * FROM pprotect_blockedprops" ), function( ind, prop )
 
-		table.foreach( sql_blocked_props, function( id, prop )
-			table.insert( blocked_props, prop )
-		end )
+		sql_props[ tonumber( prop.id ) ] = prop.model
 
-		return blocked_props or {}
+	end )
 
-	else
-		
-		return {}
-
-	end
+	return sql_props
 
 end
 
 -- BLOCKED TOOLS
 function sv_PProtect.setBlockedTools()
 
-	if sql.TableExists( "pprotect_blockedtools" ) then
+	if !sql.TableExists( "pprotect_blockedtools" ) or !sql.Query( "SELECT tool FROM pprotect_blockedtools" ) then return {} end
 
-		local blocked_tools = sql.QueryRow( "SELECT * FROM pprotect_blockedtools LIMIT 1" ) or {}
-		
-		table.foreach( blocked_tools, function( key, value )
+	local sql_tools = {}
+	table.foreach( sql.Query( "SELECT * FROM pprotect_blockedtools" ), function( ind, tool )
 
-			if value == "true" then
-				blocked_tools[ key ] = true
-			else
-				blocked_tools[ key ] = false
-			end
+		sql_tools[ tool.tool ] = tobool( tool.blocked )
 
-		end )
+	end )
 
-		return blocked_tools or {}
-
-	else
-
-		return {}
-
-	end
+	return sql_tools
 
 end
 
 -- LOAD SETTINGS
 sv_PProtect.Settings.Antispam = sv_PProtect.loadSQLSettings( "pprotect_antispam", "Antispam" )
 sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "pprotect_propprotection", "Propprotection" )
-sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntiSpamTools()
+sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntispamTools()
 sv_PProtect.Settings.Blockedprops = sv_PProtect.setBlockedProps()
 sv_PProtect.Settings.Blockedtools = sv_PProtect.setBlockedTools()
 
@@ -163,62 +135,46 @@ net.Receive( "pprotect_save_propprotection", function( len, pl )
 end )
 
 -- ANTISPAMED TOOLS
-function sv_PProtect.saveAntiSpamTools( datatable )
+function sv_PProtect.saveAntiSpamTools( data )
 
-	local keys1 = {}
-	local keys2 = {}
-	local values = {}
+	sql.Query( "DROP TABLE pprotect_antispamtools" )
+	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_antispamtools ( tool TEXT, antispam TEXT )" )
 
-	if sql.TableExists( "pprotect_antispam_tools" ) then
-		sql.Query( "DROP TABLE pprotect_antispam_tools" )
-	end
+	table.foreach( data, function( tool, antispam )
 
-	if not sql.TableExists( "pprotect_antispam_tools" ) then
+		sql.Query( "INSERT INTO pprotect_antispamtools ( tool, antispam ) VALUES ( '" .. tool .. "', '" .. tostring( antispam ) .. "' )" )
 
-		table.foreach( datatable, function( k, v )
-			
-			table.insert( keys1, k .. " VARCHAR(255)" )
-			table.insert( keys2, "'" .. k .. "'" )
-			table.insert( values, "'" .. tostring( v ) .. "'" )
-
-		end )
-
-		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_antispam_tools( " .. table.concat( keys1, ", " ) .. " );" )
-		sql.Query( "INSERT INTO pprotect_antispam_tools( " .. table.concat( keys2, ", " ) .. " ) VALUES( " .. table.concat( values, ", " ) .. " )" )
-
-	end
+	end )
 	
 end
 
--- BLOCKED DATA
-function sv_PProtect.saveBlockedData( datatable, datatype )
+-- BLOCKED PROPS
+function sv_PProtect.saveBlockedProps( data )
 
-	local keys1 = {}
-	local keys2 = {}
-	local values = {}
+	sql.Query( "DROP TABLE pprotect_blockedprops" )
+	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blockedprops ( id INTEGER, model TEXT )" )
 
-	if sql.TableExists( "pprotect_blocked" .. datatype ) then
-		sql.Query( "DROP TABLE pprotect_blocked" .. datatype )
-	end
+	if !data or table.Count( data ) == 0 then return end
 
-	if not sql.TableExists( "pprotect_blocked" .. datatype ) then
+	table.foreach( data, function( id, model )
 
-		table.foreach( datatable, function( k, v )
-			if datatype == "props" then
-				table.insert( keys1, "prop_" .. k .. " VARCHAR(255)" )
-				table.insert( keys2, "'prop_" .. k .. "'" )
-				table.insert( values, "'" .. v .. "'" )
-			elseif datatype == "tools" then
-				table.insert( keys1, k .. " VARCHAR(255)" )
-				table.insert( keys2, "'" .. k .. "'" )
-				table.insert( values, "'" .. tostring( v ) .. "'" )
-			end
-		end )
+		sql.Query( "INSERT INTO pprotect_blockedprops ( id, model ) VALUES ( " .. id .. ", '" .. model .. "' )" )
 
-		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blocked" .. datatype .. "( " .. table.concat( keys1, ", " ) .. " );" )
-		sql.Query( "INSERT INTO pprotect_blocked" .. datatype .. "( " .. table.concat( keys2, ", " ) .. " ) VALUES( " .. table.concat( values, ", " ) .. " )" )
+	end )
+	
+end
 
-	end
+-- BLOCKED TOOLS
+function sv_PProtect.saveBlockedTools( data )
+
+	sql.Query( "DROP TABLE pprotect_blockedtools" )
+	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blockedtools ( tool TEXT, blocked TEXT )" )
+
+	table.foreach( data, function( tool, blocked )
+
+		sql.Query( "INSERT INTO pprotect_blockedtools ( tool, blocked ) VALUES ( '" .. tool .. "', '" .. tostring( blocked ) .. "' )" )
+
+	end )
 	
 end
 
