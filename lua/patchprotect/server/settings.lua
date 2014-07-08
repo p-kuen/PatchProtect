@@ -3,56 +3,32 @@
 -------------------------------
 
 -- ANTISPAM AND PROP PROTECTION
-function sv_PProtect.loadSQLSettings( sqlselect, sqltable, localtable, name )
+function sv_PProtect.loadSQLSettings( sqltable, name )
 
-	if !sql.Query( "SELECT * FROM " .. sqltable ) or !sql.Query( "SELECT " .. sqlselect .. " FROM " .. sqltable ) then
-		sql.Query( "DROP TABLE " .. sqltable )
-		MsgC(
-			Color(255, 0, 0),
-			"[PatchProtect] Removed old " .. name .. "-Table to get the new version of it!\n"
-		)
-	end
+	if !sql.Query( "SELECT setting FROM " .. sqltable ) then sql.Query( "DROP TABLE " .. sqltable ) end
+	sql.Query( "CREATE TABLE IF NOT EXISTS " .. sqltable .. " ( setting TEXT, value TEXT )" )
+	local SQLSettings = {}
 
-	if !sql.TableExists( sqltable ) then
-		
-		local settings = {}
-		local values = {}
-		local values2 = {}
+	-- Save/Load SQLSettings
+	table.foreach( sv_PProtect.Config[ name ], function( setting, value )
 
-		table.foreach( localtable, function( k, v )
+		if !sql.Query( "SELECT value FROM " .. sqltable .. " WHERE setting = '" .. setting .. "'" ) then
+			sql.Query( "INSERT INTO " .. sqltable .. " ( setting, value ) VALUES ( '" .. setting .. "', '" .. value .. "' )" )
+		end
 
-			local Type = type( v )
-			if Type == "number" then
-				if v > math.floor( v ) then Type = string.gsub( Type, "number", "DOUBLE" ) else Type = string.gsub( Type, "number", "INTEGER" ) end
-			end
-			Type = string.gsub( Type, "string", "VARCHAR(255)" )
-
-			table.insert( values2, tostring( k ) .. " " .. Type )
-			table.insert( settings, k )
-			if type( v ) == "string" then v = "'" .. v .. "'" end
-			table.insert( values, v )
-				
-		end )
-		
-		sql.Query( "CREATE TABLE IF NOT EXISTS " .. sqltable .. "(" .. table.concat( values2, ", " ) .. ");" )
-		sql.Query( "INSERT INTO " .. sqltable .. "(" .. table.concat( settings, ", " ) .. ") VALUES(" .. table.concat( values, ", " ) .. ")" )
-		
-		MsgC(
-			Color(0, 240, 100),
-			"[PatchProtect] Created new " .. name .. "-Table\n"
-		)
-
-	end
-
-	local SQLSettingsTable = sql.QueryRow( "SELECT * FROM " .. sqltable .. " LIMIT 1" )
-	table.foreach( SQLSettingsTable, function( setting, value )
-
-		if tonumber( value ) != nil then SQLSettingsTable[ setting ] = tonumber( value ) end
+		SQLSettings[ setting ] = sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = '" .. setting .. "'" )
 
 	end )
 
-	return SQLSettingsTable
-	
+	-- Convert String-Numbers to Numbers
+	table.foreach( SQLSettings, function( setting, value )
+
+		if tonumber( value ) != nil then SQLSettings[ setting ] = tonumber( value ) end
+
+	end )
+
+	return SQLSettings
+
 end
 
 -- ANTISPAMMED TOOLS
@@ -132,9 +108,9 @@ function sv_PProtect.setBlockedTools()
 end
 
 -- LOAD SETTINGS
-sv_PProtect.Settings.Antispam = sv_PProtect.loadSQLSettings( "adminalertsound", "pprotect_antispam", sv_PProtect.Config.AntiSpam, "AntiSpam" )
+sv_PProtect.Settings.Antispam = sv_PProtect.loadSQLSettings( "pprotect_antispam", "Antispam" )
+sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "pprotect_propprotection", "Propprotection" )
 sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntiSpamTools()
-sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "adminssuperadmins", "pprotect_propprotection", sv_PProtect.Config.PropProtection, "PropProtection" )
 sv_PProtect.Settings.Blockedprops = sv_PProtect.setBlockedProps()
 sv_PProtect.Settings.Blockedtools = sv_PProtect.setBlockedTools()
 
@@ -157,12 +133,10 @@ net.Receive( "pprotect_save_antispam", function( len, pl )
 	sv_PProtect.broadcastSettings()
 
 	-- SAVE TO SQL TABLES
-	table.foreach( sv_PProtect.Settings.Antispam, function( key, value )
-		if type( sv_PProtect.Settings.Antispam[ key ] ) == "number" then
-			sql.Query( "UPDATE pprotect_antispam SET " .. key .. " = " .. value )
-		else
-			sql.Query( "UPDATE pprotect_antispam SET " .. key .. " = '" .. value .. "'" )
-		end
+	table.foreach( sv_PProtect.Settings.Antispam, function( setting, value )
+
+		sql.Query( "UPDATE pprotect_antispam SET value = " .. tostring( value ) .. " WHERE setting = '" .. setting .. "'" )
+
 	end )
 
 	sv_PProtect.InfoNotify( pl, "Saved new AntiSpam-Settings" )
@@ -177,12 +151,10 @@ net.Receive( "pprotect_save_propprotection", function( len, pl )
 	sv_PProtect.broadcastSettings()
 
 	-- SAVE TO SQL TABLES
-	table.foreach( sv_PProtect.Settings.Propprotection, function( key, value )
-		if type( sv_PProtect.Settings.Propprotection[ key ] ) == "number" then
-			sql.Query( "UPDATE pprotect_propprotection SET " .. key .. " = " .. value )
-		else
-			sql.Query( "UPDATE pprotect_propprotection SET " .. key .. " = '" .. value .. "'" )
-		end
+	table.foreach( sv_PProtect.Settings.Propprotection, function( setting, value )
+		
+		sql.Query( "UPDATE pprotect_propprotection SET value = " .. tostring( value ) .. " WHERE setting = '" .. setting .. "'" )
+
 	end )
 
 	sv_PProtect.InfoNotify( pl, "Saved new PropProtection-Settings" )

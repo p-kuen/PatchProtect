@@ -55,7 +55,7 @@ util.AddNetworkString( "pprotect_notify_normal" )
 sv_PProtect.Config = {}
 
 -- ANTI SPAM
-sv_PProtect.Config.AntiSpam = {
+sv_PProtect.Config.Antispam = {
 
 	enabled = 1,
 	admins = 0,
@@ -74,7 +74,7 @@ sv_PProtect.Config.AntiSpam = {
 }
 
 -- PROP PROTECTION
-sv_PProtect.Config.PropProtection = {
+sv_PProtect.Config.Propprotection = {
 
 	enabled = 1,
 	admins = 0,
