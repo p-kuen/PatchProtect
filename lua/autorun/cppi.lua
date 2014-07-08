@@ -1,5 +1,5 @@
 CPPI = CPPI or {}
-CPPI.CPPI_DEFER = 062014 -- June 2014
+CPPI.CPPI_DEFER = 072014 -- July 2014
 CPPI.CPPI_NOTIMPLEMENTED = 8084 -- PT ( Patcher and Ted )
 
 -- NAME
@@ -12,7 +12,7 @@ end
 -- VERSION
 function CPPI:GetVersion()
 
-	return "1.2"
+	return "1.2.1"
 
 end
 

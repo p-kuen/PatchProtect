@@ -86,10 +86,7 @@ sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntispamedTools()
 sv_PProtect.Settings.Blockedprops = sv_PProtect.setBlockedProps()
 sv_PProtect.Settings.Blockedtools = sv_PProtect.setBlockedTools()
 
-MsgC(
-	Color(0, 255, 0),
-	"\n[PatchProtect] Successfully loaded!\n\n"
-)
+MsgC( Color( 255, 255, 0 ), "\n[PatchProtect]", Color( 255, 255, 255 ), " Successfully loaded!\n\n" )
 
 
 
