@@ -32,7 +32,7 @@ function sv_PProtect.loadSQLSettings( sqltable, name )
 end
 
 -- ANTISPAMMED TOOLS
-function sv_PProtect.setAntispamTools()
+function sv_PProtect.setAntispamedTools()
 
 	if !sql.TableExists( "pprotect_antispamtools" ) or !sql.Query( "SELECT tool FROM pprotect_antispamtools" ) then return {} end
 
@@ -82,7 +82,7 @@ end
 -- LOAD SETTINGS
 sv_PProtect.Settings.Antispam = sv_PProtect.loadSQLSettings( "pprotect_antispam", "Antispam" )
 sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "pprotect_propprotection", "Propprotection" )
-sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntispamTools()
+sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntispamedTools()
 sv_PProtect.Settings.Blockedprops = sv_PProtect.setBlockedProps()
 sv_PProtect.Settings.Blockedtools = sv_PProtect.setBlockedTools()
 

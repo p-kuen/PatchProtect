@@ -211,11 +211,9 @@ net.Receive( "pprotect_send_blocked_props_cpanel", function( len, pl )
 	local Prop = net.ReadString()
 
 	if !table.HasValue( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) ) then
-		print("vorher")
-		PrintTable( sv_PProtect.Settings.Blockedprops )
+
 		table.insert( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) )
-		print("nachher")
-PrintTable( sv_PProtect.Settings.Blockedprops )
+
 		--Save into SQL-Table
 		sv_PProtect.saveBlockedProps( sv_PProtect.Settings.Blockedprops )
 		
