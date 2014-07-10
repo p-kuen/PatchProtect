@@ -30,6 +30,7 @@ function cl_PProtect.ASMenu( Panel )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
 		cl_PProtect.addchk( Panel, "Tool-Block", "antispam", "toolblock" )
 		cl_PProtect.addchk( Panel, "Prop-Block", "antispam", "propblock" )
+		cl_PProtect.addchk( Panel, "Block prop in other prop", "antispam", "propinprop" )
 		cl_PProtect.addchk( Panel, "Admin-Alert Sound", "antispam", "adminalertsound" )
 
 		--Tool Protection

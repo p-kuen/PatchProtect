@@ -63,6 +63,7 @@ sv_PProtect.Config.Antispam = {
 	toolprotection = 1,
 	toolblock = 1,
 	propblock = 1,
+	propinprop = 1,
 	adminalertsound = 1,
 	
 	cooldown = 0.5,
