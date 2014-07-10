@@ -88,7 +88,7 @@ if cleanup then
 		end
 		
 		-- Duplicator exception
-		if ply.duplicate == true and enttype != "duplicates" and ply.pasting != true then
+		if ply.duplicate == true and enttype != "duplicates" and enttype != "AdvDupe2" and ply.pasting != true then
 			ply.duplicate = false
 		end
 
