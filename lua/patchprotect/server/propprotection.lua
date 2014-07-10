@@ -28,6 +28,33 @@ end
 
 
 
+----------------
+--  ADV-DUPE  --
+----------------
+
+function sv_PProtect.onLoad()
+
+	if !AdvDupe then return end
+
+	local old = AdvDupe.Paste
+	function AdvDupe.Paste( ply, ... )
+		ply.pasting = true
+		old( ply, ... )
+	end
+
+end
+hook.Add( "OnGamemodeLoaded", "pprotect_gameloaded", sv_PProtect.onLoad )
+
+function sv_PProtect.finishedPaste( data, current )
+
+	local ply = data[current].Player
+	ply.pasting = false
+
+end
+hook.Add( "AdvDupe_FinishPasting", "pprotect_finishedpaste", sv_PProtect.finishedPaste )
+
+
+
 -----------------
 --  SET OWNER  --
 -----------------
@@ -61,7 +88,7 @@ if cleanup then
 		end
 		
 		-- Duplicator exception
-		if ply.duplicate == true and enttype != "duplicates" and enttype != "AdvDupe2" and !string.find( enttype, "wire_" ) then
+		if ply.duplicate == true and enttype != "duplicates" and ply.pasting != true then
 			ply.duplicate = false
 		end
 
