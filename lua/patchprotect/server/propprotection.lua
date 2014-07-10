@@ -39,21 +39,22 @@ if cleanup then
 
 	function cleanup.Add( ply, enttype, ent )
 
-		if ent == nil then return end
+		if !ent then return end
 
 		-- Prop-Block
-		local mdl = string.lower( ent:GetModel() ) or ""
-		if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] == 1 and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, mdl ) or string.find( mdl, "/../" ) then
-			sv_PProtect.Notify( ply, "This prop is in the blacklist!" )
-			ent:Remove()
-			return false
+		if ent:GetModel() != nil then
+			local mdl = string.lower( ent:GetModel() )
+			if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] == 1 and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, mdl ) or string.find( mdl, "/../" ) then
+				sv_PProtect.Notify( ply, "This prop is in the blacklist!" )
+				ent:Remove()
+				return false
+			end
 		end
 
 		-- Prop-In-Prop protection
 		local bmin, bmax = ent:LocalToWorld( ent:OBBMins() ), ent:LocalToWorld( ent:OBBMaxs() )
-		local td = { start = bmin, endpos = bmax, filter = ent }
-		local trace = util.TraceLine( td )
-		if IsValid( trace.Entity ) and !ent:IsPlayer() and sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propinprop" ] == 1 then
+		local trace = util.TraceLine( { start = bmin, endpos = bmax, filter = ent } )
+		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propinprop" ] == 1 then
 			sv_PProtect.Notify( ply, "You are not allowed to spawn a prop in an other prop!" )
 			ent:Remove()
 			return false
