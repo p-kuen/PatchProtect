@@ -50,7 +50,7 @@ if cleanup then
 				return false
 			end
 		end
-
+		
 		-- Prop-In-Prop protection
 		local bmin, bmax = ent:LocalToWorld( ent:OBBMins() ), ent:LocalToWorld( ent:OBBMaxs() )
 		local trace = util.TraceLine( { start = bmin, endpos = bmax, filter = ent } )
