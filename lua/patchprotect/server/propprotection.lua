@@ -28,10 +28,11 @@ end
 
 
 
-----------------
---  ADV-DUPE  --
-----------------
+-----------------
+--  SET OWNER  --
+-----------------
 
+-- ADV DUPE
 function sv_PProtect.onLoad()
 
 	if !AdvDupe then return end
@@ -45,19 +46,8 @@ function sv_PProtect.onLoad()
 end
 hook.Add( "OnGamemodeLoaded", "pprotect_gameloaded", sv_PProtect.onLoad )
 
-function sv_PProtect.finishedPaste( data, current )
-
-	local ply = data[current].Player
-	ply.pasting = false
-
-end
-hook.Add( "AdvDupe_FinishPasting", "pprotect_finishedpaste", sv_PProtect.finishedPaste )
-
-
-
------------------
---  SET OWNER  --
------------------
+--hook.Add( "AdvDupe_StartPasting", "pprotect_finishedpaste", function( player, ents ) player.pasting = true end )
+hook.Add( "AdvDupe_FinishPasting", "pprotect_finishedpaste", function( data, current ) data[current].Player.pasting = false end )
 
 -- SET OWNER OF TOOL-ENTS
 if cleanup then
@@ -81,7 +71,7 @@ if cleanup then
 		-- Prop-In-Prop protection
 		local bmin, bmax = ent:LocalToWorld( ent:OBBMins() ), ent:LocalToWorld( ent:OBBMaxs() )
 		local trace = util.TraceLine( { start = bmin, endpos = bmax, filter = ent } )
-		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propinprop" ] == 1 then
+		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propinprop" ] == 1 and ply.duplicate == false and ply.pasting == false and enttype != "duplicates" then
 			sv_PProtect.Notify( ply, "You are not allowed to spawn a prop in an other prop!" )
 			ent:Remove()
 			return false
