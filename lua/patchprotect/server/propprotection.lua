@@ -51,17 +51,16 @@ if cleanup then
 			if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] == 1 and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, mdl ) or string.find( mdl, "/../" ) then
 				sv_PProtect.Notify( ply, "This prop is in the blacklist!" )
 				ent:Remove()
-				return false
+				return
 			end
 		end
 		
 		-- Prop-In-Prop protection
-		local bmin, bmax = ent:LocalToWorld( ent:OBBMins() ), ent:LocalToWorld( ent:OBBMaxs() )
-		local trace = util.TraceLine( { start = bmin, endpos = bmax, filter = ent } )
-		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propinprop" ] == 1 and ply.duplicate == false and ply.pasting == false and enttype != "duplicates" and enttype != "AdvDupe2" then
+		local trace = util.TraceLine( { start = ent:LocalToWorld( ent:OBBMins() ), endpos = ent:LocalToWorld( ent:OBBMaxs() ), filter = ent } )
+		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propinprop" ] == 1 and ply.duplicate == false then
 			sv_PProtect.Notify( ply, "You are not allowed to spawn a prop in an other prop!" )
 			ent:Remove()
-			return false
+			return
 		end
 		
 		-- Duplicator exception
