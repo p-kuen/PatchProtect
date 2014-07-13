@@ -33,25 +33,8 @@ end
 -----------------
 
 -- ADV DUPE
-function sv_PProtect.onLoad()
-
-	if !AdvDupe then return end
-
-	local old = AdvDupe.Paste
-	function AdvDupe.Paste( ply, ... )
-		ply.pasting = true
-		old( ply, ... )
-	end
-
-end
-hook.Add( "OnGamemodeLoaded", "pprotect_gameloaded", sv_PProtect.onLoad )
-
---hook.Add( "AdvDupe_StartPasting", "pprotect_startpaste", function( player, num ) player.pasting = true end )
-hook.Add( "AdvDupe_FinishPasting", "pprotect_finishpaste", function( data, current )
-	if data[current].Player then
-		data[current].Player.pasting = false
-	end
-end )
+hook.Add( "AdvDupe_StartPasting", "pprotect_startpaste", function( player, num ) player.pasting = true end )
+hook.Add( "AdvDupe_FinishPasting", "pprotect_finishpaste", function( data, current ) if data[current].Player then data[current].Player.pasting = false end end )
 
 -- SET OWNER OF TOOL-ENTS
 if cleanup then
