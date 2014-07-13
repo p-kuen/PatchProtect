@@ -57,7 +57,7 @@ if cleanup then
 		
 		-- Prop-In-Prop protection
 		local trace = util.TraceLine( { start = ent:LocalToWorld( ent:OBBMins() ), endpos = ent:LocalToWorld( ent:OBBMaxs() ), filter = ent } )
-		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propinprop" ] == 1 and ply.duplicate == false then
+		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propinprop" ] == 1 and ply.duplicate == false and ent:GetClass() == "prop_physics" then
 			sv_PProtect.Notify( ply, "You are not allowed to spawn a prop in an other prop!" )
 			ent:Remove()
 			return
