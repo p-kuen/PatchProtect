@@ -47,7 +47,11 @@ end
 hook.Add( "OnGamemodeLoaded", "pprotect_gameloaded", sv_PProtect.onLoad )
 
 --hook.Add( "AdvDupe_StartPasting", "pprotect_startpaste", function( player, num ) player.pasting = true end )
-hook.Add( "AdvDupe_FinishPasting", "pprotect_finishpaste", function( data, current ) data[current].Player.pasting = false end )
+hook.Add( "AdvDupe_FinishPasting", "pprotect_finishpaste", function( data, current )
+	if data[current].Player then
+		data[current].Player.pasting = false
+	end
+end )
 
 -- SET OWNER OF TOOL-ENTS
 if cleanup then
@@ -56,7 +60,7 @@ if cleanup then
 
 	function cleanup.Add( ply, enttype, ent )
 
-		if !ent then return end
+		if !ent:IsValid() or !ply:IsPlayer() then return end
 
 		-- Prop-Block
 		if ent:GetModel() != nil then
@@ -83,10 +87,9 @@ if cleanup then
 		end
 
 		-- Set owner of the entity
-		if ent != nil and ent:IsValid() and ply:IsPlayer() then
-			ent:CPPISetOwner( ply )
-		end
+		ent:CPPISetOwner( ply )
 
+		-- Run normal function now
 		Clean( ply, enttype, ent )
 
 	end
