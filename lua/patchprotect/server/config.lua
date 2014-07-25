@@ -78,6 +78,7 @@ sv_PProtect.Config.Antispam = {
 sv_PProtect.Config.Propprotection = {
 
 	enabled = 1,
+	superadmins = 1,
 	admins = 0,
 	adminssuperadmins = 0,
 	adminscleanup = 0,

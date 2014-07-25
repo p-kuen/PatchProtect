@@ -24,7 +24,7 @@ function cl_PProtect.ASMenu( Panel )
 
 	if cl_PProtect.Settings.Antispam[ "enabled" ] == 1 then
 
-		cl_PProtect.addchk( Panel, "Ignore Admins (not SuperAdmins)", "antispam", "admins" )
+		cl_PProtect.addchk( Panel, "Ignore Admins", "antispam", "admins" )
 
 		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:" )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
@@ -172,7 +172,8 @@ function cl_PProtect.PPMenu( Panel )
 	
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 1 then
 
-		cl_PProtect.addchk( Panel, "Ignore Admins (not SuperAdmins)", "propprotection", "admins" )
+		cl_PProtect.addchk( Panel, "Ignore SuperAdmins", "propprotection", "superadmins" )
+		cl_PProtect.addchk( Panel, "Ignore Admins", "propprotection", "admins" )
 		if cl_PProtect.Settings.Propprotection[ "admins" ] == 1 then
 			cl_PProtect.addchk( Panel, "Admins can use SuperAdmins'-Props", "propprotection", "adminssuperadmins", "Touch, Tool, Use, ..." )
 		end

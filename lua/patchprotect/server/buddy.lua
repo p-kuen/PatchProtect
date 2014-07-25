@@ -4,7 +4,7 @@
 
 function sv_PProtect.isBuddy( source, buddy, mode )
 
-	if source == nil or buddy == nil then return false end
+	if !source or !buddy then return false end
 
 	local isBuddy = false
 	if source.Buddies != nil then
@@ -45,6 +45,6 @@ net.Receive( "pprotect_send_other_buddy", function( len, ply )
 
 	net.Start( "pprotect_notify_normal" )
 		net.WriteString( ply:Nick() .. " added you as a buddy!" )
-	net.Send( player.GetByUniqueID( tostring(text) ) )
+	net.Send( player.GetByUniqueID( tostring( text ) ) )
 
 end )
