@@ -5,12 +5,12 @@
 -- CHECK ADMIN
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
-	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 then
+	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] == 1 then
 		return true
-	elseif ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] == 1 then
-		return true
-	elseif ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then
-		if ent:CPPIGetOwner():IsSuperAdmin() and cl_PProtect.Settings.Propprotection[ "adminssuperadmins" ] == 0 then
+	end
+
+	if ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then
+		if ent and ent:CPPIGetOwner() and ent:CPPIGetOwner():IsSuperAdmin() and cl_PProtect.Settings.Propprotection[ "adminssuperadmins" ] == 0 then
 			return false
 		end
 		return true
