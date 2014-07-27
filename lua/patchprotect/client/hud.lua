@@ -1,9 +1,8 @@
 local Owner
 local IsBuddy
 local IsWorld
-local stopsend
-
-cl_PProtect.Notes = {}
+local lastid
+cl_PProtect.Note = { msg = "", typ = "", time = 0, alpha = 0 }
 
 
 
@@ -11,7 +10,7 @@ cl_PProtect.Notes = {}
 --  FONTS  --
 -------------
 
-surface.CreateFont( "PatchProtectFont", {
+surface.CreateFont( "pprotect_roboto", {
 	font 		= "Roboto",
 	size 		= 15,
 	weight 		= 750,
@@ -19,10 +18,26 @@ surface.CreateFont( "PatchProtectFont", {
 	shadow 		= false
 } )
 
-surface.CreateFont( "PatchProtectFont_small", {
+surface.CreateFont( "pprotect_roboto_small", {
 	font 		= "Roboto",
 	size 		= 14,
 	weight 		= 500,
+	antialias 	= true,
+	shadow 		= false
+} )
+
+surface.CreateFont( "pprotect_note", {
+	font 		= "Roboto",
+	size 		= 18,
+	weight 		= 500,
+	antialias 	= true,
+	shadow 		= false
+} )
+
+surface.CreateFont( "pprotect_note_big", {
+	font 		= "Roboto",
+	size 		= 36,
+	weight 		= 1000,
 	antialias 	= true,
 	shadow 		= false
 } )
@@ -39,21 +54,21 @@ function cl_PProtect.showOwner()
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 0 or !LocalPlayer():Alive() then return end
 
 	-- Check Entity
-	local entity = LocalPlayer():GetEyeTrace().Entity
-	if entity == nil or !entity:IsValid() or entity:IsPlayer() then return end
+	local ent = LocalPlayer():GetEyeTrace().Entity
+	if !ent or ent:IsPlayer() then return end
 	
-	if stopsend != entity:EntIndex() then
+	if lastid != ent:EntIndex() then
 
 		net.Start( "pprotect_get_owner" )
-			net.WriteEntity( entity )
+			net.WriteEntity( ent )
 		net.SendToServer()
 
-		stopsend = entity:EntIndex()
+		lastid = ent:EntIndex()
 		
 	end
 
 	-- Check Owner ( Owner is set at the bottom of the file! )
-	if Owner == nil or IsWorld == nil or !entity:IsValid() then return end
+	if Owner == nil or IsWorld == nil or !ent:IsValid() then return end
 
 	local ownerText
 	if IsWorld then
@@ -73,7 +88,7 @@ function cl_PProtect.showOwner()
 	if ownerText == nil then return end
 
 	-- Get textsize
-	surface.SetFont( "PatchProtectFont_small" )
+	surface.SetFont( "pprotect_roboto_small" )
 	local OW, OH = surface.GetTextSize( ownerText )
 	OW = OW + 10
 	OH = OH + 10
@@ -96,7 +111,7 @@ function cl_PProtect.showOwner()
 		--Textbox
 		draw.RoundedBox( 0, ScrW() - OW - 10, ScrH() / 2 - (OH / 2), OW, OH, Color( 240, 240, 240, 200 ) )
 		--Text
-		draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() - 15, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+		draw.SimpleText( ownerText, "pprotect_roboto_small", ScrW() - 15, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 	
 	else
 
@@ -106,7 +121,7 @@ function cl_PProtect.showOwner()
 		--Textbox
 		draw.RoundedBox( 2, ScrW() / 2 - ( w / 2 ) - 3, ScrH() / 2 + 19 - 2, w + 6, h + 4, Color( 0, 0, 0, 100 ) )
 		--Text
-		draw.SimpleText( ownerText, "PatchProtectFont_small", ScrW() / 2, ScrH() / 2 + 20, col, TEXT_ALIGN_CENTER, 0 )
+		draw.SimpleText( ownerText, "pprotect_roboto_small", ScrW() / 2, ScrH() / 2 + 20, col, TEXT_ALIGN_CENTER, 0 )
 
 	end
 
@@ -169,7 +184,7 @@ cl_PProtect.sharedEnt = {
 	use = false
 }
 
-properties.Add( "shareprops", {
+properties.Add( "shareentity", {
 
 	MenuLabel = "Share entity",
 	Order = 2003,
@@ -228,70 +243,62 @@ end )
 --  MESSAGES  --
 ----------------
 
--- CREATE INFO MESSAGE
-function cl_PProtect.DrawNote( self, key, value )
+-- DRAW NOTE
+local function DrawNote()
 
-	surface.SetFont( "PatchProtectFont" )
-	local tsW, tsH = surface.GetTextSize( value.text )
-	
-	local w = tsW + 20
-	local h = tsH + 15
-	local x = ScrW() - w - 20
-	local y = ScrH() - h - 40 * key + 20
+	-- Check Note
+	if cl_PProtect.Note.msg == "" or cl_PProtect.Note.time + 10 < SysTime() then return end
 
-	local col
-	if value.mode == "normal" then
-		col = Color( 88, 144, 222, 200 )
-	elseif value.mode == "info" then
-		col = Color( 128, 255, 0, 200 )
-	elseif value.mode == "admin" then
-		col = Color( 176, 0, 0, 200 )
+	-- Animation
+	if cl_PProtect.Note.time + 0.5 > SysTime() then
+		cl_PProtect.Note.alpha = math.Clamp( cl_PProtect.Note.alpha + 10, 0, 255 )
+	elseif SysTime() > cl_PProtect.Note.time + 9.5 then
+		cl_PProtect.Note.alpha = math.Clamp( cl_PProtect.Note.alpha - 10, 0, 255 )
 	end
-	
-	local xtext = ( x + w - 10 )
-	local ytext = ( y + ( h / 2 ) )
-	local coltext = Color( 75, 75, 75, 255 )
-	
-	--Border
-	draw.RoundedBox( 0, x - 5, y, 5, h, col )
+
+	surface.SetFont( "pprotect_note" )
+	local tw, th = surface.GetTextSize( cl_PProtect.Note.msg )
+	local w = tw + 20
+	local h = th + 20
+	local x = ScrW() - w - 20
+	local y = ScrH() - h - 20
+	local alpha = cl_PProtect.Note.alpha
+	local backcol = Color( 88, 144, 222, alpha )
 
 	--Textbox
-	draw.RoundedBox( 0, x, y, w, h, Color( 240, 240, 240, 200 ) )
+	if cl_PProtect.Note.typ == "info" then
+		backcol = Color( 128, 255, 0, alpha )
+	elseif cl_PProtect.Note.typ == "admin" then
+		backcol = Color( 176, 0, 0, alpha )
+	end
+	draw.RoundedBox( 0, x - h, y, h, h, backcol )
+	draw.RoundedBox( 0, x, y, w, h, Color( 240, 240, 240, alpha ) )
+	draw.SimpleText( "i", "pprotect_note_big", x - 23, y + 2, Color( 255, 255, 255, alpha ), 0, 0 )
+
+	local triangle = { { x = x, y = y + ( h / 2 ) - 6 }, { x = x + 5, y = y + ( h / 2 ) }, { x = x, y = y + ( h / 2 ) + 6 } }
+	surface.SetDrawColor( backcol )
+	draw.NoTexture()
+	surface.DrawPoly( triangle )
 
 	--Text
-	draw.SimpleText( value.text, "PatchProtectFont", xtext, ytext, coltext, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
+	draw.SimpleText( cl_PProtect.Note.msg, "pprotect_note", x + 10, y + 10, Color( 75, 75, 75, alpha ), 0, 0 )
 
 end
+hook.Add( "HUDPaint", "pprotect_drawnote", DrawNote )
 
--- PAINTING
-local function Paint()
+function cl_PProtect.ClientNote( msg, typ )
 
-	if not cl_PProtect.Notes then return end
-	table.foreach( cl_PProtect.Notes, function( key, value )
-
-		if SysTime() < value.time + 4 then
-			cl_PProtect.DrawNote( self, key, value )
-		else
-			table.remove( cl_PProtect.Notes, key )
-		end
-
-	end )
-
-end
-hook.Add( "HUDPaint", "RoundedBoxHud", Paint )
-
--- ADD MESSAGES
-function cl_PProtect.Info( text, mode )
+	local al = 0
+	if cl_PProtect.Note.alpha > 0 then al = 255 end
+	cl_PProtect.Note = { msg = msg, typ = typ, time = SysTime(), alpha = al }
 	
-	local curmsg = {}
-	curmsg.text = text
-	curmsg.time = SysTime()
-	curmsg.mode = mode
 
-	table.insert( cl_PProtect.Notes, curmsg )
+	if cl_PProtect.Note.typ == "info" then
+		LocalPlayer():EmitSound( "buttons/button9.wav", 100, 100 )
+	elseif cl_PProtect.Note.typ == "admin" and cl_PProtect.Settings.Antispam[ "adminalertsound" ] == 1 then
+		LocalPlayer():EmitSound( "ambient/alarms/klaxon1.wav", 100, 100 )
+	end
 
-	LocalPlayer():EmitSound("buttons/button9.wav", 100, 100)
-	
 end
 
 
@@ -300,58 +307,13 @@ end
 --  NETWORKING  --
 ------------------
 
--- INFO NOTIFY
-net.Receive( "pprotect_notify_info", function( len )
-	
-	local curmsg = {}
-	curmsg.text = net.ReadString()
-	curmsg.time = SysTime()
-	curmsg.mode = "info"
-
-	table.insert( cl_PProtect.Notes, curmsg )
-
-	LocalPlayer():EmitSound( "buttons/button9.wav", 100, 100 )
-
-end )
-
--- ADMIN NOTIFY
-net.Receive( "pprotect_notify_admin", function( len )
-
-	if LocalPlayer():IsAdmin() then
-
-		local curmsg = {}
-		curmsg.text = net.ReadString()
-		curmsg.time = SysTime()
-		curmsg.mode = "admin"
-
-		table.insert( cl_PProtect.Notes, curmsg )
-
-		if cl_PProtect.Settings.Antispam[ "adminalertsound" ] == 0 then return end
-		LocalPlayer():EmitSound( "ambient/alarms/klaxon1.wav", 100, 100 )
-
-	end
-
-end )
-
 -- NOTIFY
-net.Receive( "pprotect_notify_normal", function( len )
+net.Receive( "pprotect_notify", function( len )
 
-	local curmsg = {}
-	curmsg.text = net.ReadString()
-	curmsg.time = SysTime()
-	curmsg.mode = "normal"
+	local note = net.ReadTable()
+	if note[2] == "admin" and !LocalPlayer():IsAdmin() then return end
 
-	table.foreach( cl_PProtect.Notes, function( key, value )
-
-		if value.mode == "normal" then
-
-			table.remove( cl_PProtect.Notes, key)
-
-		end
-
-	end )
-
-	table.insert( cl_PProtect.Notes, curmsg )
+	cl_PProtect.ClientNote( note[1], note[2] )
 
 end )
 

@@ -41,15 +41,15 @@ function sv_PProtect.spamaction( ply )
 	if action == 2 then
 
 		cleanup.CC_Cleanup( ply, "", {} )
-		sv_PProtect.InfoNotify( ply, "Cleaned all your props! ( Reason: spamming )" )
-		sv_PProtect.AdminNotify( "Cleaned " .. ply:Nick() .. "s props! ( Reason: spamming )" )
+		sv_PProtect.Notify( ply, "Cleaned all your props! ( Reason: spamming )" )
+		sv_PProtect.Notify( nil, "Cleaned " .. ply:Nick() .. "s props! ( Reason: spamming )", "admin" )
 		print( "[PatchProtect - AntiSpam] Cleaned " .. ply:Nick() .. "s props! ( Reason: spamming )" )
 
 	--Kick
 	elseif action == 3 then
 
 		ply:Kick( "Kicked by PatchProtect! ( Reason: spamming )" )
-		sv_PProtect.AdminNotify( "Kicked " .. ply:Nick() .. "! ( Reason: spamming )" )
+		sv_PProtect.Notify( nil, "Kicked " .. ply:Nick() .. "! ( Reason: spamming )", "admin" )
 		print( "[PatchProtect - AntiSpam] Kicked " .. ply:Nick() .. "! ( Reason: spamming )" )
 
 	--Ban
@@ -57,7 +57,7 @@ function sv_PProtect.spamaction( ply )
 
 		local mins = sv_PProtect.Settings.Antispam[ "bantime" ]
 		ply:Ban( mins, "Banned by PatchProtect! ( Reason: spamming )" )
-		sv_PProtect.AdminNotify( "Banned " .. ply:Nick() .. " for " .. mins .. " minutes! ( Reason: spamming )" )
+		sv_PProtect.Notify( nil, "Banned " .. ply:Nick() .. " for " .. mins .. " minutes! ( Reason: spamming )", "admin" )
 		print( "[PatchProtect - AntiSpam] Banned " .. ply:Nick() .. " for " .. mins .. " minutes! ( Reason: spamming )" )
 
 	--ConCommand
@@ -93,15 +93,17 @@ function sv_PProtect.CanSpawn( ply, mdl )
 
 		-- Notify admin
 		if ply.props >= sv_PProtect.Settings.Antispam[ "spam" ] then
-					
-			sv_PProtect.AdminNotify( ply:Nick() .. " is spamming!" )
+			
+			sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.propcooldown - CurTime(), 1 ) .. " seconds", "normal" )
+			sv_PProtect.Notify( nil, ply:Nick() .. " is spamming!", "admin" )
 			print( "[PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming!" )
 			ply.props = 0
 			sv_PProtect.spamaction( ply )
+			return false
 
 		end
 
-		sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.propcooldown - CurTime(), 1 ) .. " seconds" )
+		sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.propcooldown - CurTime(), 1 ) .. " seconds", "normal" )
 		return false
 
 	end
@@ -143,7 +145,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 
 	-- Block
 	if sv_PProtect.Settings.Antispam[ "toolblock" ] == 1 and sv_PProtect.Settings.Blockedtools[ tool ] then
-		sv_PProtect.Notify( ply, "This tool is in the blacklist!" )
+		sv_PProtect.Notify( ply, "This tool is in the blacklist!", "normal" )
 		return false
 	end
 
@@ -158,14 +160,16 @@ function sv_PProtect.CanTool( ply, trace, tool )
 			-- Notify admin
 			if ply.tools >= sv_PProtect.Settings.Antispam[ "spam" ] then
 
-				sv_PProtect.AdminNotify( ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
+				sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.toolcooldown - CurTime(), 1 ) .. " seconds", "normal" )
+				sv_PProtect.Notify( nil, ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!", "admin" )
 				print( "PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
 				ply.tools = 0
 				sv_PProtect.spamaction( ply )
+				return false
 
 			end
 
-			sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.toolcooldown - CurTime(), 1 ) .. " seconds" )
+			sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.toolcooldown - CurTime(), 1 ) .. " seconds", "normal" )
 			return false
 
 		else
@@ -204,7 +208,7 @@ end )
 net.Receive( "pprotect_send_blocked_props_cpanel", function( len, pl )
 	
 	if !pl:IsAdmin() and !pl:IsSuperAdmin() then
-		sv_PProtect.Notify( pl, "You are not an Admin!" )
+		sv_PProtect.Notify( pl, "You are not an Admin!", "normal" )
 		return
 	end
 
@@ -217,12 +221,12 @@ net.Receive( "pprotect_send_blocked_props_cpanel", function( len, pl )
 		--Save into SQL-Table
 		sv_PProtect.saveBlockedProps( sv_PProtect.Settings.Blockedprops )
 		
-		sv_PProtect.InfoNotify( pl, "Saved " .. Prop .. " to blocked props!" )
+		sv_PProtect.Notify( pl, "Saved " .. Prop .. " to blocked props!", "info" )
 		print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " added " .. Prop .. " to the blocked props!" )
 
 	else
 
-		sv_PProtect.InfoNotify( pl, "This prop is already in the list!" )
+		sv_PProtect.Notify( pl, "This prop is already in the list!", "info" )
 
 	end
 	
@@ -235,7 +239,7 @@ net.Receive( "pprotect_send_blocked_props", function( len, pl )
 	sv_PProtect.Settings.Blockedprops = net.ReadTable()
 	sv_PProtect.saveBlockedProps( sv_PProtect.Settings.Blockedprops )
 
-	sv_PProtect.InfoNotify( pl, "Saved all blocked props!" )
+	sv_PProtect.Notify( pl, "Saved all blocked props!", "info" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-prop list!" )
 	
 end )
@@ -284,7 +288,7 @@ net.Receive( "pprotect_send_blocked_tools", function( len, pl )
 	sv_PProtect.Settings.Blockedtools = net.ReadTable()
 	sv_PProtect.saveBlockedTools( sv_PProtect.Settings.Blockedtools )
 
-	sv_PProtect.InfoNotify( pl, "Saved all blocked Tools!" )
+	sv_PProtect.Notify( pl, "Saved all blocked Tools!", "info" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-tools list!" )
 	
 end )
@@ -331,7 +335,7 @@ net.Receive( "pprotect_send_antispamed_tools", function( len, pl )
 	sv_PProtect.Settings.Antispamtools = net.ReadTable()
 	sv_PProtect.saveAntiSpamTools( sv_PProtect.Settings.Antispamtools )
 
-	sv_PProtect.InfoNotify( pl, "Saved all antispamed tools!" )
+	sv_PProtect.Notify( pl, "Saved all antispamed tools!", "info" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the antispamed-tools list!" )
 
 end )

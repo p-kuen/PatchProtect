@@ -42,9 +42,7 @@ util.AddNetworkString( "pprotect_send_blocked_props_cpanel" )
 util.AddNetworkString( "pprotect_send_blocked_tools" )
 
 -- NOTIFICATIONS
-util.AddNetworkString( "pprotect_notify_info" )
-util.AddNetworkString( "pprotect_notify_admin" )
-util.AddNetworkString( "pprotect_notify_normal" )
+util.AddNetworkString( "pprotect_notify" )
 
 
 

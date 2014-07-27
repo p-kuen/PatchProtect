@@ -67,7 +67,7 @@ net.Receive( "pprotect_cleanup_map", function( len, pl )
 	-- Define World-Props again!
 	sv_PProtect.SetWorldProps()
 
-	sv_PProtect.InfoNotify( pl, "Cleaned Map!" )
+	sv_PProtect.Notify( pl, "Cleaned Map!", "info" )
 	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all props!" )
 
 end )
@@ -155,7 +155,7 @@ net.Receive( "pprotect_cleanup_disconnected_player", function( len, pl )
 
 	end )
 
-	sv_PProtect.InfoNotify( pl, "Removed all props from disconnected players!" )
+	sv_PProtect.Notify( pl, "Removed all props from disconnected players!", "info" )
 	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all props from disconnected players!" )
 
 end )
@@ -181,7 +181,7 @@ net.Receive( "pprotect_cleanup_player", function( len, pl )
 	-- Remove them all
 	cleanup.CC_Cleanup( cleanupdata[1], "", {} )
 
-	sv_PProtect.InfoNotify( pl, "Cleaned " .. cleanupdata[1]:GetName() .. "'s props! (" .. cleanupdata[2] .. ")" )
+	sv_PProtect.Notify( pl, "Cleaned " .. cleanupdata[1]:GetName() .. "'s props! (" .. cleanupdata[2] .. ")", "info" )
 	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed " .. cleanupdata[2] .. " props from " .. cleanupdata[1]:GetName() .. "!" )
 
 end )

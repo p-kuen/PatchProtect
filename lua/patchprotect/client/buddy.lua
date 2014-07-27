@@ -26,7 +26,7 @@ function cl_PProtect.resetBuddySettings()
 
 	cl_PProtect.Buddy.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
 	cl_PProtect.UpdateMenus()
-	cl_PProtect.Info( "Cleared Buddy-List", "info" )
+	cl_PProtect.ClientNote( "Cleared Buddy-List", "info" )
 
 end
 
@@ -98,7 +98,7 @@ function cl_PProtect.AddBuddy( ply )
 		net.WriteString( tostring( cl_PProtect.Buddy.CurrentBuddy[0] ) )
 	net.SendToServer()
 	
-	cl_PProtect.Info( "Added " .. cl_PProtect.Buddy.CurrentBuddy[1] .. " to the Buddy-List", "info" )
+	cl_PProtect.ClientNote( "Added " .. cl_PProtect.Buddy.CurrentBuddy[1] .. " to the Buddy-List", "info" )
 	cl_PProtect.UpdateMenus()
 	cl_PProtect.SetBuddyVars( "add" )
 
@@ -119,7 +119,7 @@ function cl_PProtect.DeleteBuddy( ply )
 
 	cl_PProtect.sendBuddies( cl_PProtect.Buddy.Buddies )
 
-	cl_PProtect.Info( "Deleted " .. cl_PProtect.Buddy.BuddyToRemove[1] .. " from the Buddy-List", "info" )
+	cl_PProtect.ClientNote( "Deleted " .. cl_PProtect.Buddy.BuddyToRemove[1] .. " from the Buddy-List", "info" )
 	cl_PProtect.UpdateMenus()
 	cl_PProtect.SetBuddyVars( "delete" )
 	

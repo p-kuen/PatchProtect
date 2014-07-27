@@ -108,7 +108,7 @@ net.Receive( "pprotect_save_antispam", function( len, pl )
 
 	end )
 
-	sv_PProtect.InfoNotify( pl, "Saved new AntiSpam-Settings" )
+	sv_PProtect.Notify( pl, "Saved new AntiSpam-Settings", "info" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved new AntiSpam-Settings!" )
 
 end )
@@ -126,7 +126,7 @@ net.Receive( "pprotect_save_propprotection", function( len, pl )
 
 	end )
 
-	sv_PProtect.InfoNotify( pl, "Saved new PropProtection-Settings" )
+	sv_PProtect.Notify( pl, "Saved new PropProtection-Settings", "info" )
 	print( "[PatchProtect - PropProtection] " .. pl:Nick() .. " saved new PropProtection-Settings!" )
 
 end )
@@ -206,7 +206,6 @@ function sv_PProtect.broadcastSettings()
 
 	net.Start( "pprotect_new_settings" )
 		net.WriteTable( new_settings )
-		net.WriteString( "broadcast" )
 	net.Broadcast()
 
 end
@@ -217,26 +216,10 @@ end
 --  NOTIFICATIONS  --
 ---------------------
 
-function sv_PProtect.Notify( ply, text )
-
-	net.Start( "pprotect_notify_normal" )
-		net.WriteString( text )
-	net.Send( ply )
-
-end
-
-function sv_PProtect.InfoNotify( ply, text )
-
-	net.Start( "pprotect_notify_info" )
-		net.WriteString( text )
-	net.Send( ply )
-
-end
-
-function sv_PProtect.AdminNotify( text )
-
-	net.Start( "pprotect_notify_admin" )
-		net.WriteString( text )
-	net.Broadcast()
+function sv_PProtect.Notify( ply, text, typ )
+	
+	net.Start( "pprotect_notify" )
+		net.WriteTable( { text, typ } )
+	if ply then net.Send( ply ) else net.Broadcast() end
 
 end

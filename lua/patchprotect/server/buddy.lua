@@ -42,9 +42,6 @@ end )
 net.Receive( "pprotect_send_other_buddy", function( len, ply )
 
 	local text = net.ReadString()
-
-	net.Start( "pprotect_notify_normal" )
-		net.WriteString( ply:Nick() .. " added you as a buddy!" )
-	net.Send( player.GetByUniqueID( tostring( text ) ) )
+	sv_PProtect.Notify( player.GetByUniqueID( tostring( text ) ), ply:Nick() .. " added you as a buddy!", "normal" )
 
 end )

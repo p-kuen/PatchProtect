@@ -13,7 +13,7 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 	frm:SetDraggable( drag )
 	frm:ShowCloseButton( false )
 	frm.lblTitle:SetColor( Color( 75, 75, 75 ) )
-	frm.lblTitle:SetFont( "PatchProtectFont" )
+	frm.lblTitle:SetFont( "pprotect_roboto" )
 	frm:MakePopup()
 	
 	function frm:Paint()
@@ -32,7 +32,7 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 		btn:SetText( "x" )
 		btn:SetDark( false )
 		btn:SetColor( Color( 255, 255, 255, 255 ) )
-		btn:SetFont( "PatchProtectFont" )
+		btn:SetFont( "pprotect_roboto" )
 
 		function btn:Paint()
 			draw.RoundedBox( 0, 0, 0, 45, 20, Color( 199, 80, 80, 255 ) )
@@ -50,7 +50,7 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 	btn:SetSize( 100, 25 )
 	btn:SetText( btntext )
 	btn:SetDark( true )
-	btn:SetFont( "PatchProtectFont_small" )
+	btn:SetFont( "pprotect_roboto_small" )
 	btn:SetColor( Color( 50, 50, 50 ) )
 
 	btn.DoClick = function()
@@ -116,7 +116,7 @@ function cl_PProtect.addlbl( derma, text )
 	lbl:SetText( text )
 	lbl:SetDark( true )
 	lbl:SizeToContents()
-	lbl:SetFont( "PatchProtectFont_small" )
+	lbl:SetFont( "pprotect_roboto_small" )
 	derma:AddItem( lbl )
 
 end
@@ -133,7 +133,7 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip )
 	chk:SetText( text )
 	chk:SetDark( true )
 	if isstring( tooltip ) then chk:SetTooltip( tooltip ) end
-	chk.Label:SetFont( "PatchProtectFont_small" )
+	chk.Label:SetFont( "pprotect_roboto_small" )
 
 	if setting_type == "antispam" then
 		chk:SetChecked( tobool( cl_PProtect.Settings.Antispam[ setting ] ) )
@@ -191,7 +191,7 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 	btn:SetTall( 25 )
 	btn:SetText( text )
 	btn:SetDark( true )
-	btn:SetFont( "PatchProtectFont_small" )
+	btn:SetFont( "pprotect_roboto_small" )
 	btn:SetColor( Color( 50, 50, 50 ) )
 
 	btn.DoClick = function()
@@ -258,12 +258,11 @@ function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, s
 	sld:SetText( text )
 	sld:SetDark( true )
 	sld:SetValue( value )
-	sld.TextArea:SetFont( "PatchProtectFont_small" )
-	sld.Label:SetFont( "PatchProtectFont_small" )
+	sld.TextArea:SetFont( "pprotect_roboto_small" )
+	sld.Label:SetFont( "pprotect_roboto_small" )
 	sld.Scratch:SetVisible( false )
-	sld.Slider:SetNotches( nil )
 
-	sld.ValueChanged = function( self, number )
+	sld.OnValueChanged = function( self, number )
 		
 		if sld_type == "antispam" then
 			if sld_type2 == "cooldown" then
