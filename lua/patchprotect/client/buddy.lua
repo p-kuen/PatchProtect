@@ -87,6 +87,10 @@ cl_PProtect.SetBuddyVars( "delete" )
 function cl_PProtect.AddBuddy( ply )
 
 	if !ply then return end
+	if !cl_PProtect.Buddy.CurrentBuddy then
+		cl_PProtect.ClientNote( "Please select a buddy first!", "normal" )
+		return
+	end
 
 	ply.Buddies = ply.Buddies or {}
 	sql.Query( "INSERT INTO pprotect_buddies('uniqueid', 'nick', 'permission' ) VALUES( '" .. cl_PProtect.Buddy.CurrentBuddy[0] .. "', '" .. cl_PProtect.Buddy.CurrentBuddy[1] .. "', '"..table.concat( table.KeysFromValue( cl_PProtect.Buddy.RowType, "true" ),", " ).."')" )

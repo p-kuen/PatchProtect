@@ -94,7 +94,6 @@ function sv_PProtect.CanSpawn( ply, mdl )
 		-- Notify admin
 		if ply.props >= sv_PProtect.Settings.Antispam[ "spam" ] then
 			
-			sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.propcooldown - CurTime(), 1 ) .. " seconds", "normal" )
 			sv_PProtect.Notify( nil, ply:Nick() .. " is spamming!", "admin" )
 			print( "[PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming!" )
 			ply.props = 0
@@ -160,7 +159,6 @@ function sv_PProtect.CanTool( ply, trace, tool )
 			-- Notify admin
 			if ply.tools >= sv_PProtect.Settings.Antispam[ "spam" ] then
 
-				sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.toolcooldown - CurTime(), 1 ) .. " seconds", "normal" )
 				sv_PProtect.Notify( nil, ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!", "admin" )
 				print( "PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
 				ply.tools = 0

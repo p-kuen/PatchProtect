@@ -247,12 +247,12 @@ end )
 local function DrawNote()
 
 	-- Check Note
-	if cl_PProtect.Note.msg == "" or cl_PProtect.Note.time + 10 < SysTime() then return end
+	if cl_PProtect.Note.msg == "" or cl_PProtect.Note.time + 5 < SysTime() then return end
 
 	-- Animation
 	if cl_PProtect.Note.time + 0.5 > SysTime() then
 		cl_PProtect.Note.alpha = math.Clamp( cl_PProtect.Note.alpha + 10, 0, 255 )
-	elseif SysTime() > cl_PProtect.Note.time + 9.5 then
+	elseif SysTime() > cl_PProtect.Note.time + 4.5 then
 		cl_PProtect.Note.alpha = math.Clamp( cl_PProtect.Note.alpha - 10, 0, 255 )
 	end
 
