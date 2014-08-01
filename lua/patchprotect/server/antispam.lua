@@ -36,40 +36,39 @@ end
 function sv_PProtect.spamaction( ply )
 
 	local action = sv_PProtect.Settings.Antispam[ "spamaction" ]
+	local name = ply:Nick()
 
 	--Cleanup
-	if action == 2 then
+	if action == "Cleanup" then
 
 		cleanup.CC_Cleanup( ply, "", {} )
 		sv_PProtect.Notify( ply, "Cleaned all your props! ( Reason: spamming )" )
-		sv_PProtect.Notify( nil, "Cleaned " .. ply:Nick() .. "s props! ( Reason: spamming )", "admin" )
-		print( "[PatchProtect - AntiSpam] Cleaned " .. ply:Nick() .. "s props! ( Reason: spamming )" )
+		sv_PProtect.Notify( nil, "Cleaned " .. name .. "s props! ( Reason: spamming )", "admin" )
+		print( "[PatchProtect - AntiSpam] Cleaned " .. name .. "s props! ( Reason: spamming )" )
 
 	--Kick
-	elseif action == 3 then
+	elseif action == "Kick" then
 
 		ply:Kick( "Kicked by PatchProtect! ( Reason: spamming )" )
-		sv_PProtect.Notify( nil, "Kicked " .. ply:Nick() .. "! ( Reason: spamming )", "admin" )
-		print( "[PatchProtect - AntiSpam] Kicked " .. ply:Nick() .. "! ( Reason: spamming )" )
+		sv_PProtect.Notify( nil, "Kicked " .. name .. "! ( Reason: spamming )", "admin" )
+		print( "[PatchProtect - AntiSpam] Kicked " .. name .. "! ( Reason: spamming )" )
 
 	--Ban
-	elseif action == 4 then
+	elseif action == "Ban" then
 
 		local mins = sv_PProtect.Settings.Antispam[ "bantime" ]
 		ply:Ban( mins, "Banned by PatchProtect! ( Reason: spamming )" )
-		sv_PProtect.Notify( nil, "Banned " .. ply:Nick() .. " for " .. mins .. " minutes! ( Reason: spamming )", "admin" )
-		print( "[PatchProtect - AntiSpam] Banned " .. ply:Nick() .. " for " .. mins .. " minutes! ( Reason: spamming )" )
+		sv_PProtect.Notify( nil, "Banned " .. name .. " for " .. mins .. " minutes! ( Reason: spamming )", "admin" )
+		print( "[PatchProtect - AntiSpam] Banned " .. name .. " for " .. mins .. " minutes! ( Reason: spamming )" )
 
 	--ConCommand
-	elseif action == 5 then
+	elseif action == "Command" then
 
-		--[[
-		local concommand = tostring( sv_PProtect.Settings.Antispam["concommand"] )
-		concommand = string.Replace( concommand, "<player>", ply:Nick() )
-		local commands = string.Explode( " ", concommand )
-		RunConsoleCommand( commands[1], unpack( commands, 2 ) )
-		print( "[PatchProtect - AntiSpam] Ran console command " .. tostring( sv_PProtect.Settings.Antispam["concommand"] ) .. " on " .. ply:Nick() )
-		]]
+		if sv_PProtect.Settings.Antispam[ "concommand" ] == sv_PProtect.Config.Antispam[ "concommand" ] then return end
+		local rep = string.Replace( sv_PProtect.Settings.Antispam[ "concommand" ], "<player>", name )
+		local cmd = string.Explode( " ", rep )
+		RunConsoleCommand( cmd[1], unpack( cmd, 2 ) )
+		print( "[PatchProtect - AntiSpam] Ran console command '" .. rep .. "'! ( Reason: reached spam limit )" )
 
 	end
 

@@ -54,13 +54,14 @@ function cl_PProtect.ASMenu( Panel )
 		cl_PProtect.addlbl( Panel, "Number of props till admins get warned:" )
 		cl_PProtect.addsld( Panel, 0, 40, "Amount", "antispam", cl_PProtect.Settings.Antispam[ "spam" ], 0, "spam" )
 		cl_PProtect.addlbl( Panel, "Autotmatic action after spaming:" )
-		cl_PProtect.addcmb( Panel, { "Nothing", "CleanUp", "Kick", "Ban"--[[, "Console Command"]] }, "spamaction", cl_PProtect.Settings.Antispam[ "spamaction" ] )
+		cl_PProtect.addcmb( Panel, { "Nothing", "Cleanup", "Kick", "Ban", "Command" }, "spamaction", cl_PProtect.Settings.Antispam[ "spamaction" ] )
 
-		if cl_PProtect.Settings.Antispam[ "spamaction" ] == 4 then
+		if cl_PProtect.Settings.Antispam[ "spamaction" ] == "Ban" then
 			cl_PProtect.addsld( Panel, 0, 60, "Ban (Minutes)", "antispam", cl_PProtect.Settings.Antispam[ "bantime" ], 0, "bantime" )
-		elseif cl_PProtect.Settings.Antispam[ "spamaction" ] == 5 then
-			cl_PProtect.addlbl( Panel, "This doesn't work yet, sorry!" )
-			--cl_PProtect.addtext()
+		elseif cl_PProtect.Settings.Antispam[ "spamaction" ] == "Command" then
+			cl_PProtect.addlbl( Panel, "Use '<player>' to use the spaming player!" )
+			cl_PProtect.addlbl( Panel, "Some commands need sv_cheats 1 to run,\nlike 'kill <player>'" )
+			cl_PProtect.addtxt( Panel, cl_PProtect.Settings.Antispam[ "concommand" ] )
 		end
 
 	end

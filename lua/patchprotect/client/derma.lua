@@ -53,7 +53,7 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 	btn:SetFont( "pprotect_roboto_small" )
 	btn:SetColor( Color( 50, 50, 50 ) )
 
-	btn.DoClick = function()
+	function btn:DoClick()
 
 		if btnarg == nil or type( btnarg ) != "table" then return end
 			
@@ -194,7 +194,7 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 	btn:SetFont( "pprotect_roboto_small" )
 	btn:SetColor( Color( 50, 50, 50 ) )
 
-	btn.DoClick = function()
+	function btn:DoClick()
 
 		if type( args ) == "function" then
 
@@ -262,7 +262,7 @@ function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, s
 	sld.Label:SetFont( "pprotect_roboto_small" )
 	sld.Scratch:SetVisible( false )
 
-	sld.OnValueChanged = function( self, number )
+	function sld:OnValueChanged( self, number )
 		
 		if sld_type == "antispam" then
 			if sld_type2 == "cooldown" then
@@ -296,16 +296,16 @@ end
 --  COMBOBOX  --
 ----------------
 
-function cl_PProtect.addcmb( derma, items, cmb_type, value )
+function cl_PProtect.addcmb( derma, items, setting, value )
 	
 	local cmb = vgui.Create( "DComboBox" )
 	table.foreach( items, function( key, choice )
 		cmb:AddChoice( choice )
 	end )
-	cmb:ChooseOptionID( value )
+	cmb:SetValue( value )
 	
-	cmb.OnSelect = function( panel, index, value, data )
-		cl_PProtect.Settings.Antispam[ cmb_type ] = index
+	function cmb:OnSelect( panel, index, value, data )
+		cl_PProtect.Settings.Antispam[ setting ] = index
 	end
 
 	derma:AddItem( cmb )
@@ -381,5 +381,20 @@ function cl_PProtect.addlvw( derma, cols, filltype )
 	end
 	
 	derma:AddItem( lvw )
+
+end
+
+function cl_PProtect.addtxt( derma, text )
+
+	local txt = vgui.Create( "DTextEntry" )
+	txt:SetText( text )
+	txt:SetFont( "pprotect_roboto_small" )
+	derma:AddItem( txt )
+
+	function txt:OnTextChanged()
+
+		cl_PProtect.Settings.Antispam[ "concommand" ] = txt:GetValue()
+
+	end
 
 end

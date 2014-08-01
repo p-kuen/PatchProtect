@@ -104,6 +104,7 @@ net.Receive( "pprotect_save_antispam", function( len, pl )
 	-- SAVE TO SQL TABLES
 	table.foreach( sv_PProtect.Settings.Antispam, function( setting, value )
 
+		if isstring( value ) then value = "'" .. value .. "'" end
 		sql.Query( "UPDATE pprotect_antispam SET value = " .. tostring( value ) .. " WHERE setting = '" .. setting .. "'" )
 
 	end )
