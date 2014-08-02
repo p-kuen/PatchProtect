@@ -49,7 +49,7 @@ if cleanup then
 
 	function cleanup.Add( ply, enttype, ent )
 
-		if !ent:IsValid() or !ply:IsPlayer() then return end
+		if !ent or !ent:IsValid() or !ply:IsPlayer() then return end
 
 		-- Prop-Block
 		if ent:GetModel() != nil then
