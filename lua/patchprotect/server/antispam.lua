@@ -84,31 +84,26 @@ function sv_PProtect.CanSpawn( ply, mdl )
 
 	if sv_PProtect.CheckASAdmin( ply ) then return true end
 	if ply.duplicate then return true end
-	
+
 	-- Cooldown
-	if CurTime() < ply.propcooldown then
-		
-		ply.props = ply.props + 1
-
-		-- Notify admin
-		if ply.props >= sv_PProtect.Settings.Antispam[ "spam" ] then
-			
-			sv_PProtect.Notify( nil, ply:Nick() .. " is spamming!", "admin" )
-			print( "[PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming!" )
-			ply.props = 0
-			sv_PProtect.spamaction( ply )
-			return false
-
-		end
-
-		sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.propcooldown - CurTime(), 1 ) .. " seconds", "normal" )
-		return false
-
+	if CurTime() > ply.propcooldown then
+		ply.props = 0
+		ply.propcooldown = CurTime() + sv_PProtect.Settings.Antispam[ "cooldown" ]
+		return true
 	end
 
-	-- Reset cooldown
-	ply.props = 0
-	ply.propcooldown = CurTime() + sv_PProtect.Settings.Antispam[ "cooldown" ]
+	ply.props = ply.props + 1
+	sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.propcooldown - CurTime(), 1 ) .. " seconds", "normal" )
+
+	-- Spamaction
+	if ply.props >= sv_PProtect.Settings.Antispam[ "spam" ] then
+		ply.props = 0
+		sv_PProtect.spamaction( ply )
+		sv_PProtect.Notify( nil, ply:Nick() .. " is spamming!", "admin" )
+		print( "[PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming!" )
+	end
+
+	return false
 
 end
 hook.Add( "PlayerSpawnProp", "SpawningProp", sv_PProtect.CanSpawn )
@@ -125,62 +120,43 @@ hook.Add( "PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.CanSpawn )
 --  TOOL ANTI SPAM  --
 ----------------------
 
--- CHECK IF THE PLAYER FIRED WITH THE DUPLICATOR OR WITH A SIMILAR TOOL
-function sv_PProtect.CheckDupe( ply, tool )
-
-	if tool == "duplicator" or tool == "adv_duplicator" or tool == "advdupe2" or tool == "wire_adv" then
-		ply.duplicate = true
-	else
-		ply.duplicate = false
-	end
-
-end
-
 -- TOOL-ANTISPAM
 function sv_PProtect.CanTool( ply, trace, tool )
 	
 	if sv_PProtect.CheckASAdmin( ply ) then return true end
 
-	-- Block
+	-- Blocked Tool
 	if sv_PProtect.Settings.Antispam[ "toolblock" ] == 1 and sv_PProtect.Settings.Blockedtools[ tool ] then
 		sv_PProtect.Notify( ply, "This tool is in the blacklist!", "normal" )
 		return false
 	end
 
-	-- Antispam
-	if sv_PProtect.Settings.Antispam[ "toolprotection" ] == 1 and sv_PProtect.Settings.Antispamtools[ tool ] then
-		
-		-- Cooldown
-		if CurTime() < ply.toolcooldown then
+	-- Antispamed Tool
+	if !sv_PProtect.Settings.Antispamtools[ tool ] then return true end
 
-			ply.tools = ply.tools + 1
-
-			-- Notify admin
-			if ply.tools >= sv_PProtect.Settings.Antispam[ "spam" ] then
-
-				sv_PProtect.Notify( nil, ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!", "admin" )
-				print( "PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
-				ply.tools = 0
-				sv_PProtect.spamaction( ply )
-				return false
-
-			end
-
-			sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.toolcooldown - CurTime(), 1 ) .. " seconds", "normal" )
-			return false
-
-		else
-
-			-- Reset cooldown
-			ply.tools = 0
-			ply.toolcooldown = CurTime() + sv_PProtect.Settings.Antispam[ "cooldown" ]
-
-		end
-		
+	-- Cooldown
+	if CurTime() > ply.toolcooldown then
+		ply.tools = 0
+		ply.toolcooldown = CurTime() + sv_PProtect.Settings.Antispam[ "cooldown" ]
+		return true
 	end
+
+	ply.tools = ply.tools + 1
+	sv_PProtect.Notify( ply, "Please wait " .. math.Round( ply.toolcooldown - CurTime(), 1 ) .. " seconds", "normal" )
 	
- 	sv_PProtect.CheckDupe( ply, tool )
-	if !sv_PProtect.CanToolProtection( ply, trace, tool ) then return false end
+	-- Spamaction
+	if ply.tools >= sv_PProtect.Settings.Antispam[ "spam" ] then
+		ply.tools = 0
+		sv_PProtect.spamaction( ply )
+		sv_PProtect.Notify( nil, ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!", "admin" )
+		print( "PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
+		return false
+	end
+
+	-- Check Dupe
+	if tool == "duplicator" or tool == "adv_duplicator" or tool == "advdupe2" or tool == "wire_adv" then ply.duplicate = true else ply.duplicate = false end
+
+	if !sv_PProtect.CanToolProtection( ply, trace, tool ) or ply.tools != 0 then return false end
 
 end
 hook.Add( "CanTool", "FiringToolgun", sv_PProtect.CanTool )
@@ -191,31 +167,23 @@ hook.Add( "CanTool", "FiringToolgun", sv_PProtect.CanTool )
 --  BLOCKED PROPS  --
 ---------------------
 
--- SEND BLOCKEDPROPS-TABLE TO CLIENT
+-- SEND TABLE
 net.Receive( "pprotect_blockedprops", function( len, pl )
 
-	if sv_PProtect.CheckASAdmin( pl ) == false then return end
 	net.Start( "get_blocked_prop" )
 		net.WriteTable( sv_PProtect.Settings.Blockedprops )
 	net.Send( pl )
 
 end )
 
--- GET NEW BLOCKED PROP
+-- GET NEW PROP
 net.Receive( "pprotect_send_blocked_props_cpanel", function( len, pl )
-	
-	if !pl:IsAdmin() and !pl:IsSuperAdmin() then
-		sv_PProtect.Notify( pl, "You are not an Admin!", "normal" )
-		return
-	end
 
 	local Prop = net.ReadString()
 
 	if !table.HasValue( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) ) then
 
 		table.insert( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) )
-
-		--Save into SQL-Table
 		sv_PProtect.saveBlockedProps( sv_PProtect.Settings.Blockedprops )
 		
 		sv_PProtect.Notify( pl, "Saved " .. Prop .. " to blocked props!", "info" )
@@ -226,19 +194,18 @@ net.Receive( "pprotect_send_blocked_props_cpanel", function( len, pl )
 		sv_PProtect.Notify( pl, "This prop is already in the list!", "info" )
 
 	end
-	
+
 end )
 
--- GET NEW BLOCKEDPROPS-TABLE FROM CLIENT
+-- GET NEW TABLE
 net.Receive( "pprotect_send_blocked_props", function( len, pl )
-	
-	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+
 	sv_PProtect.Settings.Blockedprops = net.ReadTable()
 	sv_PProtect.saveBlockedProps( sv_PProtect.Settings.Blockedprops )
 
 	sv_PProtect.Notify( pl, "Saved all blocked props!", "info" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-prop list!" )
-	
+
 end )
 
 
@@ -247,10 +214,9 @@ end )
 --  BLOCKED TOOLS  --
 ---------------------
 
--- SEND BLOCKEDTOOLS-TABLE TO CLIENT
+-- SEND TABLE
 net.Receive( "pprotect_blockedtools", function( len, pl )
 
-	if sv_PProtect.CheckASAdmin( pl ) == false then return end
 	local sendingTable = {}
 
 	--This is here, that we get everytime the new tools from addons
@@ -271,23 +237,22 @@ net.Receive( "pprotect_blockedtools", function( len, pl )
 		end
 		
 	end )
-	
+
 	net.Start( "get_blocked_tool" )
 		net.WriteTable( sendingTable )
 	net.Send( pl )
 
 end )
 
--- GET NEW BLOCKEDTOOLS-TABLE FROM CLIENT
+-- GET NEW TABLE
 net.Receive( "pprotect_send_blocked_tools", function( len, pl )
-	
-	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+
 	sv_PProtect.Settings.Blockedtools = net.ReadTable()
 	sv_PProtect.saveBlockedTools( sv_PProtect.Settings.Blockedtools )
 
 	sv_PProtect.Notify( pl, "Saved all blocked Tools!", "info" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-tools list!" )
-	
+
 end )
 
 
@@ -296,9 +261,9 @@ end )
 --  ANTISPAMED TOOLS  --
 ------------------------
 
+-- SEND TABLE
 net.Receive( "pprotect_antispamtools", function( len, pl )
 
-	if sv_PProtect.CheckASAdmin( pl ) == false then return end
 	local sendingTable = {}
 
 	--This is here, that we get everytime the new tools from addons
@@ -326,9 +291,9 @@ net.Receive( "pprotect_antispamtools", function( len, pl )
 
 end )
 
+-- GET NEW TABLE
 net.Receive( "pprotect_send_antispamed_tools", function( len, pl )
 
-	if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
 	sv_PProtect.Settings.Antispamtools = net.ReadTable()
 	sv_PProtect.saveAntiSpamTools( sv_PProtect.Settings.Antispamtools )
 

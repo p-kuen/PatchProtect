@@ -48,8 +48,8 @@ We offer a nice working <b>AntiSpam-Feature</b>, so that people are not able to 
 - If you use a <b>duplicator, like the default one or AdvancedDuplicator 1/2</b>, there is an <b>exception</b>. <i>So you can still spawn dupes!</i>
 - You can set the <b>length of the 'cooldown'</b>
 - Players, who try to spam will get an information, <b>how long they have to wait</b> till the next prop spawn/tool fire
-- Admins are getting <b>informed if someone is spaming</b> ( There is also a little sound, which should make attention to the message )
-- You can change the <b>spam-action</b> - What should happen, if someone is spaming <i>( nothing, message, kick, ban, ... )</i>
+- Admins are getting <b>informed if someone is spamming</b> ( There is also a little sound, which should make attention to the message )
+- You can change the <b>spam-action</b> - What should happen, if someone is spamming <i>( nothing, message, kick, ban, ... )</i>
 - You can <b>enable/disable Toolgun-AntiSpam</b> for each Tool ( i.e. you can use the 'remover' as fast as you can, but you are not able to spam 'thrusters' )
 - You can <b>block tools</b>, which you don't want to be used on your server
 - You can <b>block props</b>, which you don't want on your server

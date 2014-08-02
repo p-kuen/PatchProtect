@@ -262,7 +262,7 @@ function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, s
 	sld.Label:SetFont( "pprotect_roboto_small" )
 	sld.Scratch:SetVisible( false )
 
-	function sld:OnValueChanged( self, number )
+	sld.OnValueChanged = function( self, number )
 		
 		if sld_type == "antispam" then
 			if sld_type2 == "cooldown" then

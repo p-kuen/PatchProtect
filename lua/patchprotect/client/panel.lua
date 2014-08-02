@@ -53,13 +53,13 @@ function cl_PProtect.ASMenu( Panel )
 		cl_PProtect.addsld( Panel, 0, 10, "Cooldown (Seconds)", "antispam", cl_PProtect.Settings.Antispam[ "cooldown" ], 1, "cooldown" )
 		cl_PProtect.addlbl( Panel, "Number of props till admins get warned:" )
 		cl_PProtect.addsld( Panel, 0, 40, "Amount", "antispam", cl_PProtect.Settings.Antispam[ "spam" ], 0, "spam" )
-		cl_PProtect.addlbl( Panel, "Autotmatic action after spaming:" )
+		cl_PProtect.addlbl( Panel, "Autotmatic action after spamming:" )
 		cl_PProtect.addcmb( Panel, { "Nothing", "Cleanup", "Kick", "Ban", "Command" }, "spamaction", cl_PProtect.Settings.Antispam[ "spamaction" ] )
 
 		if cl_PProtect.Settings.Antispam[ "spamaction" ] == "Ban" then
 			cl_PProtect.addsld( Panel, 0, 60, "Ban (Minutes)", "antispam", cl_PProtect.Settings.Antispam[ "bantime" ], 0, "bantime" )
 		elseif cl_PProtect.Settings.Antispam[ "spamaction" ] == "Command" then
-			cl_PProtect.addlbl( Panel, "Use '<player>' to use the spaming player!" )
+			cl_PProtect.addlbl( Panel, "Use '<player>' to use the spamming player!" )
 			cl_PProtect.addlbl( Panel, "Some commands need sv_cheats 1 to run,\nlike 'kill <player>'" )
 			cl_PProtect.addtxt( Panel, cl_PProtect.Settings.Antispam[ "concommand" ] )
 		end
