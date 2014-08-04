@@ -123,7 +123,7 @@ hook.Add( "PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.CanSpawn )
 -- TOOL-ANTISPAM
 function sv_PProtect.CanTool( ply, trace, tool )
 	
-	if sv_PProtect.CheckASAdmin( ply ) then return true end
+	if sv_PProtect.CheckASAdmin( ply ) then return sv_PProtect.CanToolProtection( ply, trace, tool ) end
 
 	-- Blocked Tool
 	if sv_PProtect.Settings.Antispam[ "toolblock" ] == 1 and sv_PProtect.Settings.Blockedtools[ tool ] then
@@ -132,13 +132,13 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	end
 
 	-- Antispamed Tool
-	if !sv_PProtect.Settings.Antispamtools[ tool ] then return true end
+	if !sv_PProtect.Settings.Antispamtools[ tool ] then return sv_PProtect.CanToolProtection( ply, trace, tool ) end
 
 	-- Cooldown
 	if CurTime() > ply.toolcooldown then
 		ply.tools = 0
 		ply.toolcooldown = CurTime() + sv_PProtect.Settings.Antispam[ "cooldown" ]
-		return true
+		return sv_PProtect.CanToolProtection( ply, trace, tool )
 	end
 
 	ply.tools = ply.tools + 1
@@ -150,13 +150,12 @@ function sv_PProtect.CanTool( ply, trace, tool )
 		sv_PProtect.spamaction( ply )
 		sv_PProtect.Notify( nil, ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!", "admin" )
 		print( "PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming with " .. tostring( tool ) .. "s!" )
-		return false
 	end
 
 	-- Check Dupe
 	if tool == "duplicator" or tool == "adv_duplicator" or tool == "advdupe2" or tool == "wire_adv" then ply.duplicate = true else ply.duplicate = false end
 
-	if !sv_PProtect.CanToolProtection( ply, trace, tool ) or ply.tools != 0 then return false end
+	return false
 
 end
 hook.Add( "CanTool", "FiringToolgun", sv_PProtect.CanTool )
