@@ -1,6 +1,8 @@
 CPPI = CPPI or {}
 CPPI.CPPI_DEFER = 072014 -- July 2014
 CPPI.CPPI_NOTIMPLEMENTED = 8084 -- PT ( Patcher and Ted )
+pprotect_cppi_call = false
+pprotect_cppi_right = false
 
 -- NAME
 function CPPI:GetName()
@@ -112,28 +114,40 @@ if SERVER then
 	-- CAN TOOL
 	function ENTITY:CPPICanTool( ply, tool )
 
-		return sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool )
+		pprotect_cppi_call = true
+		pprotect_cppi_right = sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool )
+		pprotect_cppi_call = false
+		return pprotect_cppi_right
 
 	end
 
 	-- CAN PHYSGUN
 	function ENTITY:CPPICanPhysgun( ply )
 
-		return sv_PProtect.CanTouch( ply, self )
+		pprotect_cppi_call = true
+		pprotect_cppi_right = sv_PProtect.CanTouch( ply, self )
+		pprotect_cppi_call = false
+		return pprotect_cppi_right
 
 	end
 
 	-- CAN PICKUP
 	function ENTITY:CPPICanPickup( ply )
 
-		return sv_PProtect.CanPickup( ply, self )
+		pprotect_cppi_call = true
+		pprotect_cppi_right = sv_PProtect.CanPickup( ply, self )
+		pprotect_cppi_call = false
+		return pprotect_cppi_right
 
 	end
 
 	-- CAN PUNT
 	function ENTITY:CPPICanPunt( ply )
 
-		return sv_PProtect.CanGravPunt( ply, self )
+		pprotect_cppi_call = true
+		pprotect_cppi_right = sv_PProtect.CanGravPunt( ply, self )
+		pprotect_cppi_call = false
+		return pprotect_cppi_right
 
 	end
 

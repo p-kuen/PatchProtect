@@ -218,6 +218,8 @@ end
 ---------------------
 
 function sv_PProtect.Notify( ply, text, typ )
+
+	if pprotect_cppi_call then return end
 	
 	net.Start( "pprotect_notify" )
 		net.WriteTable( { text, typ } )
