@@ -303,8 +303,9 @@ function sv_PProtect.CanDamage( ent, info )
 	-- Check Owner
 	if Attacker:IsPlayer() and Owner != Attacker and !sv_PProtect.isBuddy( Owner, Attacker, "damage" ) then
 
-		if Attacker:IsSuperAdmin() or Attacker:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then return end
-
+		if Attacker:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] == 1 then return end
+		if Attacker:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then return end
+		
 		info:SetDamage( 0 )
 		timer.Simple( 0.1, function()
 
