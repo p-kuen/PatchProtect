@@ -7,8 +7,12 @@ function pprotect_count_props( ply )
 	local count = 0
 
 	table.foreach( ents.GetAll(), function( key, value )
-		
-		if value:IsValid() and ply == value:CPPIGetOwner() then
+
+		if ply == nil and value:IsValid() and value.World != true then
+			count = count + 1
+		end
+
+		if ply != nil and value:IsValid() and ply == value:CPPIGetOwner() then
 			count = count + 1
 		end
 		
@@ -23,13 +27,7 @@ function pprotect_new_counts( ply, cmd, args )
 	local counts = {}
 
 	-- GLOBAL COUNT
-	local global_count = 0
-	table.foreach( ents.GetAll(), function( key, value )
-		if value:IsValid() and value:GetClass() == "prop_physics" and value.World != true then
-			global_count = global_count + 1
-		end
-	end )
-	counts[ "global" ] = global_count
+	counts[ "global" ] = pprotect_count_props()
 
 	-- PLAYER COUNT
 	local player_counts = {}
