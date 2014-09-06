@@ -8,11 +8,11 @@ function pprotect_count_props( ply )
 
 	table.foreach( ents.GetAll(), function( key, value )
 
-		if ply == nil and value:IsValid() and value.World != true then
+		if ply == nil and value:IsValid() and value.World != true and value:GetClass() == "prop_physics" then
 			count = count + 1
 		end
 
-		if ply != nil and value:IsValid() and ply == value:CPPIGetOwner() then
+		if ply != nil and value:IsValid() and ply == value:CPPIGetOwner() and value:GetClass() == "prop_physics" then
 			count = count + 1
 		end
 		
