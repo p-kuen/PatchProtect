@@ -299,6 +299,9 @@ function sv_PProtect.CanDamage( ent, info )
 
 	-- Check Protection
 	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or sv_PProtect.Settings.Propprotection[ "damageprotection" ] == 0 then return end
+
+	-- Check Shared
+	if sv_PProtect.isShared( ent, "dmg" ) then return end
 	
 	-- Check Owner
 	if Attacker:IsPlayer() and Owner != Attacker and !sv_PProtect.isBuddy( Owner, Attacker, "damage" ) then

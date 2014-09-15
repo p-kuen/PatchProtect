@@ -234,6 +234,7 @@ net.Receive( "pprotect_send_sharedEntity", function( len )
 	cl_PProtect.addchk( frame, "Physgun", "share", "phys" )
 	cl_PProtect.addchk( frame, "Toolgun", "share", "tool" )
 	cl_PProtect.addchk( frame, "Use", "share", "use" )
+	cl_PProtect.addchk( frame, "Damage", "share", "dmg" )
 	
 end )
 
