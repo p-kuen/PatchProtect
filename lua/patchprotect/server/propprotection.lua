@@ -15,6 +15,8 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 		end
 		return true
 	end
+
+	if ent:CPPIGetOwner() == nil and ent.World == nil then return true end
 	
 	return false
 
