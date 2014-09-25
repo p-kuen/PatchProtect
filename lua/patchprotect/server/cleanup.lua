@@ -72,6 +72,40 @@ end )
 
 
 
+-- CLEANUP PLAYERS PROPS
+net.Receive( "pprotect_cleanup_player", function( len, pl )
+
+	-- Check Permissions
+	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
+		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+	elseif sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 then
+		if !pl:IsSuperAdmin() then return end
+	end
+
+	-- Find all props from a special player
+	local cleanupdata = net.ReadTable()
+	table.foreach( player.GetAll(), function( key, value )
+		if value:Nick() == cleanupdata[1] then
+			cleanupdata[1] = value
+		end
+	end )
+
+	-- Remove them all
+	table.foreach( ents.GetAll(), function( key, value )
+
+		if value:CPPIGetOwner() == cleanupdata[1] then
+			value:Remove()
+		end
+		
+	end )
+
+	sv_PProtect.Notify( pl, "Cleaned " .. cleanupdata[1]:Nick() .. "'s props! (" .. cleanupdata[2] .. ")", "info" )
+	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed " .. cleanupdata[2] .. " props from " .. cleanupdata[1]:Nick() .. "!" )
+
+end )
+
+
+
 ----------------------------------------
 --  CLEAR DISCONNECTED PLAYERS PROPS  --
 ----------------------------------------
@@ -155,31 +189,5 @@ net.Receive( "pprotect_cleanup_disconnected_player", function( len, pl )
 
 	sv_PProtect.Notify( pl, "Removed all props from disconnected players!", "info" )
 	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all props from disconnected players!" )
-
-end )
-
--- CLEANUP PLAYERS PROPS
-net.Receive( "pprotect_cleanup_player", function( len, pl )
-
-	-- Check Permissions
-	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
-		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
-	elseif sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 then
-		if !pl:IsSuperAdmin() then return end
-	end
-
-	-- Find all props from a special player
-	local cleanupdata = net.ReadTable()
-	table.foreach( player.GetAll(), function( key, value )
-		if value:Nick() == cleanupdata[1] then
-			cleanupdata[1] = value
-		end
-	end )
-
-	-- Remove them all
-	cleanup.CC_Cleanup( cleanupdata[1], "", {} )
-
-	sv_PProtect.Notify( pl, "Cleaned " .. cleanupdata[1]:GetName() .. "'s props! (" .. cleanupdata[2] .. ")", "info" )
-	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed " .. cleanupdata[2] .. " props from " .. cleanupdata[1]:GetName() .. "!" )
 
 end )
