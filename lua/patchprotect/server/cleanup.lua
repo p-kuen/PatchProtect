@@ -84,13 +84,6 @@ net.Receive( "pprotect_cleanup_player", function( len, pl )
 
 	-- Find all props from a special player
 	local cleanupdata = net.ReadTable()
-	table.foreach( player.GetAll(), function( key, value )
-		if value:Nick() == cleanupdata[1] then
-			cleanupdata[1] = value
-		end
-	end )
-
-	-- Remove them all
 	table.foreach( ents.GetAll(), function( key, value )
 
 		if value:CPPIGetOwner() == cleanupdata[1] then

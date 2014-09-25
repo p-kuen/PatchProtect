@@ -297,7 +297,7 @@ function cl_PProtect.CUMenu( Panel )
 
 		cl_PProtect.addlbl( Panel, "\nCleanup Player's props:", "panel" )
 		table.foreach( players, function( p, c )
-			cl_PProtect.addbtn( Panel, "Cleanup " .. p:Nick() .."  (" .. tostring( c ) .. " Props)", "pprotect_cleanup_player", { p:Nick(), tostring( c ) } )
+			cl_PProtect.addbtn( Panel, "Cleanup " .. p:Nick() .."  (" .. tostring( c ) .. " Props)", "pprotect_cleanup_player", { p, tostring( c ) } )
 		end )
 
 	end
