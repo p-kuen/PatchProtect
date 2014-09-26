@@ -237,22 +237,83 @@ function cl_PProtect.BMenu( Panel )
 	
 	}
 
+	local newBuddy = {
+		player = nil,
+		permissions = {}
+	}
+
+	local selectedBuddy = {
+		nick = nil,
+		uniqueid = nil
+	}
+
+	local me = LocalPlayer()
+
 	-- BUDDY CONTROLS
 	cl_PProtect.addlbl( Panel, "Your Buddies:" )
-	cl_PProtect.addlvw( Panel, { "Name", "Permission", "UniqueID" } , "my_buddies" )
-	cl_PProtect.addbtn( Panel, "Delete selected buddy" , "", function() cl_PProtect.DeleteBuddy( LocalPlayer() ) end )
+	local list_mybuddies = cl_PProtect.addlvw( Panel, { "Name", "Permission" } , function( selectedLine )
+
+		selectedBuddy.nick = selectedLine.nick
+		selectedBuddy.uniqueid = selectedLine.uniqueid
+
+	end )
+
+	if me.Buddies != nil and table.Count(me.Buddies) > 0 then
+
+		table.foreach( me.Buddies, function( key, buddy )
+
+			local line = list_mybuddies:AddLine( buddy.nick, buddy.permission )
+			line.nick = buddy.nick
+			line.uniqueid = buddy.uniqueid
+
+		end )
+
+	end
+
+	cl_PProtect.addbtn( Panel, "Delete selected buddy" , "", function() cl_PProtect.DeleteBuddy( selectedBuddy ) end )
 	
 	cl_PProtect.addlbl( Panel, "\nAdd a new buddy:" )
-	cl_PProtect.addlvw( Panel, { "Name", "ID" } , "all_players" )
+
+	local list_allplayers = cl_PProtect.addlvw( Panel, { "Name" } , function( selectedLine )
+
+		newBuddy.player = selectedLine.player
+
+	end )
+
 	
-	table.foreach( buddy_permissions, function( key, value )
-		cl_PProtect.addchk( Panel, value, "buddy", string.lower( value ) )
+
+	table.foreach( player.GetAll(), function( key, ply )
+
+		if ply != me then
+
+			local new = true
+
+			if me.Buddies != nil and table.Count(me.Buddies) > 0 then
+
+				table.foreach( me.Buddies, function(key, buddy)
+
+					if ply:UniqueID() == buddy.uniqueid then new = false end
+
+				end )
+
+			end
+
+			if !new then return end
+
+			local newline = list_allplayers:AddLine( ply:Nick() )
+			newline.player = ply
+			
+		end
+		
 	end )
 	
-	cl_PProtect.addbtn( Panel, "Add selected buddy" , "", function() cl_PProtect.AddBuddy( LocalPlayer() ) end )
-
-	cl_PProtect.addlbl( Panel, "\nReset Buddies:" )
-	cl_PProtect.addbtn( Panel, "Clear Buddy-List" , "", function() cl_PProtect.resetBuddySettings() end )
+	table.foreach( buddy_permissions, function( key, permission )
+		cl_PProtect.addchk( Panel, permission, "", "", nil, function( checked )
+			newBuddy.permissions[string.lower( permission )] = checked
+		end )
+	end )
+	
+	cl_PProtect.addbtn( Panel, "Add selected buddy" , "", function() cl_PProtect.AddBuddy( newBuddy ) end )
 
 end
 

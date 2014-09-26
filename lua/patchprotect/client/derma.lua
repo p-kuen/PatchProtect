@@ -127,11 +127,12 @@ end
 --  CHECKBOX  --
 ----------------
 
-function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip )
+function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip, cb )
 
 	local chk = vgui.Create( "DCheckBoxLabel" )
 	chk:SetText( text )
 	chk:SetDark( true )
+	chk:SetChecked( false )
 	if isstring( tooltip ) then chk:SetTooltip( tooltip ) end
 	chk.Label:SetFont( "pprotect_roboto_small" )
 
@@ -150,6 +151,12 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip )
 	end
 
 	function chk:OnChange()
+
+		if cb != nil then
+
+			cb( chk:GetChecked() and true or false )
+
+		end
 
 		if setting_type == "antispam" then
 			cl_PProtect.Settings.Antispam[ setting ] = chk:GetChecked() and 1 or 0
@@ -175,6 +182,8 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip )
 	end
 
 	derma:AddItem( chk )
+
+	return chk;
 
 end
 
@@ -318,7 +327,7 @@ end
 --  LISTVIEW  --
 ----------------
 
-function cl_PProtect.addlvw( derma, cols, filltype )
+function cl_PProtect.addlvw( derma, cols, cb )
 
 	local lvw = vgui.Create( "DListView" )
 	lvw:SetMultiSelect( false )
@@ -326,61 +335,50 @@ function cl_PProtect.addlvw( derma, cols, filltype )
 	table.foreach( cols, function( key, value )
 		lvw:AddColumn( value )
 	end )
-	
-	if filltype == "my_buddies" then
-	
-		if cl_PProtect.Buddy.Buddies != nil then
-			
-			table.foreach( cl_PProtect.Buddy.Buddies, function( key, value )
-				lvw:AddLine( tostring( value[ "nick" ] ), value[ "permission" ], value[ "uniqueid" ] )
-			end )
 
-		end
+	function lvw:OnClickLine( line, selected )
 
-		function lvw:OnClickLine( line, selected )
-
-			cl_PProtect.Buddy.BuddyToRemove[0] = tostring( line:GetValue(3) )
-			cl_PProtect.Buddy.BuddyToRemove[1] = tostring( line:GetValue(1) )
-			lvw:ClearSelection()
-			line:SetSelected( true )
-			
-		end
+		cb(line);
+		lvw:ClearSelection()
+		line:SetSelected( true )
 		
-	elseif filltype == "all_players" then
-	
-		table.foreach( player.GetAll(), function( key, value )
-
-			if value != LocalPlayer() then
-
-				if cl_PProtect.Buddy.Buddies != nil and table.Count( cl_PProtect.Buddy.Buddies ) > 0 then
-
-					table.foreach( cl_PProtect.Buddy.Buddies, function( k, v )
-
-						if value:UniqueID() != v[ "uniqueid" ] then
-							lvw:AddLine( value:Nick(), value:UniqueID() )
-						end
-
-					end )
-				else
-					lvw:AddLine( value:Nick(), value:UniqueID() )
-				end
-				
-			end
-			
-		end )
-		
-		function lvw:OnClickLine( line, selected )
-
-			cl_PProtect.Buddy.CurrentBuddy[0] = tostring( line:GetValue(2) )
-			cl_PProtect.Buddy.CurrentBuddy[1] = tostring( line:GetValue(1) )
-			lvw:ClearSelection()
-			line:SetSelected( true )
-
-		end
-
 	end
 	
+	-- if filltype == "my_buddies" then
+	
+	-- 	if cl_PProtect.Buddy.Buddies != nil then
+			
+	-- 		table.foreach( cl_PProtect.Buddy.Buddies, function( key, value )
+	-- 			lvw:AddLine( tostring( value[ "nick" ] ), value[ "permission" ], value[ "uniqueid" ] )
+	-- 		end )
+
+	-- 	end
+
+	-- 	function lvw:OnClickLine( line, selected )
+
+	-- 		cl_PProtect.Buddy.BuddyToRemove[0] = tostring( line:GetValue(3) )
+	-- 		cl_PProtect.Buddy.BuddyToRemove[1] = tostring( line:GetValue(1) )
+	-- 		lvw:ClearSelection()
+	-- 		line:SetSelected( true )
+			
+	-- 	end
+		
+	-- elseif filltype == "all_players" then
+		
+	-- 	function lvw:OnClickLine( line, selected )
+
+	-- 		cl_PProtect.Buddy.CurrentBuddy[0] = tostring( line:GetValue(2) )
+	-- 		cl_PProtect.Buddy.CurrentBuddy[1] = tostring( line:GetValue(1) )
+	-- 		lvw:ClearSelection()
+	-- 		line:SetSelected( true )
+
+	-- 	end
+
+	-- end
+	
 	derma:AddItem( lvw )
+
+	return lvw
 
 end
 
