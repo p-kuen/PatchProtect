@@ -52,11 +52,6 @@ end
 -- ADD BUDDY
 function cl_PProtect.AddBuddy( newBuddy )
 
-	if !newBuddy then
-		cl_PProtect.ClientNote( "Please select a buddy first!", "normal" )
-		return
-	end
-
 	local valid = false
 
 	table.foreach(newBuddy.permissions, function(name, checked)

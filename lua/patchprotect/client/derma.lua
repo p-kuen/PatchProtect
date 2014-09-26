@@ -205,6 +205,8 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 
 	function btn:DoClick()
 
+		if btn:GetDisabled() then return end
+
 		if type( args ) == "function" then
 
 			args()
@@ -241,7 +243,11 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 	derma:AddItem( btn )
 
 	function btn:Paint()
-		if btn.Depressed then
+
+		if btn:GetDisabled() then
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 240, 240, 240, 255 ) )
+			btn:SetCursor("arrow")
+		elseif btn.Depressed then
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0, 255 ) )
 		elseif btn.Hovered then
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220, 255 ) )
@@ -249,6 +255,8 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200, 255 ) )
 		end
 	end
+
+	return btn
 
 end
 

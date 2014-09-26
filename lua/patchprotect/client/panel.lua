@@ -248,39 +248,19 @@ function cl_PProtect.BMenu( Panel )
 	}
 
 	local me = LocalPlayer()
+	local btn_addbuddy
+	local btn_deletebuddy
 
-	-- BUDDY CONTROLS
-	cl_PProtect.addlbl( Panel, "Your Buddies:" )
-	local list_mybuddies = cl_PProtect.addlvw( Panel, { "Name", "Permission" } , function( selectedLine )
-
-		selectedBuddy.nick = selectedLine.nick
-		selectedBuddy.uniqueid = selectedLine.uniqueid
-
-	end )
-
-	if me.Buddies != nil and table.Count(me.Buddies) > 0 then
-
-		table.foreach( me.Buddies, function( key, buddy )
-
-			local line = list_mybuddies:AddLine( buddy.nick, buddy.permission )
-			line.nick = buddy.nick
-			line.uniqueid = buddy.uniqueid
-
-		end )
-
-	end
-
-	cl_PProtect.addbtn( Panel, "Delete selected buddy" , "", function() cl_PProtect.DeleteBuddy( selectedBuddy ) end )
+	
 	
 	cl_PProtect.addlbl( Panel, "\nAdd a new buddy:" )
 
 	local list_allplayers = cl_PProtect.addlvw( Panel, { "Name" } , function( selectedLine )
 
+		btn_addbuddy:SetDisabled(false)
 		newBuddy.player = selectedLine.player
 
 	end )
-
-	
 
 	table.foreach( player.GetAll(), function( key, ply )
 
@@ -313,7 +293,38 @@ function cl_PProtect.BMenu( Panel )
 		end )
 	end )
 	
-	cl_PProtect.addbtn( Panel, "Add selected buddy" , "", function() cl_PProtect.AddBuddy( newBuddy ) end )
+	btn_addbuddy = cl_PProtect.addbtn( Panel, "Add selected buddy" , "", function()
+
+		cl_PProtect.AddBuddy( newBuddy )
+
+	end )
+
+	btn_addbuddy:SetDisabled(true)
+
+	-- BUDDY CONTROLS
+	cl_PProtect.addlbl( Panel, "Your Buddies:" )
+	local list_mybuddies = cl_PProtect.addlvw( Panel, { "Name", "Permission" } , function( selectedLine )
+
+		btn_deletebuddy:SetDisabled(false)
+		selectedBuddy.nick = selectedLine.nick
+		selectedBuddy.uniqueid = selectedLine.uniqueid
+
+	end )
+
+	if me.Buddies != nil and table.Count(me.Buddies) > 0 then
+
+		table.foreach( me.Buddies, function( key, buddy )
+
+			local line = list_mybuddies:AddLine( buddy.nick, buddy.permission )
+			line.nick = buddy.nick
+			line.uniqueid = buddy.uniqueid
+
+		end )
+
+	end
+
+	btn_deletebuddy = cl_PProtect.addbtn( Panel, "Delete selected buddy" , "", function() cl_PProtect.DeleteBuddy( selectedBuddy ) end )
+	btn_deletebuddy:SetDisabled(true)
 
 end
 
