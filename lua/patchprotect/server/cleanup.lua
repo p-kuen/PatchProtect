@@ -152,7 +152,7 @@ function sv_PProtect.checkComeback( ply )
 	table.foreach( ents.GetAll(), function( k, v )
 
 		if v.PatchPPOwnerID == ply:SteamID() then
-			v.PatchPPCleanup = ""
+			v.PatchPPCleanup = nil
 			v:CPPISetOwner( ply )
 		end
 

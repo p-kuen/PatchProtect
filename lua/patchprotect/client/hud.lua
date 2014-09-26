@@ -1,6 +1,7 @@
 local Owner
 local IsBuddy
 local IsWorld
+local IsDisconnected
 local lastid
 cl_PProtect.Note = { msg = "", typ = "", time = 0, alpha = 0 }
 
@@ -69,7 +70,7 @@ function cl_PProtect.showOwner()
 
 	-- Check Owner ( Owner is set at the bottom of the file! )
 	if Owner == nil or IsWorld == nil or !ent:IsValid() then return end
-
+	
 	local ownerText
 	if IsWorld then
 
@@ -79,8 +80,8 @@ function cl_PProtect.showOwner()
 
 		if Owner:IsPlayer() and Owner:IsValid() then
 			ownerText = "Owner: " .. Owner:Nick()
-		elseif Owner:IsPlayer() then
-			ownerText = "Owner: Disconnected Player"
+		elseif IsDisconnected != nil then
+			ownerText = "Owner: " .. IsDisconnected .. " (disconnected)"
 		end
 
 	end
@@ -325,5 +326,6 @@ net.Receive( "pprotect_send_owner", function( len )
 	local info = net.ReadString()
 	if info == "buddy" then IsBuddy = true else IsBuddy = false end
 	if info == "world" then IsWorld = true else IsWorld = false end
+	if info != "" and info != "buddy" and info != "world" then IsDisconnected = info else IsDisconnected = nil end
 	
 end )

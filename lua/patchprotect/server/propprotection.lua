@@ -457,6 +457,7 @@ net.Receive( "pprotect_get_owner", function( len, pl )
 		info = "buddy"
 	end
 
+	if ent.PatchPPCleanup != nil then info = ent.PatchPPCleanup end
 	if ent.World == true then info = "world" end
 
 	net.Start( "pprotect_send_owner" )
