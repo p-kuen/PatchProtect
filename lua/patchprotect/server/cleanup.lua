@@ -137,7 +137,7 @@ function sv_PProtect.SetCleanupProps( ply )
 	end )
 
 end
-hook.Add( "PlayerDisconnected", "CleanupDisconnectedPlayersProps", sv_PProtect.SetCleanupProps )
+hook.Add( "PlayerDisconnected", "pprotect_playerdisconnected", sv_PProtect.SetCleanupProps )
 
 -- PLAYER CAME BACK
 function sv_PProtect.checkComeback( ply )
@@ -159,7 +159,7 @@ function sv_PProtect.checkComeback( ply )
 	end )
 
 end
-hook.Add( "PlayerSpawn", "CheckAbortCleanup", sv_PProtect.checkComeback )
+hook.Add( "PlayerSpawn", "pprotect_abortcleanup", sv_PProtect.checkComeback )
 
 -- CLEAN ALL DISCONNECTED PLAYERS PROPS (BUTTON)
 net.Receive( "pprotect_cleanup_disconnected_player", function( len, pl )

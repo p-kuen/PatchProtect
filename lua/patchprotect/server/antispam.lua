@@ -15,7 +15,7 @@ function sv_PProtect.Setup( ply )
 	ply.duplicate = false
 
 end
-hook.Add( "PlayerInitialSpawn", "Setup_AntiSpamVariables", sv_PProtect.Setup )
+hook.Add( "PlayerInitialSpawn", "pprotect_initialspawn", sv_PProtect.Setup )
 
 -- CHECK ANTISPAM ADMIN
 function sv_PProtect.CheckASAdmin( ply )
@@ -106,13 +106,13 @@ function sv_PProtect.CanSpawn( ply, mdl )
 	return false
 
 end
-hook.Add( "PlayerSpawnProp", "SpawningProp", sv_PProtect.CanSpawn )
-hook.Add( "PlayerSpawnEffect", "SpawningEffect", sv_PProtect.CanSpawn )
-hook.Add( "PlayerSpawnSENT", "SpawningSENT", sv_PProtect.CanSpawn )
-hook.Add( "PlayerSpawnRagdoll", "SpawningRagdoll", sv_PProtect.CanSpawn )
-hook.Add( "PlayerSpawnVehicle", "SpawningVehicle", sv_PProtect.CanSpawn )
-hook.Add( "PlayerSpawnNPC", "SpawningNPC", sv_PProtect.CanSpawn )
-hook.Add( "PlayerSpawnSWEP", "SpawningSWEP", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnProp", "pprotect_spawnprop", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnEffect", "pprotect_spawneffect", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnSENT", "pprotect_spawnSENT", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnRagdoll", "pprotect_spawnragdoll", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnVehicle", "pprotect_spawnvehicle", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnNPC", "pprotect_spawnNPC", sv_PProtect.CanSpawn )
+hook.Add( "PlayerSpawnSWEP", "pprotect_spawnSWEP", sv_PProtect.CanSpawn )
 
 
 
@@ -158,7 +158,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	return false
 
 end
-hook.Add( "CanTool", "FiringToolgun", sv_PProtect.CanTool )
+hook.Add( "CanTool", "pprotect_toolgun", sv_PProtect.CanTool )
 
 
 

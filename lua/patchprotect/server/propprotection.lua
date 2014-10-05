@@ -120,8 +120,8 @@ function sv_PProtect.CanTouch( ply, ent )
 	end
 
 end
-hook.Add( "PhysgunPickup", "AllowPhysPickup", sv_PProtect.CanTouch )
-hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CanTouch )
+hook.Add( "PhysgunPickup", "pprotect_physpickup", sv_PProtect.CanTouch )
+hook.Add( "GravGunOnPickedUp", "pprotect_graphpickup", sv_PProtect.CanTouch )
 
 
 
@@ -194,7 +194,7 @@ function sv_PProtect.CanUse( ply, ent )
 	end
 
 end
-hook.Add( "PlayerUse", "AllowUsing", sv_PProtect.CanUse )
+hook.Add( "PlayerUse", "pprotect_use", sv_PProtect.CanUse )
 
 
 
@@ -225,7 +225,7 @@ function sv_PProtect.CanPickup( ply, ent )
 	end
 
 end
-hook.Add( "AllowPlayerPickup", "PropPickup", sv_PProtect.CanPickup )
+hook.Add( "AllowPlayerPickup", "pprotect_proppickup", sv_PProtect.CanPickup )
 
 
 
@@ -260,7 +260,7 @@ function sv_PProtect.CanProperty( ply, property, ent )
 	end
 
 end
-hook.Add( "CanProperty", "AllowProperty", sv_PProtect.CanProperty )
+hook.Add( "CanProperty", "pprotect_property", sv_PProtect.CanProperty )
 
 -- CAN DRIVE
 function sv_PProtect.CanDrive( ply, ent )
@@ -283,7 +283,7 @@ function sv_PProtect.CanDrive( ply, ent )
 	end
 
 end
-hook.Add( "CanDrive", "AllowDriving", sv_PProtect.CanDrive )
+hook.Add( "CanDrive", "pprotect_drive", sv_PProtect.CanDrive )
 
 
 
@@ -329,7 +329,7 @@ function sv_PProtect.CanDamage( ent, info )
 	end
 
 end
-hook.Add( "EntityTakeDamage", "AllowEntityDamage", sv_PProtect.CanDamage )
+hook.Add( "EntityTakeDamage", "pprotect_damage", sv_PProtect.CanDamage )
 
 
 
@@ -362,7 +362,7 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 	end
 
 end
-hook.Add( "OnPhysgunReload", "AllowPhysReload", sv_PProtect.CanPhysReload )
+hook.Add( "OnPhysgunReload", "pprotect_physreload", sv_PProtect.CanPhysReload )
 
 
 
@@ -393,7 +393,7 @@ function sv_PProtect.CanGravPunt( ply, ent )
 	end
 
 end
-hook.Add( "GravGunPunt", "AllowGravPunt", sv_PProtect.CanGravPunt )
+hook.Add( "GravGunPunt", "pprotect_graphpunt", sv_PProtect.CanGravPunt )
 
 function sv_PProtect.CanGravPickup( ply, ent )
 
@@ -418,7 +418,7 @@ function sv_PProtect.CanGravPickup( ply, ent )
 	end
 
 end
-hook.Add( "GravGunOnPickedUp", "AllowGravPickup", sv_PProtect.CanGravPickup )
+hook.Add( "GravGunOnPickedUp", "pprotect_graphpickedup", sv_PProtect.CanGravPickup )
 
 
 
@@ -437,7 +437,7 @@ function sv_PProtect.SetWorldProps()
 	end )
 
 end
-hook.Add( "PersistenceLoad", "SetWorldOwnedEnts", sv_PProtect.SetWorldProps )
+hook.Add( "PersistenceLoad", "pprotect_worldprops", sv_PProtect.SetWorldProps )
 
 
 

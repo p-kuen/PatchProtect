@@ -195,7 +195,7 @@ local function sendPlayerSettings( ply, cmd, args )
 	net.Send( ply )
 
 end
-hook.Add( "PlayerInitialSpawn", "sendPlayerSettings", sendPlayerSettings )
+hook.Add( "PlayerInitialSpawn", "pprotect_playersettings", sendPlayerSettings )
 concommand.Add( "pprotect_request_newest_settings", sendPlayerSettings )
 
 -- TO EVERY PLAYER

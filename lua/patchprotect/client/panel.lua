@@ -25,13 +25,13 @@ function cl_PProtect.ASMenu( Panel )
 	if cl_PProtect.Settings.Antispam[ "enabled" ] == 1 then
 
 		cl_PProtect.addchk( Panel, "Ignore Admins", "antispam", "admins" )
+		cl_PProtect.addchk( Panel, "Admin-Alert Sound", "antispam", "adminalertsound" )
 
 		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:" )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
 		cl_PProtect.addchk( Panel, "Tool-Block", "antispam", "toolblock" )
 		cl_PProtect.addchk( Panel, "Prop-Block", "antispam", "propblock" )
 		cl_PProtect.addchk( Panel, "Block prop in other prop", "antispam", "propinprop" )
-		cl_PProtect.addchk( Panel, "Admin-Alert Sound", "antispam", "adminalertsound" )
 
 		--Tool Protection
 		if cl_PProtect.Settings.Antispam[ "toolprotection" ] == 1 then
