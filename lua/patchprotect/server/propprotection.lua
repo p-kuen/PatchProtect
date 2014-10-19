@@ -41,6 +41,7 @@ hook.Add( "AdvDupe_StartPasting", "pprotect_startpaste", function( player, num )
 	player.pasting = true
 end )
 hook.Add( "AdvDupe_FinishPasting", "pprotect_finishpaste", function( data, current )
+	if !data or !current or !data[current] or !data[current].Player then return end
 	if data[current].Player then data[current].Player.pasting = false end
 end )
 
