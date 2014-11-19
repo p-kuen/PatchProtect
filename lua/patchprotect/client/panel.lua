@@ -1,6 +1,6 @@
-----------------------
---  ANTISPAM PANEL  --
-----------------------
+---------------------
+--  ANTISPAM MENU  --
+---------------------
 
 function cl_PProtect.ASMenu( Panel )
 
@@ -31,7 +31,7 @@ function cl_PProtect.ASMenu( Panel )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
 		cl_PProtect.addchk( Panel, "Tool-Block", "antispam", "toolblock" )
 		cl_PProtect.addchk( Panel, "Prop-Block", "antispam", "propblock" )
-		cl_PProtect.addchk( Panel, "Block prop in other prop", "antispam", "propinprop" )
+		cl_PProtect.addchk( Panel, "Prop-In-Prop", "antispam", "propinprop" )
 
 		--Tool Protection
 		if cl_PProtect.Settings.Antispam[ "toolprotection" ] == 1 then
@@ -147,9 +147,9 @@ end )
 
 
 
-----------------------------
---  PROPPROTECTION PANEL  --
-----------------------------
+---------------------------
+--  PROPPROTECTION MENU  --
+---------------------------
 
 function cl_PProtect.PPMenu( Panel )
 
@@ -189,18 +189,18 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "PropPickup-Protection", "propprotection", "proppickup", "Pick up props with 'use'-key" )
 
 		cl_PProtect.addlbl( Panel, "\nSpecial User-Restrictions:", "panel" )
-		cl_PProtect.addchk( Panel, "Allow Creator-Tool", "propprotection", "creatorprotection", "ie. Spawning weapons with the toolgun" )
-		cl_PProtect.addchk( Panel, "Allow Prop-Driving", "propprotection", "propdriving", "Allow Users to drive props over the context menu (c-key)" )
-		cl_PProtect.addchk( Panel, "Allow World Props", "propprotection", "worldprops", "Physgun, Toolgun, Use, ..." )
-		cl_PProtect.addchk( Panel, "Allow World Buttons/Doors", "propprotection", "worldbutton", "Allow Users to press World-Buttons/Doors" )
+		cl_PProtect.addchk( Panel, "Allow Creator-Tool", "propprotection", "creatorprotection", "ie. spawning weapons with the toolgun" )
+		cl_PProtect.addchk( Panel, "Allow Prop-Driving", "propprotection", "propdriving", "Allow users to drive props over the context menu (c-key)" )
+		cl_PProtect.addchk( Panel, "Allow World-Props", "propprotection", "worldprops", "Allow users to physgun, toolgun, use, ... world props" )
+		cl_PProtect.addchk( Panel, "Allow World-Buttons/Doors", "propprotection", "worldbutton", "Allow users to press World-Buttons/Doors" )
 
 		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
 		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "propdelete" )
 
 		--Prop Delete
 		if cl_PProtect.Settings.Propprotection[ "propdelete" ] == 1 then
-			cl_PProtect.addchk( Panel, "Keep Admin-Props", "propprotection", "adminprops" )
-			cl_PProtect.addsld( Panel, 5, 300, "Delay (Seconds)", "propprotection", cl_PProtect.Settings.Propprotection[ "delay" ], 0, "delay" )
+			cl_PProtect.addchk( Panel, "Keep admin's props", "propprotection", "adminprops" )
+			cl_PProtect.addsld( Panel, 5, 300, "Delay (sec.)", "propprotection", cl_PProtect.Settings.Propprotection[ "delay" ], 0, "delay" )
 		end
 
 	end
@@ -251,8 +251,6 @@ function cl_PProtect.BMenu( Panel )
 	local btn_addbuddy
 	local btn_deletebuddy
 
-	
-	
 	cl_PProtect.addlbl( Panel, "\nAdd a new buddy:" )
 
 	local list_allplayers = cl_PProtect.addlvw( Panel, { "Name" } , function( selectedLine )
@@ -268,9 +266,9 @@ function cl_PProtect.BMenu( Panel )
 
 			local new = true
 
-			if me.Buddies != nil and table.Count(me.Buddies) > 0 then
+			if me.Buddies != nil and table.Count( me.Buddies ) > 0 then
 
-				table.foreach( me.Buddies, function(key, buddy)
+				table.foreach( me.Buddies, function( key, buddy )
 
 					if ply:UniqueID() == buddy.uniqueid then new = false end
 
@@ -378,6 +376,34 @@ end
 
 
 
+----------------------------
+--  CLIENT SETTINGS MENU  --
+----------------------------
+
+function cl_PProtect.CSMenu( Panel )
+
+	Panel:ClearControls()
+
+	-- UPDATE MENU
+	if !cl_PProtect.CSCPanel then
+		cl_PProtect.CSCPanel = Panel
+	end
+
+	cl_PProtect.addlbl( Panel, "Enable/Disable features:" )
+	cl_PProtect.addchk( Panel, "Use Owner-HUD", "csetting", "OwnerHUD" )
+
+	-- Reset CSettings table
+	cl_PProtect.addlbl( Panel, "\nCSettings-Commands:" )
+	cl_PProtect.addlbl( Panel, "(WARNING: Some checkboxes may not show" )
+	cl_PProtect.addlbl( Panel, "up correctly, until you recheck them)" )
+	cl_PProtect.addbtn( Panel, "Reset Client Settings", "", function()
+		cl_PProtect.reset_csettings()
+	end )
+
+end
+
+
+
 --------------------
 --  CREATE MENUS  --
 --------------------
@@ -390,11 +416,14 @@ local function CreateMenus()
 	-- PROP PROTECTION
 	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPPropProtection", "PropProtection", "", "", cl_PProtect.PPMenu )
 
-	-- CLEANUP
-	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPClientCleanup", "Cleanup", "", "", cl_PProtect.CUMenu )
-	
 	-- BUDDY
-	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPBuddyManager", "Buddy", "", "", cl_PProtect.BMenu )
+	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPBuddy", "Buddy", "", "", cl_PProtect.BMenu )
+
+	-- CLEANUP
+	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPCleanup", "Cleanup", "", "", cl_PProtect.CUMenu )
+	
+	-- CLIENT SETTINGS
+	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPClientSettings", "Client-Settings", "", "", cl_PProtect.CSMenu )
 
 end
 hook.Add( "PopulateToolMenu", "pprotect_make_menus", CreateMenus )
@@ -417,14 +446,19 @@ function cl_PProtect.UpdateMenus()
 		RunConsoleCommand( "pprotect_request_newest_settings", "propprotection" )
 	end
 
+	-- BUDDY
+	if cl_PProtect.BCPanel then
+		cl_PProtect.BMenu( cl_PProtect.BCPanel )
+	end
+
 	-- CLEANUP
 	if cl_PProtect.CUCPanel then
 		cl_PProtect.CUMenu( cl_PProtect.CUCPanel )
 	end
 
-	-- BUDDY
-	if cl_PProtect.BCPanel then
-		cl_PProtect.BMenu( cl_PProtect.BCPanel )
+	-- CLIENT SETTINGS
+	if cl_PProtect.CSCPanel then
+		cl_PProtect.CSMenu( cl_PProtect.CSCPanel )
 	end
 
 end

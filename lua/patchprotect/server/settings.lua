@@ -178,6 +178,24 @@ end
 
 
 
+----------------------
+--  RESET SETTINGS  --
+----------------------
+
+concommand.Add( "pprotect_reset_antispam", function()
+	sql.Query( "DROP TABLE pprotect_antispam" )
+	print( "[PatchProtect-AntiSpam] Successfully deleted all AntiSpam-Settings!" )
+	print( "[PatchProtect-AntiSpam] PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!" )
+end )
+
+concommand.Add( "pprotect_reset_propprotection", function()
+	sql.Query( "DROP TABLE pprotect_propprotection" )
+	print( "[PatchProtect-PropProtection] Successfully deleted all PropProtection-Settings!" )
+	print( "[PatchProtect-PropProtection] PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!" )
+end )
+
+
+
 ---------------------------
 --  SEND SETTING-TABLES  --
 ---------------------------

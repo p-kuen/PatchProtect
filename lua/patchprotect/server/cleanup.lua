@@ -112,6 +112,7 @@ function sv_PProtect.SetCleanupProps( ply )
 	end
 	
 	local cleanupname = ply:Nick()
+	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " left the server. Props will be deleted in " .. tostring( sv_PProtect.Settings.Propprotection[ "delay" ] ) .. " seconds." )
 
 	table.foreach( ents.GetAll(), function( k, v )
 		

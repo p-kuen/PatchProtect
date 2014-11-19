@@ -53,6 +53,7 @@ surface.CreateFont( "pprotect_note_big", {
 function cl_PProtect.showOwner()
 	
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 0 or !LocalPlayer():Alive() then return end
+	if cl_PProtect.Settings.CSettings[ "OwnerHUD" ] == 0 then return end
 
 	-- Check Entity
 	local ent = LocalPlayer():GetEyeTrace().Entity

@@ -148,15 +148,13 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip, cb )
 		chk:SetChecked( false )
 	elseif setting_type == "share" then
 		chk:SetChecked( cl_PProtect.sharedEnt[ setting ] )
+	elseif setting_type == "csetting" then
+		chk:SetChecked( cl_PProtect.Settings.CSettings[ setting ] )
 	end
 
 	function chk:OnChange()
 
-		if cb != nil then
-
-			cb( chk:GetChecked() and true or false )
-
-		end
+		if cb != nil then cb( chk:GetChecked() and true or false ) end
 
 		if setting_type == "antispam" then
 			cl_PProtect.Settings.Antispam[ setting ] = chk:GetChecked() and 1 or 0
@@ -170,6 +168,8 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip, cb )
 			cl_PProtect.Buddy.RowType[ setting ] = chk:GetChecked() and "true" or "false"
 		elseif setting_type == "share" then
 			cl_PProtect.sharedEnt[ setting ] = chk:GetChecked()
+		elseif setting_type == "csetting" then
+			cl_PProtect.update_csetting( setting, chk:GetChecked() and "1" or "0" )
 		end
 
 	end

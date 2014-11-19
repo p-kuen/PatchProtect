@@ -57,17 +57,17 @@ sv_PProtect.Config.Antispam = {
 
 	enabled = 1,
 	admins = 0,
+	adminalertsound = 1,
 
 	toolprotection = 1,
 	toolblock = 1,
 	propblock = 1,
 	propinprop = 1,
-	adminalertsound = 1,
 	
-	cooldown = 0.5,
-	spam = 10,
+	cooldown = 0.3,
+	spam = 2,
 	spamaction = 1,
-	bantime = 5,
+	bantime = 10,
 	concommand = "Put your command here"
 
 }
