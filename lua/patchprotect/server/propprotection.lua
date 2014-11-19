@@ -5,14 +5,10 @@
 -- CHECK ADMIN
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
-	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] == 1 then
-		return true
-	end
+	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] == 1 then return true end
 
 	if ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then
-		if ent and ent:CPPIGetOwner() and ent:CPPIGetOwner():IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "adminssuperadmins" ] == 0 then
-			return false
-		end
+		if ent and ent:CPPIGetOwner() and ent:CPPIGetOwner():IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "adminssuperadmins" ] == 0 then return false end
 		return true
 	end
 
@@ -41,8 +37,8 @@ hook.Add( "AdvDupe_StartPasting", "pprotect_startpaste", function( player, num )
 	player.pasting = true
 end )
 hook.Add( "AdvDupe_FinishPasting", "pprotect_finishpaste", function( data, current )
-	if !data or !current or !data[current] or !data[current].Player then return end
-	if data[current].Player then data[current].Player.pasting = false end
+	if data == nil or current == nil or data[current] == nil or data[current].Player == nil then return end
+	data[current].Player.pasting = false
 end )
 
 -- SET OWNER OF TOOL-ENTS
@@ -317,9 +313,7 @@ function sv_PProtect.CanDamage( ent, info )
 
 			if !ent:IsValid() then return end
 
-			if ent:IsOnFire() then
-				ent:Extinguish()
-			end
+			if ent:IsOnFire() then ent:Extinguish() end
 
 		end )
 
