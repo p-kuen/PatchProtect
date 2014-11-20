@@ -37,11 +37,10 @@ function cl_PProtect.update_csetting( setting, value )
 end
 
 -- Print Client Settings
-function cl_PProtect.reset_csettings()
+concommand.Add( "pprotect_reset_csettings", function( ply, cmd, args )
 	
 	sql.Query( "DROP TABLE pprotect_csettings" )
 	cl_PProtect.Settings.CSettings = {}
-	print( "[PProtect-CSettings] Successfully delted all CSettings" )
-	cl_PProtect.ClientNote( "Successfully delted all CSettings", "info" )
+	print( "[PProtect-CSettings] Successfully delted all Client Settings" )
 
-end
+end )

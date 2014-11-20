@@ -392,14 +392,6 @@ function cl_PProtect.CSMenu( Panel )
 	cl_PProtect.addlbl( Panel, "Enable/Disable features:" )
 	cl_PProtect.addchk( Panel, "Use Owner-HUD", "csetting", "OwnerHUD" )
 
-	-- Reset CSettings table
-	cl_PProtect.addlbl( Panel, "\nCSettings-Commands:" )
-	cl_PProtect.addlbl( Panel, "(WARNING: Some checkboxes may not show" )
-	cl_PProtect.addlbl( Panel, "up correctly, until you recheck them)" )
-	cl_PProtect.addbtn( Panel, "Reset Client Settings", "", function()
-		cl_PProtect.reset_csettings()
-	end )
-
 end
 
 
@@ -423,7 +415,7 @@ local function CreateMenus()
 	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPCleanup", "Cleanup", "", "", cl_PProtect.CUMenu )
 	
 	-- CLIENT SETTINGS
-	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPClientSettings", "Client-Settings", "", "", cl_PProtect.CSMenu )
+	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPClientSettings", "Client Settings", "", "", cl_PProtect.CSMenu )
 
 end
 hook.Add( "PopulateToolMenu", "pprotect_make_menus", CreateMenus )
