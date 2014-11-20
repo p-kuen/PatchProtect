@@ -5,14 +5,30 @@
 -- Create CSettings-Table
 cl_PProtect.Settings.CSettings = {}
 
--- Load CSettings from SQL-Database
+-- Default Settings-Table
+local csettings_default = {
+	
+	OwnerHUD = 1
+
+}
+
+-- Create new SQL-Table
+if !sql.TableExists( "pprotect_csettings" ) then
+
+	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_csettings ( setting TEXT, value TEXT )" )
+
+	table.foreach( csettings_default, function( s, v )
+		sql.Query( "INSERT INTO pprotect_csettings ( setting, value ) VALUES ( '" .. s .. "', '" .. tostring( v ) .. "' )" )
+	end )
+
+end
+
+-- Load CSettings from SQL-Table
 if sql.Query( "SELECT * FROM pprotect_csettings" ) then
 
 	local idata = sql.Query( "SELECT * FROM pprotect_csettings" )
 	table.foreach( idata, function( id, sql )
-		
 		cl_PProtect.Settings.CSettings[ sql.setting ] = tonumber( sql.value )
-
 	end )
 
 end
@@ -20,18 +36,8 @@ end
 -- Update Client Settings
 function cl_PProtect.update_csetting( setting, value )
 
-	-- Create new SQL-Database
-	if !sql.TableExists( "pprotect_csettings" ) then
-		sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_csettings ( setting TEXT, value TEXT )" )
-	end
-
-	-- Add/Update setting to the SQL-Database
-	if !sql.QueryValue( "SELECT value from pprotect_csettings WHERE setting = '" .. setting .. "'" ) then
-		sql.Query( "INSERT INTO pprotect_csettings ( setting, value ) VALUES ( '" .. setting .. "', '" .. value .. "' )" )
-	else
-		sql.Query( "UPDATE pprotect_csettings SET value = '" .. value .. "' WHERE setting = '" .. setting .. "'" )
-	end
-
+	-- Update setting in SQL-Table and current Table
+	sql.Query( "UPDATE pprotect_csettings SET value = '" .. value .. "' WHERE setting = '" .. setting .. "'" )
 	cl_PProtect.Settings.CSettings[ setting ] = tonumber( value )
 
 end
@@ -39,8 +45,9 @@ end
 -- Print Client Settings
 concommand.Add( "pprotect_reset_csettings", function( ply, cmd, args )
 	
+	-- Delete old SQL-Table
 	sql.Query( "DROP TABLE pprotect_csettings" )
-	cl_PProtect.Settings.CSettings = {}
-	print( "[PProtect-CSettings] Successfully delted all Client Settings" )
+	print( "[PProtect-CSettings] Successfully deleted all Client Settings!" )
+	print( "[PProtect-CSettings] PLEASE RECONNECT TO GET A NEW TABLE!" )
 
 end )
