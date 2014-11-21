@@ -99,7 +99,7 @@ function cl_PProtect.showOwner()
 	local col
 	if Owner == LocalPlayer() or IsBuddy or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() or IsWorld and cl_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then
 		col = Color( 128, 255, 0, 200 )
-	elseif cl_PProtect.Settings.Propprotection[ "worldbutton" ] == 1 then
+	elseif cl_PProtect.Settings.Propprotection[ "worldbutton" ] == 1 and IsWorld then
 		col = Color( 0, 161, 222, 200 )
 	else
 		col = Color( 176, 0, 0, 200 )
