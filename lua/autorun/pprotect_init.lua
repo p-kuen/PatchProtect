@@ -10,6 +10,7 @@ AddCSLuaFile( "patchprotect/client/panel.lua" )
 AddCSLuaFile( "patchprotect/client/buddy.lua" )
 
 
+
 --------------------------------
 --  LOAD SERVER/CLIENT FILES  --
 --------------------------------

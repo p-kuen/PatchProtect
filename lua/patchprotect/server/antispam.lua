@@ -184,7 +184,7 @@ net.Receive( "pprotect_send_blocked_props_cpanel", function( len, pl )
 
 		table.insert( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) )
 		sv_PProtect.saveBlockedProps( sv_PProtect.Settings.Blockedprops )
-		
+
 		sv_PProtect.Notify( pl, "Saved " .. Prop .. " to blocked props!", "info" )
 		print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " added " .. Prop .. " to the blocked props!" )
 
@@ -218,7 +218,7 @@ net.Receive( "pprotect_blockedtools", function( len, pl )
 
 	local sendingTable = {}
 
-	--This is here, that we get everytime the new tools from addons
+	-- Required to include recently added tools
 	table.foreach( weapons.GetList(), function( _, wep )
 
 		if wep.ClassName == "gmod_tool" then
@@ -234,7 +234,7 @@ net.Receive( "pprotect_blockedtools", function( len, pl )
 		if value == true then
 			sendingTable[ key ] = true
 		end
-		
+
 	end )
 
 	net.Start( "get_blocked_tool" )
@@ -265,7 +265,7 @@ net.Receive( "pprotect_antispamtools", function( len, pl )
 
 	local sendingTable = {}
 
-	--This is here, that we get everytime the new tools from addons
+	-- Required to include recently added tools
 	table.foreach( weapons.GetList(), function( _, wep )
 
 		if wep.ClassName == "gmod_tool" then
@@ -281,7 +281,7 @@ net.Receive( "pprotect_antispamtools", function( len, pl )
 		if value == true then
 			sendingTable[ key ] = true
 		end
-		
+
 	end )
 
 	net.Start( "get_antispam_tool" )

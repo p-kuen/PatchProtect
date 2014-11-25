@@ -226,7 +226,7 @@ function cl_PProtect.BMenu( Panel )
 		cl_PProtect.BCPanel = Panel
 	end
 	
-	-- BUDDY PERMISSIONS
+	-- BUDDY PERMISSIONS TABLE
 	local buddy_permissions = {
 
 		"Use",
@@ -255,61 +255,60 @@ function cl_PProtect.BMenu( Panel )
 
 	local list_allplayers = cl_PProtect.addlvw( Panel, { "Name" } , function( selectedLine )
 
-		btn_addbuddy:SetDisabled(false)
+		btn_addbuddy:SetDisabled( false )
 		newBuddy.player = selectedLine.player
 
 	end )
 
 	table.foreach( player.GetAll(), function( key, ply )
 
-		if ply != me then
+		if ply == me then return end
 
-			local new = true
+		local new = true
 
-			if me.Buddies != nil and table.Count( me.Buddies ) > 0 then
+		if me.Buddies != nil and table.Count( me.Buddies ) > 0 then
 
-				table.foreach( me.Buddies, function( key, buddy )
+			table.foreach( me.Buddies, function( key, buddy )
 
-					if ply:UniqueID() == buddy.uniqueid then new = false end
+				if ply:UniqueID() == buddy.uniqueid then new = false end
 
-				end )
+			end )
 
-			end
-
-			if !new then return end
-
-			local newline = list_allplayers:AddLine( ply:Nick() )
-			newline.player = ply
-			
 		end
+
+		if !new then return end
+
+		local newline = list_allplayers:AddLine( ply:Nick() )
+		newline.player = ply
 		
 	end )
-	
+
+	-- BUDDY PERMISSIONS
 	table.foreach( buddy_permissions, function( key, permission )
+
 		cl_PProtect.addchk( Panel, permission, "", "", nil, function( checked )
-			newBuddy.permissions[string.lower( permission )] = checked
+
+			newBuddy.permissions[ string.lower( permission ) ] = checked
+
 		end )
-	end )
-	
-	btn_addbuddy = cl_PProtect.addbtn( Panel, "Add selected buddy" , "", function()
-
-		cl_PProtect.AddBuddy( newBuddy )
 
 	end )
 
-	btn_addbuddy:SetDisabled(true)
+	-- ADD BUDDY
+	btn_addbuddy = cl_PProtect.addbtn( Panel, "Add selected buddy" , "", function() cl_PProtect.AddBuddy( newBuddy ) end )
+	btn_addbuddy:SetDisabled( true )
 
-	-- BUDDY CONTROLS
+	-- BUDDY LIST
 	cl_PProtect.addlbl( Panel, "Your Buddies:" )
 	local list_mybuddies = cl_PProtect.addlvw( Panel, { "Name", "Permission" } , function( selectedLine )
 
-		btn_deletebuddy:SetDisabled(false)
+		btn_deletebuddy:SetDisabled( false )
 		selectedBuddy.nick = selectedLine.nick
 		selectedBuddy.uniqueid = selectedLine.uniqueid
 
 	end )
 
-	if me.Buddies != nil and table.Count(me.Buddies) > 0 then
+	if me.Buddies != nil and table.Count( me.Buddies ) > 0 then
 
 		table.foreach( me.Buddies, function( key, buddy )
 
@@ -321,8 +320,9 @@ function cl_PProtect.BMenu( Panel )
 
 	end
 
+	-- DELETE BUDDY
 	btn_deletebuddy = cl_PProtect.addbtn( Panel, "Delete selected buddy" , "", function() cl_PProtect.DeleteBuddy( selectedBuddy ) end )
-	btn_deletebuddy:SetDisabled(true)
+	btn_deletebuddy:SetDisabled( true )
 
 end
 
@@ -344,16 +344,12 @@ function cl_PProtect.CUMenu( Panel )
 	end
 
 	-- CHECK ADMIN
-	if cl_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
-		if !LocalPlayer():IsAdmin() and !LocalPlayer():IsSuperAdmin() then
-			cl_PProtect.addlbl( Panel, "Sorry, you need to be an Admin to change the settings!" )
-			return
-		end
-	elseif cl_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 then
-		if !LocalPlayer():IsSuperAdmin() then
-			cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
-			return
-		end
+	if cl_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 and !LocalPlayer():IsAdmin() and !LocalPlayer():IsSuperAdmin() then
+		cl_PProtect.addlbl( Panel, "Sorry, you need to be an Admin to access the Cleanup-Menu!" )
+		return
+	elseif cl_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 and !LocalPlayer():IsSuperAdmin() then
+		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
+		return
 	end
 
 	function pprotect_write_cleanup_menu( global, players )
@@ -367,7 +363,7 @@ function cl_PProtect.CUMenu( Panel )
 
 		cl_PProtect.addlbl( Panel, "\nCleanup Player's props:", "panel" )
 		table.foreach( players, function( p, c )
-			cl_PProtect.addbtn( Panel, "Cleanup " .. p:Nick() .."  (" .. tostring( c ) .. " Props)", "pprotect_cleanup_player", { p, tostring( c ) } )
+			cl_PProtect.addbtn( Panel, "Cleanup " .. p:Nick() .. " (" .. tostring( c ) .. " props)", "pprotect_cleanup_player", { p, tostring( c ) } )
 		end )
 
 	end

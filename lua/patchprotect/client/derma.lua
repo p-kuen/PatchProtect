@@ -183,7 +183,7 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip, cb )
 
 	derma:AddItem( chk )
 
-	return chk;
+	return chk
 
 end
 
@@ -346,43 +346,11 @@ function cl_PProtect.addlvw( derma, cols, cb )
 
 	function lvw:OnClickLine( line, selected )
 
-		cb(line);
+		cb( line )
 		lvw:ClearSelection()
 		line:SetSelected( true )
 		
 	end
-	
-	-- if filltype == "my_buddies" then
-	
-	-- 	if cl_PProtect.Buddy.Buddies != nil then
-			
-	-- 		table.foreach( cl_PProtect.Buddy.Buddies, function( key, value )
-	-- 			lvw:AddLine( tostring( value[ "nick" ] ), value[ "permission" ], value[ "uniqueid" ] )
-	-- 		end )
-
-	-- 	end
-
-	-- 	function lvw:OnClickLine( line, selected )
-
-	-- 		cl_PProtect.Buddy.BuddyToRemove[0] = tostring( line:GetValue(3) )
-	-- 		cl_PProtect.Buddy.BuddyToRemove[1] = tostring( line:GetValue(1) )
-	-- 		lvw:ClearSelection()
-	-- 		line:SetSelected( true )
-			
-	-- 	end
-		
-	-- elseif filltype == "all_players" then
-		
-	-- 	function lvw:OnClickLine( line, selected )
-
-	-- 		cl_PProtect.Buddy.CurrentBuddy[0] = tostring( line:GetValue(2) )
-	-- 		cl_PProtect.Buddy.CurrentBuddy[1] = tostring( line:GetValue(1) )
-	-- 		lvw:ClearSelection()
-	-- 		line:SetSelected( true )
-
-	-- 	end
-
-	-- end
 	
 	derma:AddItem( lvw )
 
