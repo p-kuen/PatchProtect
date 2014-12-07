@@ -5,11 +5,11 @@
 -- SET PLAYER VARS
 function sv_PProtect.Setup( ply )
 
-	-- PROPS
+	-- Props
 	ply.propcooldown = 0
 	ply.props = 0
 
-	-- TOOLS
+	-- Tools
 	ply.toolcooldown = 0
 	ply.tools = 0
 	ply.duplicate = false
@@ -32,13 +32,12 @@ end
 --  SPAM ACTION  --
 -------------------
 
--- SET SPAM ACTION
 function sv_PProtect.spamaction( ply )
 
 	local action = sv_PProtect.Settings.Antispam[ "spamaction" ]
 	local name = ply:Nick()
 
-	--Cleanup
+	-- Cleanup
 	if action == "Cleanup" then
 
 		cleanup.CC_Cleanup( ply, "", {} )
@@ -46,14 +45,14 @@ function sv_PProtect.spamaction( ply )
 		sv_PProtect.Notify( nil, "Cleaned " .. name .. "s props! ( Reason: spamming )", "admin" )
 		print( "[PatchProtect - AntiSpam] Cleaned " .. name .. "s props! ( Reason: spamming )" )
 
-	--Kick
+	-- Kick
 	elseif action == "Kick" then
 
 		ply:Kick( "Kicked by PatchProtect! ( Reason: spamming )" )
 		sv_PProtect.Notify( nil, "Kicked " .. name .. "! ( Reason: spamming )", "admin" )
 		print( "[PatchProtect - AntiSpam] Kicked " .. name .. "! ( Reason: spamming )" )
 
-	--Ban
+	-- Ban
 	elseif action == "Ban" then
 
 		local mins = sv_PProtect.Settings.Antispam[ "bantime" ]
@@ -61,7 +60,7 @@ function sv_PProtect.spamaction( ply )
 		sv_PProtect.Notify( nil, "Banned " .. name .. " for " .. mins .. " minutes! ( Reason: spamming )", "admin" )
 		print( "[PatchProtect - AntiSpam] Banned " .. name .. " for " .. mins .. " minutes! ( Reason: spamming )" )
 
-	--ConCommand
+	-- ConCommand
 	elseif action == "Command" then
 
 		if sv_PProtect.Settings.Antispam[ "concommand" ] == sv_PProtect.Config.Antispam[ "concommand" ] then return end
@@ -76,9 +75,9 @@ end
 
 
 
-----------------
---  ANTISPAM  --
-----------------
+-----------------------
+--  SPAWN ANTI SPAM  --
+-----------------------
 
 function sv_PProtect.CanSpawn( ply, mdl )
 

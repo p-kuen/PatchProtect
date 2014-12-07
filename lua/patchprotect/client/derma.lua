@@ -4,13 +4,13 @@
 
 function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, btnarg, nettext )
 
-	-- FRAME
+	-- Frame
 	local frm = vgui.Create( "DFrame" )
 	frm:SetPos( surface.ScreenWidth() / 2 - ( w / 2 ), surface.ScreenHeight() / 2 - ( h / 2 ) )
 	frm:SetSize( w, h )
 	frm:SetTitle( title )
 	frm:SetVisible( true )
-	frm:SetDraggable( drag )
+	frm:SetDraggable( false )
 	frm:ShowCloseButton( false )
 	frm.lblTitle:SetColor( Color( 75, 75, 75 ) )
 	frm.lblTitle:SetFont( "pprotect_roboto" )
@@ -22,7 +22,7 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 		draw.RoundedBox( 0, 6, 24, frm:GetWide() - 12, frm:GetTall() - 30, Color( 255, 255, 255, 255 ) )
 	end
 
-	-- Close Button
+	-- Close-Button
 	if close then
 
 		local btn = vgui.Create( "DButton", frm )
@@ -35,7 +35,7 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 		btn:SetFont( "pprotect_roboto" )
 
 		function btn:Paint()
-			draw.RoundedBox( 0, 0, 0, 45, 20, Color( 199, 80, 80, 255 ) )
+			draw.RoundedBox( 0, 0, 0, 45, 20, Color( 200, 80, 80, 255 ) )
 		end
 		function btn:OnMousePressed()
 			frm:Close()
@@ -43,7 +43,7 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 
 	end
 
-	-- Save Button
+	-- Save-Button
 	local btn = vgui.Create( "DButton", frm )
 	btn:Center()
 	btn:SetPos( w - 116, h - 41 )

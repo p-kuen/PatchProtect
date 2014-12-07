@@ -63,7 +63,7 @@ net.Receive( "pprotect_cleanup_map", function( len, pl )
 	game.CleanUpMap()
 
 	-- Define World-Props again!
-	sv_PProtect.SetWorldProps()
+	sv_PProtect.setWorldProps()
 
 	sv_PProtect.Notify( pl, "Cleaned Map!", "info" )
 	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all props!" )

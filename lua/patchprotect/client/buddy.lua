@@ -36,7 +36,6 @@ function sendBuddiesToServer( buddies )
 
 	buddies = buddies or {}
 
-	-- Send all buddies to the server
 	net.Start( "pprotect_send_buddy" )
 		net.WriteTable( buddies )
 	net.SendToServer()
@@ -81,7 +80,6 @@ end
 function cl_PProtect.DeleteBuddy( buddy )
 
 	if !buddy then return end
-
 	local me = LocalPlayer()
 
 	sql.Query( "DELETE FROM pprotect_buddies WHERE uniqueid = '" .. buddy.uniqueid .. "'" )
@@ -98,7 +96,6 @@ end
 function cl_PProtect.OnPlayerBuddyIPE()
 
 	LocalPlayer().Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
-
 	if !LocalPlayer().Buddies then return end
 
 end

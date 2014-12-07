@@ -12,9 +12,7 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 		return true
 	end
 
-	if ent:CPPIGetOwner() == nil and ent.World == nil then return true end
-	
-	return false
+	if ent:CPPIGetOwner() == nil and ent.World == nil then return true else return false end
 
 end
 
@@ -36,9 +34,9 @@ end
 hook.Add( "AdvDupe_StartPasting", "pprotect_startpaste", function( player, num )
 	player.pasting = true
 end )
-hook.Add( "AdvDupe_FinishPasting", "pprotect_finishpaste", function( data, current )
-	if data == nil or current == nil or data[current] == nil or data[current].Player == nil then return end
-	data[current].Player.pasting = false
+hook.Add( "AdvDupe_FinishPasting", "pprotect_finishpaste", function( data, cur )
+	if data == nil or cur == nil or data[ cur ] == nil or data[ cur ].Player == nil then return end
+	data[ cur ].Player.pasting = false
 end )
 
 -- SET OWNER OF TOOL-ENTS
@@ -261,7 +259,7 @@ hook.Add( "CanProperty", "pprotect_property", sv_PProtect.CanProperty )
 
 -- CAN DRIVE
 function sv_PProtect.CanDrive( ply, ent )
-	
+
 	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
@@ -289,7 +287,7 @@ hook.Add( "CanDrive", "pprotect_drive", sv_PProtect.CanDrive )
 ------------------------------
 
 function sv_PProtect.CanDamage( ent, info )
-	
+
 	local Owner = ent:CPPIGetOwner()
 	local Attacker = info:GetAttacker()
 
@@ -333,7 +331,7 @@ hook.Add( "EntityTakeDamage", "pprotect_damage", sv_PProtect.CanDamage )
 ---------------------------------
 
 function sv_PProtect.CanPhysReload( weapon, ply )
-	
+
 	local ent = ply:GetEyeTrace().Entity
 
 	-- Check Admin
@@ -421,18 +419,16 @@ hook.Add( "GravGunOnPickedUp", "pprotect_graphpickedup", sv_PProtect.CanGravPick
 --  SET WORLD PROPS  --
 -----------------------
 
-function sv_PProtect.SetWorldProps()
+function sv_PProtect.setWorldProps()
 
 	table.foreach( ents:GetAll(), function( id, ent )
 
-		if string.find( ent:GetClass(), "func_" ) or string.find( ent:GetClass(), "prop_" ) then
-			ent.World = true
-		end
-		
+		if string.find( ent:GetClass(), "func_" ) or string.find( ent:GetClass(), "prop_" ) then ent.World = true end
+
 	end )
 
 end
-hook.Add( "PersistenceLoad", "pprotect_worldprops", sv_PProtect.SetWorldProps )
+hook.Add( "PersistenceLoad", "pprotect_worldprops", sv_PProtect.setWorldProps )
 
 
 
@@ -442,7 +438,7 @@ hook.Add( "PersistenceLoad", "pprotect_worldprops", sv_PProtect.SetWorldProps )
 
 -- SEND THE OWNER TO THE CLIENT
 net.Receive( "pprotect_get_owner", function( len, pl )
-	
+
 	local ent = net.ReadEntity()
 	local info = ""
 
@@ -465,7 +461,7 @@ end )
 -- SEND NEW SHARED ENTITY INFORMAITON TO THE CLIENT
 sv_PProtect.shared = nil
 net.Receive( "pprotect_get_sharedEntity", function( len, pl )
-	
+
 	local entity = net.ReadEntity()
 	sv_PProtect.shared = entity
 

@@ -49,7 +49,6 @@ surface.CreateFont( "pprotect_note_big", {
 --  PROP OWNER  --
 ------------------
 
--- SHOW OWNER
 function cl_PProtect.showOwner()
 	
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 0 or !LocalPlayer():Alive() then return end
@@ -108,11 +107,11 @@ function cl_PProtect.showOwner()
 	-- Check Draw-Mode ( FPP-Mode or not )
 	if cl_PProtect.Settings.Propprotection[ "fppmode" ] == 0 then
 
-		--Border
+		-- Border
 		draw.RoundedBox( 0, ScrW() - OW - 15, ScrH() / 2 - (OH / 2), 5, OH, col )
-		--Textbox
+		-- Textbox
 		draw.RoundedBox( 0, ScrW() - OW - 10, ScrH() / 2 - (OH / 2), OW, OH, Color( 240, 240, 240, 200 ) )
-		--Text
+		-- Text
 		draw.SimpleText( ownerText, "pprotect_roboto_small", ScrW() - 15, ScrH() / 2 , Color( 75, 75, 75, 255 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER )
 	
 	else
@@ -120,9 +119,9 @@ function cl_PProtect.showOwner()
 		ownerText = string.Replace( ownerText, "Owner: ", "" )
 		local w, h = surface.GetTextSize( ownerText )
 
-		--Textbox
+		-- Textbox
 		draw.RoundedBox( 2, ScrW() / 2 - ( w / 2 ) - 3, ScrH() / 2 + 19 - 2, w + 6, h + 4, Color( 0, 0, 0, 100 ) )
-		--Text
+		-- Text
 		draw.SimpleText( ownerText, "pprotect_roboto_small", ScrW() / 2, ScrH() / 2 + 20, col, TEXT_ALIGN_CENTER, 0 )
 
 	end
@@ -147,7 +146,6 @@ hook.Add( "PhysgunPickup", "SetClientPhysBeam", cl_PProtect.SetClientBeam )
 --  ADD BLOCKED PROP  --
 ------------------------
 
--- ADD TO BLOCKED PROPS
 properties.Add( "addblockedprop", {
 
 	MenuLabel = "Add to blocked Props",
@@ -168,7 +166,7 @@ properties.Add( "addblockedprop", {
 		net.Start( "pprotect_send_blocked_props_cpanel" )
 			net.WriteString( ent:GetModel() )
 		net.SendToServer()
-		
+
 	end
 
 } )
@@ -268,7 +266,7 @@ local function DrawNote()
 	local alpha = cl_PProtect.Note.alpha
 	local backcol = Color( 88, 144, 222, alpha )
 
-	--Textbox
+	-- Textbox
 	if cl_PProtect.Note.typ == "info" then
 		backcol = Color( 128, 255, 0, alpha )
 	elseif cl_PProtect.Note.typ == "admin" then
@@ -283,7 +281,7 @@ local function DrawNote()
 	draw.NoTexture()
 	surface.DrawPoly( triangle )
 
-	--Text
+	-- Text
 	draw.SimpleText( cl_PProtect.Note.msg, "pprotect_note", x + 10, y + 10, Color( 75, 75, 75, alpha ), 0, 0 )
 
 end
@@ -306,9 +304,9 @@ end
 
 
 
-------------------
---  NETWORKING  --
-------------------
+---------------
+--  NETWORK  --
+---------------
 
 -- NOTIFY
 net.Receive( "pprotect_notify", function( len )

@@ -11,7 +11,6 @@ util.AddNetworkString( "pprotect_save_propprotection" )
 util.AddNetworkString( "pprotect_cleanup_map" )
 util.AddNetworkString( "pprotect_cleanup_disconnected_player" )
 util.AddNetworkString( "pprotect_cleanup_player" )
-
 util.AddNetworkString( "pprotect_new_counts" )
 
 -- BUDDY
@@ -63,7 +62,7 @@ sv_PProtect.Config.Antispam = {
 	toolblock = 1,
 	propblock = 1,
 	propinprop = 1,
-	
+
 	cooldown = 0.3,
 	spam = 2,
 	spamaction = 1,

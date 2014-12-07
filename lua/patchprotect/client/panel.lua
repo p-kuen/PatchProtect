@@ -4,51 +4,53 @@
 
 function cl_PProtect.ASMenu( Panel )
 
-	-- DELETE CONTROLS
+	-- clear Panel
 	Panel:ClearControls()
 
-	-- UPDATE MENU
+	-- update Panel
 	if !cl_PProtect.ASCPanel then
 		cl_PProtect.ASCPanel = Panel
 	end
 
-	-- CHECK ADMIN
+	-- check Admin
 	if !LocalPlayer():IsSuperAdmin() then
 		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
 		return
 	end
 
-	-- MAIN SETTINGS
+	-- main Settings
 	cl_PProtect.addlbl( Panel, "General Settings:" )
 	cl_PProtect.addchk( Panel, "Enable AntiSpam", "antispam", "enabled" )
 
 	if cl_PProtect.Settings.Antispam[ "enabled" ] == 1 then
 
+		-- General
 		cl_PProtect.addchk( Panel, "Ignore Admins", "antispam", "admins" )
 		cl_PProtect.addchk( Panel, "Admin-Alert Sound", "antispam", "adminalertsound" )
 
+		-- Anti-Spam features
 		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:" )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
 		cl_PProtect.addchk( Panel, "Tool-Block", "antispam", "toolblock" )
 		cl_PProtect.addchk( Panel, "Prop-Block", "antispam", "propblock" )
 		cl_PProtect.addchk( Panel, "Prop-In-Prop", "antispam", "propinprop" )
 
-		--Tool Protection
+		-- Tool Protection
 		if cl_PProtect.Settings.Antispam[ "toolprotection" ] == 1 then
 			cl_PProtect.addbtn( Panel, "Set antispamed Tools", "pprotect_antispamtools" )
 		end
 
-		--Tool Block
+		-- Tool Block
 		if cl_PProtect.Settings.Antispam[ "toolblock" ] == 1 then
 			cl_PProtect.addbtn( Panel, "Set blocked Tools", "pprotect_blockedtools" )
 		end
 
-		--Prop Block
+		-- Prop Block
 		if cl_PProtect.Settings.Antispam[ "propblock" ] == 1 then
 			cl_PProtect.addbtn( Panel, "Set blocked Props", "pprotect_blockedprops" )
 		end
 
-		--Cooldown/Spamaction
+		-- Cooldown/Spamaction
 		cl_PProtect.addlbl( Panel, "\nDuration till the next prop-spawn/tool-fire:" )
 		cl_PProtect.addsld( Panel, 0, 10, "Cooldown (Seconds)", "antispam", cl_PProtect.Settings.Antispam[ "cooldown" ], 1, "cooldown" )
 		cl_PProtect.addlbl( Panel, "Number of props till admins get warned:" )
@@ -66,7 +68,7 @@ function cl_PProtect.ASMenu( Panel )
 
 	end
 
-	-- SAVE SETTINGS
+	-- save Settings
 	cl_PProtect.addbtn( Panel, "Save Settings", "pprotect_save_antispam" )
 
 end
@@ -81,12 +83,11 @@ end
 net.Receive( "get_antispam_tool", function()
 
 	cl_PProtect.Settings.Antispamtools = net.ReadTable()
-
-	tsFrm = cl_PProtect.addfrm( 250, 350, "Set antispamed Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.Antispamtools, "pprotect_send_antispamed_tools" )
+	local frm = cl_PProtect.addfrm( 250, 350, "Set antispamed Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.Antispamtools, "pprotect_send_antispamed_tools" )
 
 	for key, value in SortedPairs( cl_PProtect.Settings.Antispamtools ) do
 
-		cl_PProtect.addchk( tsFrm, key, "antispamtools", key )
+		cl_PProtect.addchk( frm, key, "antispamtools", key )
 
 	end
 
@@ -96,12 +97,11 @@ end )
 net.Receive( "get_blocked_prop", function()
 
 	cl_PProtect.Settings.Blockedprops = net.ReadTable()
-	
-	psFrm = cl_PProtect.addfrm( 800, 600, "Set blocked Props:", false, true, true, "Save Props", cl_PProtect.Settings.Blockedprops, "pprotect_send_blocked_props" )
+	local frm = cl_PProtect.addfrm( 800, 600, "Set blocked Props:", false, true, true, "Save Props", cl_PProtect.Settings.Blockedprops, "pprotect_send_blocked_props" )
 
 	table.foreach( cl_PProtect.Settings.Blockedprops, function( key, value )
 
-		local Icon = vgui.Create( "SpawnIcon", psFrm )
+		local Icon = vgui.Create( "SpawnIcon", frm )
 		Icon:SetModel( value )
 
 		Icon.DoClick = function()
@@ -110,7 +110,7 @@ net.Receive( "get_blocked_prop", function()
 			menu:AddOption( "Remove from blocked Props", function()
 				table.RemoveByValue( cl_PProtect.Settings.Blockedprops, value )
 				Icon:Remove()
-				psFrm:InvalidateLayout()
+				frm:InvalidateLayout()
 			end )
 			menu:Open()
 
@@ -120,13 +120,9 @@ net.Receive( "get_blocked_prop", function()
 			draw.RoundedBox( 0, 0, 0, Icon:GetWide(), Icon:GetTall(), Color( 200, 200, 200, 255 ) )
 		end
 
-		psFrm:AddItem( Icon )
+		frm:AddItem( Icon )
 
 	end )
-
-	if table.Count( cl_PProtect.Settings.Blockedprops ) == 0 then
-		cl_PProtect.addlbl( psFrm, "Nothing..." )
-	end
 
 end )
 
@@ -134,12 +130,11 @@ end )
 net.Receive( "get_blocked_tool", function()
 
 	cl_PProtect.Settings.Blockedtools = net.ReadTable()
-
-	tsFrm = cl_PProtect.addfrm( 250, 350, "Set blocked Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.Blockedtools, "pprotect_send_blocked_tools" )
+	local frm = cl_PProtect.addfrm( 250, 350, "Set blocked Tools:", false, true, false, "Save Tools", cl_PProtect.Settings.Blockedtools, "pprotect_send_blocked_tools" )
 
 	for key, value in SortedPairs( cl_PProtect.Settings.Blockedtools ) do
 
-		cl_PProtect.addchk( tsFrm, key, "blockedtools", key )
+		cl_PProtect.addchk( frm, key, "blockedtools", key )
 
 	end
 
@@ -153,26 +148,27 @@ end )
 
 function cl_PProtect.PPMenu( Panel )
 
-	-- DELETE CONTROLS
+	-- clear Panel
 	Panel:ClearControls()
 
-	-- UPDATE MENU
+	-- update Panel
 	if !cl_PProtect.PPCPanel then
 		cl_PProtect.PPCPanel = Panel
 	end
 
-	-- CHECK ADMIN
+	-- check Admin
 	if !LocalPlayer():IsSuperAdmin() then
 		cl_PProtect.addlbl( Panel, "Sorry, you need to be a Super-Admin to change the settings!" )
 		return
 	end
 
-	-- MAIN SETTINGS
+	-- main Setttings
 	cl_PProtect.addlbl( Panel, "General Settings:" )
 	cl_PProtect.addchk( Panel, "Enable PropProtection", "propprotection", "enabled" )
 	
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 1 then
 
+		-- General
 		cl_PProtect.addchk( Panel, "Ignore SuperAdmins", "propprotection", "superadmins" )
 		cl_PProtect.addchk( Panel, "Ignore Admins", "propprotection", "admins" )
 		if cl_PProtect.Settings.Propprotection[ "admins" ] == 1 then
@@ -181,6 +177,7 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "Admins can use Cleanup-Menu", "propprotection", "adminscleanup" )
 		cl_PProtect.addchk( Panel, "FPP-Mode (Owner HUD)", "propprotection", "fppmode", "Owner will be shown under the crosshair" )
 
+		-- Protections
 		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
 		cl_PProtect.addchk( Panel, "Use-Protection", "propprotection", "useprotection" )
 		cl_PProtect.addchk( Panel, "Reload-Protection", "propprotection", "reloadprotection" )
@@ -188,6 +185,7 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "GravGun-Protection", "propprotection", "gravgunprotection" )
 		cl_PProtect.addchk( Panel, "PropPickup-Protection", "propprotection", "proppickup", "Pick up props with 'use'-key" )
 
+		-- Restrictions
 		cl_PProtect.addlbl( Panel, "\nSpecial User-Restrictions:", "panel" )
 		cl_PProtect.addchk( Panel, "Allow Creator-Tool", "propprotection", "creatorprotection", "ie. spawning weapons with the toolgun" )
 		cl_PProtect.addchk( Panel, "Allow Prop-Driving", "propprotection", "propdriving", "Allow users to drive props over the context menu (c-key)" )
@@ -197,7 +195,7 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
 		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "propdelete" )
 
-		--Prop Delete
+		-- Prop-Delete
 		if cl_PProtect.Settings.Propprotection[ "propdelete" ] == 1 then
 			cl_PProtect.addchk( Panel, "Keep admin's props", "propprotection", "adminprops" )
 			cl_PProtect.addsld( Panel, 5, 300, "Delay (sec.)", "propprotection", cl_PProtect.Settings.Propprotection[ "delay" ], 0, "delay" )
@@ -205,7 +203,7 @@ function cl_PProtect.PPMenu( Panel )
 
 	end
 
-	-- SAVE SETTINGS
+	-- save Settings
 	cl_PProtect.addbtn( Panel, "Save Settings", "pprotect_save_propprotection" )
 
 end
@@ -218,15 +216,15 @@ end
 
 function cl_PProtect.BMenu( Panel )
 
-	-- DELETE CONTROLS
+	-- clear Panel
 	Panel:ClearControls()
 
-	-- UPDATE MENU
+	-- update Panel
 	if !cl_PProtect.BCPanel then
 		cl_PProtect.BCPanel = Panel
 	end
 	
-	-- BUDDY PERMISSIONS TABLE
+	-- Buddy-Permission-Table
 	local buddy_permissions = {
 
 		"Use",
@@ -263,7 +261,6 @@ function cl_PProtect.BMenu( Panel )
 	table.foreach( player.GetAll(), function( key, ply )
 
 		if ply == me then return end
-
 		local new = true
 
 		if me.Buddies != nil and table.Count( me.Buddies ) > 0 then
@@ -277,7 +274,6 @@ function cl_PProtect.BMenu( Panel )
 		end
 
 		if !new then return end
-
 		local newline = list_allplayers:AddLine( ply:Nick() )
 		newline.player = ply
 		
@@ -334,16 +330,16 @@ end
 
 function cl_PProtect.CUMenu( Panel )
 
-	-- DELETE CONTROLS
+	-- clear Panel
 	RunConsoleCommand( "pprotect_request_newest_counts" )
 	Panel:ClearControls()
 
-	-- UPDATE MENU
+	-- update Panel
 	if !cl_PProtect.CUCPanel then
 		cl_PProtect.CUCPanel = Panel
 	end
 
-	-- CHECK ADMIN
+	-- check Admin
 	if cl_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 and !LocalPlayer():IsAdmin() and !LocalPlayer():IsSuperAdmin() then
 		cl_PProtect.addlbl( Panel, "Sorry, you need to be an Admin to access the Cleanup-Menu!" )
 		return
@@ -354,7 +350,6 @@ function cl_PProtect.CUMenu( Panel )
 
 	function pprotect_write_cleanup_menu( global, players )
 
-		-- CLEANUP CONTROLS
 		cl_PProtect.addlbl( Panel, "Cleanup everything: (Including World Props)" )
 		cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring( global ) .. " Props)", "pprotect_cleanup_map" )
 
@@ -378,9 +373,10 @@ end
 
 function cl_PProtect.CSMenu( Panel )
 
+	-- clear Panel
 	Panel:ClearControls()
 
-	-- UPDATE MENU
+	-- update Panel
 	if !cl_PProtect.CSCPanel then
 		cl_PProtect.CSCPanel = Panel
 	end
@@ -398,19 +394,19 @@ end
 
 local function CreateMenus()
 
-	-- ANTISPAM
+	-- Anti-Spam
 	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPAntiSpam", "AntiSpam", "", "", cl_PProtect.ASMenu )
 
-	-- PROP PROTECTION
+	-- Prop-Protection
 	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPPropProtection", "PropProtection", "", "", cl_PProtect.PPMenu )
 
-	-- BUDDY
+	-- Buddy
 	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPBuddy", "Buddy", "", "", cl_PProtect.BMenu )
 
-	-- CLEANUP
+	-- Cleanup
 	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPCleanup", "Cleanup", "", "", cl_PProtect.CUMenu )
 	
-	-- CLIENT SETTINGS
+	-- Client-Settings
 	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPClientSettings", "Client Settings", "", "", cl_PProtect.CSMenu )
 
 end
@@ -424,27 +420,27 @@ hook.Add( "PopulateToolMenu", "pprotect_make_menus", CreateMenus )
 
 function cl_PProtect.UpdateMenus()
 	
-	-- ANTISPAM
+	-- Anti-Spam
 	if cl_PProtect.ASCPanel then
 		RunConsoleCommand( "pprotect_request_newest_settings", "antispam" )
 	end
 	
-	-- PROP PROTECTION
+	-- Prop-Protection
 	if cl_PProtect.PPCPanel then
 		RunConsoleCommand( "pprotect_request_newest_settings", "propprotection" )
 	end
 
-	-- BUDDY
+	-- Buddy
 	if cl_PProtect.BCPanel then
 		cl_PProtect.BMenu( cl_PProtect.BCPanel )
 	end
 
-	-- CLEANUP
+	-- Cleanup
 	if cl_PProtect.CUCPanel then
 		cl_PProtect.CUMenu( cl_PProtect.CUCPanel )
 	end
 
-	-- CLIENT SETTINGS
+	-- Client-Settings
 	if cl_PProtect.CSCPanel then
 		cl_PProtect.CSMenu( cl_PProtect.CSCPanel )
 	end
@@ -454,10 +450,11 @@ hook.Add( "SpawnMenuOpen", "pprotect_update_menus", cl_PProtect.UpdateMenus )
 
 
 
-------------------------
---  GET NEW SETTINGS  --
-------------------------
+---------------
+--  NETWORK  --
+---------------
 
+-- RECEIVE NEW SETTINGS
 net.Receive( "pprotect_new_settings", function()
 	
 	local settings = net.ReadTable()
@@ -474,6 +471,7 @@ net.Receive( "pprotect_new_settings", function()
 
 end )
 
+-- RECEIVE NEW PROP-COUNTS
 net.Receive( "pprotect_new_counts", function()
 
 	-- Check Permissions

@@ -99,7 +99,7 @@ net.Receive( "pprotect_save_antispam", function( len, pl )
 
 	sv_PProtect.Settings.Antispam = net.ReadTable()
 	sv_PProtect.Settings.Antispam[ "cooldown" ] = math.Round( sv_PProtect.Settings.Antispam[ "cooldown" ], 1 )
-	sv_PProtect.broadcastSettings()
+	sv_PProtect.sendSettings()
 
 	-- SAVE TO SQL TABLES
 	table.foreach( sv_PProtect.Settings.Antispam, function( setting, value )
@@ -118,7 +118,7 @@ end )
 net.Receive( "pprotect_save_propprotection", function( len, pl )
 
 	sv_PProtect.Settings.Propprotection = net.ReadTable()
-	sv_PProtect.broadcastSettings()
+	sv_PProtect.sendSettings()
 
 	-- SAVE TO SQL TABLES
 	table.foreach( sv_PProtect.Settings.Propprotection, function( setting, value )
@@ -184,24 +184,22 @@ end
 
 concommand.Add( "pprotect_reset_antispam", function()
 	sql.Query( "DROP TABLE pprotect_antispam" )
-	print( "[PatchProtect-AntiSpam] Successfully deleted all AntiSpam-Settings!" )
-	print( "[PatchProtect-AntiSpam] PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!" )
+	print( "[PatchProtect-AntiSpam] Successfully deleted all AntiSpam-Settings!\n[PatchProtect-AntiSpam] PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!" )
 end )
 
 concommand.Add( "pprotect_reset_propprotection", function()
 	sql.Query( "DROP TABLE pprotect_propprotection" )
-	print( "[PatchProtect-PropProtection] Successfully deleted all PropProtection-Settings!" )
-	print( "[PatchProtect-PropProtection] PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!" )
+	print( "[PatchProtect-PropProtection] Successfully deleted all PropProtection-Settings!\n[PatchProtect-PropProtection] PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!" )
 end )
 
 
 
----------------------------
---  SEND SETTING-TABLES  --
----------------------------
+---------------
+--  NETWORK  --
+---------------
 
--- TO A SPECIFIC PLAYER
-local function sendPlayerSettings( ply, cmd, args )
+-- SEND SETTINGS
+function sv_PProtect.sendSettings( ply, cmd, args )
 
 	local new_settings = {}
 	new_settings.AntiSpam = sv_PProtect.Settings.Antispam
@@ -210,31 +208,13 @@ local function sendPlayerSettings( ply, cmd, args )
 	net.Start( "pprotect_new_settings" )
 		net.WriteTable( new_settings )
 		if args != nil and args[1] != nil then net.WriteString( args[1] ) end
-	net.Send( ply )
+	if ply then net.Send( ply ) else net.Broadcast() end
 
 end
-hook.Add( "PlayerInitialSpawn", "pprotect_playersettings", sendPlayerSettings )
-concommand.Add( "pprotect_request_newest_settings", sendPlayerSettings )
+hook.Add( "PlayerInitialSpawn", "pprotect_playersettings", sv_PProtect.sendSettings )
+concommand.Add( "pprotect_request_newest_settings", sv_PProtect.sendSettings )
 
--- TO EVERY PLAYER
-function sv_PProtect.broadcastSettings()
-
-	local new_settings = {}
-	new_settings.AntiSpam = sv_PProtect.Settings.Antispam
-	new_settings.PropProtection = sv_PProtect.Settings.Propprotection
-
-	net.Start( "pprotect_new_settings" )
-		net.WriteTable( new_settings )
-	net.Broadcast()
-
-end
-
-
-
----------------------
---  NOTIFICATIONS  --
----------------------
-
+-- SEND NOTIFICATION
 function sv_PProtect.Notify( ply, text, typ )
 
 	if pprotect_cppi_call then return end

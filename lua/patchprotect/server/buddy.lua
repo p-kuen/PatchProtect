@@ -5,23 +5,16 @@
 function sv_PProtect.isBuddy( source, buddy, mode )
 
 	if !source or !buddy then return false end
-
+	if source.Buddies == nil then return end
 	local isBuddy = false
-	if source.Buddies != nil then
 
-		table.foreach( source.Buddies, function( k, b )
-			
-			if buddy:UniqueID() == b.uniqueid then
-				if string.match( b.permission, mode ) then
-					isBuddy = true
-				end
-			end
+	table.foreach( source.Buddies, function( k, b )
 
-		end )
+		if buddy:UniqueID() == b.uniqueid and string.match( b.permission, mode ) then isBuddy = true end
 
-	end
+	end )
 
-	if isBuddy then return true else return false end
+	return isBuddy
 
 end
 
@@ -42,6 +35,6 @@ end )
 net.Receive( "pprotect_send_other_buddy", function( len, ply )
 
 	local uid = net.ReadString()
-	sv_PProtect.Notify( player.GetByUniqueID( tostring( uid ) ), ply:Nick() .. " added you as a buddy!", "normal" )
+	sv_PProtect.Notify( player.GetByUniqueID( uid ), ply:Nick() .. " added you as a buddy!", "normal" )
 
 end )
