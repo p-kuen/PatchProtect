@@ -81,14 +81,14 @@ end
 
 function sv_PProtect.CanSpawn( ply, mdl )
 
-	if sv_PProtect.CheckASAdmin( ply ) then return true end
-	if ply.duplicate then return true end
+	if sv_PProtect.CheckASAdmin( ply ) then return end
+	if ply.duplicate then return end
 
 	-- Cooldown
 	if CurTime() > ply.propcooldown then
 		ply.props = 0
 		ply.propcooldown = CurTime() + sv_PProtect.Settings.Antispam[ "cooldown" ]
-		return true
+		return
 	end
 
 	ply.props = ply.props + 1
