@@ -7,44 +7,6 @@ cl_PProtect.Note = { msg = "", typ = "", time = 0, alpha = 0 }
 
 
 
--------------
---  FONTS  --
--------------
-
-surface.CreateFont( "pprotect_roboto", {
-	font 		= "Roboto",
-	size 		= 15,
-	weight 		= 750,
-	antialias 	= true,
-	shadow 		= false
-} )
-
-surface.CreateFont( "pprotect_roboto_small", {
-	font 		= "Roboto",
-	size 		= 14,
-	weight 		= 500,
-	antialias 	= true,
-	shadow 		= false
-} )
-
-surface.CreateFont( "pprotect_note", {
-	font 		= "Roboto",
-	size 		= 18,
-	weight 		= 500,
-	antialias 	= true,
-	shadow 		= false
-} )
-
-surface.CreateFont( "pprotect_note_big", {
-	font 		= "Roboto",
-	size 		= 36,
-	weight 		= 1000,
-	antialias 	= true,
-	shadow 		= false
-} )
-
-
-
 ------------------
 --  PROP OWNER  --
 ------------------
@@ -228,7 +190,7 @@ net.Receive( "pprotect_send_sharedEntity", function( len )
 	end
 
 	-- Frame
-	local frame = cl_PProtect.addfrm( 175, 175, "Share Prop: " .. model, false, true, false, "Save", cl_PProtect.sharedEnt, "pprotect_save_sharedEntity" )
+	local frame = cl_PProtect.addfrm( 180, 180, "Share Prop: " .. model, false, true, false, "Save", cl_PProtect.sharedEnt, "pprotect_save_sharedEntity" )
 
 	-- Checkboxes
 	cl_PProtect.addchk( frame, "Physgun", "share", "phys" )

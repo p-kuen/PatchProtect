@@ -110,13 +110,13 @@ end
 --  LABEL  --
 -------------
 
-function cl_PProtect.addlbl( derma, text )
+function cl_PProtect.addlbl( derma, text, header )
 
 	local lbl = vgui.Create( "DLabel" )
 	lbl:SetText( text )
 	lbl:SetDark( true )
+	if !header then lbl:SetFont( "pprotect_roboto_small" ) else lbl:SetFont( "pprotect_roboto_small_bold" ) end
 	lbl:SizeToContents()
-	lbl:SetFont( "pprotect_roboto_small" )
 	derma:AddItem( lbl )
 
 end
@@ -174,11 +174,47 @@ function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip, cb )
 
 	end
 
+	function chk:PerformLayout()
+
+		local x = self.m_iIndent or 0
+
+		self:SetHeight( 20 )
+		self.Button:SetSize( 40, 20 )
+		self.Button:SetPos( x, 0 )
+		
+		if ( self.Label ) then
+			self.Label:SizeToContents()
+			self.Label:SetPos( x + 35 + 10, self.Button:GetTall() / 2 - 7 )
+		end
+
+	end
+
+	local curx = 0
+	if !chk:GetChecked() then curx = 2 else curx = 22 end
+	local function smooth( goal )
+
+		local speed = math.abs( goal - curx ) / 3
+
+		if curx > goal then curx = curx - speed
+		elseif curx < goal then curx = curx + speed
+		end
+
+		return curx
+
+	end
+
 	function chk:PaintOver()
-		draw.RoundedBox( 0, 0, 0, chk:GetTall(), chk:GetTall(), Color( 150, 150, 150, 255 ) )
-		draw.RoundedBox( 0, 1, 1, chk:GetTall() - 2, chk:GetTall() - 2, Color( 240, 240, 240, 255 ) )
-		if chk:GetChecked() == false then return end
-		draw.RoundedBox( 0, 2, 2, chk:GetTall() - 4, chk:GetTall() - 4, Color( 255, 150, 0, 255 ) )
+
+		draw.RoundedBox( 0, 0, 0, 40, 20, Color( 255, 255, 255 ) )
+
+		if !chk:GetChecked() then
+			draw.RoundedBox( 8, 0, 0, 40, 20, Color( 255, 50, 0 ) )
+			draw.RoundedBox( 8, smooth( 2 ), 2, 16, 16, Color( 255, 255, 255 ) )
+		else
+			draw.RoundedBox( 8, 0, 0, 40, 20, Color( 120, 220, 0 ) )
+			draw.RoundedBox( 8, smooth( 22 ), 2, 16, 16, Color( 255, 255, 255 ) )
+		end
+
 	end
 
 	derma:AddItem( chk )
@@ -298,11 +334,11 @@ function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, s
 	derma:AddItem( sld )
 
 	function sld.Slider.Knob:Paint()
-		draw.RoundedBox( 0, 0, sld.Slider.Knob:GetTall() * 0.1, sld.Slider.Knob:GetWide() * 0.75, sld.Slider.Knob:GetTall() * 0.75, Color( 255, 150, 0, 255 ) )
+		draw.RoundedBox( 4, 0, sld.Slider.Knob:GetTall() * 0.1, sld.Slider.Knob:GetWide() * 0.75, sld.Slider.Knob:GetTall() * 0.75, Color( 255, 150, 0 ) )
 	end
 
 	function sld.Slider:Paint()
-		draw.RoundedBox( 0, sld.Slider.Knob:GetTall() * 0.25, sld.Slider:GetTall() / 2 - ( sld.Slider:GetTall() / 16 ), sld.Slider:GetWide() - sld.Slider.Knob:GetTall(), sld.Slider:GetTall() / 8, Color( 150, 150, 150, 255 ) )
+		draw.RoundedBox( 0, sld.Slider.Knob:GetTall() * 0.25, sld.Slider:GetTall() / 2 - ( sld.Slider:GetTall() / 16 ), sld.Slider:GetWide() - sld.Slider.Knob:GetTall(), sld.Slider:GetTall() / 8, Color( 200, 200, 200 ) )
 	end
 
 end

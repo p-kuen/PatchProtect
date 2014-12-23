@@ -19,7 +19,7 @@ function cl_PProtect.ASMenu( Panel )
 	end
 
 	-- main Settings
-	cl_PProtect.addlbl( Panel, "General Settings:" )
+	cl_PProtect.addlbl( Panel, "General Settings:", true )
 	cl_PProtect.addchk( Panel, "Enable AntiSpam", "antispam", "enabled" )
 
 	if cl_PProtect.Settings.Antispam[ "enabled" ] == 1 then
@@ -29,7 +29,7 @@ function cl_PProtect.ASMenu( Panel )
 		cl_PProtect.addchk( Panel, "Admin-Alert Sound", "antispam", "adminalertsound" )
 
 		-- Anti-Spam features
-		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:" )
+		cl_PProtect.addlbl( Panel, "\nEnable/Disable antispam features:", true )
 		cl_PProtect.addchk( Panel, "Tool-AntiSpam", "antispam", "toolprotection" )
 		cl_PProtect.addchk( Panel, "Tool-Block", "antispam", "toolblock" )
 		cl_PProtect.addchk( Panel, "Prop-Block", "antispam", "propblock" )
@@ -51,7 +51,7 @@ function cl_PProtect.ASMenu( Panel )
 		end
 
 		-- Cooldown/Spamaction
-		cl_PProtect.addlbl( Panel, "\nDuration till the next prop-spawn/tool-fire:" )
+		cl_PProtect.addlbl( Panel, "\nDuration till the next prop-spawn/tool-fire:", true )
 		cl_PProtect.addsld( Panel, 0, 10, "Cooldown (Seconds)", "antispam", cl_PProtect.Settings.Antispam[ "cooldown" ], 1, "cooldown" )
 		cl_PProtect.addlbl( Panel, "Number of props till admins get warned:" )
 		cl_PProtect.addsld( Panel, 0, 40, "Amount", "antispam", cl_PProtect.Settings.Antispam[ "spam" ], 0, "spam" )
@@ -163,7 +163,7 @@ function cl_PProtect.PPMenu( Panel )
 	end
 
 	-- main Setttings
-	cl_PProtect.addlbl( Panel, "General Settings:" )
+	cl_PProtect.addlbl( Panel, "General Settings:", true )
 	cl_PProtect.addchk( Panel, "Enable PropProtection", "propprotection", "enabled" )
 	
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 1 then
@@ -178,7 +178,7 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "FPP-Mode (Owner HUD)", "propprotection", "fppmode", "Owner will be shown under the crosshair" )
 
 		-- Protections
-		cl_PProtect.addlbl( Panel, "\nProtection Settings:", "panel" )
+		cl_PProtect.addlbl( Panel, "\nProtection Settings:", true )
 		cl_PProtect.addchk( Panel, "Use-Protection", "propprotection", "useprotection" )
 		cl_PProtect.addchk( Panel, "Reload-Protection", "propprotection", "reloadprotection" )
 		cl_PProtect.addchk( Panel, "Damage-Protection", "propprotection", "damageprotection" )
@@ -186,13 +186,13 @@ function cl_PProtect.PPMenu( Panel )
 		cl_PProtect.addchk( Panel, "PropPickup-Protection", "propprotection", "proppickup", "Pick up props with 'use'-key" )
 
 		-- Restrictions
-		cl_PProtect.addlbl( Panel, "\nSpecial User-Restrictions:", "panel" )
+		cl_PProtect.addlbl( Panel, "\nSpecial User-Restrictions:", true )
 		cl_PProtect.addchk( Panel, "Allow Creator-Tool", "propprotection", "creatorprotection", "ie. spawning weapons with the toolgun" )
 		cl_PProtect.addchk( Panel, "Allow Prop-Driving", "propprotection", "propdriving", "Allow users to drive props over the context menu (c-key)" )
 		cl_PProtect.addchk( Panel, "Allow World-Props", "propprotection", "worldprops", "Allow users to physgun, toolgun, use, ... world props" )
 		cl_PProtect.addchk( Panel, "Allow World-Buttons/Doors", "propprotection", "worldbutton", "Allow users to press World-Buttons/Doors" )
 
-		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", "panel" )
+		cl_PProtect.addlbl( Panel, "\nProp-Delete on Disconnect:", true )
 		cl_PProtect.addchk( Panel, "Use Prop-Delete", "propprotection", "propdelete" )
 
 		-- Prop-Delete
@@ -249,7 +249,7 @@ function cl_PProtect.BMenu( Panel )
 	local btn_addbuddy
 	local btn_deletebuddy
 
-	cl_PProtect.addlbl( Panel, "\nAdd a new buddy:" )
+	cl_PProtect.addlbl( Panel, "Add a new buddy:", true )
 
 	local list_allplayers = cl_PProtect.addlvw( Panel, { "Name" } , function( selectedLine )
 
@@ -295,7 +295,7 @@ function cl_PProtect.BMenu( Panel )
 	btn_addbuddy:SetDisabled( true )
 
 	-- BUDDY LIST
-	cl_PProtect.addlbl( Panel, "Your Buddies:" )
+	cl_PProtect.addlbl( Panel, "Your Buddies:", true )
 	local list_mybuddies = cl_PProtect.addlvw( Panel, { "Name", "Permission" } , function( selectedLine )
 
 		btn_deletebuddy:SetDisabled( false )
@@ -350,13 +350,13 @@ function cl_PProtect.CUMenu( Panel )
 
 	function pprotect_write_cleanup_menu( global, players )
 
-		cl_PProtect.addlbl( Panel, "Cleanup everything: (Including World Props)" )
+		cl_PProtect.addlbl( Panel, "Cleanup everything: (Including World Props)", true )
 		cl_PProtect.addbtn( Panel, "Cleanup everything (" .. tostring( global ) .. " Props)", "pprotect_cleanup_map" )
 
-		cl_PProtect.addlbl( Panel, "\nCleanup props of disconnected Players:" )
+		cl_PProtect.addlbl( Panel, "\nCleanup props of disconnected Players:", true )
 		cl_PProtect.addbtn( Panel, "Cleanup all Props from disc. Players", "pprotect_cleanup_disconnected_player" )
 
-		cl_PProtect.addlbl( Panel, "\nCleanup Player's props:", "panel" )
+		cl_PProtect.addlbl( Panel, "\nCleanup Player's props:", true )
 		table.foreach( players, function( p, c )
 			cl_PProtect.addbtn( Panel, "Cleanup " .. p:Nick() .. " (" .. tostring( c ) .. " props)", "pprotect_cleanup_player", { p, tostring( c ) } )
 		end )
@@ -381,7 +381,7 @@ function cl_PProtect.CSMenu( Panel )
 		cl_PProtect.CSCPanel = Panel
 	end
 
-	cl_PProtect.addlbl( Panel, "Enable/Disable features:" )
+	cl_PProtect.addlbl( Panel, "Enable/Disable features:", true )
 	cl_PProtect.addchk( Panel, "Use Owner-HUD", "csetting", "OwnerHUD" )
 
 end
