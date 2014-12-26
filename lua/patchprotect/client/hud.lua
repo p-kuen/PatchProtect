@@ -1,8 +1,8 @@
 local Owner
 local IsBuddy
 local IsWorld
-local IsDisconnected
-local lastid
+local IsDisc
+local LastID
 cl_PProtect.Note = { msg = "", typ = "", time = 0, alpha = 0 }
 
 
@@ -13,42 +13,32 @@ cl_PProtect.Note = { msg = "", typ = "", time = 0, alpha = 0 }
 
 function cl_PProtect.showOwner()
 	
-	if cl_PProtect.Settings.Propprotection[ "enabled" ] == 0 or !LocalPlayer():Alive() then return end
-	if cl_PProtect.Settings.CSettings[ "OwnerHUD" ] == 0 then return end
+	if !cl_PProtect.Settings.Propprotection[ "enabled" ] or !cl_PProtect.Settings.CSettings[ "ownerhud" ] or !LocalPlayer():Alive() then return end
 
 	-- Check Entity
 	local ent = LocalPlayer():GetEyeTrace().Entity
 	if !ent or ent:IsPlayer() then return end
 	
-	if lastid != ent:EntIndex() then
+	if LastID != ent:EntIndex() then
 
 		net.Start( "pprotect_get_owner" )
 			net.WriteEntity( ent )
 		net.SendToServer()
 
-		lastid = ent:EntIndex()
+		LastID = ent:EntIndex()
 		
 	end
 
 	-- Check Owner ( Owner is set at the bottom of the file! )
-	if Owner == nil or IsWorld == nil or !ent:IsValid() then return end
+	if !Owner or IsWorld == nil or !ent:IsValid() then return end
 	
 	local ownerText
-	if IsWorld then
-
-		ownerText = "Owner: World"
-
-	else
-
-		if Owner:IsPlayer() and Owner:IsValid() then
-			ownerText = "Owner: " .. Owner:Nick()
-		elseif IsDisconnected != nil then
-			ownerText = "Owner: " .. IsDisconnected .. " (disconnected)"
-		end
-
+	if IsWorld then ownerText = "Owner: World"
+	elseif Owner:IsPlayer() and Owner:IsValid() then ownerText = "Owner: " .. Owner:Nick()
+	elseif IsDisc then ownerText = "Owner: " .. IsDisc .. " (disconnected)"
 	end
 
-	if ownerText == nil then return end
+	if !ownerText then return end
 
 	-- Get textsize
 	surface.SetFont( "pprotect_roboto_small" )
@@ -58,16 +48,16 @@ function cl_PProtect.showOwner()
 
 	-- Set color
 	local col
-	if Owner == LocalPlayer() or IsBuddy or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() or IsWorld and cl_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then
+	if Owner == LocalPlayer() or IsBuddy or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() or IsWorld and cl_PProtect.Settings.Propprotection[ "worldprops" ] then
 		col = Color( 128, 255, 0, 200 )
-	elseif cl_PProtect.Settings.Propprotection[ "worldbutton" ] == 1 and IsWorld then
+	elseif cl_PProtect.Settings.Propprotection[ "worldbutton" ] and IsWorld then
 		col = Color( 0, 161, 222, 200 )
 	else
 		col = Color( 176, 0, 0, 200 )
 	end
 	
 	-- Check Draw-Mode ( FPP-Mode or not )
-	if cl_PProtect.Settings.Propprotection[ "fppmode" ] == 0 then
+	if !cl_PProtect.Settings.Propprotection[ "fppmode" ] then
 
 		-- Border
 		draw.RoundedBox( 0, ScrW() - OW - 15, ScrH() / 2 - (OH / 2), 5, OH, col )
@@ -116,7 +106,7 @@ properties.Add( "addblockedprop", {
 
 	Filter = function( self, ent, ply )
 
-		if cl_PProtect.Settings.Antispam[ "enabled" ] == 0 or cl_PProtect.Settings.Antispam[ "propblock" ] == 0 then return false end
+		if !cl_PProtect.Settings.Antispam[ "enabled" ] or !cl_PProtect.Settings.Antispam[ "propblock" ] then return false end
 		if !LocalPlayer():IsAdmin() or !LocalPlayer():IsSuperAdmin() then return false end
 		if !ent:IsValid() or ent:IsPlayer() then return false end
 		return true
@@ -154,7 +144,7 @@ properties.Add( "shareentity", {
 
 	Filter = function( self, ent, ply )
 
-		if !ent:IsValid() or cl_PProtect.Settings.Propprotection[ "enabled" ] == 0 or ent:IsPlayer() then return false end
+		if !ent:IsValid() or !cl_PProtect.Settings.Propprotection[ "enabled" ] or ent:IsPlayer() then return false end
 		if LocalPlayer():IsSuperAdmin() or Owner == LocalPlayer() then return true else return false end
 
 	end,
@@ -193,10 +183,10 @@ net.Receive( "pprotect_send_sharedEntity", function( len )
 	local frame = cl_PProtect.addfrm( 180, 180, "Share Prop: " .. model, false, true, false, "Save", cl_PProtect.sharedEnt, "pprotect_save_sharedEntity" )
 
 	-- Checkboxes
-	cl_PProtect.addchk( frame, "Physgun", "share", "phys" )
-	cl_PProtect.addchk( frame, "Toolgun", "share", "tool" )
-	cl_PProtect.addchk( frame, "Use", "share", "use" )
-	cl_PProtect.addchk( frame, "Damage", "share", "dmg" )
+	frame:addchk( "Physgun", nil, cl_PProtect.sharedEnt[ "phys" ], function( c ) cl_PProtect.sharedEnt[ "phys" ] = c end )
+	frame:addchk( "Toolgun", nil, cl_PProtect.sharedEnt[ "tool" ], function( c ) cl_PProtect.sharedEnt[ "tool" ] = c end )
+	frame:addchk( "Use", nil, cl_PProtect.sharedEnt[ "use" ], function( c ) cl_PProtect.sharedEnt[ "use" ] = c end )
+	frame:addchk( "Damage", nil, cl_PProtect.sharedEnt[ "dmg" ], function( c ) cl_PProtect.sharedEnt[ "dmg" ] = c end )
 	
 end )
 
@@ -251,6 +241,8 @@ hook.Add( "HUDPaint", "pprotect_drawnote", DrawNote )
 
 function cl_PProtect.ClientNote( msg, typ )
 
+	if !cl_PProtect.Settings.CSettings[ "notes" ] then return end
+
 	local al = 0
 	if cl_PProtect.Note.alpha > 0 then al = 255 end
 	cl_PProtect.Note = { msg = msg, typ = typ, time = SysTime(), alpha = al }
@@ -258,7 +250,7 @@ function cl_PProtect.ClientNote( msg, typ )
 
 	if cl_PProtect.Note.typ == "info" then
 		LocalPlayer():EmitSound( "buttons/button9.wav", 100, 100 )
-	elseif cl_PProtect.Note.typ == "admin" and cl_PProtect.Settings.Antispam[ "adminalertsound" ] == 1 then
+	elseif cl_PProtect.Note.typ == "admin" and cl_PProtect.Settings.Antispam[ "alert" ] then
 		LocalPlayer():EmitSound( "ambient/alarms/klaxon1.wav", 100, 100 )
 	end
 
@@ -287,6 +279,6 @@ net.Receive( "pprotect_send_owner", function( len )
 	local info = net.ReadString()
 	if info == "buddy" then IsBuddy = true else IsBuddy = false end
 	if info == "world" then IsWorld = true else IsWorld = false end
-	if info != "" and info != "buddy" and info != "world" then IsDisconnected = info else IsDisconnected = nil end
+	if info != "" and info != "buddy" and info != "world" then IsDisc = info else IsDisc = nil end
 	
 end )

@@ -1,3 +1,5 @@
+local pan = FindMetaTable( "Panel" )
+
 -------------
 --  FRAME  --
 -------------
@@ -17,9 +19,9 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 	frm:MakePopup()
 	
 	function frm:Paint()
-		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 200, 150, 30, 255 ) )
-		draw.RoundedBox( 0, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 175, 0, 255 ) )
-		draw.RoundedBox( 0, 6, 24, frm:GetWide() - 12, frm:GetTall() - 30, Color( 255, 255, 255, 255 ) )
+		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 200, 150, 30 ) )
+		draw.RoundedBox( 0, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 175, 0 ) )
+		draw.RoundedBox( 0, 6, 24, frm:GetWide() - 12, frm:GetTall() - 30, Color( 255, 255, 255 ) )
 	end
 
 	-- Close-Button
@@ -31,12 +33,13 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 		btn:SetSize( 45, 20 )
 		btn:SetText( "x" )
 		btn:SetDark( false )
-		btn:SetColor( Color( 255, 255, 255, 255 ) )
+		btn:SetColor( Color( 255, 255, 255 ) )
 		btn:SetFont( "pprotect_roboto" )
 
 		function btn:Paint()
-			draw.RoundedBox( 0, 0, 0, 45, 20, Color( 200, 80, 80, 255 ) )
+			draw.RoundedBox( 0, 0, 0, 45, 20, Color( 200, 80, 80 ) )
 		end
+
 		function btn:OnMousePressed()
 			frm:Close()
 		end
@@ -71,11 +74,11 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 
 	function btn:Paint()
 		if btn.Depressed then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0, 255 ) )
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0 ) )
 		elseif btn.Hovered then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220, 255 ) )
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220 ) )
 		else
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200, 255 ) )
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200 ) )
 		end
 	end
 
@@ -92,8 +95,9 @@ function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, 
 		list.VBar.btnDown:SetVisible( false )
 
 		function list.VBar:Paint()
-			draw.RoundedBox( 0, 0, 0, 20, list.VBar:GetTall(), Color( 255, 255, 255, 255 ) )
+			draw.RoundedBox( 0, 0, 0, 20, list.VBar:GetTall(), Color( 255, 255, 255 ) )
 		end
+
 		function list.VBar.btnGrip:Paint()
 			draw.RoundedBox( 0, 8, 0, 5, list.VBar.btnGrip:GetTall(), Color( 0, 0, 0, 150 ) )
 		end
@@ -110,14 +114,14 @@ end
 --  LABEL  --
 -------------
 
-function cl_PProtect.addlbl( derma, text, header )
+function pan:addlbl( text, header )
 
 	local lbl = vgui.Create( "DLabel" )
 	lbl:SetText( text )
 	lbl:SetDark( true )
 	if !header then lbl:SetFont( "pprotect_roboto_small" ) else lbl:SetFont( "pprotect_roboto_small_bold" ) end
 	lbl:SizeToContents()
-	derma:AddItem( lbl )
+	self:AddItem( lbl )
 
 end
 
@@ -127,97 +131,50 @@ end
 --  CHECKBOX  --
 ----------------
 
-function cl_PProtect.addchk( derma, text, setting_type, setting, tooltip, cb )
+function pan:addchk( text, tip, check, cb )
 
 	local chk = vgui.Create( "DCheckBoxLabel" )
 	chk:SetText( text )
 	chk:SetDark( true )
-	chk:SetChecked( false )
-	if isstring( tooltip ) then chk:SetTooltip( tooltip ) end
+	chk:SetChecked( check )
+	if tip then chk:SetTooltip( tip ) end
 	chk.Label:SetFont( "pprotect_roboto_small" )
 
-	if setting_type == "antispam" then
-		chk:SetChecked( tobool( cl_PProtect.Settings.Antispam[ setting ] ) )
-	elseif setting_type == "propprotection" then
-		chk:SetChecked( tobool( cl_PProtect.Settings.Propprotection[ setting ] ) )
-	elseif setting_type == "blockedtools" then
-		chk:SetChecked( tobool( cl_PProtect.Settings.Blockedtools[ setting ] ) )
-	elseif setting_type == "antispamtools" then
-		chk:SetChecked( tobool( cl_PProtect.Settings.Antispamtools[ setting ] ) )
-	elseif setting_type == "buddy" then
-		chk:SetChecked( false )
-	elseif setting_type == "share" then
-		chk:SetChecked( cl_PProtect.sharedEnt[ setting ] )
-	elseif setting_type == "csetting" then
-		chk:SetChecked( cl_PProtect.Settings.CSettings[ setting ] )
-	end
-
-	function chk:OnChange()
-
-		if cb != nil then cb( chk:GetChecked() and true or false ) end
-
-		if setting_type == "antispam" then
-			cl_PProtect.Settings.Antispam[ setting ] = chk:GetChecked() and 1 or 0
-		elseif setting_type == "propprotection" then
-			cl_PProtect.Settings.Propprotection[ setting ] = chk:GetChecked() and 1 or 0
-		elseif setting_type == "blockedtools" then
-			cl_PProtect.Settings.Blockedtools[ setting ] = chk:GetChecked() and true or false
-		elseif setting_type == "antispamtools" then
-			cl_PProtect.Settings.Antispamtools[ setting ] = chk:GetChecked() and true or false
-		elseif setting_type == "buddy" then
-			cl_PProtect.Buddy.RowType[ setting ] = chk:GetChecked() and "true" or "false"
-		elseif setting_type == "share" then
-			cl_PProtect.sharedEnt[ setting ] = chk:GetChecked()
-		elseif setting_type == "csetting" then
-			cl_PProtect.update_csetting( setting, chk:GetChecked() and "1" or "0" )
-		end
-
-	end
+	function chk:OnChange() cb( chk:GetChecked() ) end
 
 	function chk:PerformLayout()
-
 		local x = self.m_iIndent or 0
-
 		self:SetHeight( 20 )
 		self.Button:SetSize( 40, 20 )
 		self.Button:SetPos( x, 0 )
-		
-		if ( self.Label ) then
+		if self.Label then
 			self.Label:SizeToContents()
 			self.Label:SetPos( x + 35 + 10, self.Button:GetTall() / 2 - 7 )
 		end
-
 	end
 
 	local curx = 0
-	if !chk:GetChecked() then curx = 2 else curx = 22 end
+	if !chk:GetChecked() then curx = 3 else curx = 22 end
 	local function smooth( goal )
-
 		local speed = math.abs( goal - curx ) / 3
-
 		if curx > goal then curx = curx - speed
 		elseif curx < goal then curx = curx + speed
 		end
-
 		return curx
-
 	end
 
 	function chk:PaintOver()
-
 		draw.RoundedBox( 0, 0, 0, 40, 20, Color( 255, 255, 255 ) )
-
 		if !chk:GetChecked() then
-			draw.RoundedBox( 8, 0, 0, 40, 20, Color( 255, 50, 0 ) )
-			draw.RoundedBox( 8, smooth( 2 ), 2, 16, 16, Color( 255, 255, 255 ) )
+			draw.RoundedBox( 8, 0, 0, 40, 20, Color( 100, 100, 100 ) )
+			draw.RoundedBox( 6, smooth( 3 ), 3, 14, 14, Color( 255, 255, 255 ) )
 		else
-			draw.RoundedBox( 8, 0, 0, 40, 20, Color( 120, 220, 0 ) )
-			draw.RoundedBox( 8, smooth( 22 ), 2, 16, 16, Color( 255, 255, 255 ) )
+			draw.RoundedBox( 8, 0, 0, 40, 20, Color( 255, 150, 0 ) )
+			draw.RoundedBox( 6, smooth( 22 ), 3, 14, 14, Color( 255, 255, 255 ) )
 		end
-
 	end
 
-	derma:AddItem( chk )
+	self:AddItem( chk )
 
 	return chk
 
@@ -229,7 +186,7 @@ end
 --   BUTTON   --
 ----------------
 
-function cl_PProtect.addbtn( derma, text, nettext, args )
+function pan:addbtn( text, nettext, args )
 
 	local btn = vgui.Create( "DButton" )
 	btn:Center()
@@ -254,10 +211,9 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 			net.Start( nettext )
 
 				if string.find( nettext, "pprotect_save_" ) then
-					local a, b = string.find( nettext, "pprotect_save_" )
-					local tabletext = string.sub( nettext, b + 1, string.len( nettext ) )
+					local tabletext = string.Replace( nettext, "pprotect_save_", "" )
 					tabletext = string.upper( string.sub( tabletext, 1, 1) ) .. string.sub( tabletext, 2, string.len( tabletext ) )
-					savetable = cl_PProtect.Settings[tabletext]
+					savetable = cl_PProtect.Settings[ tabletext ]
 				else
 					savetable = args
 				end
@@ -276,21 +232,20 @@ function cl_PProtect.addbtn( derma, text, nettext, args )
 
 	end
 
-	derma:AddItem( btn )
-
 	function btn:Paint()
-
 		if btn:GetDisabled() then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 240, 240, 240, 255 ) )
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 240, 240, 240 ) )
 			btn:SetCursor("arrow")
 		elseif btn.Depressed then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0, 255 ) )
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0 ) )
 		elseif btn.Hovered then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220, 255 ) )
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220 ) )
 		else
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200, 255 ) )
+			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200 ) )
 		end
 	end
+
+	self:AddItem( btn )
 
 	return btn
 
@@ -301,8 +256,8 @@ end
 --------------
 --  SLIDER  --
 --------------
-
-function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, sld_type2 )
+local sldnum = 0
+function pan:addsld( min, max, text, value, t1, t2, decimals )
 
 	local sld = vgui.Create( "DNumSlider" )
 	sld:SetMin( min )
@@ -316,30 +271,17 @@ function cl_PProtect.addsld( derma, min, max, text, sld_type, value, decimals, s
 	sld.Scratch:SetVisible( false )
 
 	sld.OnValueChanged = function( self, number )
-		
-		if sld_type == "antispam" then
-			if sld_type2 == "cooldown" then
-				cl_PProtect.Settings.Antispam[ "cooldown" ] = math.Round( number, 1 )
-			elseif sld_type2 == "spam" or "bantime" then
-				cl_PProtect.Settings.Antispam[ sld_type2 ] = math.Round( number, 0 )
-			end
-		elseif sld_type == "propprotection" then
-			if sld_type2 == "delay" then
-				cl_PProtect.Settings.Propprotection[ "delay" ] = math.Round( number, 0 )
-			end
-		end
+
+		if sldnum != math.Round( number, decimals ) then sldnum = math.Round( number, decimals ) end
+		cl_PProtect.Settings[ t1 ][ t2 ] = sldnum
 
 	end
 
-	derma:AddItem( sld )
+	function sld.Slider.Knob:Paint() draw.RoundedBox( 6, 2, 2, 12, 12, Color( 255, 150, 0 ) ) end
 
-	function sld.Slider.Knob:Paint()
-		draw.RoundedBox( 4, 0, sld.Slider.Knob:GetTall() * 0.1, sld.Slider.Knob:GetWide() * 0.75, sld.Slider.Knob:GetTall() * 0.75, Color( 255, 150, 0 ) )
-	end
+	function sld.Slider:Paint() draw.RoundedBox( 2, 8, 15, 115, 2, Color( 200, 200, 200 ) ) end
 
-	function sld.Slider:Paint()
-		draw.RoundedBox( 0, sld.Slider.Knob:GetTall() * 0.25, sld.Slider:GetTall() / 2 - ( sld.Slider:GetTall() / 16 ), sld.Slider:GetWide() - sld.Slider.Knob:GetTall(), sld.Slider:GetTall() / 8, Color( 200, 200, 200 ) )
-	end
+	self:AddItem( sld )
 
 end
 
@@ -349,19 +291,17 @@ end
 --  COMBOBOX  --
 ----------------
 
-function cl_PProtect.addcmb( derma, items, setting, value )
+function pan:addcmb( items, setting, value )
 	
 	local cmb = vgui.Create( "DComboBox" )
-	table.foreach( items, function( key, choice )
-		cmb:AddChoice( choice )
-	end )
+	table.foreach( items, function( key, choice ) cmb:AddChoice( choice ) end )
 	cmb:SetValue( value )
 	
 	function cmb:OnSelect( panel, index, value, data )
 		cl_PProtect.Settings.Antispam[ setting ] = index
 	end
 
-	derma:AddItem( cmb )
+	self:AddItem( cmb )
 
 end
 
@@ -371,14 +311,12 @@ end
 --  LISTVIEW  --
 ----------------
 
-function cl_PProtect.addlvw( derma, cols, cb )
+function pan:addlvw( cols, cb )
 
 	local lvw = vgui.Create( "DListView" )
 	lvw:SetMultiSelect( false )
 	lvw:SetSize( 150, 200 )
-	table.foreach( cols, function( key, value )
-		lvw:AddColumn( value )
-	end )
+	table.foreach( cols, function( key, value ) lvw:AddColumn( value ) end )
 
 	function lvw:OnClickLine( line, selected )
 
@@ -388,23 +326,27 @@ function cl_PProtect.addlvw( derma, cols, cb )
 		
 	end
 	
-	derma:AddItem( lvw )
+	self:AddItem( lvw )
 
 	return lvw
 
 end
 
-function cl_PProtect.addtxt( derma, text )
+
+
+---------------
+--  TEXTBOX  --
+---------------
+
+function pan:addtxt( text )
 
 	local txt = vgui.Create( "DTextEntry" )
 	txt:SetText( text )
 	txt:SetFont( "pprotect_roboto_small" )
-	derma:AddItem( txt )
+	self:AddItem( txt )
 
 	function txt:OnTextChanged()
-
 		cl_PProtect.Settings.Antispam[ "concommand" ] = txt:GetValue()
-
 	end
 
 end

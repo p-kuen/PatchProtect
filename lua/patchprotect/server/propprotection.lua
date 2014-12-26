@@ -5,10 +5,10 @@
 -- CHECK ADMIN
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
-	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] == 1 then return true end
+	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] then return true end
 
-	if ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then
-		if ent and ent:CPPIGetOwner() and ent:CPPIGetOwner():IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "adminssuperadmins" ] == 0 then return false end
+	if ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] then
+		if ent and ent:CPPIGetOwner() and ent:CPPIGetOwner():IsSuperAdmin() and !sv_PProtect.Settings.Propprotection[ "adminssuperadmins" ] then return false end
 		return true
 	end
 
@@ -17,7 +17,7 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 end
 
 -- CHECK SHARED
-function sv_PProtect.isShared( ent, mode )
+function sv_PProtect.IsShared( ent, mode )
 
 	if ent.share == nil then return false end
 	if ent.share[ mode ] == true then return true else return false end
@@ -52,7 +52,7 @@ if cleanup then
 		-- Prop-Block
 		if ent:GetModel() != nil then
 			local mdl = string.lower( ent:GetModel() )
-			if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] == 1 and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, mdl ) or string.find( mdl, "/../" ) then
+			if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, mdl ) or string.find( mdl, "/../" ) then
 				sv_PProtect.Notify( ply, "This prop is in the blacklist!" )
 				ent:Remove()
 				return
@@ -61,7 +61,7 @@ if cleanup then
 		
 		-- Prop-In-Prop protection
 		local trace = util.TraceLine( { start = ent:LocalToWorld( ent:OBBMins() ), endpos = ent:LocalToWorld( ent:OBBMaxs() ), filter = ent } )
-		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.Settings.Antispam[ "propinprop" ] == 1 and sv_PProtect.CheckASAdmin( ply ) == false and ent:GetClass() == "prop_physics" and ply.duplicate == false and !ply.pasting then
+		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.Settings.Antispam[ "propinprop" ] and sv_PProtect.CheckASAdmin( ply ) == false and ent:GetClass() == "prop_physics" and ply.duplicate == false and !ply.pasting then
 			sv_PProtect.Notify( ply, "You are not allowed to spawn a prop in an other prop!" )
 			ent:Remove()
 			return
@@ -101,13 +101,13 @@ function sv_PProtect.CanTouch( ply, ent )
 	if !ent:IsValid() or ent:IsWorld() then return false end
 
 	-- Check Shared
-	if sv_PProtect.isShared( ent, "phys" ) then return true end
+	if sv_PProtect.IsShared( ent, "phys" ) then return true end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "physgun" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "physgun" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to hold this object!" )
@@ -135,19 +135,19 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	if !ent:IsValid() and !ent:IsWorld() then return false end
 
 	-- Check Protection
-	if tool == "creator" and sv_PProtect.Settings.Propprotection[ "creatorprotection" ] == 0 then
+	if tool == "creator" and !sv_PProtect.Settings.Propprotection[ "creatorprotection" ] then
 		sv_PProtect.Notify( ply, "You are not allowed to use the creator tool!" )
 		return false
 	end
 
 	-- Check Shared
-	if sv_PProtect.isShared( ent, "tool" ) then return true end
+	if sv_PProtect.IsShared( ent, "tool" ) then return true end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or ent:IsWorld() and ent.World != true or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "toolgun" ) then
+	if ply == ent:CPPIGetOwner() or ent:IsWorld() and ent.World != true or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "toolgun" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to use " .. tool .. " on this object!" )
@@ -171,17 +171,17 @@ function sv_PProtect.CanUse( ply, ent )
 	if !ent:IsValid() then return false end
 
 	-- Check Protection
-	if sv_PProtect.Settings.Propprotection[ "useprotection" ] == 0 then return true end
+	if !sv_PProtect.Settings.Propprotection[ "useprotection" ] then return true end
 
 	-- Check Shared
-	if sv_PProtect.isShared( ent, "use" ) then return true end
+	if sv_PProtect.IsShared( ent, "use" ) then return true end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldbutton" ] == 1 then return true end
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldbutton" ] then return true end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "use" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "use" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to use this object!" )
@@ -206,13 +206,13 @@ function sv_PProtect.CanPickup( ply, ent )
 	if !ent:IsValid() then return false end
 
 	-- Check Protection
-	if sv_PProtect.Settings.Propprotection[ "proppickup" ] == 0 then return true end
+	if !sv_PProtect.Settings.Propprotection[ "proppickup" ] then return true end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "use" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "use" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to pickup this object!" )
@@ -244,10 +244,10 @@ function sv_PProtect.CanProperty( ply, property, ent )
 	end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 	
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "property" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "property" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to change the properties on this object!" )
@@ -264,13 +264,13 @@ function sv_PProtect.CanDrive( ply, ent )
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
 	-- Check Protection
-	if sv_PProtect.Settings.Propprotection[ "propdriving" ] == 0 then return false end
+	if !sv_PProtect.Settings.Propprotection[ "propdriving" ] then return false end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "property" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "property" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to drive this object!" )
@@ -295,16 +295,16 @@ function sv_PProtect.CanDamage( ent, info )
 	if !ent:IsValid() or ent:IsPlayer() then return false end
 
 	-- Check Protection
-	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or sv_PProtect.Settings.Propprotection[ "damageprotection" ] == 0 then return end
+	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or !sv_PProtect.Settings.Propprotection[ "damageprotection" ] then return end
 
 	-- Check Shared
-	if sv_PProtect.isShared( ent, "dmg" ) then return end
+	if sv_PProtect.IsShared( ent, "dmg" ) then return end
 	
 	-- Check Owner
-	if Attacker:IsPlayer() and Owner != Attacker and !sv_PProtect.isBuddy( Owner, Attacker, "damage" ) then
+	if Attacker:IsPlayer() and Owner != Attacker and !sv_PProtect.IsBuddy( Owner, Attacker, "damage" ) then
 
-		if Attacker:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] == 1 then return end
-		if Attacker:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] == 1 then return end
+		if Attacker:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] then return end
+		if Attacker:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] then return end
 		
 		info:SetDamage( 0 )
 		timer.Simple( 0.1, function()
@@ -341,13 +341,13 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 	if !ent:IsValid() then return false end
 
 	-- Check Protection
-	if sv_PProtect.Settings.Propprotection[ "reloadprotection" ] == 0 then return end
+	if !sv_PProtect.Settings.Propprotection[ "reloadprotection" ] then return end
 	
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.isBuddy( ent:CPPIGetOwner(), ply, "physgun" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "physgun" ) then
 		return
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to unfreeze this object!" )
@@ -372,10 +372,10 @@ function sv_PProtect.CanGravPunt( ply, ent )
 	if !ent:IsValid() then return false end
 
 	-- Check Protection
-	if sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] == 0 then return false end
+	if !sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] then return false end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 1 then return true end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() then
@@ -397,10 +397,10 @@ function sv_PProtect.CanGravPickup( ply, ent )
 	if !ent:IsValid() then return false end
 
 	-- Check Protection
-	if sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] == 0 then return false end
+	if !sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] then return false end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] == 0 then
+	if ent.World and !sv_PProtect.Settings.Propprotection[ "worldprops" ] then
 		local worldprop = true
 	end
 
@@ -442,9 +442,9 @@ net.Receive( "pprotect_get_owner", function( len, pl )
 	local ent = net.ReadEntity()
 	local info = ""
 
-	if sv_PProtect.isBuddy( ent:CPPIGetOwner(), pl, "physgun" ) == true or 
-	sv_PProtect.isBuddy( ent:CPPIGetOwner(), pl, "use" ) == true or 
-	sv_PProtect.isBuddy( ent:CPPIGetOwner(), pl, "toolgun" ) == true then
+	if sv_PProtect.IsBuddy( ent:CPPIGetOwner(), pl, "physgun" ) == true or 
+	sv_PProtect.IsBuddy( ent:CPPIGetOwner(), pl, "use" ) == true or 
+	sv_PProtect.IsBuddy( ent:CPPIGetOwner(), pl, "toolgun" ) == true then
 		info = "buddy"
 	end
 

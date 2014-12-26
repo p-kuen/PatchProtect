@@ -2,19 +2,19 @@
 --  CHECK BUDDY  --
 -------------------
 
-function sv_PProtect.isBuddy( source, buddy, mode )
+function sv_PProtect.IsBuddy( source, buddy, mode )
 
 	if !source or !buddy then return false end
 	if source.Buddies == nil then return end
-	local isBuddy = false
+	local IsBuddy = false
 
 	table.foreach( source.Buddies, function( k, b )
 
-		if buddy:UniqueID() == b.uniqueid and string.match( b.permission, mode ) then isBuddy = true end
+		if buddy:UniqueID() == b.uniqueid and string.match( b.permission, mode ) then IsBuddy = true end
 
 	end )
 
-	return isBuddy
+	return IsBuddy
 
 end
 

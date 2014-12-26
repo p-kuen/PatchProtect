@@ -53,7 +53,7 @@ concommand.Add( "pprotect_request_newest_counts", pprotect_new_counts )
 net.Receive( "pprotect_cleanup_map", function( len, pl )
 
 	-- Check Permissions
-	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
+	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
 		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
 	else
 		if !pl:IsSuperAdmin() then return end
@@ -76,9 +76,9 @@ end )
 net.Receive( "pprotect_cleanup_player", function( len, pl )
 
 	-- Check Permissions
-	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
+	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
 		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
-	elseif sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 then
+	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
 		if !pl:IsSuperAdmin() then return end
 	end
 
@@ -106,8 +106,8 @@ end )
 -- PLAYER LEFT SERVER
 function sv_PProtect.SetCleanupProps( ply )
 	
-	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or sv_PProtect.Settings.Propprotection[ "propdelete" ] == 0 then return end
-	if sv_PProtect.Settings.Propprotection[ "adminprops" ] == 1 then
+	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or !sv_PProtect.Settings.Propprotection[ "propdelete" ] then return end
+	if sv_PProtect.Settings.Propprotection[ "adminprops" ] then
 		if ply:IsAdmin() or ply:IsSuperAdmin() then return end
 	end
 	
@@ -143,7 +143,7 @@ hook.Add( "PlayerDisconnected", "pprotect_playerdisconnected", sv_PProtect.SetCl
 -- PLAYER CAME BACK
 function sv_PProtect.checkComeback( ply )
 	
-	if sv_PProtect.Settings.Propprotection[ "enabled" ] == 0 or sv_PProtect.Settings.Propprotection[ "propdelete" ] == 0 then return end
+	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or !sv_PProtect.Settings.Propprotection[ "propdelete" ] then return end
 
 	if timer.Exists( "CleanupPropsOf" .. ply:Nick() ) then
 		print( "[PatchProtect - Cleanup] Aborded Cleanup! " .. ply:Nick() .. " came back!" )
@@ -166,9 +166,9 @@ hook.Add( "PlayerSpawn", "pprotect_abortcleanup", sv_PProtect.checkComeback )
 net.Receive( "pprotect_cleanup_disconnected_player", function( len, pl )
 
 	-- Check Permissions
-	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 1 then
+	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
 		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
-	elseif sv_PProtect.Settings.Propprotection[ "adminscleanup" ] == 0 then
+	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
 		if !pl:IsSuperAdmin() then return end
 	end
 

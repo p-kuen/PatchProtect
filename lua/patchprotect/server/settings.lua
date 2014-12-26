@@ -5,29 +5,35 @@
 -- ANTISPAM AND PROP PROTECTION
 function sv_PProtect.loadSQLSettings( sqltable, name )
 
+	-- Delete old version of settings
+	if sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = 'enabled'" ) == 1 or sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = 'enabled'" ) == 0 then
+		print( "PPROTECT: ATTENTION! DELETED ALL TABLES BECAUSE OF A NEW VERSION OF SETTINGS! PLEASE SET ALL SETTINGS AS YOU HAD THEM BEFORE!" )
+		sql.Query( "DROP TABLE " .. sqltable )
+	end
 	if !sql.Query( "SELECT setting FROM " .. sqltable ) then sql.Query( "DROP TABLE " .. sqltable ) end
 	sql.Query( "CREATE TABLE IF NOT EXISTS " .. sqltable .. " ( setting TEXT, value TEXT )" )
-	local SQLSettings = {}
+	local sql_settings = {}
 
 	-- Save/Load SQLSettings
 	table.foreach( sv_PProtect.Config[ name ], function( setting, value )
 
 		if !sql.Query( "SELECT value FROM " .. sqltable .. " WHERE setting = '" .. setting .. "'" ) then
-			sql.Query( "INSERT INTO " .. sqltable .. " ( setting, value ) VALUES ( '" .. setting .. "', '" .. value .. "' )" )
+			sql.Query( "INSERT INTO " .. sqltable .. " ( setting, value ) VALUES ( '" .. setting .. "', '" .. tostring( value ) .. "' )" )
 		end
 
-		SQLSettings[ setting ] = sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = '" .. setting .. "'" )
+		sql_settings[ setting ] = sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = '" .. setting .. "'" )
 
 	end )
 
-	-- Convert String-Numbers to Numbers
-	table.foreach( SQLSettings, function( setting, value )
+	-- Convert strings to numbers and booleans
+	table.foreach( sql_settings, function( setting, value )
 
-		if tonumber( value ) != nil then SQLSettings[ setting ] = tonumber( value ) end
+		if tonumber( value ) != nil then sql_settings[ setting ] = tonumber( value ) end
+		if value == "true" or value == "false" then sql_settings[ setting ] = tobool( value ) end
 
 	end )
 
-	return SQLSettings
+	return sql_settings
 
 end
 
@@ -98,14 +104,12 @@ MsgC( Color( 255, 255, 0 ), "\n[PatchProtect]", Color( 255, 255, 255 ), " Succes
 net.Receive( "pprotect_save_antispam", function( len, pl )
 
 	sv_PProtect.Settings.Antispam = net.ReadTable()
-	sv_PProtect.Settings.Antispam[ "cooldown" ] = math.Round( sv_PProtect.Settings.Antispam[ "cooldown" ], 1 )
 	sv_PProtect.sendSettings()
 
 	-- SAVE TO SQL TABLES
 	table.foreach( sv_PProtect.Settings.Antispam, function( setting, value )
 
-		if isstring( value ) then value = "'" .. value .. "'" end
-		sql.Query( "UPDATE pprotect_antispam SET value = " .. tostring( value ) .. " WHERE setting = '" .. setting .. "'" )
+		sql.Query( "UPDATE pprotect_antispam SET value = '" .. tostring( value ) .. "' WHERE setting = '" .. setting .. "'" )
 
 	end )
 
@@ -123,7 +127,7 @@ net.Receive( "pprotect_save_propprotection", function( len, pl )
 	-- SAVE TO SQL TABLES
 	table.foreach( sv_PProtect.Settings.Propprotection, function( setting, value )
 		
-		sql.Query( "UPDATE pprotect_propprotection SET value = " .. tostring( value ) .. " WHERE setting = '" .. setting .. "'" )
+		sql.Query( "UPDATE pprotect_propprotection SET value = '" .. tostring( value ) .. "' WHERE setting = '" .. setting .. "'" )
 
 	end )
 

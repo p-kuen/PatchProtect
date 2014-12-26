@@ -54,18 +54,18 @@ sv_PProtect.Config = {}
 -- ANTI SPAM
 sv_PProtect.Config.Antispam = {
 
-	enabled = 1,
-	admins = 0,
-	adminalertsound = 1,
+	enabled = true,
+	admins = false,
+	alert = true,
 
-	toolprotection = 1,
-	toolblock = 1,
-	propblock = 1,
-	propinprop = 1,
+	toolprotection = true,
+	toolblock = true,
+	propblock = true,
+	propinprop = true,
 
 	cooldown = 0.3,
 	spam = 2,
-	spamaction = 1,
+	spamaction = 0,
 	bantime = 10,
 	concommand = "Put your command here"
 
@@ -74,26 +74,26 @@ sv_PProtect.Config.Antispam = {
 -- PROP PROTECTION
 sv_PProtect.Config.Propprotection = {
 
-	enabled = 1,
-	superadmins = 1,
-	admins = 0,
-	adminssuperadmins = 0,
-	adminscleanup = 0,
-	fppmode = 0,
+	enabled = true,
+	superadmins = true,
+	admins = false,
+	adminssuperadmins = false,
+	adminscleanup = false,
+	fppmode = false,
 
-	useprotection = 1,
-	reloadprotection = 1,
-	damageprotection = 1,
-	gravgunprotection = 1,
-	proppickup = 1,
+	useprotection = true,
+	reloadprotection = true,
+	damageprotection = true,
+	gravgunprotection = true,
+	proppickup = true,
 
-	creatorprotection = 0,
-	propdriving = 0,
-	worldprops = 0,
-	worldbutton = 0,
+	creatorprotection = false,
+	propdriving = false,
+	worldprops = false,
+	worldbutton = false,
 
-	propdelete = 1,
-	adminprops = 0,
+	propdelete = true,
+	adminprops = false,
 	delay = 120
 
 }

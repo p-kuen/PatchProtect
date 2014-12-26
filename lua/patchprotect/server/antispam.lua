@@ -20,8 +20,8 @@ hook.Add( "PlayerInitialSpawn", "pprotect_initialspawn", sv_PProtect.Setup )
 -- CHECK ANTISPAM ADMIN
 function sv_PProtect.CheckASAdmin( ply )
 
-	if sv_PProtect.Settings.Antispam[ "enabled" ] == 0 or ply:IsSuperAdmin() then return true end
-	if ply:IsAdmin() and sv_PProtect.Settings.Antispam[ "admins" ] == 1 then return true end
+	if !sv_PProtect.Settings.Antispam[ "enabled" ] or ply:IsSuperAdmin() then return true end
+	if ply:IsAdmin() and sv_PProtect.Settings.Antispam[ "admins" ] then return true end
 	return false
 
 end
@@ -125,7 +125,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	if sv_PProtect.CheckASAdmin( ply ) then return sv_PProtect.CanToolProtection( ply, trace, tool ) end
 
 	-- Blocked Tool
-	if sv_PProtect.Settings.Antispam[ "toolblock" ] == 1 and sv_PProtect.Settings.Blockedtools[ tool ] then
+	if sv_PProtect.Settings.Antispam[ "toolblock" ] and sv_PProtect.Settings.Blockedtools[ tool ] then
 		sv_PProtect.Notify( ply, "This tool is in the blacklist!", "normal" )
 		return false
 	end

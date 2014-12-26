@@ -5,6 +5,11 @@
 -- Create CSettings-Table
 cl_PProtect.Settings.CSettings = {}
 
+-- Delete old settings version
+if sql.QueryValue( "SELECT value FROM pprotect_csettings WHERE setting = 'OwnerHUD'" ) == "1" then
+	sql.Query( "DROP TABLE pprotect_csettings" )
+end
+
 -- Create SQL-CSettings-Table
 if !sql.TableExists( "pprotect_csettings" ) then
 
@@ -15,7 +20,8 @@ end
 -- Set default CSettings
 local csettings_default = {
 
-	OwnerHUD = 1
+	ownerhud = true,
+	notes = true
 
 }
 
@@ -27,7 +33,7 @@ table.foreach( csettings_default, function( setting, value )
 		sql.Query( "INSERT INTO pprotect_csettings ( setting, value ) VALUES ( '" .. setting .. "', '" .. tostring( value ) .. "' )" )
 		cl_PProtect.Settings.CSettings[ setting ] = value
 	else
-		cl_PProtect.Settings.CSettings[ setting ] = tonumber( v )
+		cl_PProtect.Settings.CSettings[ setting ] = tobool( v )
 	end
 
 end )
@@ -35,8 +41,8 @@ end )
 -- Update CSettings
 function cl_PProtect.update_csetting( setting, value )
 
-	sql.Query( "UPDATE pprotect_csettings SET value = '" .. value .. "' WHERE setting = '" .. setting .. "'" )
-	cl_PProtect.Settings.CSettings[ setting ] = tonumber( value )
+	sql.Query( "UPDATE pprotect_csettings SET value = '" .. tostring( value ) .. "' WHERE setting = '" .. setting .. "'" )
+	cl_PProtect.Settings.CSettings[ setting ] = value
 
 end
 
