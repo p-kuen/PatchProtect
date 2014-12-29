@@ -442,6 +442,8 @@ net.Receive( "pprotect_get_owner", function( len, pl )
 	local ent = net.ReadEntity()
 	local info = ""
 
+	if !ent then return end
+
 	if sv_PProtect.IsBuddy( ent:CPPIGetOwner(), pl, "physgun" ) == true or 
 	sv_PProtect.IsBuddy( ent:CPPIGetOwner(), pl, "use" ) == true or 
 	sv_PProtect.IsBuddy( ent:CPPIGetOwner(), pl, "toolgun" ) == true then
