@@ -163,26 +163,26 @@ end
 ---------------------------
 
 function sv_PProtect.CanUse( ply, ent )
-	
+
 	-- Check Admin
-	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check Entity
 	if !ent:IsValid() then return false end
 
 	-- Check Protection
-	if !sv_PProtect.Settings.Propprotection[ "useprotection" ] then return true end
+	if !sv_PProtect.Settings.Propprotection[ "useprotection" ] then return end
 
 	-- Check Shared
-	if sv_PProtect.IsShared( ent, "use" ) then return true end
+	if sv_PProtect.IsShared( ent, "use" ) then return end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldbutton" ] then return true end
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldbutton" ] then return end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "use" ) then
-		return true
+		return
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to use this object!" )
 		return false
