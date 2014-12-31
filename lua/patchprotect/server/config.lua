@@ -79,7 +79,6 @@ sv_PProtect.Config.Propprotection = {
 	admins = false,
 	adminssuperadmins = false,
 	adminscleanup = false,
-	fppmode = false,
 
 	useprotection = true,
 	reloadprotection = true,

@@ -21,6 +21,7 @@ end
 local csettings_default = {
 
 	ownerhud = true,
+	fppmode = false,
 	notes = true
 
 }

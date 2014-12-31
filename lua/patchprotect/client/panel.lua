@@ -176,7 +176,6 @@ function cl_PProtect.pp_menu( p )
 			p:addchk( "Admins can use SuperAdmins'-Props", "Touch, Tool, Use, ...", cl_PProtect.Settings.Propprotection[ "adminssuperadmins" ], function( c ) cl_PProtect.Settings.Propprotection[ "adminssuperadmins" ] = c end )
 		end
 		p:addchk( "Admins can use Cleanup-Menu", nil, cl_PProtect.Settings.Propprotection[ "adminscleanup" ], function( c ) cl_PProtect.Settings.Propprotection[ "adminscleanup" ] = c end )
-		p:addchk( "FPP-Mode (Owner HUD)", "Owner will be shown under the crosshair", cl_PProtect.Settings.Propprotection[ "fppmode" ], function( c ) cl_PProtect.Settings.Propprotection[ "fppmode" ] = c end )
 
 		-- Protections
 		p:addlbl( "\nProtection Settings:", true )
@@ -380,6 +379,7 @@ function cl_PProtect.cs_menu( p )
 
 	p:addlbl( "Enable/Disable features:", true )
 	p:addchk( "Use Owner-HUD", "Allows you to see the owner of a prop.", cl_PProtect.Settings.CSettings[ "ownerhud" ], function( c ) cl_PProtect.update_csetting( "ownerhud", c ) end )
+	p:addchk( "FPP-Mode (Owner HUD)", "Owner will be shown under the crosshair", cl_PProtect.Settings.CSettings[ "fppmode" ], function( c ) cl_PProtect.update_csetting( "fppmode", c ) end )
 	p:addchk( "Use Notifications", "Allows you to see incoming notifications. (right-bottom).", cl_PProtect.Settings.CSettings[ "notes" ], function( c ) cl_PProtect.update_csetting( "notes", c ) end )
 
 end

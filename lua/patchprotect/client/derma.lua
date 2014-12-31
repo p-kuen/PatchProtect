@@ -145,7 +145,7 @@ function pan:addchk( text, tip, check, cb )
 	function chk:PerformLayout()
 		local x = self.m_iIndent or 0
 		self:SetHeight( 20 )
-		self.Button:SetSize( 40, 20 )
+		self.Button:SetSize( 36, 20 )
 		self.Button:SetPos( x, 0 )
 		if self.Label then
 			self.Label:SizeToContents()
@@ -154,7 +154,7 @@ function pan:addchk( text, tip, check, cb )
 	end
 
 	local curx = 0
-	if !chk:GetChecked() then curx = 3 else curx = 22 end
+	if !chk:GetChecked() then curx = 2 else curx = 18 end
 	local function smooth( goal )
 		local speed = math.abs( goal - curx ) / 3
 		if curx > goal then curx = curx - speed
@@ -164,13 +164,13 @@ function pan:addchk( text, tip, check, cb )
 	end
 
 	function chk:PaintOver()
-		draw.RoundedBox( 0, 0, 0, 40, 20, Color( 255, 255, 255 ) )
+		draw.RoundedBox( 0, 0, 0, 36, 20, Color( 255, 255, 255 ) )
 		if !chk:GetChecked() then
-			draw.RoundedBox( 8, 0, 0, 40, 20, Color( 100, 100, 100 ) )
-			draw.RoundedBox( 6, smooth( 3 ), 3, 14, 14, Color( 255, 255, 255 ) )
+			draw.RoundedBox( 8, 0, 0, 36, 20, Color( 100, 100, 100 ) )
+			draw.RoundedBox( 8, smooth( 2 ), 2, 16, 16, Color( 255, 255, 255 ) )
 		else
-			draw.RoundedBox( 8, 0, 0, 40, 20, Color( 255, 150, 0 ) )
-			draw.RoundedBox( 6, smooth( 22 ), 3, 14, 14, Color( 255, 255, 255 ) )
+			draw.RoundedBox( 8, 0, 0, 36, 20, Color( 255, 150, 0 ) )
+			draw.RoundedBox( 8, smooth( 18 ), 2, 16, 16, Color( 255, 255, 255 ) )
 		end
 	end
 

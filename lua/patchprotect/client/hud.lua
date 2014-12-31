@@ -57,7 +57,7 @@ function cl_PProtect.showOwner()
 	end
 	
 	-- Check Draw-Mode ( FPP-Mode or not )
-	if !cl_PProtect.Settings.Propprotection[ "fppmode" ] then
+	if !cl_PProtect.Settings.CSettings[ "fppmode" ] then
 
 		-- Border
 		draw.RoundedBox( 0, ScrW() - OW - 15, ScrH() / 2 - (OH / 2), 5, OH, col )
