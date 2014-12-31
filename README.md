@@ -84,7 +84,7 @@ Here are all features of our PropProtection:
 - If you <b>disconnect</b>, your props will be on the server, but if you enalbed prop-cleanup, your <b>props will be deleted after a configured time</b> ( If you rejoin between this time, your props won't get deleted )
 
 <h3>Cleanup:</h3>
-We have added some cleanup-features to allow SuperAdmins to clear props very fast.
+We have added some cleanup-features to allow SuperAdmins ( or probably Admins ) to clear props very fast.
 You have following posibilities:
 
 - <b>Cleanup the whole map</b> ( all world props will be resetted )
@@ -97,11 +97,12 @@ You can <b>add buddies to a buddy list</b>, to share your prop with other player
 You are also able to <b>set only specific rights to other players</b>. ( i.e.: another player can use it but he is not able to pick it up with the physgun )
 
 <h3>Client Settings:</h3>
-You can set some settings, which are only affecting you. There you have different possibilities to personalize your experience with PatchProtect. Here are some examples:
-	- Enable/Disable the Owner-HUD
-	- Enable/Disable the FPPMode of the Owner-HUD ( it looks similar to the Owner-HUD from FPP )
-	- Enable/Disable all incoming notifications
-	- More features will come from time to time
+You can set some settings, which are <b>only affecting you</b>. There you have different possibilities to personalize your own experience with PatchProtect. Here are some examples:
+
+- Enable/Disable the Owner-HUD
+- Enable/Disable the FPPMode of the Owner-HUD ( it looks similar to the Owner-HUD from FPP )
+- Enable/Disable all incoming notifications
+- More features will come from time to time
 
 <h3>CPPI:</h3>
 We implemented <b>CPPI</b>, so you are able to use PatchProtect for other Addons/Pugins/Gamemodes!
@@ -109,12 +110,12 @@ We implemented <b>CPPI</b>, so you are able to use PatchProtect for other Addons
 <h2>Other important information:</h2>
 There are some console-commands which allow you to perform some commands, which are not used quite often. This commands should be used, if you think that there is someithing wrong with your saved settings. Just type them into the correct console to clear all settings.
 Here is a list of all that commands:
-- Serverside: ( type them into the server-console )
+- <b>Serverside:</b> ( type them into the server-console )
 	- <b>pprotect_reset_antispam</b> - Reset all AntiSpam-Settings. Please follow all printed intstructions, if you ran this command.
 	- <b>pprotect_reset_propprotection</b> - Reset all PropProtection-Settings. Please follow all printed intstructions, if you ran this command.
-- Clientside: ( type them into the client-console )
+- <b>Clientside:</b> ( type them into the client-console )
 	- <b>pprotect_reset_csettings</b> - This resets all client settings. Just follow all instructions, which will be printed into the console.
-<br>
+
 <br>
 <br>
 Ok, that was pretty much information for now. We hope, that you like all mentioned features here. As I said, this is only a list of the most important things of PatchProtect. There are also many background-functions which are really important for all above mentioned features.
