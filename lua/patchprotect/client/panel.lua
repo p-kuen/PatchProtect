@@ -25,7 +25,7 @@ function cl_PProtect.as_menu( p )
 	if cl_PProtect.Settings.Antispam[ "enabled" ] then
 
 		-- General
-		p:addchk( "Ignore Admins", "antispam", "admins" )
+		p:addchk( "Ignore Admins", nil, cl_PProtect.Settings.Antispam[ "admins" ], function( c ) cl_PProtect.Settings.Antispam[ "admins" ] = c end )
 		p:addchk( "Admin-Alert Sound", nil, cl_PProtect.Settings.Antispam[ "alert" ], function( c ) cl_PProtect.Settings.Antispam[ "alert" ] = c end )
 
 		-- Anti-Spam features

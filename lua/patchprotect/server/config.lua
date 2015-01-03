@@ -65,7 +65,7 @@ sv_PProtect.Config.Antispam = {
 
 	cooldown = 0.3,
 	spam = 2,
-	spamaction = 0,
+	spamaction = "Nothing",
 	bantime = 10,
 	concommand = "Put your command here"
 
