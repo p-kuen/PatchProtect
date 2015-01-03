@@ -108,7 +108,7 @@ You can set some settings, which are <b>only affecting you</b>. There you have d
 We implemented <b>CPPI</b>, so you are able to use PatchProtect for other Addons/Pugins/Gamemodes!
 
 <h2>Other important information:</h2>
-There are some console-commands which allow you to perform some commands, which are not used quite often. This commands should be used, if you think that there is someithing wrong with your saved settings. Just type them into the correct console to clear all settings.
+There are some console-commands which allow you to perform some commands, which are not used quite often. This commands should be used, if you think that there is something wrong with your saved settings. Just type them into the correct console to clear all settings.
 Here is a list of all that commands:
 - <b>Serverside:</b> ( type them into the server-console )
 	- <b>pprotect_reset_antispam</b> - Reset all AntiSpam-Settings. Please follow all printed intstructions, if you ran this command.
@@ -116,7 +116,6 @@ Here is a list of all that commands:
 - <b>Clientside:</b> ( type them into the client-console )
 	- <b>pprotect_reset_csettings</b> - This resets all client settings. Just follow all instructions, which will be printed into the console.
 
-<br>
 <br>
 Ok, that was pretty much information for now. We hope, that you like all mentioned features here. As I said, this is only a list of the most important things of PatchProtect. There are also many background-functions which are really important for all above mentioned features.
 
