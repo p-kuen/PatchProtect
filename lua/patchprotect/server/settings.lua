@@ -6,8 +6,8 @@
 function sv_PProtect.loadSQLSettings( sqltable, name )
 
 	-- Delete old version of settings
-	if sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = 'enabled'" ) == "1" or sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = 'enabled'" ) == "0" then
-		print( "PPROTECT: ATTENTION! DELETED ALL TABLES BECAUSE OF A NEW VERSION OF SETTINGS! PLEASE SET ALL SETTINGS AS YOU HAD THEM BEFORE!" )
+	if sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = 'enabled'" ) != "true" and sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = 'enabled'" ) != "false" then
+		print( "PPROTECT: ATTENTION! DELETED " .. sqltable .. " BECAUSE OF A NEW SETTINGS-VERSION! PLEASE SET ALL SETTINGS AS YOU HAD THEM BEFORE!" )
 		sql.Query( "DROP TABLE " .. sqltable )
 	end
 	if !sql.Query( "SELECT setting FROM " .. sqltable ) then sql.Query( "DROP TABLE " .. sqltable ) end
