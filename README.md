@@ -9,7 +9,7 @@ You can control the settings in the <b>Q-Menu -> Utilities</b> (mostly the secon
 <h2>Why we recommend PatchProtect on your server:</h2>
 
 <h3>Lagfree and highest performance:</h3>
-It is very important for us, to code a prop protection, which doesn't need that much resources from the cpu.
+It is very important for us, to code a prop-protection, which doesn't need that much resources from the CPU.
 Everybody hates lags and we too, so we want to save some resources for other addons or for the server itself.
 
 <h3>Simple but functional:</h3>
@@ -28,7 +28,7 @@ Every Panel has Labels to split features into specific sections. This helps to k
 - <b>Client Settings</b> ( use owner-hud, fppmode, enable notifications )
 
 <h3>Modern Design:</h3>
-Patchprotect is not just a functional addon. It also looks pretty! We gave PatchProtect a nice modern design, which makes it easy to see, what you can do or not. Also checkboxes, as well as as other control elements have their own modern design.
+Patchprotect is not just a functional addon. It also looks pretty! We gave PatchProtect a nice modern design, which makes it easy to see, what you can do or not. Also checkboxes, as well as other control-elements have their own modern design.
 You can also write us some suggestions about possible changes.
 
 <h3>Bug fixing:</h3>
@@ -38,12 +38,12 @@ If someone posts an error on GitHub or on Workshop, we try to fix the problem as
 
 <h2>Features of PatchProtect:</h2>
 
-<b>PatchProtect offers a nice range of features. To give you an overview of all features, we created a list with the most important features of PatchProtect:</b>
+<b>PatchProtect offers a nice range of features. To give you an overview of all features, we created a list with the most important ones:</b>
 
 <h3>AntiSpam:</h3>
 We offer a nice working <b>AntiSpam-System</b>, so that people are <b>not able to spam your server to death</b>:
 
-- You can generally <b>enable/disable AntiSpam</b> if you want to use it or not
+- You can <b>enable/disable AntiSpam</b> if you want to use it or not
 - You can <b>enable/disable that Admins</b> (not SuperAdmins!) will be ignored from the AntiSpam-System
 - You can <b>enable/disable Adminalert-Sounds</b> (when somebody spams on the server) if you think that they are annoying
 - It prevents that people <b>spawn props too fast</b>
@@ -59,33 +59,35 @@ We offer a nice working <b>AntiSpam-System</b>, so that people are <b>not able t
 	- You can also disable it completely if you don't want to use it on your server
 
 <h3>PropProtection:</h3>
-The main thing of PatchProtect.
-Here are all features of our PropProtection:
+The <b>main thing</b> of PatchProtect.
+Here are <b>all features of our PropProtection</b>:
 
-- You can generally <b>enable/disable AntiSpam</b> if you just want to use our AntiSpam-System
-- You can <b>enable/disable that SuperAdmins</b> will be ignored from the PropProtection-System
-- You can <b>enable/disable that Admins</b> (not SuperAdmins!) will be ignored from the PropProtection-System
-- You can <b>enable/disable that Admins</b> are allowed to use the Cleanup-Menu of PatchProtect
-- You can <b>enable/disable many PropProtection-Features</b>
+- You can <b>enable/disable our PropProtection</b> if you just want to use our AntiSpam-System
+- You can <b>enable/disable</b> that <b>SuperAdmins</b> will be <b>ignored from the PropProtection-System</b>
+- You can <b>enable/disable</b> that <b>Admins</b> (not SuperAdmins!) will be ignored from the PropProtection-System
+- You can <b>enable/disable</b> that <b>Admins</b> are allowed to use the Cleanup-Menu of PatchProtect
+- You can <b>enable/disable many PropProtection-Features:</b>
 	- PhysGun-Protection
 	- Use-Protection
-	- Reload-Protection <i>( prevent players using the 'r-key' when using the physgun )</i>
+	- Reload-Protection <i>( prevents the use of the 'r'-key when using the PhysGun )</i>
 	- Damage-Protection
 	- GravGun-Protection
-	- PropPickup-Protection
-	- You can ignore some of those features, if the other player is in your Buddy-List
+	- PropPickup-Protection <i>( prevents to pick up props with 'use'-key )</i>
+	- You can ignore some of those features, if the other player is in your <b>Buddy-List</b>
+	- You are also allowed to <b>share permissions ( like use, touch, tool, damage )</b> of just one specific prop to all other players <i>( hold 'c'-key to share permissions of the viewing prop )</i>
 - You can <b>enable/disable a world protection</b>, which prevents people from interacting with world props <i>( if you are looking on a world prop, you will get informed about it )</i>
-	- You can also allow them to use world-props (especially for doors and other stuff) but not moving them
+	- You can also allow them to <b>use</b> world-props (especially for doors and other stuff) <b>but not moving</b> them
 - A smart <b>HUD shows the Owner</b> of the currently viewing prop
 	- You can <b>switch between two HUD-Modes</b>:
-		- First, there is our own design (little box with white background on the right-middle position on the screen)
-		- Secondly you can change in the PropProtection-Settings to the 'FPP-Mode' (little box with the owner in it under the crosshair)
-		- The color shows you, if you are allowed to interact with the viewing prop or not
-- If you <b>disconnect</b>, your props will be on the server, but if you enalbed prop-cleanup, your <b>props will be deleted after a configured time</b> ( If you rejoin between this time, your props won't get deleted )
+		- First, there is our <b>own design</b> <i>( little white box with on the right-middle position of the screen )</i>
+		- Secondly you can change in the <b>Client-Settings</b> to the <b>'FPP-Mode'</b> <i>( little box with the owner in it under the crosshair )</i>
+		- The color shows you, if you are allowed to interact with the viewing prop or not <i>( <span style="color: green;">green</span> = yes, <span style="color: red;">red</span> = no, <span style="color: blue;">blue</span> = yes on using a world-prop )</i>
+- If you <b>disconnect</b>, your props will be on the server, but if you <b>enalbed prop-cleanup</b>, your <b>props will be deleted after a configured time</b> ( If you rejoin between this time, your props won't get deleted )
 
 <h3>Cleanup:</h3>
-We have added some cleanup-features to allow SuperAdmins ( or probably Admins ) to clear props very fast.
-You have following posibilities:
+We have added some <b>Cleanup-Features</b> to allow SuperAdmins ( or probably Admins ) to <b>clear props very fast</b>.
+
+<b>You have following posibilities:</b>
 
 - <b>Cleanup the whole map</b> ( all world props will be resetted )
 - <b>Cleanup everything from a specific player</b>
@@ -97,18 +99,18 @@ You can <b>add buddies to a buddy list</b>, to share your prop with other player
 You are also able to <b>set only specific rights to other players</b>. ( i.e.: another player can use it but he is not able to pick it up with the physgun )
 
 <h3>Client Settings:</h3>
-You can set some settings, which are <b>only affecting you</b>. There you have different possibilities to personalize your own experience with PatchProtect. Here are some examples:
+You can set some <b>settings, which are only affecting you</b>. There you have different possibilities to personalize your own experience with PatchProtect. Here are some examples:
 
-- Enable/Disable the Owner-HUD
-- Enable/Disable the FPPMode of the Owner-HUD ( it looks similar to the Owner-HUD from FPP )
-- Enable/Disable all incoming notifications
+- Enable/Disable the <b>Owner-HUD</b>
+- Enable/Disable the <b>FPPMode of the Owner-HUD</b> ( it looks similar to the Owner-HUD from FPP )
+- Enable/Disable all <b>incoming notifications</b>
 - More features will come from time to time
 
 <h3>CPPI:</h3>
-We implemented <b>CPPI</b>, so you are able to use PatchProtect for other Addons/Pugins/Gamemodes!
+We implemented CPPI, so you are able to <b>use PatchProtect with other Addons/Pugins/Gamemodes</b>!
 
 <h2>Other important information:</h2>
-There are some console-commands which allow you to perform some commands, which are not used quite often. This commands should be used, if you think that there is something wrong with your saved settings. Just type them into the correct console to clear all settings.
+There are some <b>console-commands</b>, which allow you to perform some commands, which are not used quite often. This commands should be used, if you think that there is something wrong with your saved settings. Just type them into the correct console to clear all settings.
 Here is a list of all that commands:
 - <b>Serverside:</b> ( type them into the server-console )
 	- <b>pprotect_reset_antispam</b> - Reset all AntiSpam-Settings. Please follow all printed intstructions, if you ran this command.
@@ -117,6 +119,6 @@ Here is a list of all that commands:
 	- <b>pprotect_reset_csettings</b> - This resets all client settings. Just follow all instructions, which will be printed into the console.
 
 <br>
-Ok, that was pretty much information for now. We hope, that you like all mentioned features here. As I said, this is only a list of the most important things of PatchProtect. There are also many background-functions which are really important for all above mentioned features.
+So that was pretty much information for now. We hope, that you like all mentioned features here. As I said, this is only a list of the most important things of PatchProtect. There are also many background-functions which are really important for all above mentioned features.
 
 We hope, that you enjoy <b>PatchProtect</b> on your server! ;)
