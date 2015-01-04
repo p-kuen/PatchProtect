@@ -49,16 +49,6 @@ if cleanup then
 		if !ent then return end
 		if !ent:IsValid() or !ply:IsPlayer() then return end
 
-		-- Prop-Block
-		if ent:GetModel() != nil then
-			local mdl = string.lower( ent:GetModel() )
-			if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] and isstring( mdl ) and table.HasValue( sv_PProtect.Settings.Blockedprops, mdl ) or string.find( mdl, "/../" ) then
-				sv_PProtect.Notify( ply, "This prop is in the blacklist!" )
-				ent:Remove()
-				return
-			end
-		end
-		
 		-- Prop-In-Prop protection
 		local trace = util.TraceLine( { start = ent:LocalToWorld( ent:OBBMins() ), endpos = ent:LocalToWorld( ent:OBBMaxs() ), filter = ent } )
 		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.Settings.Antispam[ "propinprop" ] and sv_PProtect.CheckASAdmin( ply ) == false and ent:GetClass() == "prop_physics" and ply.duplicate == false and !ply.pasting then
@@ -66,7 +56,7 @@ if cleanup then
 			ent:Remove()
 			return
 		end
-		
+
 		-- Duplicator exception
 		if ply.duplicate == true and enttype != "duplicates" and enttype != "AdvDupe2" and ply.pasting != true then
 			ply.duplicate = false

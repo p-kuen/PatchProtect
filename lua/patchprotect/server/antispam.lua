@@ -2,6 +2,8 @@
 --  SETTINGS  --
 ----------------
 
+local weplist = {}
+
 -- SET PLAYER VARS
 function sv_PProtect.Setup( ply )
 
@@ -13,6 +15,13 @@ function sv_PProtect.Setup( ply )
 	ply.toolcooldown = 0
 	ply.tools = 0
 	ply.duplicate = false
+
+	-- Weapons List
+	if #weplist != 0 then return end
+	table.foreach( weapons.GetList(), function( _, wep )
+		if wep.ClassName != "gmod_tool" then return end
+		table.foreach( wep.Tool, function( name, tool ) weplist[ name ] = false end )
+	end )
 
 end
 hook.Add( "PlayerInitialSpawn", "pprotect_initialspawn", sv_PProtect.Setup )
@@ -83,6 +92,13 @@ function sv_PProtect.CanSpawn( ply, mdl )
 
 	if sv_PProtect.CheckASAdmin( ply ) then return end
 	if ply.duplicate then return end
+
+	-- Prop-Block
+	local lmdl = string.lower( mdl )
+	if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] and table.HasValue( sv_PProtect.Settings.Blockedprops, lmdl ) or string.find( lmdl, "/../" ) then
+		sv_PProtect.Notify( ply, "This prop is in the blacklist!" )
+		return false
+	end
 
 	-- Cooldown
 	if CurTime() > ply.propcooldown then
@@ -215,25 +231,10 @@ end )
 -- SEND TABLE
 net.Receive( "pprotect_blockedtools", function( len, pl )
 
-	local sendingTable = {}
-
-	-- Required to include recently added tools
-	table.foreach( weapons.GetList(), function( _, wep )
-
-		if wep.ClassName == "gmod_tool" then
-			table.foreach( wep.Tool, function( name, tool )
-				sendingTable[ name ] = false
-			end )
-		end
-
-	end )
+	local sendingTable = weplist
 
 	table.foreach( sv_PProtect.Settings.Blockedtools, function( key, value )
-
-		if value == true then
-			sendingTable[ key ] = true
-		end
-
+		if value then sendingTable[ key ] = true end
 	end )
 
 	net.Start( "get_blocked_tool" )
@@ -262,25 +263,10 @@ end )
 -- SEND TABLE
 net.Receive( "pprotect_antispamtools", function( len, pl )
 
-	local sendingTable = {}
-
-	-- Required to include recently added tools
-	table.foreach( weapons.GetList(), function( _, wep )
-
-		if wep.ClassName == "gmod_tool" then
-			table.foreach( wep.Tool, function( name, tool )
-				sendingTable[ name ] = false
-			end )
-		end
-
-	end )
+	local sendingTable = weplist
 
 	table.foreach( sv_PProtect.Settings.Antispamtools, function( key, value )
-
-		if value == true then
-			sendingTable[ key ] = true
-		end
-
+		if value then sendingTable[ key ] = true end
 	end )
 
 	net.Start( "get_antispam_tool" )

@@ -12,7 +12,7 @@ cl_PProtect.Note = { msg = "", typ = "", time = 0, alpha = 0 }
 ------------------
 
 function cl_PProtect.showOwner()
-	
+
 	if !cl_PProtect.Settings.Propprotection[ "enabled" ] or !cl_PProtect.Settings.CSettings[ "ownerhud" ] or !LocalPlayer():Alive() then return end
 
 	-- Check Entity
