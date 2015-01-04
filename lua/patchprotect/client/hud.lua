@@ -116,7 +116,7 @@ properties.Add( "addblockedprop", {
 	Action = function( self, ent )
 
 		net.Start( "pprotect_send_blocked_props_cpanel" )
-			net.WriteString( ent:GetModel() )
+			if ent:GetClass() == "prop_physics" then net.WriteString( ent:GetModel() ) else net.WriteString( ent:GetClass() ) end
 		net.SendToServer()
 
 	end

@@ -1,6 +1,6 @@
-----------------
---  SETTINGS  --
-----------------
+----------------------
+--  ANTISPAM SETUP  --
+----------------------
 
 local weplist = {}
 
@@ -14,6 +14,8 @@ function sv_PProtect.Setup( ply )
 	-- Tools
 	ply.toolcooldown = 0
 	ply.tools = 0
+
+	-- Duplicate
 	ply.duplicate = false
 
 	-- Weapons List

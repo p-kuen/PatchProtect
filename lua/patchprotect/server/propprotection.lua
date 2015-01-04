@@ -12,6 +12,7 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 		return true
 	end
 
+	if !IsValid( ent ) then return end
 	if ent:CPPIGetOwner() == nil and ent.World == nil then return true else return false end
 
 end
@@ -115,20 +116,20 @@ hook.Add( "GravGunOnPickedUp", "pprotect_graphpickup", sv_PProtect.CanTouch )
 ----------------------------
 
 function sv_PProtect.CanToolProtection( ply, trace, tool )
-	
+
 	local ent = trace.Entity
 
 	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
-
-	-- Check Entity
-	if !ent:IsValid() and !ent:IsWorld() then return false end
 
 	-- Check Protection
 	if tool == "creator" and !sv_PProtect.Settings.Propprotection[ "creatorprotection" ] then
 		sv_PProtect.Notify( ply, "You are not allowed to use the creator tool!" )
 		return false
 	end
+
+	-- Check Entity
+	if !ent:IsValid() and !ent:IsWorld() then return false end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "tool" ) then return true end
