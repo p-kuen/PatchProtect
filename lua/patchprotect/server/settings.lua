@@ -177,7 +177,7 @@ function sv_PProtect.saveBlockedTools( data )
 		sql.Query( "INSERT INTO pprotect_blockedtools ( tool, blocked ) VALUES ( '" .. tool .. "', '" .. tostring( blocked ) .. "' )" )
 
 	end )
-	
+
 end
 
 

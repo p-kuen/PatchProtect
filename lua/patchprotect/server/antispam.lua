@@ -2,8 +2,6 @@
 --  ANTISPAM SETUP  --
 ----------------------
 
-local weplist = {}
-
 -- SET PLAYER VARS
 function sv_PProtect.Setup( ply )
 
@@ -17,13 +15,6 @@ function sv_PProtect.Setup( ply )
 
 	-- Duplicate
 	ply.duplicate = false
-
-	-- Weapons List
-	if #weplist != 0 then return end
-	table.foreach( weapons.GetList(), function( _, wep )
-		if wep.ClassName != "gmod_tool" then return end
-		table.foreach( wep.Tool, function( name, tool ) weplist[ name ] = false end )
-	end )
 
 end
 hook.Add( "PlayerInitialSpawn", "pprotect_initialspawn", sv_PProtect.Setup )
@@ -233,10 +224,14 @@ end )
 -- SEND TABLE
 net.Receive( "pprotect_blockedtools", function( len, pl )
 
-	local sendingTable = weplist
+	local sendingTable = {}
+	table.foreach( weapons.GetList(), function( _, wep )
+		if wep.ClassName != "gmod_tool" then return end
+		table.foreach( wep.Tool, function( name, tool ) sendingTable[ name ] = false end )
+	end )
 
 	table.foreach( sv_PProtect.Settings.Blockedtools, function( key, value )
-		if value then sendingTable[ key ] = true end
+		if value == true then sendingTable[ key ] = true end
 	end )
 
 	net.Start( "get_blocked_tool" )
@@ -265,10 +260,14 @@ end )
 -- SEND TABLE
 net.Receive( "pprotect_antispamtools", function( len, pl )
 
-	local sendingTable = weplist
+	local sendingTable = {}
+	table.foreach( weapons.GetList(), function( _, wep )
+		if wep.ClassName != "gmod_tool" then return end
+		table.foreach( wep.Tool, function( name, tool ) sendingTable[ name ] = false end )
+	end )
 
 	table.foreach( sv_PProtect.Settings.Antispamtools, function( key, value )
-		if value then sendingTable[ key ] = true end
+		if value == true then sendingTable[ key ] = true end
 	end )
 
 	net.Start( "get_antispam_tool" )
