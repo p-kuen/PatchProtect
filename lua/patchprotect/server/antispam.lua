@@ -88,8 +88,11 @@ function sv_PProtect.CanSpawn( ply, mdl )
 
 	-- Prop-Block
 	local lmdl = string.lower( mdl )
-	if sv_PProtect.CheckASAdmin( ply ) == false and sv_PProtect.Settings.Antispam[ "propblock" ] and table.HasValue( sv_PProtect.Settings.Blockedprops, lmdl ) or string.find( lmdl, "/../" ) then
+	if sv_PProtect.Settings.Antispam[ "propblock" ] and table.HasValue( sv_PProtect.Settings.Blockedprops, lmdl ) or string.find( lmdl, "/../" ) then
 		sv_PProtect.Notify( ply, "This prop is in the blacklist!" )
+		return false
+	elseif sv_PProtect.Settings.Antispam[ "entblock" ] and sv_PProtect.Settings.Blockedents[ mdl ] then
+		sv_PProtect.Notify( ply, "This entity is in the blacklist!" )
 		return false
 	end
 
@@ -212,6 +215,53 @@ net.Receive( "pprotect_send_blocked_props", function( len, pl )
 
 	sv_PProtect.Notify( pl, "Saved all blocked props!", "info" )
 	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-prop list!" )
+
+end )
+
+
+
+--------------------
+--  BLOCKED ENTS  --
+--------------------
+
+-- SEND TABLE
+net.Receive( "pprotect_blockedents", function( len, pl )
+
+	net.Start( "get_blocked_ent" )
+		net.WriteTable( sv_PProtect.Settings.Blockedents )
+	net.Send( pl )
+
+end )
+
+-- GET NEW PROP
+net.Receive( "pprotect_send_blocked_ents_cpanel", function( len, pl )
+
+	local Entity = net.ReadTable()
+
+	if !sv_PProtect.Settings.Blockedents[ Entity.name ] then
+
+		sv_PProtect.Settings.Blockedents[ Entity.name ] = Entity.model
+		sv_PProtect.saveBlockedEnts( sv_PProtect.Settings.Blockedents )
+
+		sv_PProtect.Notify( pl, "Saved " .. Entity.name .. " to blocked ents!", "info" )
+		print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " added " .. Entity.name .. " to the blocked ents!" )
+
+	else
+
+		sv_PProtect.Notify( pl, "This ent is already in the list!", "info" )
+
+	end
+
+end )
+
+-- GET NEW TABLE
+net.Receive( "pprotect_send_blocked_ents", function( len, pl )
+
+	sv_PProtect.Settings.Blockedents = net.ReadTable()
+	sv_PProtect.saveBlockedEnts( sv_PProtect.Settings.Blockedents )
+
+	sv_PProtect.Notify( pl, "Saved all blocked ents!", "info" )
+	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-ent list!" )
 
 end )
 

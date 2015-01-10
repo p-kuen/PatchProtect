@@ -33,6 +33,7 @@ function cl_PProtect.as_menu( p )
 		p:addchk( "Tool-AntiSpam", nil, cl_PProtect.Settings.Antispam[ "toolprotection" ], function( c ) cl_PProtect.Settings.Antispam[ "toolprotection" ] = c end )
 		p:addchk( "Tool-Block", nil, cl_PProtect.Settings.Antispam[ "toolblock" ], function( c ) cl_PProtect.Settings.Antispam[ "toolblock" ] = c end )
 		p:addchk( "Prop-Block", nil, cl_PProtect.Settings.Antispam[ "propblock" ], function( c ) cl_PProtect.Settings.Antispam[ "propblock" ] = c end )
+		p:addchk( "Entity-Block", nil, cl_PProtect.Settings.Antispam[ "entblock" ], function( c ) cl_PProtect.Settings.Antispam[ "entblock" ] = c end )
 		p:addchk( "Prop-In-Prop", nil, cl_PProtect.Settings.Antispam[ "propinprop" ], function( c ) cl_PProtect.Settings.Antispam[ "propinprop" ] = c end )
 
 		-- Tool Protection
@@ -48,6 +49,11 @@ function cl_PProtect.as_menu( p )
 		-- Prop Block
 		if cl_PProtect.Settings.Antispam[ "propblock" ] then
 			p:addbtn( "Set blocked Props", "pprotect_blockedprops" )
+		end
+
+		-- Ent Block
+		if cl_PProtect.Settings.Antispam[ "entblock" ] then
+			p:addbtn( "Set blocked Entities", "pprotect_blockedents" )
 		end
 
 		-- Cooldown
@@ -102,26 +108,37 @@ net.Receive( "get_blocked_prop", function()
 
 	table.foreach( cl_PProtect.Settings.Blockedprops, function( key, value )
 
-		local Icon = vgui.Create( "SpawnIcon", frm )
-		Icon:SetModel( value )
-
-		Icon.DoClick = function()
-
+		frm:addico( value, nil, function( icon )
 			local menu = DermaMenu()
-			menu:AddOption( "Remove from blocked Props", function()
+			menu:AddOption( "Remove from blocked props", function()
 				table.RemoveByValue( cl_PProtect.Settings.Blockedprops, value )
-				Icon:Remove()
+				icon:Remove()
 				frm:InvalidateLayout()
 			end )
 			menu:Open()
+		end )
 
-		end
+	end )
 
-		function Icon:Paint()
-			draw.RoundedBox( 0, 0, 0, Icon:GetWide(), Icon:GetTall(), Color( 200, 200, 200 ) )
-		end
+end )
 
-		frm:AddItem( Icon )
+-- BLOCKED ENTS
+net.Receive( "get_blocked_ent", function()
+
+	cl_PProtect.Settings.Blockedents = net.ReadTable()
+	local frm = cl_PProtect.addfrm( 800, 600, "Set blocked Ents:", false, true, true, "Save Ents", cl_PProtect.Settings.Blockedents, "pprotect_send_blocked_ents" )
+
+	table.foreach( cl_PProtect.Settings.Blockedents, function( key, value )
+
+		frm:addico( value, key, function( icon )
+			local menu = DermaMenu()
+			menu:AddOption( "Remove from blocked entities", function()
+				cl_PProtect.Settings.Blockedents[ key ] = nil
+				icon:Remove()
+				frm:InvalidateLayout()
+			end )
+			menu:Open()
+		end )
 
 	end )
 

@@ -69,6 +69,22 @@ function sv_PProtect.setBlockedProps()
 
 end
 
+-- BLOCKED ENTS
+function sv_PProtect.setBlockedEnts()
+
+	if !sql.TableExists( "pprotect_blockedents" ) or !sql.Query( "SELECT name FROM pprotect_blockedents" ) then return {} end
+
+	local sql_ents = {}
+	table.foreach( sql.Query( "SELECT * FROM pprotect_blockedents" ), function( ind, ent )
+
+		sql_ents[ ent.name ] = ent.model
+
+	end )
+
+	return sql_ents
+
+end
+
 -- BLOCKED TOOLS
 function sv_PProtect.setBlockedTools()
 
@@ -90,6 +106,7 @@ sv_PProtect.Settings.Antispam = sv_PProtect.loadSQLSettings( "pprotect_antispam"
 sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "pprotect_propprotection", "Propprotection" )
 sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntispamedTools()
 sv_PProtect.Settings.Blockedprops = sv_PProtect.setBlockedProps()
+sv_PProtect.Settings.Blockedents = sv_PProtect.setBlockedEnts()
 sv_PProtect.Settings.Blockedtools = sv_PProtect.setBlockedTools()
 
 MsgC( Color( 255, 255, 0 ), "\n[PatchProtect]", Color( 255, 255, 255 ), " Successfully loaded!\n\n" )
@@ -163,7 +180,23 @@ function sv_PProtect.saveBlockedProps( data )
 		sql.Query( "INSERT INTO pprotect_blockedprops ( id, model ) VALUES ( " .. id .. ", '" .. model .. "' )" )
 
 	end )
-	
+
+end
+
+-- BLOCKED ENTS
+function sv_PProtect.saveBlockedEnts( data )
+
+	sql.Query( "DROP TABLE pprotect_blockedents" )
+	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blockedents ( name TEXT, model TEXT )" )
+
+	if !data or table.Count( data ) == 0 then return end
+
+	table.foreach( data, function( name, model )
+
+		sql.Query( "INSERT INTO pprotect_blockedents ( name, model ) VALUES ( '" .. name .. "', '" .. model .. "' )" )
+
+	end )
+
 end
 
 -- BLOCKED TOOLS

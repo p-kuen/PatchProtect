@@ -54,8 +54,8 @@ We offer a nice working <b>AntiSpam-System</b>, so that people are <b>not able t
 - Admins get <b>informed if someone is spamming</b> ( There is also a little sound, which should make attention to the message )
 - You can change the <b>spam-action</b>: What should happen, if someone is spamming <i>( nothing, message, kick, ban, custom console command )</i>
 - You can <b>enable/disable Toolgun-AntiSpam</b> for each Tool <i>( i.e. you can use the 'remover' as fast as you can, but you are not able to spam 'thrusters' )</i>
-- You can <b>block tools and props</b>, which you don't want to be used on your server
-	- <b>Add blocked prop:</b> Hold <i>c-key</i> to open the <i>context-menu</i> of a prop. There you will find an entry to <i>add the viewing prop to blocked props</i>. You can remove it again over the <i>q-menu</i>.
+- You can <b>block tools, props and entities</b>, which you don't want to be used on your server
+	- <b>Add blocked prop/entity:</b> Aim on prop/entity and hold <i>c-key</i> to open the <i>context-menu</i> of it. There you will find an entry to <i>add the viewing prop to blocked props/entities</i>. You can remove it again over the <i>q-menu</i>.
 	- You can also disable it completely if you don't want to use it on your server
 
 <h3>PropProtection:</h3>

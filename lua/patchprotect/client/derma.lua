@@ -350,3 +350,27 @@ function pan:addtxt( text )
 	end
 
 end
+
+
+
+------------
+--  ICON  --
+------------
+
+function pan:addico( model, tip, cb )
+
+	local ico = vgui.Create( "SpawnIcon", self )
+	ico:SetModel( model )
+	if tip then ico:SetTooltip( tip ) end
+
+	ico.DoClick = function() cb( ico ) end
+
+	function ico:Paint()
+		draw.RoundedBox( 0, 0, 0, ico:GetWide(), ico:GetTall(), Color( 200, 200, 200 ) )
+	end
+
+	self:AddItem( ico )
+
+	return ico
+
+end

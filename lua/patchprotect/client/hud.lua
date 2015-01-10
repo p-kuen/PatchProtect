@@ -109,6 +109,7 @@ properties.Add( "addblockedprop", {
 		if !cl_PProtect.Settings.Antispam[ "enabled" ] or !cl_PProtect.Settings.Antispam[ "propblock" ] then return false end
 		if !LocalPlayer():IsAdmin() or !LocalPlayer():IsSuperAdmin() then return false end
 		if !ent:IsValid() or ent:IsPlayer() then return false end
+		if ent:GetClass() != "prop_physics" then return false end
 		return true
 
 	end,
@@ -116,7 +117,39 @@ properties.Add( "addblockedprop", {
 	Action = function( self, ent )
 
 		net.Start( "pprotect_send_blocked_props_cpanel" )
-			if ent:GetClass() == "prop_physics" then net.WriteString( ent:GetModel() ) else net.WriteString( ent:GetClass() ) end
+			net.WriteString( ent:GetModel() )
+		net.SendToServer()
+
+	end
+
+} )
+
+
+
+-----------------------
+--  ADD BLOCKED ENT  --
+-----------------------
+
+properties.Add( "addblockedent", {
+
+	MenuLabel = "Add to blocked Entities",
+	Order = 2002,
+	MenuIcon = "icon16/page_white_edit.png",
+
+	Filter = function( self, ent, ply )
+
+		if !cl_PProtect.Settings.Antispam[ "enabled" ] or !cl_PProtect.Settings.Antispam[ "entblock" ] then return false end
+		if !LocalPlayer():IsAdmin() or !LocalPlayer():IsSuperAdmin() then return false end
+		if !ent:IsValid() or ent:IsPlayer() then return false end
+		if ent:GetClass() == "prop_physics" then return false end
+		return true
+
+	end,
+
+	Action = function( self, ent )
+
+		net.Start( "pprotect_send_blocked_ents_cpanel" )
+			net.WriteTable( { name = ent:GetClass(), model = ent:GetModel() } )
 		net.SendToServer()
 
 	end

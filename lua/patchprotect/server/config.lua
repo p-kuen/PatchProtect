@@ -29,15 +29,19 @@ util.AddNetworkString( "pprotect_save_sharedEntity" )
 -- ANTISPAMED TOOLS, BLOCKED PROPS, BLOCKED TOOLS
 util.AddNetworkString( "pprotect_antispamtools" )
 util.AddNetworkString( "pprotect_blockedprops" )
+util.AddNetworkString( "pprotect_blockedents" )
 util.AddNetworkString( "pprotect_blockedtools" )
 
 util.AddNetworkString( "get_antispam_tool" )
 util.AddNetworkString( "get_blocked_prop" )
+util.AddNetworkString( "get_blocked_ent" )
 util.AddNetworkString( "get_blocked_tool" )
 
 util.AddNetworkString( "pprotect_send_antispamed_tools" )
 util.AddNetworkString( "pprotect_send_blocked_props" )
 util.AddNetworkString( "pprotect_send_blocked_props_cpanel" )
+util.AddNetworkString( "pprotect_send_blocked_ents" )
+util.AddNetworkString( "pprotect_send_blocked_ents_cpanel" )
 util.AddNetworkString( "pprotect_send_blocked_tools" )
 
 -- NOTIFICATIONS
@@ -59,8 +63,9 @@ sv_PProtect.Config.Antispam = {
 	alert = true,
 
 	toolprotection = true,
-	toolblock = true,
 	propblock = true,
+	entblock = true,
+	toolblock = true,
 	propinprop = true,
 
 	cooldown = 0.3,
