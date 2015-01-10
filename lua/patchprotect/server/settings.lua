@@ -164,7 +164,7 @@ function sv_PProtect.saveAntiSpamTools( data )
 		sql.Query( "INSERT INTO pprotect_antispamtools ( tool, antispam ) VALUES ( '" .. tool .. "', '" .. tostring( antispam ) .. "' )" )
 
 	end )
-	
+
 end
 
 -- BLOCKED PROPS
