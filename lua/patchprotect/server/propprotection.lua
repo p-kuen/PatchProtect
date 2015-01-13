@@ -31,45 +31,44 @@ end
 --  SET OWNER  --
 -----------------
 
--- ADV DUPE
-hook.Add( "AdvDupe_StartPasting", "pprotect_startpaste", function( player, num )
-	player.pasting = true
-end )
-hook.Add( "AdvDupe_FinishPasting", "pprotect_finishpaste", function( data, cur )
-	if data == nil or cur == nil or data[ cur ] == nil or data[ cur ].Player == nil then return end
-	data[ cur ].Player.pasting = false
-end )
+-- GET DATA
+local en, uc, ue, up, uf = nil, undo.Create, undo.AddEntity, undo.SetPlayer, undo.Finish
+function undo.Create( typ ) en = { t = typ, e = {}, o = nil } uc( typ ) end
+function undo.AddEntity( ent ) table.insert( en.e, ent ) ue( ent ) end
+function undo.SetPlayer( ply ) en.o = ply up( ply ) end
+function undo.Finish() sv_PProtect.SetOwner( en.o, en.typ, en.e ) en = nil uf() end
 
--- SET OWNER OF TOOL-ENTS
-if cleanup then
-	
-	local Clean = cleanup.Add
+-- SET OWNER
+function sv_PProtect.SetOwner( ply, typ, ent )
 
-	function cleanup.Add( ply, enttype, ent )
+	if !ent or !ply:IsPlayer() then return end
 
-		if !ent then return end
-		if !ent:IsValid() or !ply:IsPlayer() then return end
+	-- Duplicator exception
+	if ply.duplicate == true and typ != "Duplicator" and typ != "AdvDupe (pasting...)" and typ != "AdvDupe2_Paste" then
+		ply.duplicate = false
+	end
+
+	-- Set owner of the entity
+	table.foreach( ent, function( k, e )
+
+		-- Check entity
+		if !e:IsValid() then return end
+
+		-- Set owner
+		e:CPPISetOwner( ply )
+
+		-- Check duplicator exception
+		if ply.duplicate then return end
 
 		-- Prop-In-Prop protection
-		local trace = util.TraceLine( { start = ent:LocalToWorld( ent:OBBMins() ), endpos = ent:LocalToWorld( ent:OBBMaxs() ), filter = ent } )
-		if IsValid( trace.Entity ) and !trace.Entity:IsPlayer() and sv_PProtect.Settings.Antispam[ "propinprop" ] and sv_PProtect.CheckASAdmin( ply ) == false and ent:GetClass() == "prop_physics" and ply.duplicate == false and !ply.pasting then
+		local te = util.TraceLine( { start = e:LocalToWorld( e:OBBMins() ), endpos = e:LocalToWorld( e:OBBMaxs() ), filter = e } )
+		if IsValid( te.Entity ) and !te.Entity:IsPlayer() and sv_PProtect.Settings.Antispam[ "propinprop" ] and sv_PProtect.CheckASAdmin( ply ) == false and e:GetClass() == "prop_physics" then
 			sv_PProtect.Notify( ply, "You are not allowed to spawn a prop in an other prop!" )
-			ent:Remove()
+			e:Remove()
 			return
 		end
 
-		-- Duplicator exception
-		if ply.duplicate == true and enttype != "duplicates" and enttype != "AdvDupe2" and ply.pasting != true then
-			ply.duplicate = false
-		end
-
-		-- Set owner of the entity
-		ent:CPPISetOwner( ply )
-
-		-- Run normal function now
-		Clean( ply, enttype, ent )
-
-	end
+	end )
 
 end
 
