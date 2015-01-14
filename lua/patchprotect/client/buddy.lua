@@ -2,29 +2,33 @@
 --  BUDDY SQL SETTINGS  --
 --------------------------
 
-if !sql.TableExists( "pprotect_buddies" ) then
+-- LOAD BUDDIES WHEN JOINED THE SERVER
+local function loadBuddies()
 
-	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_buddies( 'uniqueid' TEXT, 'nick' TEXT, 'permission' TEXT )" )
-	
-	MsgC(
-		Color(50, 240, 0),
-		"[PatchProtect] Created new Buddy-Table\n"
-	)
+	cl_PProtect.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
 
 end
+hook.Add( "InitPostEntity", "pprotect_load_buddies", loadBuddies )
 
-function cl_PProtect.resetBuddySettings()
+-- CREATE NEW BUDDY TABLE
+local function createTable()
 
-	-- Delete whole Buddy-List
+	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_buddies( uniqueid TEXT, nick TEXT, permission TEXT )" )
+	loadBuddies()
+	MsgC( Color( 50, 240, 0 ), "[PatchProtect] Created new Buddy-Table\n" )
+
+end
+if !sql.TableExists( "pprotect_buddies" ) then createTable() end
+
+-- RESET BUDDIES
+concommand.Add( "pprotect_reset_buddies", function()
+
 	sql.Query( "DROP TABLE pprotect_buddies" )
-	-- Create new clear Buddy-List
-	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_buddies( 'uniqueid' TEXT, 'nick' TEXT, 'permission' TEXT )" )
+	createTable()
 
-	cl_PProtect.Buddy.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
-	cl_PProtect.UpdateMenus()
-	cl_PProtect.ClientNote( "Cleared Buddy-List", "info" )
+	print( "[PProtect-Buddy] Successfully deleted all Buddies!" )
 
-end
+end )
 
 
 
@@ -32,7 +36,7 @@ end
 --  SET BUDDIES  --
 -------------------
 
-function sendBuddiesToServer( buddies )
+local function sendBuddy( buddies )
 
 	buddies = buddies or {}
 
@@ -43,60 +47,40 @@ function sendBuddiesToServer( buddies )
 end
 
 -- ADD BUDDY
-function cl_PProtect.AddBuddy( newBuddy )
+function cl_PProtect.addBuddy( newBuddy )
 
-	local valid = false
-
-	table.foreach( newBuddy.permissions, function( name, checked )
-
-		if checked then valid = true end
-
-	end )
-
-	if !valid then
+	-- Check permissions
+	if !table.HasValue( newBuddy.permissions, true ) then
 		cl_PProtect.ClientNote( "Please select a permission first!", "normal" )
 		return
 	end
 
-	local me = LocalPlayer()
+	sql.Query( "INSERT INTO pprotect_buddies( uniqueid, nick, permission ) VALUES( '" .. newBuddy.player:UniqueID() .. "', '" .. newBuddy.player:Nick() .. "', '" .. table.concat( table.KeysFromValue( newBuddy.permissions, true ), ", " ) .. "' )" )
 
-	sql.Query( "INSERT INTO pprotect_buddies( 'uniqueid', 'nick', 'permission' ) VALUES( '" .. newBuddy.player:UniqueID() .. "', '" .. newBuddy.player:Nick() .. "', '" .. table.concat( table.KeysFromValue( newBuddy.permissions, true ),", " ) .. "' )" )
-	
-	me.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
-	
-	sendBuddiesToServer( me.Buddies )
+	loadBuddies()
+	sendBuddy( cl_PProtect.Buddies )
 
 	-- Send message to other player
 	net.Start( "pprotect_send_other_buddy" )
 		net.WriteString( tostring( newBuddy.player:UniqueID() ) )
 	net.SendToServer()
-	
+
 	cl_PProtect.ClientNote( "Added " .. newBuddy.player:Nick() .. " to the Buddy-List!", "info" )
 	cl_PProtect.UpdateMenus()
 
 end
 
 -- DELETE BUDDY
-function cl_PProtect.DeleteBuddy( buddy )
+function cl_PProtect.deleteBuddy( buddy )
 
 	if !buddy then return end
-	local me = LocalPlayer()
 
 	sql.Query( "DELETE FROM pprotect_buddies WHERE uniqueid = '" .. buddy.uniqueid .. "'" )
-	me.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
 
-	sendBuddiesToServer( me.Buddies )
+	loadBuddies()
+	sendBuddy( cl_PProtect.Buddies )
 
 	cl_PProtect.ClientNote( "Deleted " .. buddy.nick .. " from the Buddy-List!", "info" )
 	cl_PProtect.UpdateMenus()
-	
-end
-
--- IF PLAYER JOINS THE SERVER -> SEND BUDDIES
-function cl_PProtect.OnPlayerBuddyIPE()
-
-	LocalPlayer().Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
-	if !LocalPlayer().Buddies then return end
 
 end
-hook.Add( "InitPostEntity", "PlayerBuddyIPE", cl_PProtect.OnPlayerBuddyIPE )

@@ -1,8 +1,8 @@
 CPPI = CPPI or {}
-CPPI.CPPI_DEFER = 072014 -- July 2014
+CPPI.CPPI_DEFER = 012015 -- January 2015
 CPPI.CPPI_NOTIMPLEMENTED = 8084 -- PT ( Patcher and Ted )
-pprotect_cppi_call = false
-pprotect_cppi_right = false
+local PLAYER = FindMetaTable( "Player" )
+local ENTITY = FindMetaTable( "Entity" )
 
 -- NAME
 function CPPI:GetName()
@@ -32,23 +32,17 @@ function CPPI:GetNameFromUID( uid )
 
 end
 
--- PLAYER ( METATABLE )
-local PLAYER = FindMetaTable( "Player" )
-
 function PLAYER:CPPIGetFriends()
 
 	return CPPI.CPPI_DEFER
 
 end
 
--- ENTITY ( METATABLE )
-local ENTITY = FindMetaTable( "Entity" )
-
 function ENTITY:CPPIGetOwner()
 
-	local Owner = self.PatchPPOwner
+	local Owner = self.pprotect_owner
 
-	if not IsValid( Owner ) or not Owner:IsPlayer() then return Owner, self.PatchPPOwnerID end
+	if !IsValid( Owner ) or !Owner:IsPlayer() then return Owner, self.pprotect_owner_id end
 	return Owner, Owner:UniqueID()
 
 end
@@ -59,25 +53,19 @@ if SERVER then
 	-- SET OWNER
 	function ENTITY:CPPISetOwner( ply )
 		
-		if self == nil then return end
+		if !self then return false end
 
-		self.PatchPPOwner = ply
-		self.PatchPPOwnerID = ply:SteamID()
-		
-		if constraint.HasConstraints( self ) then
-			
-			local ConstrainedEntities = constraint.GetAllConstrainedEntities( self )
+		self.pprotect_owner = ply
+		self.pprotect_owner_id = ply:SteamID()
 
-			table.foreach( ConstrainedEntities, function( _, cent )
+		table.foreach( constraint.GetAllConstrainedEntities( self ), function( _, cent )
 
-				if IsEntity( cent.PatchPPOwner ) and cent.PatchPPOwner:IsValid() then return end
+			if IsEntity( cent.pprotect_owner ) and cent.pprotect_owner:IsValid() then return end
 
-				cent.PatchPPOwner = ply
-				cent.PatchPPOwnerID = ply:SteamID()
+			cent.pprotect_owner = ply
+			cent.pprotect_owner_id = ply:SteamID()
 
-			end )
-
-		end
+		end )
 
 		return true
 
@@ -87,8 +75,9 @@ if SERVER then
 	function ENTITY:CPPISetOwnerUID( UID )
 
 		local ply = player.GetByUniqueID( tostring( UID ) )
+		if !ply:IsValid() then return false end
 
-		if self.PatchPPOwner and ply:IsValid() then
+		if self.pprotect_owner then
 
 			if self.AllowedPlayers then
 				table.insert( self.AllowedPlayers, ply )
@@ -98,56 +87,42 @@ if SERVER then
 
 			return true
 
-		elseif ply:IsValid() then
+		else
 
-			self.PatchPPOwner = ply
-			self.PatchPPOwnerID = ply:SteamID()
+			self.pprotect_owner = ply
+			self.pprotect_owner_id = ply:SteamID()
 
 			return true
 
 		end
-
-		return false
 
 	end
 
 	-- CAN TOOL
 	function ENTITY:CPPICanTool( ply, tool )
 
-		pprotect_cppi_call = true
-		pprotect_cppi_right = sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool )
-		pprotect_cppi_call = false
-		return pprotect_cppi_right
+		return sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool )
 
 	end
 
 	-- CAN PHYSGUN
 	function ENTITY:CPPICanPhysgun( ply )
 
-		pprotect_cppi_call = true
-		pprotect_cppi_right = sv_PProtect.CanTouch( ply, self )
-		pprotect_cppi_call = false
-		return pprotect_cppi_right
+		return sv_PProtect.CanTouch( ply, self )
 
 	end
 
 	-- CAN PICKUP
 	function ENTITY:CPPICanPickup( ply )
 
-		pprotect_cppi_call = true
-		pprotect_cppi_right = sv_PProtect.CanPickup( ply, self )
-		pprotect_cppi_call = false
-		return pprotect_cppi_right
+		return sv_PProtect.CanPickup( ply, self )
 
 	end
 
 	-- CAN PUNT
 	function ENTITY:CPPICanPunt( ply )
 
-		pprotect_cppi_call = true
-		pprotect_cppi_right = sv_PProtect.CanGravPunt( ply, self )
-		pprotect_cppi_call = false
-		return pprotect_cppi_right
+		return sv_PProtect.CanGravPunt( ply, self )
 
 	end
 

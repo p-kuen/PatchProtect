@@ -189,9 +189,6 @@ function cl_PProtect.pp_menu( p )
 		-- General
 		p:addchk( "Ignore SuperAdmins", nil, cl_PProtect.Settings.Propprotection[ "superadmins" ], function( c ) cl_PProtect.Settings.Propprotection[ "superadmins" ] = c end )
 		p:addchk( "Ignore Admins", nil, cl_PProtect.Settings.Propprotection[ "admins" ], function( c ) cl_PProtect.Settings.Propprotection[ "admins" ] = c end )
-		if cl_PProtect.Settings.Propprotection[ "admins" ] then
-			p:addchk( "Admins can use SuperAdmins'-Props", "Touch, Tool, Use, ...", cl_PProtect.Settings.Propprotection[ "adminssuperadmins" ], function( c ) cl_PProtect.Settings.Propprotection[ "adminssuperadmins" ] = c end )
-		end
 		p:addchk( "Admins can use Cleanup-Menu", nil, cl_PProtect.Settings.Propprotection[ "adminscleanup" ], function( c ) cl_PProtect.Settings.Propprotection[ "adminscleanup" ] = c end )
 
 		-- Protections
@@ -241,85 +238,56 @@ function cl_PProtect.b_menu( p )
 		cl_PProtect.b_panel = p
 	end
 	
-	-- Buddy-Permission-Table
-	local buddy_permissions = {
-
-		"Use",
-		"PhysGun",
-		"ToolGun",
-		"Damage",
-		"Property"
-	
-	}
-
-	local newBuddy = {
-		player = nil,
-		permissions = {}
-	}
-
-	local selectedBuddy = {
-		nick = nil,
-		uniqueid = nil
-	}
-
+	-- Variables and Tables
+	local buddy_permissions = { "Use", "PhysGun", "ToolGun", "Damage", "Property" }
+	local newBuddy = { player = nil, permissions = {} }
+	local selectedBuddy = { nick = nil, uniqueid = nil }
 	local me = LocalPlayer()
 	local btn_addbuddy
 	local btn_deletebuddy
 
 	p:addlbl( "Add a new buddy:", true )
 
-	local list_allplayers = p:addlvw( { "Name" } , function( selectedLine )
-
+	local list_allplayers = p:addlvw( { "Name" } , function( line )
 		btn_addbuddy:SetDisabled( false )
-		newBuddy.player = selectedLine.player
-
+		newBuddy.player = line.player
 	end )
 
 	table.foreach( player.GetAll(), function( key, ply )
 
-		if ply == me then return end
+		if ply == me or !cl_PProtect.Buddies then return end
+
 		local new = true
-
-		if me.Buddies != nil and table.Count( me.Buddies ) > 0 then
-
-			table.foreach( me.Buddies, function( key, buddy )
-
-				if ply:UniqueID() == buddy.uniqueid then new = false end
-
-			end )
-
-		end
-
+		table.foreach( cl_PProtect.Buddies, function( key, buddy )
+			if ply:UniqueID() == buddy.uniqueid then new = false end
+		end )
 		if !new then return end
+
 		local newline = list_allplayers:AddLine( ply:Nick() )
 		newline.player = ply
-		
+
 	end )
 
 	-- Buddy Permissions
 	table.foreach( buddy_permissions, function( key, permission )
-
 		p:addchk( permission, nil, false, function( c ) newBuddy.permissions[ string.lower( permission ) ] = c end )
-
 	end )
 
 	-- add Buddy
-	btn_addbuddy = p:addbtn( "Add selected buddy" , "", function() cl_PProtect.AddBuddy( newBuddy ) end )
+	btn_addbuddy = p:addbtn( "Add selected buddy" , "", function() cl_PProtect.addBuddy( newBuddy ) end )
 	btn_addbuddy:SetDisabled( true )
 
 	-- Buddy List
 	p:addlbl( "Your Buddies:", true )
 	local list_mybuddies = p:addlvw( { "Name", "Permission" } , function( selectedLine )
-
 		btn_deletebuddy:SetDisabled( false )
 		selectedBuddy.nick = selectedLine.nick
 		selectedBuddy.uniqueid = selectedLine.uniqueid
-
 	end )
 
-	if me.Buddies != nil and table.Count( me.Buddies ) > 0 then
+	if cl_PProtect.Buddies then
 
-		table.foreach( me.Buddies, function( key, buddy )
+		table.foreach( cl_PProtect.Buddies, function( key, buddy )
 
 			local line = list_mybuddies:AddLine( buddy.nick, buddy.permission )
 			line.nick = buddy.nick
@@ -330,7 +298,7 @@ function cl_PProtect.b_menu( p )
 	end
 
 	-- delete Buddy
-	btn_deletebuddy = p:addbtn( "Delete selected buddy" , "", function() cl_PProtect.DeleteBuddy( selectedBuddy ) end )
+	btn_deletebuddy = p:addbtn( "Delete selected buddy" , "", function() cl_PProtect.deleteBuddy( selectedBuddy ) end )
 	btn_deletebuddy:SetDisabled( true )
 
 end

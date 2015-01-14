@@ -12,19 +12,11 @@ end
 
 -- Create SQL-CSettings-Table
 if !sql.TableExists( "pprotect_csettings" ) then
-
 	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_csettings ( setting TEXT, value TEXT )" )
-
 end
 
 -- Set default CSettings
-local csettings_default = {
-
-	ownerhud = true,
-	fppmode = false,
-	notes = true
-
-}
+local csettings_default = { ownerhud = true, fppmode = false, notes = true }
 
 -- Check/Load SQL-CSettings
 table.foreach( csettings_default, function( setting, value )

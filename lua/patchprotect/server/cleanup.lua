@@ -104,7 +104,7 @@ end )
 ----------------------------------------
 
 -- PLAYER LEFT SERVER
-function sv_PProtect.SetCleanupProps( ply )
+function sv_PProtect.setCleanupProps( ply )
 	
 	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or !sv_PProtect.Settings.Propprotection[ "propdelete" ] then return end
 	if sv_PProtect.Settings.Propprotection[ "adminprops" ] then
@@ -116,8 +116,8 @@ function sv_PProtect.SetCleanupProps( ply )
 
 	table.foreach( ents.GetAll(), function( k, v )
 		
-		if v.PatchPPOwnerID == ply:SteamID() then
-			v.PatchPPCleanup = ply:Nick()
+		if v.pprotect_owner_id == ply:SteamID() then
+			v.pprotect_cleanup = ply:Nick()
 		end
 
 	end )
@@ -127,7 +127,7 @@ function sv_PProtect.SetCleanupProps( ply )
 
 		table.foreach( ents.GetAll(), function( k, v )
 
-			if v.PatchPPCleanup == cleanupname then
+			if v.pprotect_cleanup == cleanupname then
 				v:Remove()
 			end
 
@@ -138,7 +138,7 @@ function sv_PProtect.SetCleanupProps( ply )
 	end )
 
 end
-hook.Add( "PlayerDisconnected", "pprotect_playerdisconnected", sv_PProtect.SetCleanupProps )
+hook.Add( "PlayerDisconnected", "pprotect_playerdisconnected", sv_PProtect.setCleanupProps )
 
 -- PLAYER CAME BACK
 function sv_PProtect.checkComeback( ply )
@@ -152,8 +152,8 @@ function sv_PProtect.checkComeback( ply )
 
 	table.foreach( ents.GetAll(), function( k, v )
 
-		if v.PatchPPOwnerID == ply:SteamID() then
-			v.PatchPPCleanup = nil
+		if v.pprotect_owner_id == ply:SteamID() then
+			v.pprotect_cleanup = nil
 			v:CPPISetOwner( ply )
 		end
 
@@ -175,7 +175,7 @@ net.Receive( "pprotect_cleanup_disconnected_player", function( len, pl )
 	-- Remove all props from disconnected players
 	table.foreach( ents.GetAll(), function( k, v )
 
-		if v.PatchPPCleanup != nil and v.PatchPPCleanup != "" then
+		if v.pprotect_cleanup != nil and v.pprotect_cleanup != "" then
 			v:Remove()
 		end
 

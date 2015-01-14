@@ -117,6 +117,7 @@ Here is a list of all that commands:
 	- <b>pprotect_reset_propprotection</b> - Reset all PropProtection-Settings. Please follow all printed intstructions, if you ran this command.
 - <b>Clientside:</b> ( type them into the client-console )
 	- <b>pprotect_reset_csettings</b> - This resets all client settings. Just follow all instructions, which will be printed into the console.
+	- <b>pprotect_reset_buddies</b> - This resets all client settings. Just follow all instructions, which will be printed into the console.
 
 <br>
 So that was pretty much information for now. We hope, that you like all mentioned features here. As I said, this is only a list of the most important things of PatchProtect. There are also many background-functions which are really important for all above mentioned features.

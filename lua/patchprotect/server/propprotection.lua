@@ -5,15 +5,14 @@
 -- CHECK ADMIN
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
-	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] then return true end
-
-	if ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] then
-		if ent and ent:CPPIGetOwner() and ent:CPPIGetOwner():IsSuperAdmin() and !sv_PProtect.Settings.Propprotection[ "adminssuperadmins" ] then return false end
+	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or
+		ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] or
+		ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] then
 		return true
 	end
 
 	if !IsValid( ent ) then return end
-	if ent:CPPIGetOwner() == nil and ent.World == nil then return true else return false end
+	if !ent:CPPIGetOwner() and !ent.World then return true end
 
 end
 
@@ -34,7 +33,7 @@ end
 -- GET DATA
 local en, uc, ue, up, uf = nil, undo.Create, undo.AddEntity, undo.SetPlayer, undo.Finish
 function undo.Create( typ ) en = { t = typ, e = {}, o = nil } uc( typ ) end
-function undo.AddEntity( ent ) table.insert( en.e, ent ) ue( ent ) end
+function undo.AddEntity( ent ) if ent:GetClass() != "phys_constraint" then table.insert( en.e, ent ) end ue( ent ) end
 function undo.SetPlayer( ply ) en.o = ply up( ply ) end
 function undo.Finish() sv_PProtect.SetOwner( en.o, en.typ, en.e ) en = nil uf() end
 
@@ -44,9 +43,7 @@ function sv_PProtect.SetOwner( ply, typ, ent )
 	if !ent or !ply:IsPlayer() then return end
 
 	-- Duplicator exception
-	if ply.duplicate == true and typ != "Duplicator" and typ != "AdvDupe (pasting...)" and typ != "AdvDupe2_Paste" then
-		ply.duplicate = false
-	end
+	if ply.duplicate == true and typ != "Duplicator" and typ != "AdvDupe (pasting...)" and typ != "AdvDupe2_Paste" then ply.duplicate = false end
 
 	-- Set owner of the entity
 	table.foreach( ent, function( k, e )
@@ -57,15 +54,14 @@ function sv_PProtect.SetOwner( ply, typ, ent )
 		-- Set owner
 		e:CPPISetOwner( ply )
 
-		-- Check duplicator exception
-		if ply.duplicate then return end
+		-- Check PropInProp-Exceptions
+		if ply.duplicate or !sv_PProtect.Settings.Antispam[ "propinprop" ] or sv_PProtect.CheckPPAdmin( ply ) or e:GetClass() != "prop_physics" then return end
 
-		-- Prop-In-Prop protection
+		-- PropInProp-Protection
 		local te = util.TraceLine( { start = e:LocalToWorld( e:OBBMins() ), endpos = e:LocalToWorld( e:OBBMaxs() ), filter = e } )
-		if IsValid( te.Entity ) and !te.Entity:IsPlayer() and sv_PProtect.Settings.Antispam[ "propinprop" ] and sv_PProtect.CheckASAdmin( ply ) == false and e:GetClass() == "prop_physics" then
+		if IsValid( te.Entity ) and !te.Entity:IsPlayer() then
 			sv_PProtect.Notify( ply, "You are not allowed to spawn a prop in an other prop!" )
 			e:Remove()
-			return
 		end
 
 	end )
@@ -83,7 +79,7 @@ function sv_PProtect.CanTouch( ply, ent )
 
 	-- Check Player
 	if ent:IsPlayer() then return end
-	
+
 	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
@@ -235,7 +231,7 @@ function sv_PProtect.CanProperty( ply, property, ent )
 
 	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
-	
+
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "property" ) then
 		return true
@@ -289,13 +285,13 @@ function sv_PProtect.CanDamage( ent, info )
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "dmg" ) then return end
-	
+
 	-- Check Owner
 	if Attacker:IsPlayer() and Owner != Attacker and !sv_PProtect.IsBuddy( Owner, Attacker, "damage" ) then
 
 		if Attacker:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] then return end
 		if Attacker:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] then return end
-		
+
 		info:SetDamage( 0 )
 		timer.Simple( 0.1, function()
 
@@ -332,7 +328,7 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 
 	-- Check Protection
 	if !sv_PProtect.Settings.Propprotection[ "reloadprotection" ] then return end
-	
+
 	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
 
@@ -430,35 +426,35 @@ hook.Add( "PersistenceLoad", "pprotect_worldprops", sv_PProtect.setWorldProps )
 net.Receive( "pprotect_get_owner", function( len, pl )
 
 	local ent = net.ReadEntity()
+	local ply = ent:CPPIGetOwner()
 	local info = ""
 
-	if sv_PProtect.IsBuddy( ent:CPPIGetOwner(), pl, "physgun" ) == true or 
-	sv_PProtect.IsBuddy( ent:CPPIGetOwner(), pl, "use" ) == true or 
-	sv_PProtect.IsBuddy( ent:CPPIGetOwner(), pl, "toolgun" ) == true then
+	if sv_PProtect.IsBuddy( ply, pl, "physgun" ) == true or 
+	sv_PProtect.IsBuddy( ply, pl, "use" ) == true or 
+	sv_PProtect.IsBuddy( ply, pl, "toolgun" ) == true then
 		info = "buddy"
 	end
 
-	if ent.PatchPPCleanup != nil then info = ent.PatchPPCleanup end
+	if ent.pprotect_cleanup != nil then info = ent.pprotect_cleanup end
 	if ent.World == true then info = "world" end
 
 	net.Start( "pprotect_send_owner" )
-		net.WriteEntity( ent:CPPIGetOwner() )
+		net.WriteEntity( ply )
 		net.WriteString( info )
 	net.Send( pl )
 
 end )
 
 -- SEND NEW SHARED ENTITY INFORMAITON TO THE CLIENT
-sv_PProtect.shared = nil
+local shared_ent = nil
 net.Receive( "pprotect_get_sharedEntity", function( len, pl )
 
-	local entity = net.ReadEntity()
-	sv_PProtect.shared = entity
+	shared_ent = net.ReadEntity()
 
 	net.Start( "pprotect_send_sharedEntity" )
 
-		if istable( entity.share ) then
-			net.WriteTable( entity.share )
+		if istable( shared_ent.share ) then
+			net.WriteTable( shared_ent.share )
 		else
 			net.WriteTable( {} )
 		end
@@ -469,9 +465,8 @@ end )
 
 -- SAVE NEW SHARED ENTITY
 net.Receive( "pprotect_save_sharedEntity", function( len, pl )
-	
-	local entity = sv_PProtect.shared
+
 	local info = net.ReadTable()
-	if istable( info ) then entity.share = info end
+	if istable( info ) then shared_ent.share = info end
 
 end )
