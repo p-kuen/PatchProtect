@@ -113,8 +113,8 @@ We implemented CPPI, so you are able to <b>use PatchProtect with other Addons/Pu
 There are some <b>console-commands</b>, which allow you to perform some commands, which are not used quite often. This commands should be used, if you think that there is something wrong with your saved settings. Just type them into the correct console to clear all settings.
 Here is a list of all that commands:
 - <b>Serverside:</b> ( type them into the server-console )
-	- <b>pprotect_reset_antispam</b> - Reset all AntiSpam-Settings. Please follow all printed intstructions, if you ran this command.
-	- <b>pprotect_reset_propprotection</b> - Reset all PropProtection-Settings. Please follow all printed intstructions, if you ran this command.
+	- <b>pprotect_reset [arg]</b> - This resets Serverside-Settings. Please follow all printed intstructions, if you ran this command.
+	For <b>[arg]</b> you can use <b>help, all, antispam, propprotection, blocked_props, blocked_ents, blocked_tools or antispam_tools</b> (all recommended).
 - <b>Clientside:</b> ( type them into the client-console )
 	- <b>pprotect_reset_csettings</b> - This resets all client settings. Just follow all instructions, which will be printed into the console.
 	- <b>pprotect_reset_buddies</b> - This resets all buddies.

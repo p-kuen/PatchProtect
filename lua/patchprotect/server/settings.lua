@@ -1,3 +1,33 @@
+----------------------
+--  RESET SETTINGS  --
+----------------------
+
+local function resetSettings( ply, cmd, args )
+
+	-- all valid tables
+	local tabs = { "all", "help", "antispam", "propprotection", "blocked_props", "blocked_ents", "blocked_tools", "antispam_tools" }
+
+	-- help for reset command
+	if args[1] == "help" then MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Use all, antispam, propprotection, blocked_props, blocked_ents, blocked_tools or antispam_tools!" ) return end
+
+	-- reset all sql-tables
+	if args[1] == "all" then
+		table.foreach( tabs, function( key, value ) sql.Query( "DROP TABLE pprotect_" .. value ) end )
+		MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Successfully deleted all sql-settings!\n", Color( 255, 0, 0 ), "[PatchProtect-Reset]", Color( 255, 255, 255 ), " PLEASE RESTART YOUR SERVER!\n\n" ) return
+	end
+
+	-- check argument
+	if !table.HasValue( tabs, args[1] ) then MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " " .. args[1] .. " is not a valid sql-table!" ) return end
+
+	-- delete sql-table
+	sql.Query( "DROP TABLE pprotect_" .. args[1] )
+	MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Successfully deleted all " .. args[1] .. "-settings!\n", Color( 255, 0, 0 ), "[PatchProtect-Reset]", Color( 255, 255, 255 ), " PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!\n\n" )
+
+end 
+concommand.Add( "pprotect_reset", resetSettings )
+
+
+
 ---------------------
 --  LOAD SETTINGS  --
 ---------------------
@@ -41,9 +71,7 @@ function sv_PProtect.loadBlockedEnts( typ )
 
 	local sql_ents = {}
 	table.foreach( sql.Query( "SELECT * FROM pprotect_blocked_" .. typ ), function( id, ent )
-
 		sql_ents[ ent.name ] = ent.model
-
 	end )
 
 	return sql_ents
@@ -57,9 +85,7 @@ function sv_PProtect.loadBlockedTools( typ )
 
 	local sql_tools = {}
 	table.foreach( sql.Query( "SELECT * FROM pprotect_" .. typ .. "_tools" ), function( ind, tool )
-
 		sql_tools[ tool.tool ] = tobool( tool.bool )
-
 	end )
 
 	return sql_tools
@@ -67,9 +93,15 @@ function sv_PProtect.loadBlockedTools( typ )
 end
 
 -- LOAD SETTINGS
+local sql_version = "2.3"
 sv_PProtect.Settings = { Antispam = sv_PProtect.loadSettings( "Antispam" ), Propprotection = sv_PProtect.loadSettings( "Propprotection" ) }
 sv_PProtect.Blocked = { props = sv_PProtect.loadBlockedEnts( "props" ), ents = sv_PProtect.loadBlockedEnts( "ents" ), atools = sv_PProtect.loadBlockedTools( "antispam" ), btools = sv_PProtect.loadBlockedTools( "blocked" ) }
-MsgC( Color( 255, 255, 0 ), "\n[PatchProtect]", Color( 255, 255, 255 ), " Successfully loaded!\n\n" )
+if !sql.TableExists( "pprotect_version" ) or sql.QueryValue( "SELECT * FROM pprotect_version" ) != sql_version then
+	resetSettings( nil, nil, { "all" } )
+	sql.Query( "DROP TABLE pprotect_version" ) sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_version ( info TEXT )" ) sql.Query( "INSERT INTO pprotect_version ( info ) VALUES ( '" .. sql_version .. "' )" )
+else
+	MsgC( Color( 255, 255, 0 ), "\n[PatchProtect]", Color( 255, 255, 255 ), " Successfully loaded!\n\n" )
+end
 
 
 
@@ -117,22 +149,6 @@ function sv_PProtect.saveBlockedTools( typ, data )
 	end )
 
 end
-
-
-
-----------------------
---  RESET SETTINGS  --
-----------------------
-
-concommand.Add( "pprotect_reset_antispam", function()
-	sql.Query( "DROP TABLE pprotect_antispam" )
-	print( "[PatchProtect-AntiSpam] Successfully deleted all AntiSpam-Settings!\n[PatchProtect-AntiSpam] PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!" )
-end )
-
-concommand.Add( "pprotect_reset_propprotection", function()
-	sql.Query( "DROP TABLE pprotect_propprotection" )
-	print( "[PatchProtect-PropProtection] Successfully deleted all PropProtection-Settings!\n[PatchProtect-PropProtection] PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!" )
-end )
 
 
 
