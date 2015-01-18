@@ -154,7 +154,7 @@ function sv_PProtect.sendSettings( ply, cmd, args )
 
 end
 hook.Add( "PlayerInitialSpawn", "pprotect_playersettings", sv_PProtect.sendSettings )
-concommand.Add( "pprotect_request_newest_settings", sv_PProtect.sendSettings )
+concommand.Add( "pprotect_request_new_settings", sv_PProtect.sendSettings )
 
 -- SEND NOTIFICATION
 function sv_PProtect.Notify( ply, text, typ )

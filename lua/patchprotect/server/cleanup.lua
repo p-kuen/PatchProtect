@@ -33,7 +33,7 @@ function pprotect_countProps( ply, dels )
 	net.Send( ply )
 
 end
-concommand.Add( "pprotect_request_newest_counts", pprotect_countProps )
+concommand.Add( "pprotect_request_new_counts", pprotect_countProps )
 
 
 

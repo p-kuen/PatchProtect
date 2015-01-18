@@ -7,12 +7,6 @@ function cl_PProtect.as_menu( p )
 	-- clear Panel
 	p:ClearControls()
 
-	-- check Admin
-	if !LocalPlayer():IsSuperAdmin() then
-		p:addlbl( "Sorry, you need to be a Super-Admin to change the settings!" )
-		return
-	end
-
 	-- Main Settings
 	p:addlbl( "General Settings:", true )
 	p:addchk( "Enable AntiSpam", nil, cl_PProtect.Settings.Antispam[ "enabled" ], function( c ) cl_PProtect.Settings.Antispam[ "enabled" ] = c end )
@@ -128,12 +122,6 @@ function cl_PProtect.pp_menu( p )
 	-- clear Panel
 	p:ClearControls()
 
-	-- check Admin
-	if !LocalPlayer():IsSuperAdmin() then
-		p:addlbl( "Sorry, you need to be a Super-Admin to change the settings!" )
-		return
-	end
-
 	-- Main Settings
 	p:addlbl( "General Settings:", true )
 	p:addchk( "Enable PropProtection", nil, cl_PProtect.Settings.Propprotection[ "enabled" ], function( c ) cl_PProtect.Settings.Propprotection[ "enabled" ] = c end )
@@ -172,7 +160,7 @@ function cl_PProtect.pp_menu( p )
 	end
 
 	-- save Settings
-	p:addbtn( "Save Settings", "pprotect_save_propprotection", { "Propprotection", cl_PProtect.Settings.Propprotection } )
+	p:addbtn( "Save Settings", "pprotect_save", { "Propprotection", cl_PProtect.Settings.Propprotection } )
 
 end
 
@@ -188,12 +176,8 @@ function cl_PProtect.b_menu( p )
 	p:ClearControls()
 	
 	-- Variables and Tables
-	local buddy_permissions = { "Use", "PhysGun", "ToolGun", "Damage", "Property" }
-	local newBuddy = { player = nil, permissions = {} }
-	local selectedBuddy = { nick = nil, uniqueid = nil }
-	local me = LocalPlayer()
-	local btn_addbuddy
-	local btn_deletebuddy
+	local buddy_permissions, newBuddy = { "Use", "PhysGun", "ToolGun", "Damage", "Property" }, { player = nil, permissions = {} }
+	local selectedBuddy, me, btn_addbuddy, btn_deletebuddy = { nick = nil, uniqueid = nil }, LocalPlayer()
 
 	p:addlbl( "Add a new buddy:", true )
 
@@ -258,21 +242,11 @@ end
 --  CLEANUP MENU  --
 --------------------
 
-local o_global = 0
-local o_players = {}
+local o_global, o_players = 0, {}
 function cl_PProtect.cu_menu( p )
 
 	-- clear Panel
 	p:ClearControls()
-
-	-- check Admin
-	if cl_PProtect.Settings.Propprotection[ "adminscleanup" ] and !LocalPlayer():IsAdmin() and !LocalPlayer():IsSuperAdmin() then
-		p:addlbl( "Sorry, you need to be an Admin to access the Cleanup-Menu!" )
-		return
-	elseif !cl_PProtect.Settings.Propprotection[ "adminscleanup" ] and !LocalPlayer():IsSuperAdmin() then
-		p:addlbl( "Sorry, you need to be a Super-Admin to change the settings!" )
-		return
-	end
 
 	p:addlbl( "Cleanup everything:", true )
 	p:addbtn( "Cleanup everything (" .. tostring( o_global ) .. " Props)", "pprotect_cleanup_map" )
@@ -338,6 +312,11 @@ hook.Add( "PopulateToolMenu", "pprotect_make_menus", CreateMenus )
 --  UPDATE MENUS  --
 --------------------
 
+local function showErrorMessage( p, msg )
+	p:ClearControls()
+	p:addlbl( msg )
+end
+
 local pans = {}
 function cl_PProtect.UpdateMenus( p_type, panel )
 
@@ -348,9 +327,11 @@ function cl_PProtect.UpdateMenus( p_type, panel )
 	table.foreach( pans, function( t, p )
 
 		if t == "as" or t == "pp" then
-			if LocalPlayer():IsSuperAdmin() then RunConsoleCommand( "pprotect_request_newest_settings", t ) else cl_PProtect[ t .. "_menu" ]( pans[ t ] ) end
+			if LocalPlayer():IsSuperAdmin() then RunConsoleCommand( "pprotect_request_new_settings", t ) else showErrorMessage( pans[ t ], "Sorry, you need to be a Super-Admin to change\nthe settings!" ) end
 		elseif t == "cu" then
-			if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then RunConsoleCommand( "pprotect_request_newest_counts" ) else cl_PProtect[ t .. "_menu" ]( pans[ t ] ) end
+			if LocalPlayer():IsSuperAdmin() then RunConsoleCommand( "pprotect_request_new_counts" )
+			elseif LocalPlayer():IsAdmin() and cl_PProtect.Settings.Propprotection[ "adminscleanup" ] then RunConsoleCommand( "pprotect_request_new_counts" )
+			else showErrorMessage( pans[ t ], "Sorry, you need to be a Admin/SuperAdmin to change\nthe settings!" ) end
 		else
 			cl_PProtect[ t .. "_menu" ]( pans[ t ] )
 		end
