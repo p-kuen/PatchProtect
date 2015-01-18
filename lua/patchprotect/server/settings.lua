@@ -2,7 +2,7 @@
 --  RESET SETTINGS  --
 ----------------------
 
-local function resetSettings( ply, cmd, args )
+local function resetSettings( ply, cmd, args, auto )
 
 	-- all valid tables
 	local tabs = { "all", "help", "antispam", "propprotection", "blocked_props", "blocked_ents", "blocked_tools", "antispam_tools" }
@@ -13,6 +13,7 @@ local function resetSettings( ply, cmd, args )
 	-- reset all sql-tables
 	if args[1] == "all" then
 		table.foreach( tabs, function( key, value ) sql.Query( "DROP TABLE pprotect_" .. value ) end )
+		if auto then return end
 		MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Successfully deleted all sql-settings!\n", Color( 255, 0, 0 ), "[PatchProtect-Reset]", Color( 255, 255, 255 ), " PLEASE RESTART YOUR SERVER!\n\n" ) return
 	end
 
@@ -94,14 +95,14 @@ end
 
 -- LOAD SETTINGS
 local sql_version = "2.3"
+if !sql.TableExists( "pprotect_version" ) or sql.QueryValue( "SELECT * FROM pprotect_version" ) != sql_version then
+	resetSettings( nil, nil, { "all" }, "auto" )
+	sql.Query( "DROP TABLE pprotect_version" ) sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_version ( info TEXT )" ) sql.Query( "INSERT INTO pprotect_version ( info ) VALUES ( '" .. sql_version .. "' )" )
+	MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Reset all sql-settings due a new sql-table-version, sry!\nYou don't need to resetart the server, but please check all settings. Thanks!\n" )
+end
 sv_PProtect.Settings = { Antispam = sv_PProtect.loadSettings( "Antispam" ), Propprotection = sv_PProtect.loadSettings( "Propprotection" ) }
 sv_PProtect.Blocked = { props = sv_PProtect.loadBlockedEnts( "props" ), ents = sv_PProtect.loadBlockedEnts( "ents" ), atools = sv_PProtect.loadBlockedTools( "antispam" ), btools = sv_PProtect.loadBlockedTools( "blocked" ) }
-if !sql.TableExists( "pprotect_version" ) or sql.QueryValue( "SELECT * FROM pprotect_version" ) != sql_version then
-	resetSettings( nil, nil, { "all" } )
-	sql.Query( "DROP TABLE pprotect_version" ) sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_version ( info TEXT )" ) sql.Query( "INSERT INTO pprotect_version ( info ) VALUES ( '" .. sql_version .. "' )" )
-else
-	MsgC( Color( 255, 255, 0 ), "\n[PatchProtect]", Color( 255, 255, 255 ), " Successfully loaded!\n\n" )
-end
+MsgC( Color( 255, 255, 0 ), "\n[PatchProtect]", Color( 255, 255, 255 ), " Successfully loaded!\n\n" )
 
 
 
