@@ -13,7 +13,7 @@ local function resetSettings( ply, cmd, args, auto )
 	-- reset all sql-tables
 	if args[1] == "all" then
 		table.foreach( tabs, function( key, value ) sql.Query( "DROP TABLE pprotect_" .. value ) end )
-		if auto then return end
+		if auto == "auto" then return end
 		MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Successfully deleted all sql-settings!\n", Color( 255, 0, 0 ), "[PatchProtect-Reset]", Color( 255, 255, 255 ), " PLEASE RESTART YOUR SERVER!\n\n" ) return
 	end
 
