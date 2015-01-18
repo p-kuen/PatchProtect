@@ -86,13 +86,9 @@ function sv_PProtect.CanSpawn( ply, mdl )
 	if sv_PProtect.CheckASAdmin( ply ) then return end
 	if ply.duplicate then return end
 
-	-- Prop-Block
-	local lmdl = string.lower( mdl )
-	if sv_PProtect.Settings.Antispam[ "propblock" ] and table.HasValue( sv_PProtect.Settings.Blockedprops, lmdl ) or string.find( lmdl, "/../" ) then
-		sv_PProtect.Notify( ply, "This prop is in the blacklist!" )
-		return false
-	elseif sv_PProtect.Settings.Antispam[ "entblock" ] and sv_PProtect.Settings.Blockedents[ mdl ] then
-		sv_PProtect.Notify( ply, "This entity is in the blacklist!" )
+	-- Prop/Entity-Block
+	if sv_PProtect.Settings.Antispam[ "propblock" ] and sv_PProtect.Blocked.props[ string.lower( mdl ) ] or string.find( string.lower( mdl ), "/../" ) or sv_PProtect.Settings.Antispam[ "entblock" ] and sv_PProtect.Blocked.ents[ string.lower( mdl ) ] then
+		sv_PProtect.Notify( ply, "This object is in the blacklist!" )
 		return false
 	end
 
@@ -137,7 +133,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	if sv_PProtect.CheckASAdmin( ply ) then return sv_PProtect.CanToolProtection( ply, trace, tool ) end
 
 	-- Blocked Tool
-	if sv_PProtect.Settings.Antispam[ "toolblock" ] and sv_PProtect.Settings.Blockedtools[ tool ] then
+	if sv_PProtect.Settings.Antispam[ "toolblock" ] and sv_PProtect.Blocked.btools[ tool ] then
 		sv_PProtect.Notify( ply, "This tool is in the blacklist!", "normal" )
 		return false
 	end
@@ -146,7 +142,7 @@ function sv_PProtect.CanTool( ply, trace, tool )
 	if tool == "duplicator" or tool == "adv_duplicator" or tool == "advdupe2" or tool == "wire_adv" then ply.duplicate = true else ply.duplicate = false end
 
 	-- Antispamed Tool
-	if !sv_PProtect.Settings.Antispamtools[ tool ] then return sv_PProtect.CanToolProtection( ply, trace, tool ) end
+	if !sv_PProtect.Blocked.atools[ tool ] then return sv_PProtect.CanToolProtection( ply, trace, tool ) end
 
 	-- Cooldown
 	if CurTime() > ply.toolcooldown then
@@ -173,166 +169,94 @@ hook.Add( "CanTool", "pprotect_toolgun", sv_PProtect.CanTool )
 
 
 
----------------------
---  BLOCKED PROPS  --
----------------------
+--------------------------
+--  BLOCKED PROPS/ENTS  --
+--------------------------
 
--- SEND TABLE
-net.Receive( "pprotect_blockedprops", function( len, pl )
+-- SEND BLOCKED PROPS/ENTS TABLE
+net.Receive( "pprotect_request_ents", function( len, pl )
 
-	net.Start( "get_blocked_prop" )
-		net.WriteTable( sv_PProtect.Settings.Blockedprops )
+	local typ = net.ReadTable()[1]
+
+	net.Start( "pprotect_send_ents" )
+		net.WriteString( typ )
+		net.WriteTable( sv_PProtect.Blocked[ typ ] )
 	net.Send( pl )
 
 end )
 
--- GET NEW PROP
-net.Receive( "pprotect_send_blocked_props_cpanel", function( len, pl )
+-- SAVE BLOCKED PROPS/ENTS TABLE
+net.Receive( "pprotect_save_ents", function( len, pl )
 
-	local Prop = net.ReadString()
+	local d = net.ReadTable()
+	local typ = d[1]
 
-	if !table.HasValue( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) ) then
+	sv_PProtect.Blocked[ typ ] = d[2]
+	sv_PProtect.saveBlockedEnts( typ, sv_PProtect.Blocked[ typ ] )
 
-		table.insert( sv_PProtect.Settings.Blockedprops, string.lower( Prop ) )
-		sv_PProtect.saveBlockedProps( sv_PProtect.Settings.Blockedprops )
+	sv_PProtect.Notify( pl, "Saved all blocked " .. typ .. "!", "info" )
+	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved a new blocked-" .. typ .. "-list!" )
 
-		sv_PProtect.Notify( pl, "Saved " .. Prop .. " to blocked props!", "info" )
-		print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " added " .. Prop .. " to the blocked props!" )
+end )
 
-	else
+-- SAVE BLOCKED PROP/ENT FROM CPANEL
+net.Receive( "pprotect_save_cent", function( len, pl )
 
-		sv_PProtect.Notify( pl, "This prop is already in the list!", "info" )
+	local ent = net.ReadTable()
 
+	if sv_PProtect.Blocked[ ent.typ ][ ent.name ] then
+		sv_PProtect.Notify( pl, "This object is already in the " .. ent.typ .. "-list!", "info" )
+		return
 	end
 
-end )
+	sv_PProtect.Blocked[ ent.typ ][ string.lower( ent.name ) ] = string.lower( ent.model )
+	sv_PProtect.saveBlockedEnts( ent.typ, sv_PProtect.Blocked[ ent.typ ] )
 
--- GET NEW TABLE
-net.Receive( "pprotect_send_blocked_props", function( len, pl )
-
-	sv_PProtect.Settings.Blockedprops = net.ReadTable()
-	sv_PProtect.saveBlockedProps( sv_PProtect.Settings.Blockedprops )
-
-	sv_PProtect.Notify( pl, "Saved all blocked props!", "info" )
-	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-prop list!" )
+	sv_PProtect.Notify( pl, "Saved " .. ent.name .. " to blocked-" .. ent.typ .. "-list!", "info" )
+	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " added " .. ent.name .. " to the blocked-" .. ent.typ .. "-list!" )
 
 end )
 
 
 
---------------------
---  BLOCKED ENTS  --
---------------------
+--------------------------------
+--  ANTISPAMED/BLOCKED TOOLS  --
+--------------------------------
 
--- SEND TABLE
-net.Receive( "pprotect_blockedents", function( len, pl )
+-- SEND ANTISPAMED/BLOCKED TOOLS TABLE
+net.Receive( "pprotect_request_tools", function( len, pl )
 
-	net.Start( "get_blocked_ent" )
-		net.WriteTable( sv_PProtect.Settings.Blockedents )
-	net.Send( pl )
+	local typ = net.ReadTable()[1]
+	local t = string.sub( typ , 1, 1 ) .. "tools"
+	local tools = {}
 
-end )
-
--- GET NEW PROP
-net.Receive( "pprotect_send_blocked_ents_cpanel", function( len, pl )
-
-	local Entity = net.ReadTable()
-
-	if !sv_PProtect.Settings.Blockedents[ Entity.name ] then
-
-		sv_PProtect.Settings.Blockedents[ Entity.name ] = Entity.model
-		sv_PProtect.saveBlockedEnts( sv_PProtect.Settings.Blockedents )
-
-		sv_PProtect.Notify( pl, "Saved " .. Entity.name .. " to blocked ents!", "info" )
-		print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " added " .. Entity.name .. " to the blocked ents!" )
-
-	else
-
-		sv_PProtect.Notify( pl, "This ent is already in the list!", "info" )
-
-	end
-
-end )
-
--- GET NEW TABLE
-net.Receive( "pprotect_send_blocked_ents", function( len, pl )
-
-	sv_PProtect.Settings.Blockedents = net.ReadTable()
-	sv_PProtect.saveBlockedEnts( sv_PProtect.Settings.Blockedents )
-
-	sv_PProtect.Notify( pl, "Saved all blocked ents!", "info" )
-	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-ent list!" )
-
-end )
-
-
-
----------------------
---  BLOCKED TOOLS  --
----------------------
-
--- SEND TABLE
-net.Receive( "pprotect_blockedtools", function( len, pl )
-
-	local sendingTable = {}
 	table.foreach( weapons.GetList(), function( _, wep )
 		if wep.ClassName != "gmod_tool" then return end
-		table.foreach( wep.Tool, function( name, tool ) sendingTable[ name ] = false end )
+		table.foreach( wep.Tool, function( name, tool ) tools[ name ] = false end )
 	end )
 
-	table.foreach( sv_PProtect.Settings.Blockedtools, function( key, value )
-		if value == true then sendingTable[ key ] = true end
+	table.foreach( sv_PProtect.Blocked[ t ], function( name, value )
+		if value == true then tools[ name ] = true end
 	end )
 
-	net.Start( "get_blocked_tool" )
-		net.WriteTable( sendingTable )
+	net.Start( "pprotect_send_tools" )
+		net.WriteString( t )
+		net.WriteTable( tools )
 	net.Send( pl )
 
 end )
 
--- GET NEW TABLE
-net.Receive( "pprotect_send_blocked_tools", function( len, pl )
+-- SAVE BLOCKED/ANTISPAMED TOOLS
+net.Receive( "pprotect_save_tools", function( len, pl )
 
-	sv_PProtect.Settings.Blockedtools = net.ReadTable()
-	sv_PProtect.saveBlockedTools( sv_PProtect.Settings.Blockedtools )
+	local d = net.ReadTable()
+	local t = d[1]
+	local typ = "antispam"
+	if t == "btools" then typ = "blocked" end
+	sv_PProtect.Blocked[ t ] = d[2]
+	sv_PProtect.saveBlockedTools( typ, sv_PProtect.Blocked[ t ] )
 
-	sv_PProtect.Notify( pl, "Saved all blocked Tools!", "info" )
-	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the blocked-tools list!" )
-
-end )
-
-
-
-------------------------
---  ANTISPAMED TOOLS  --
-------------------------
-
--- SEND TABLE
-net.Receive( "pprotect_antispamtools", function( len, pl )
-
-	local sendingTable = {}
-	table.foreach( weapons.GetList(), function( _, wep )
-		if wep.ClassName != "gmod_tool" then return end
-		table.foreach( wep.Tool, function( name, tool ) sendingTable[ name ] = false end )
-	end )
-
-	table.foreach( sv_PProtect.Settings.Antispamtools, function( key, value )
-		if value == true then sendingTable[ key ] = true end
-	end )
-
-	net.Start( "get_antispam_tool" )
-		net.WriteTable( sendingTable )
-	net.Send( pl )
-
-end )
-
--- GET NEW TABLE
-net.Receive( "pprotect_send_antispamed_tools", function( len, pl )
-
-	sv_PProtect.Settings.Antispamtools = net.ReadTable()
-	sv_PProtect.saveAntiSpamTools( sv_PProtect.Settings.Antispamtools )
-
-	sv_PProtect.Notify( pl, "Saved all antispamed tools!", "info" )
-	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved the antispamed-tools list!" )
+	sv_PProtect.Notify( pl, "Saved all " .. typ .. "-tools!", "info" )
+	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved new " .. typ .. "-tools-list!" )
 
 end )

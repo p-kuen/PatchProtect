@@ -205,37 +205,25 @@ function pan:addbtn( text, nettext, args )
 			args()
 
 		else
-
-			local savetable = {}
 			
 			net.Start( nettext )
-
-				if string.find( nettext, "pprotect_save_" ) then
-					local tabletext = string.Replace( nettext, "pprotect_save_", "" )
-					tabletext = string.upper( string.sub( tabletext, 1, 1) ) .. string.sub( tabletext, 2, string.len( tabletext ) )
-					savetable = cl_PProtect.Settings[ tabletext ]
-				else
-					savetable = args
-				end
-					
-				if savetable != nil then
-					net.WriteTable( savetable )
+				if istable( args ) then
+					net.WriteTable( args )
 				else
 					net.WriteString( "noargs" )
 				end
-
 			net.SendToServer()
 
 		end
 
-		if string.find( nettext, "pprotect_save_" ) or string.find( nettext, "pprotect_cleanup_" ) then cl_PProtect.UpdateMenus() end
+		if nettext == "pprotect_save" then cl_PProtect.UpdateMenus() end
 
 	end
 
 	function btn:Paint()
 		if btn:GetDisabled() then
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 240, 240, 240 ) )
-			btn:SetCursor("arrow")
+			btn:SetCursor( "arrow" )
 		elseif btn.Depressed then
 			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0 ) )
 		elseif btn.Hovered then

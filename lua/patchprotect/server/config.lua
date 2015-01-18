@@ -4,8 +4,7 @@
 
 -- SETTINGS
 util.AddNetworkString( "pprotect_new_settings" )
-util.AddNetworkString( "pprotect_save_antispam" )
-util.AddNetworkString( "pprotect_save_propprotection" )
+util.AddNetworkString( "pprotect_save" )
 
 -- CLEANUP
 util.AddNetworkString( "pprotect_cleanup_map" )
@@ -26,23 +25,16 @@ util.AddNetworkString( "pprotect_get_sharedEntity" )
 util.AddNetworkString( "pprotect_send_sharedEntity" )
 util.AddNetworkString( "pprotect_save_sharedEntity" )
 
--- ANTISPAMED TOOLS, BLOCKED PROPS, BLOCKED TOOLS
-util.AddNetworkString( "pprotect_antispamtools" )
-util.AddNetworkString( "pprotect_blockedprops" )
-util.AddNetworkString( "pprotect_blockedents" )
-util.AddNetworkString( "pprotect_blockedtools" )
+-- BLOCKED PROPS/ENTS
+util.AddNetworkString( "pprotect_request_ents" )
+util.AddNetworkString( "pprotect_send_ents" )
+util.AddNetworkString( "pprotect_save_ents" )
+util.AddNetworkString( "pprotect_save_cent" )
 
-util.AddNetworkString( "get_antispam_tool" )
-util.AddNetworkString( "get_blocked_prop" )
-util.AddNetworkString( "get_blocked_ent" )
-util.AddNetworkString( "get_blocked_tool" )
-
-util.AddNetworkString( "pprotect_send_antispamed_tools" )
-util.AddNetworkString( "pprotect_send_blocked_props" )
-util.AddNetworkString( "pprotect_send_blocked_props_cpanel" )
-util.AddNetworkString( "pprotect_send_blocked_ents" )
-util.AddNetworkString( "pprotect_send_blocked_ents_cpanel" )
-util.AddNetworkString( "pprotect_send_blocked_tools" )
+-- ANTISPAMED/BLOCKED TOOLS
+util.AddNetworkString( "pprotect_request_tools" )
+util.AddNetworkString( "pprotect_send_tools" )
+util.AddNetworkString( "pprotect_save_tools" )
 
 -- NOTIFICATIONS
 util.AddNetworkString( "pprotect_notify" )

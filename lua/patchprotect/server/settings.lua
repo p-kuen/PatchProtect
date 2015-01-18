@@ -1,17 +1,14 @@
--------------------------------
---  LOAD/WRITE SQL SETTINGS  --
--------------------------------
+---------------------
+--  LOAD SETTINGS  --
+---------------------
 
 -- ANTISPAM AND PROP PROTECTION
-function sv_PProtect.loadSQLSettings( sqltable, name )
+function sv_PProtect.loadSettings( name )
 
-	-- Delete old version of settings
-	if sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = 'enabled'" ) != "true" and sql.QueryValue( "SELECT value FROM " .. sqltable .. " WHERE setting = 'enabled'" ) != "false" then
-		print( "PPROTECT: ATTENTION! DELETED " .. sqltable .. " BECAUSE OF A NEW SETTINGS-VERSION! PLEASE SET ALL SETTINGS AS YOU HAD THEM BEFORE!" )
-		sql.Query( "DROP TABLE " .. sqltable )
-	end
-	if !sql.Query( "SELECT setting FROM " .. sqltable ) then sql.Query( "DROP TABLE " .. sqltable ) end
+	local sqltable = "pprotect_" .. string.lower( name )
+	if !sql.TableExists( sqltable ) then sql.Query( "DROP TABLE " .. sqltable ) end
 	sql.Query( "CREATE TABLE IF NOT EXISTS " .. sqltable .. " ( setting TEXT, value TEXT )" )
+
 	local sql_settings = {}
 
 	-- Save/Load SQLSettings
@@ -37,45 +34,13 @@ function sv_PProtect.loadSQLSettings( sqltable, name )
 
 end
 
--- ANTISPAMMED TOOLS
-function sv_PProtect.setAntispamedTools()
-
-	if !sql.TableExists( "pprotect_antispamtools" ) or !sql.Query( "SELECT tool FROM pprotect_antispamtools" ) then return {} end
-
-	local sql_tools = {}
-	table.foreach( sql.Query( "SELECT * FROM pprotect_antispamtools" ), function( ind, tool )
-
-		sql_tools[ tool.tool ] = tobool( tool.antispam )
-
-	end )
-
-	return sql_tools
-
-end
-
--- BLOCKED PROPS
-function sv_PProtect.setBlockedProps()
-
-	if !sql.TableExists( "pprotect_blockedprops" ) or !sql.Query( "SELECT id FROM pprotect_blockedprops" ) then return {} end
-
-	local sql_props = {}
-	table.foreach( sql.Query( "SELECT * FROM pprotect_blockedprops" ), function( ind, prop )
-
-		sql_props[ tonumber( prop.id ) ] = prop.model
-
-	end )
-
-	return sql_props
-
-end
-
 -- BLOCKED ENTS
-function sv_PProtect.setBlockedEnts()
+function sv_PProtect.loadBlockedEnts( typ )
 
-	if !sql.TableExists( "pprotect_blockedents" ) or !sql.Query( "SELECT name FROM pprotect_blockedents" ) then return {} end
+	if !sql.TableExists( "pprotect_blocked_" .. typ ) then return {} end
 
 	local sql_ents = {}
-	table.foreach( sql.Query( "SELECT * FROM pprotect_blockedents" ), function( ind, ent )
+	table.foreach( sql.Query( "SELECT * FROM pprotect_blocked_" .. typ ), function( id, ent )
 
 		sql_ents[ ent.name ] = ent.model
 
@@ -85,15 +50,15 @@ function sv_PProtect.setBlockedEnts()
 
 end
 
--- BLOCKED TOOLS
-function sv_PProtect.setBlockedTools()
+-- ANTISPAMMED/BLOCKED TOOLS
+function sv_PProtect.loadBlockedTools( typ )
 
-	if !sql.TableExists( "pprotect_blockedtools" ) or !sql.Query( "SELECT tool FROM pprotect_blockedtools" ) then return {} end
+	if !sql.TableExists( "pprotect_" .. typ .. "_tools" ) then return {} end
 
 	local sql_tools = {}
-	table.foreach( sql.Query( "SELECT * FROM pprotect_blockedtools" ), function( ind, tool )
+	table.foreach( sql.Query( "SELECT * FROM pprotect_" .. typ .. "_tools" ), function( ind, tool )
 
-		sql_tools[ tool.tool ] = tobool( tool.blocked )
+		sql_tools[ tool.tool ] = tobool( tool.bool )
 
 	end )
 
@@ -102,13 +67,8 @@ function sv_PProtect.setBlockedTools()
 end
 
 -- LOAD SETTINGS
-sv_PProtect.Settings.Antispam = sv_PProtect.loadSQLSettings( "pprotect_antispam", "Antispam" )
-sv_PProtect.Settings.Propprotection = sv_PProtect.loadSQLSettings( "pprotect_propprotection", "Propprotection" )
-sv_PProtect.Settings.Antispamtools = sv_PProtect.setAntispamedTools()
-sv_PProtect.Settings.Blockedprops = sv_PProtect.setBlockedProps()
-sv_PProtect.Settings.Blockedents = sv_PProtect.setBlockedEnts()
-sv_PProtect.Settings.Blockedtools = sv_PProtect.setBlockedTools()
-
+sv_PProtect.Settings = { Antispam = sv_PProtect.loadSettings( "Antispam" ), Propprotection = sv_PProtect.loadSettings( "Propprotection" ) }
+sv_PProtect.Blocked = { props = sv_PProtect.loadBlockedEnts( "props" ), ents = sv_PProtect.loadBlockedEnts( "ents" ), atools = sv_PProtect.loadBlockedTools( "antispam" ), btools = sv_PProtect.loadBlockedTools( "blocked" ) }
 MsgC( Color( 255, 255, 0 ), "\n[PatchProtect]", Color( 255, 255, 255 ), " Successfully loaded!\n\n" )
 
 
@@ -117,98 +77,43 @@ MsgC( Color( 255, 255, 0 ), "\n[PatchProtect]", Color( 255, 255, 255 ), " Succes
 --  SAVE SETTINGS  --
 ---------------------
 
--- ANTI SPAM
-net.Receive( "pprotect_save_antispam", function( len, pl )
+-- SAVE ANTISPAM/PROP PROTECTION
+net.Receive( "pprotect_save", function( len, pl )
 
-	sv_PProtect.Settings.Antispam = net.ReadTable()
+	local data = net.ReadTable()
+	sv_PProtect.Settings[ data[1] ] = data[2]
 	sv_PProtect.sendSettings()
 
 	-- SAVE TO SQL TABLES
-	table.foreach( sv_PProtect.Settings.Antispam, function( setting, value )
-
-		sql.Query( "UPDATE pprotect_antispam SET value = '" .. tostring( value ) .. "' WHERE setting = '" .. setting .. "'" )
-
+	table.foreach( sv_PProtect.Settings[ data[1] ], function( setting, value )
+		sql.Query( "UPDATE pprotect_" .. string.lower( data[1] ) .. " SET value = '" .. tostring( value ) .. "' WHERE setting = '" .. setting .. "'" )
 	end )
 
-	sv_PProtect.Notify( pl, "Saved new AntiSpam-Settings", "info" )
-	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved new AntiSpam-Settings!" )
+	sv_PProtect.Notify( pl, "Saved new " .. data[1] .. "-Settings", "info" )
+	print( "[PatchProtect - " .. data[1] .. "] " .. pl:Nick() .. " saved new " .. data[1] .. "-Settings!" )
 
 end )
 
--- PROP PROTECTION
-net.Receive( "pprotect_save_propprotection", function( len, pl )
+-- SAVE BLOCKED PROPS/ENTS
+function sv_PProtect.saveBlockedEnts( typ, data )
 
-	sv_PProtect.Settings.Propprotection = net.ReadTable()
-	sv_PProtect.sendSettings()
+	sql.Query( "DROP TABLE pprotect_blocked_" .. typ )
+	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blocked_" .. typ .. " ( name TEXT, model TEXT )" )
 
-	-- SAVE TO SQL TABLES
-	table.foreach( sv_PProtect.Settings.Propprotection, function( setting, value )
-		
-		sql.Query( "UPDATE pprotect_propprotection SET value = '" .. tostring( value ) .. "' WHERE setting = '" .. setting .. "'" )
-
-	end )
-
-	sv_PProtect.Notify( pl, "Saved new PropProtection-Settings", "info" )
-	print( "[PatchProtect - PropProtection] " .. pl:Nick() .. " saved new PropProtection-Settings!" )
-
-end )
-
--- ANTISPAMED TOOLS
-function sv_PProtect.saveAntiSpamTools( data )
-
-	sql.Query( "DROP TABLE pprotect_antispamtools" )
-	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_antispamtools ( tool TEXT, antispam TEXT )" )
-
-	table.foreach( data, function( tool, antispam )
-
-		sql.Query( "INSERT INTO pprotect_antispamtools ( tool, antispam ) VALUES ( '" .. tool .. "', '" .. tostring( antispam ) .. "' )" )
-
+	table.foreach( data, function( n, m )
+		sql.Query( "INSERT INTO pprotect_blocked_" .. typ .. " ( name, model ) VALUES ( '" .. n .. "', '" .. m .. "' )" )
 	end )
 
 end
 
--- BLOCKED PROPS
-function sv_PProtect.saveBlockedProps( data )
+-- SAVE ANTISPAMED/BLOCKED TOOLS
+function sv_PProtect.saveBlockedTools( typ, data )
 
-	sql.Query( "DROP TABLE pprotect_blockedprops" )
-	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blockedprops ( id INTEGER, model TEXT )" )
+	sql.Query( "DROP TABLE pprotect_" .. typ .. "_tools" )
+	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_" .. typ .. "_tools ( tool TEXT, bool TEXT )" )
 
-	if !data or table.Count( data ) == 0 then return end
-
-	table.foreach( data, function( id, model )
-
-		sql.Query( "INSERT INTO pprotect_blockedprops ( id, model ) VALUES ( " .. id .. ", '" .. model .. "' )" )
-
-	end )
-
-end
-
--- BLOCKED ENTS
-function sv_PProtect.saveBlockedEnts( data )
-
-	sql.Query( "DROP TABLE pprotect_blockedents" )
-	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blockedents ( name TEXT, model TEXT )" )
-
-	if !data or table.Count( data ) == 0 then return end
-
-	table.foreach( data, function( name, model )
-
-		sql.Query( "INSERT INTO pprotect_blockedents ( name, model ) VALUES ( '" .. name .. "', '" .. model .. "' )" )
-
-	end )
-
-end
-
--- BLOCKED TOOLS
-function sv_PProtect.saveBlockedTools( data )
-
-	sql.Query( "DROP TABLE pprotect_blockedtools" )
-	sql.Query( "CREATE TABLE IF NOT EXISTS pprotect_blockedtools ( tool TEXT, blocked TEXT )" )
-
-	table.foreach( data, function( tool, blocked )
-
-		sql.Query( "INSERT INTO pprotect_blockedtools ( tool, blocked ) VALUES ( '" .. tool .. "', '" .. tostring( blocked ) .. "' )" )
-
+	table.foreach( data, function( tool, bool )
+		sql.Query( "INSERT INTO pprotect_" .. typ .. "_tools ( tool, bool ) VALUES ( '" .. tool .. "', '" .. tostring( bool ) .. "' )" )
 	end )
 
 end
@@ -244,7 +149,7 @@ function sv_PProtect.sendSettings( ply, cmd, args )
 
 	net.Start( "pprotect_new_settings" )
 		net.WriteTable( new_settings )
-		if args != nil and args[1] != nil then net.WriteString( args[1] ) end
+		if args and args[1] then net.WriteString( args[1] ) end
 	if ply then net.Send( ply ) else net.Broadcast() end
 
 end
@@ -253,7 +158,7 @@ concommand.Add( "pprotect_request_newest_settings", sv_PProtect.sendSettings )
 
 -- SEND NOTIFICATION
 function sv_PProtect.Notify( ply, text, typ )
-	
+
 	net.Start( "pprotect_notify" )
 		net.WriteTable( { text, typ } )
 	if ply then net.Send( ply ) else net.Broadcast() end

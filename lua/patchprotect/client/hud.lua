@@ -90,60 +90,31 @@ hook.Add( "PhysgunPickup", "pprotect_physbeam", PhysBeam )
 
 
 
-------------------------
---  ADD BLOCKED PROP  --
-------------------------
+----------------------------
+--  ADD BLOCKED PROP/ENT  --
+----------------------------
 
 properties.Add( "addblockedprop", {
 
-	MenuLabel = "Add to blocked Props",
+	MenuLabel = "Add to Blocked-List",
 	Order = 2002,
 	MenuIcon = "icon16/page_white_edit.png",
 
 	Filter = function( self, ent, ply )
-
-		if !cl_PProtect.Settings.Antispam[ "enabled" ] or !cl_PProtect.Settings.Antispam[ "propblock" ] or !LocalPlayer():IsSuperAdmin() then return false end
-		if !ent:IsValid() or ent:IsPlayer() or ent:GetClass() != "prop_physics" then return false end
+		local typ = "prop"
+		if ent:GetClass() != "prop_physics" then typ = "ent" end
+		if !cl_PProtect.Settings.Antispam[ "enabled" ] or !cl_PProtect.Settings.Antispam[ typ .. "block" ] or !LocalPlayer():IsSuperAdmin() or !ent:IsValid() or ent:IsPlayer() then return false end
 		return true
-
 	end,
 
 	Action = function( self, ent )
-
-		net.Start( "pprotect_send_blocked_props_cpanel" )
-			net.WriteString( ent:GetModel() )
+		net.Start( "pprotect_save_cent" )
+			if ent:GetClass() == "prop_physics" then
+				net.WriteTable( { typ = "props", name = ent:GetModel(), model = ent:GetModel() } )
+			else
+				net.WriteTable( { typ = "ents", name = ent:GetClass(), model = ent:GetModel() } )
+			end
 		net.SendToServer()
-
-	end
-
-} )
-
-
-
------------------------
---  ADD BLOCKED ENT  --
------------------------
-
-properties.Add( "addblockedent", {
-
-	MenuLabel = "Add to blocked Entities",
-	Order = 2002,
-	MenuIcon = "icon16/page_white_edit.png",
-
-	Filter = function( self, ent, ply )
-
-		if !cl_PProtect.Settings.Antispam[ "enabled" ] or !cl_PProtect.Settings.Antispam[ "entblock" ] or !LocalPlayer():IsSuperAdmin() then return false end
-		if !ent:IsValid() or ent:IsPlayer() or ent:GetClass() == "prop_physics" then return false end
-		return true
-
-	end,
-
-	Action = function( self, ent )
-
-		net.Start( "pprotect_send_blocked_ents_cpanel" )
-			net.WriteTable( { name = ent:GetClass(), model = ent:GetModel() } )
-		net.SendToServer()
-
 	end
 
 } )

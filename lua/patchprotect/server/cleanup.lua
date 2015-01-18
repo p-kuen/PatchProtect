@@ -2,46 +2,38 @@
 --  COUNT PROPS  --
 -------------------
 
-function pprotect_count_props( ply )
+function pprotect_countProps( ply, dels )
 
-	local count = 0
+	local result = { global = 0, players = {} }
 
-	table.foreach( ents.GetAll(), function( key, value )
+	table.foreach( ents.GetAll(), function( key, ent )
 
-		if ply == nil and value:IsValid() and value.World != true and value:GetClass() == "prop_physics" then
-			count = count + 1
-		end
+		if !ent:IsValid() or ent.World or ent:GetClass() != "prop_physics" or !ent.pprotect_owner:IsValid() then return end
 
-		if ply != nil and value:IsValid() and ply == value:CPPIGetOwner() and value:GetClass() == "prop_physics" then
-			count = count + 1
-		end
+		-- check deleted Entities
+		if istable( dels ) and table.HasValue( dels, ent:EntIndex() ) then return end
 		
+		-- Global-Count
+		result.global = result.global + 1
+
+		-- Player-Count
+		local owner = ent.pprotect_owner
+
+		if !result.players[ owner ] then result.players[ owner ] = 0 end
+		result.players[ owner ] = result.players[ owner ] + 1
+
 	end )
 
-	return count
-
-end
-
-function pprotect_new_counts( ply, cmd, args )
-
-	local counts = {}
-
-	-- GLOBAL COUNT
-	counts[ "global" ] = pprotect_count_props()
-
-	-- PLAYER COUNT
-	local player_counts = {}
-	table.foreach( player.GetAll(), function( key, player )
-		player_counts[ player ] = pprotect_count_props( player )
-	end )
-	counts[ "players" ] = player_counts
+	-- check Permissions
+	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !ply:IsAdmin() and !ply:IsSuperAdmin() then return
+	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !ply:IsSuperAdmin() then return end
 
 	net.Start( "pprotect_new_counts" )
-		net.WriteTable( counts )
+		net.WriteTable( result )
 	net.Send( ply )
 
 end
-concommand.Add( "pprotect_request_newest_counts", pprotect_new_counts )
+concommand.Add( "pprotect_request_newest_counts", pprotect_countProps )
 
 
 
@@ -65,6 +57,9 @@ net.Receive( "pprotect_cleanup_map", function( len, pl )
 	-- Define World-Props again!
 	sv_PProtect.setWorldProps()
 
+	-- recount Ents
+	pprotect_countProps( pl )
+
 	sv_PProtect.Notify( pl, "Cleaned Map!", "info" )
 	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all props!" )
 
@@ -75,25 +70,27 @@ end )
 -- CLEANUP PLAYERS PROPS
 net.Receive( "pprotect_cleanup_player", function( len, pl )
 
-	-- Check Permissions
-	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
-		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
-	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
-		if !pl:IsSuperAdmin() then return end
-	end
+	-- check Permissions
+	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !pl:IsAdmin() and !pl:IsSuperAdmin() then return
+	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !pl:IsSuperAdmin() then return end
 
-	-- Find all props from a special player
-	local cleanupdata = net.ReadTable()
-	table.foreach( ents.GetAll(), function( key, value )
+	-- find all props from a special player
+	local owner = net.ReadTable()
+	local del_ents = {}
+	table.foreach( ents.GetAll(), function( key, ent )
 
-		if value:CPPIGetOwner() == cleanupdata[1] then
-			value:Remove()
+		if ent.pprotect_owner == owner[1] then
+			ent:Remove()
+			table.insert( del_ents, ent:EntIndex() )
 		end
-		
+
 	end )
 
-	sv_PProtect.Notify( pl, "Cleaned " .. cleanupdata[1]:Nick() .. "'s props! (" .. cleanupdata[2] .. ")", "info" )
-	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed " .. cleanupdata[2] .. " props from " .. cleanupdata[1]:Nick() .. "!" )
+	-- recount Ents
+	pprotect_countProps( pl, del_ents )
+
+	sv_PProtect.Notify( pl, "Cleaned " .. owner[1]:Nick() .. "'s props! (" .. owner[2] .. ")", "info" )
+	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed " .. owner[2] .. " props from " .. owner[1]:Nick() .. "!" )
 
 end )
 
@@ -165,12 +162,9 @@ hook.Add( "PlayerSpawn", "pprotect_abortcleanup", sv_PProtect.checkComeback )
 -- CLEAN ALL DISCONNECTED PLAYERS PROPS (BUTTON)
 net.Receive( "pprotect_cleanup_disconnected_player", function( len, pl )
 
-	-- Check Permissions
-	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
-		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
-	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
-		if !pl:IsSuperAdmin() then return end
-	end
+	-- check Permissions
+	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !pl:IsAdmin() and !pl:IsSuperAdmin() then return
+	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !pl:IsSuperAdmin() then return end
 
 	-- Remove all props from disconnected players
 	table.foreach( ents.GetAll(), function( k, v )
