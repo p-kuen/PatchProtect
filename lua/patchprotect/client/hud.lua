@@ -58,16 +58,15 @@ function cl_PProtect.showOwner()
 	-- Check Draw-Mode ( FPP-Mode or not )
 	if !cl_PProtect.Settings.CSettings[ "fppmode" ] then
 
-		-- Border
+		-- Background
 		draw.RoundedBoxEx( 4, l - 5, t - 12, 5, 24, col, true, false, true, false )
-		-- Textbox
 		draw.RoundedBoxEx( 4, l, t - 12, w, 24, Color( 240, 240, 240, 200 ), false, true, false, true )
 		-- Text
-		draw.SimpleText( txt, "pprotect_roboto_small", l + 5, t - 7, Color( 75, 75, 75 ) )
+		draw.SimpleText( txt, "pprotect_roboto_small", l + 5, t - 6, Color( 75, 75, 75 ) )
 
 	else
 
-		-- Textbox
+		-- Background
 		draw.RoundedBox( 4, scr_w * 0.5 - ( w * 0.5 ) - 3, t + 16, w + 6, 20, Color( 0, 0, 0, 150 ) )
 		-- Text
 		draw.SimpleText( txt, "pprotect_roboto_small", scr_w * 0.5, t + 20, col, TEXT_ALIGN_CENTER, 0 )
