@@ -226,8 +226,7 @@ end )
 -- SEND ANTISPAMED/BLOCKED TOOLS TABLE
 net.Receive( "pprotect_request_tools", function( len, pl )
 
-	local typ = net.ReadTable()[1]
-	local t = string.sub( typ , 1, 1 ) .. "tools"
+	local t = string.sub( net.ReadTable()[1], 1, 1 ) .. "tools"
 	local tools = {}
 
 	table.foreach( weapons.GetList(), function( _, wep )

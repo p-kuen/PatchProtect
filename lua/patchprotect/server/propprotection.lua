@@ -35,7 +35,7 @@ local en, uc, ue, up, uf = nil, undo.Create, undo.AddEntity, undo.SetPlayer, und
 function undo.Create( typ ) en = { t = typ, e = {}, o = nil } uc( typ ) end
 function undo.AddEntity( ent ) if ent:GetClass() != "phys_constraint" then table.insert( en.e, ent ) end ue( ent ) end
 function undo.SetPlayer( ply ) en.o = ply up( ply ) end
-function undo.Finish() sv_PProtect.SetOwner( en.o, en.typ, en.e ) en = nil uf() end
+function undo.Finish() sv_PProtect.SetOwner( en.o, en.t, en.e ) en = nil uf() end
 
 -- SET OWNER
 function sv_PProtect.SetOwner( ply, typ, ent )
