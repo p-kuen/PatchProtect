@@ -86,6 +86,7 @@ sv_PProtect.Config.Propprotection = {
 	propdriving = false,
 	worldprops = false,
 	worldbutton = false,
+	noowner = false,
 
 	propdelete = true,
 	adminprops = false,

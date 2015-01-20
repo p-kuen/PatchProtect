@@ -205,12 +205,12 @@ function pan:addbtn( text, nettext, args )
 			args()
 
 		else
-			
+
 			net.Start( nettext )
-				if istable( args ) then
-					net.WriteTable( args )
+				if args != nil and cl_PProtect.Settings[ args[1] ] then
+					net.WriteTable( { args[1], cl_PProtect.Settings[ args[1] ] } )
 				else
-					net.WriteString( "noargs" )
+					net.WriteTable( args or {} )
 				end
 			net.SendToServer()
 

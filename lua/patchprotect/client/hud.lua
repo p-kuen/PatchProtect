@@ -36,7 +36,7 @@ function cl_PProtect.showOwner()
 	if IsWorld then txt = "World"
 	elseif Owner:IsPlayer() and Owner:IsValid() then txt = Owner:Nick()
 	elseif IsDisc then txt = IsDisc .. " (disconnected)"
-	else return end
+	else txt = "No Owner" end
 
 	-- Set Variables
 	surface.SetFont( "pprotect_roboto_small" )
@@ -47,10 +47,14 @@ function cl_PProtect.showOwner()
 
 	-- Set color
 	local col
-	if Owner == LocalPlayer() or IsBuddy or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() or IsWorld and cl_PProtect.Settings.Propprotection[ "worldprops" ] then
+	if Owner == LocalPlayer() or IsBuddy or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+		col = Color( 128, 255, 0, 200 )
+	elseif IsWorld and cl_PProtect.Settings.Propprotection[ "worldprops" ] then
 		col = Color( 128, 255, 0, 200 )
 	elseif cl_PProtect.Settings.Propprotection[ "worldbutton" ] and IsWorld then
 		col = Color( 0, 161, 222, 200 )
+	elseif txt == "No Owner" and cl_PProtect.Settings.Propprotection[ "noowner" ] then
+		col = Color( 128, 255, 0, 200 )
 	else
 		col = Color( 176, 0, 0, 200 )
 	end
