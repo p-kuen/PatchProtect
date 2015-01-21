@@ -138,6 +138,12 @@ function cl_PProtect.pp_menu( p )
 		p:addchk( "Use-Protection", nil, cl_PProtect.Settings.Propprotection[ "useprotection" ], function( c ) cl_PProtect.Settings.Propprotection[ "useprotection" ] = c end )
 		p:addchk( "Reload-Protection", nil, cl_PProtect.Settings.Propprotection[ "reloadprotection" ], function( c ) cl_PProtect.Settings.Propprotection[ "reloadprotection" ] = c end )
 		p:addchk( "Damage-Protection", nil, cl_PProtect.Settings.Propprotection[ "damageprotection" ], function( c ) cl_PProtect.Settings.Propprotection[ "damageprotection" ] = c end )
+
+		-- Special damage protection
+		if cl_PProtect.Settings.Propprotection[ "damageprotection" ] then
+			p:addchk( "In-Vehicle-Damage-Protection", "Restrict players to kill other players, while sitting in a vehicle", cl_PProtect.Settings.Propprotection[ "damageinvehicle" ], function( c ) cl_PProtect.Settings.Propprotection[ "damageinvehicle" ] = c end )
+		end
+
 		p:addchk( "GravGun-Protection", nil, cl_PProtect.Settings.Propprotection[ "gravgunprotection" ], function( c ) cl_PProtect.Settings.Propprotection[ "gravgunprotection" ] = c end )
 		p:addchk( "PropPickup-Protection", "Pick up props with 'use'-key", cl_PProtect.Settings.Propprotection[ "proppickup" ], function( c ) cl_PProtect.Settings.Propprotection[ "proppickup" ] = c end )
 

@@ -8,7 +8,7 @@ function pprotect_countProps( ply, dels )
 
 	table.foreach( ents.GetAll(), function( key, ent )
 
-		if !ent:IsValid() or ent.World or ent:GetClass() != "prop_physics" or ent.pprotect_owner == nil or !ent.pprotect_owner:IsValid() then return end
+		if !ent:IsValid() or ent.World or ent.pprotect_owner == nil or !ent.pprotect_owner:IsValid() then return end
 
 		-- check deleted Entities
 		if istable( dels ) and table.HasValue( dels, ent:EntIndex() ) then return end

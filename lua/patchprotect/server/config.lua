@@ -79,6 +79,7 @@ sv_PProtect.Config.Propprotection = {
 	useprotection = true,
 	reloadprotection = true,
 	damageprotection = true,
+	damageinvehicle = true,
 	gravgunprotection = true,
 	proppickup = true,
 

@@ -69,9 +69,9 @@ end
 
 
 
---------------------
---  CHECK PLAYER  --
---------------------
+-------------------------------
+--  PHYSGUN PROP PROTECTION  --
+-------------------------------
 
 -- GENERAL CHECK-PLAYER FUNCTION
 function sv_PProtect.CanTouch( ply, ent )
@@ -283,7 +283,7 @@ function sv_PProtect.CanDamage( ent, info )
 	local ply = info:GetAttacker()
 
 	-- Check Entity
-	if !ent:IsValid() or ent:IsPlayer() then return end
+	if !ent:IsValid() then return end
 
 	-- Check Admin
 	if ply:IsPlayer() then
@@ -293,6 +293,12 @@ function sv_PProtect.CanDamage( ent, info )
 	-- Check Protection
 	if !sv_PProtect.Settings.Propprotection[ "damageprotection" ] then return end
 
+	-- Check Damage from Player in Vehicle
+	if ply:IsPlayer() and ply:InVehicle() and ent:IsPlayer() and sv_PProtect.Settings.Propprotection[ "damageinvehicle" ] then
+		sv_PProtect.Notify( ply, "You are not allowed to damage other players while sitting in a vehicle!" )
+		return true
+	end
+
 	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
 
@@ -300,7 +306,7 @@ function sv_PProtect.CanDamage( ent, info )
 	if sv_PProtect.IsShared( ent, "dmg" ) then return end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "damage" ) or ply:GetClass() == "entityflame" then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "damage" ) or ply:GetClass() == "entityflame" or ent:IsPlayer() then
 		return
 	else
 		if ply:IsPlayer() then sv_PProtect.Notify( ply, "You are not allowed to damage this object!" ) end
