@@ -67,8 +67,6 @@ end
 net.Receive( "pprotect_cleanup_map", sv_PProtect.cleanupMap )
 concommand.Add( "gmod_admin_cleanup", function( ply, cmd, args ) sv_PProtect.cleanupMap( nil, ply ) end )
 
-
-
 -- CLEANUP PLAYERS PROPS
 net.Receive( "pprotect_cleanup_player", function( len, pl )
 
