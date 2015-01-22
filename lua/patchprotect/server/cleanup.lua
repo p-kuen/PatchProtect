@@ -41,6 +41,17 @@ concommand.Add( "pprotect_request_new_counts", pprotect_countProps )
 --  CLEANUP MAP/PLAYERS PROPS  --
 ---------------------------------
 
+-- CHECK NORMAL ADMIN CLEANUP
+concommand.Add( "gmod_admin_cleanup", function( ply, cmd, args )
+
+	if sv_PProtect.Settings.Propprotection[ "enabled" ] and !ply:IsSuperAdmin() then
+		sv_PProtect.Notify( ply, "PProtect-Propprotection is installed and activated. Please use the PProtect-Cleanup-System!", "normal" )
+	else
+		game.CleanUpMap()
+	end
+
+end )
+
 -- CLEANUP EVERYTHING
 net.Receive( "pprotect_cleanup_map", function( len, pl )
 
