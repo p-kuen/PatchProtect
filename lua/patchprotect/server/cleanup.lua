@@ -41,25 +41,14 @@ concommand.Add( "pprotect_request_new_counts", pprotect_countProps )
 --  CLEANUP MAP/PLAYERS PROPS  --
 ---------------------------------
 
--- CHECK NORMAL ADMIN CLEANUP
-concommand.Add( "gmod_admin_cleanup", function( ply, cmd, args )
-
-	if sv_PProtect.Settings.Propprotection[ "enabled" ] and !ply:IsSuperAdmin() then
-		sv_PProtect.Notify( ply, "PProtect-Propprotection is installed and activated. Please use the PProtect-Cleanup-System!", "normal" )
-	else
-		game.CleanUpMap()
-	end
-
-end )
-
 -- CLEANUP EVERYTHING
-net.Receive( "pprotect_cleanup_map", function( len, pl )
+function sv_PProtect.cleanupMap( len, ply )
 
 	-- Check Permissions
 	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
-		if !pl:IsAdmin() and !pl:IsSuperAdmin() then return end
+		if !ply:IsAdmin() and !ply:IsSuperAdmin() then sv_PProtect.Notify( ply, "You are not allowed to clean the map!", "normal" ) return end
 	else
-		if !pl:IsSuperAdmin() then return end
+		if !ply:IsSuperAdmin() then sv_PProtect.Notify( ply, "You are not allowed to clean the map!", "normal" ) return end
 	end
 
 	-- Cleanup Map
@@ -69,12 +58,14 @@ net.Receive( "pprotect_cleanup_map", function( len, pl )
 	sv_PProtect.setWorldProps()
 
 	-- recount Ents
-	pprotect_countProps( pl )
+	pprotect_countProps( ply )
 
-	sv_PProtect.Notify( pl, "Cleaned Map!", "info" )
-	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all props!" )
+	sv_PProtect.Notify( ply, "Cleaned Map!", "info" )
+	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props!" )
 
-end )
+end
+net.Receive( "pprotect_cleanup_map", sv_PProtect.cleanupMap )
+concommand.Add( "gmod_admin_cleanup", function( ply, cmd, args ) sv_PProtect.cleanupMap( nil, ply ) end )
 
 
 
