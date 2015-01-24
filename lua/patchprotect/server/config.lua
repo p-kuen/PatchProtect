@@ -54,10 +54,10 @@ sv_PProtect.Config.Antispam = {
 	admins = false,
 	alert = true,
 
-	toolprotection = true,
+	tool = true,
+	toolblock = true,
 	propblock = true,
 	entblock = true,
-	toolblock = true,
 	propinprop = true,
 
 	cooldown = 0.3,
@@ -76,17 +76,17 @@ sv_PProtect.Config.Propprotection = {
 	admins = false,
 	adminscleanup = false,
 
-	useprotection = true,
-	reloadprotection = true,
-	damageprotection = true,
+	use = true,
+	reload = true,
+	damage = true,
 	damageinvehicle = true,
-	gravgunprotection = true,
+	gravgun = true,
 	proppickup = true,
 
-	creatorprotection = false,
+	creator = false,
 	propdriving = false,
 	worldprops = false,
-	worldbutton = false,
+	worldbutton = true,
 	noowner = false,
 
 	propdelete = true,

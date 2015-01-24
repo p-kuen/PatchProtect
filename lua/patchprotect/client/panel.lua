@@ -19,14 +19,14 @@ function cl_PProtect.as_menu( p )
 
 		-- Anti-Spam features
 		p:addlbl( "\nEnable/Disable antispam features:", true )
-		p:addchk( "Tool-AntiSpam", nil, cl_PProtect.Settings.Antispam[ "toolprotection" ], function( c ) cl_PProtect.Settings.Antispam[ "toolprotection" ] = c end )
+		p:addchk( "Tool-AntiSpam", nil, cl_PProtect.Settings.Antispam[ "tool" ], function( c ) cl_PProtect.Settings.Antispam[ "tool" ] = c end )
 		p:addchk( "Tool-Block", nil, cl_PProtect.Settings.Antispam[ "toolblock" ], function( c ) cl_PProtect.Settings.Antispam[ "toolblock" ] = c end )
 		p:addchk( "Prop-Block", nil, cl_PProtect.Settings.Antispam[ "propblock" ], function( c ) cl_PProtect.Settings.Antispam[ "propblock" ] = c end )
 		p:addchk( "Entity-Block", nil, cl_PProtect.Settings.Antispam[ "entblock" ], function( c ) cl_PProtect.Settings.Antispam[ "entblock" ] = c end )
 		p:addchk( "Prop-In-Prop", nil, cl_PProtect.Settings.Antispam[ "propinprop" ], function( c ) cl_PProtect.Settings.Antispam[ "propinprop" ] = c end )
 
 		-- Tool Protection
-		if cl_PProtect.Settings.Antispam[ "toolprotection" ] then
+		if cl_PProtect.Settings.Antispam[ "tool" ] then
 			p:addbtn( "Set antispamed Tools", "pprotect_request_tools", { "antispam" } )
 		end
 
@@ -135,21 +135,21 @@ function cl_PProtect.pp_menu( p )
 
 		-- Protections
 		p:addlbl( "\nProtection Settings:", true )
-		p:addchk( "Use-Protection", nil, cl_PProtect.Settings.Propprotection[ "useprotection" ], function( c ) cl_PProtect.Settings.Propprotection[ "useprotection" ] = c end )
-		p:addchk( "Reload-Protection", nil, cl_PProtect.Settings.Propprotection[ "reloadprotection" ], function( c ) cl_PProtect.Settings.Propprotection[ "reloadprotection" ] = c end )
-		p:addchk( "Damage-Protection", nil, cl_PProtect.Settings.Propprotection[ "damageprotection" ], function( c ) cl_PProtect.Settings.Propprotection[ "damageprotection" ] = c end )
+		p:addchk( "Use-Protection", nil, cl_PProtect.Settings.Propprotection[ "use" ], function( c ) cl_PProtect.Settings.Propprotection[ "use" ] = c end )
+		p:addchk( "Reload-Protection", nil, cl_PProtect.Settings.Propprotection[ "reload" ], function( c ) cl_PProtect.Settings.Propprotection[ "reload" ] = c end )
+		p:addchk( "Damage-Protection", nil, cl_PProtect.Settings.Propprotection[ "damage" ], function( c ) cl_PProtect.Settings.Propprotection[ "damage" ] = c end )
 
 		-- Special damage protection
-		if cl_PProtect.Settings.Propprotection[ "damageprotection" ] then
+		if cl_PProtect.Settings.Propprotection[ "damage" ] then
 			p:addchk( "In-Vehicle-Damage-Protection", "Restrict players to kill other players, while sitting in a vehicle", cl_PProtect.Settings.Propprotection[ "damageinvehicle" ], function( c ) cl_PProtect.Settings.Propprotection[ "damageinvehicle" ] = c end )
 		end
 
-		p:addchk( "GravGun-Protection", nil, cl_PProtect.Settings.Propprotection[ "gravgunprotection" ], function( c ) cl_PProtect.Settings.Propprotection[ "gravgunprotection" ] = c end )
+		p:addchk( "GravGun-Protection", nil, cl_PProtect.Settings.Propprotection[ "gravgun" ], function( c ) cl_PProtect.Settings.Propprotection[ "gravgun" ] = c end )
 		p:addchk( "PropPickup-Protection", "Pick up props with 'use'-key", cl_PProtect.Settings.Propprotection[ "proppickup" ], function( c ) cl_PProtect.Settings.Propprotection[ "proppickup" ] = c end )
 
 		-- Restrictions
 		p:addlbl( "\nSpecial User-Restrictions:", true )
-		p:addchk( "Allow Creator-Tool", "ie. spawning weapons with the toolgun", cl_PProtect.Settings.Propprotection[ "creatorprotection" ], function( c ) cl_PProtect.Settings.Propprotection[ "creatorprotection" ] = c end )
+		p:addchk( "Allow Creator-Tool", "ie. spawning weapons with the toolgun", cl_PProtect.Settings.Propprotection[ "creator" ], function( c ) cl_PProtect.Settings.Propprotection[ "creator" ] = c end )
 		p:addchk( "Allow Prop-Driving", "Allow users to drive props over the context menu (c-key)", cl_PProtect.Settings.Propprotection[ "propdriving" ], function( c ) cl_PProtect.Settings.Propprotection[ "propdriving" ] = c end )
 		p:addchk( "Allow World-Props", "Allow users to physgun, toolgun, use, ... world props", cl_PProtect.Settings.Propprotection[ "worldprops" ], function( c ) cl_PProtect.Settings.Propprotection[ "worldprops" ] = c end )
 		p:addchk( "Allow World-Buttons/Doors", "Allow users to press World-Buttons/Doors", cl_PProtect.Settings.Propprotection[ "worldbutton" ], function( c ) cl_PProtect.Settings.Propprotection[ "worldbutton" ] = c end )

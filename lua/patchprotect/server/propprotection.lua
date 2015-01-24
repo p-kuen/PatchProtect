@@ -5,9 +5,9 @@
 -- CHECK ADMIN
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
-	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or
-		ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] or
-		ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] then
+	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or 
+	ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] or 
+	ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] then
 		return true
 	else
 		return false
@@ -41,19 +41,19 @@ function sv_PProtect.SetOwner( ply, typ, ent )
 
 	if !ent or !ply:IsPlayer() then return end
 
-	-- Duplicator exception
+	-- Duplicator-Exception
 	if ply.duplicate == true and typ != "Duplicator" and typ != "AdvDupe (pasting...)" and typ != "AdvDupe2_Paste" then ply.duplicate = false end
 
-	-- Set owner of the entity
+	-- Set Owner Of Ents
 	table.foreach( ent, function( k, e )
 
-		-- Check entity
+		-- Check Entity
 		if !e:IsValid() then return end
 
-		-- Set owner
+		-- Set Owner
 		e:CPPISetOwner( ply )
 
-		-- Check PropInProp-Exceptions
+		-- Check PropInProp
 		if ply.duplicate or !sv_PProtect.Settings.Antispam[ "propinprop" ] or sv_PProtect.CheckPPAdmin( ply ) or e:GetClass() != "prop_physics" then return end
 
 		-- PropInProp-Protection
@@ -73,7 +73,6 @@ end
 --  PHYSGUN PROP PROTECTION  --
 -------------------------------
 
--- GENERAL CHECK-PLAYER FUNCTION
 function sv_PProtect.CanTouch( ply, ent )
 
 	-- Check Entity
@@ -97,7 +96,7 @@ function sv_PProtect.CanTouch( ply, ent )
 	end
 
 end
-hook.Add( "PhysgunPickup", "pprotect_physpickup", sv_PProtect.CanTouch )
+hook.Add( "PhysgunPickup", "pprotect_touch", sv_PProtect.CanTouch )
 
 
 
@@ -116,7 +115,7 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
 	-- Check Protection
-	if tool == "creator" and !sv_PProtect.Settings.Propprotection[ "creatorprotection" ] then
+	if tool == "creator" and !sv_PProtect.Settings.Propprotection[ "creator" ] then
 		sv_PProtect.Notify( ply, "You are not allowed to use the creator tool!" )
 		return false
 	end
@@ -151,8 +150,8 @@ function sv_PProtect.CanUse( ply, ent )
 	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
 
-	-- Check Protection
-	if !sv_PProtect.Settings.Propprotection[ "useprotection" ] then return true end
+	-- Check Protection / Gamemode
+	if !sv_PProtect.Settings.Propprotection[ "use" ] or engine.ActiveGamemode() == "prop_hunt" then return true end
 
 	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldbutton" ] or sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
@@ -291,7 +290,7 @@ function sv_PProtect.CanDamage( ent, info )
 	end
 
 	-- Check Protection
-	if !sv_PProtect.Settings.Propprotection[ "damageprotection" ] then return end
+	if !sv_PProtect.Settings.Propprotection[ "damage" ] then return end
 
 	-- Check Damage from Player in Vehicle
 	if ply:CPPIGetOwner() and ply:CPPIGetOwner():InVehicle() and ent:IsPlayer() and sv_PProtect.Settings.Propprotection[ "damageinvehicle" ] then
@@ -333,7 +332,7 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check Protection
-	if !sv_PProtect.Settings.Propprotection[ "reloadprotection" ] then return end
+	if !sv_PProtect.Settings.Propprotection[ "reload" ] then return end
 
 	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
@@ -364,7 +363,7 @@ function sv_PProtect.CanGravPunt( ply, ent )
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check Protection
-	if !sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] then return end
+	if !sv_PProtect.Settings.Propprotection[ "gravgun" ] then return end
 
 	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
@@ -392,7 +391,7 @@ function sv_PProtect.CanGravPickup( ply, ent )
 	if !ent:IsValid() then return false end
 
 	-- Check Protection
-	if !sv_PProtect.Settings.Propprotection[ "gravgunprotection" ] then return false end
+	if !sv_PProtect.Settings.Propprotection[ "gravgun" ] then return false end
 
 	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
