@@ -221,7 +221,7 @@ end )
 concommand.Add( "pprotect_import_blocked_props", function( ply, cmd, args )
 
 	if !file.Read( "pproptect_import_blocked_props.txt", "DATA" ) then
-		print( "Please copy a file with a blocked-props model list into the 'data'-folder of the server with the name: 'pproptect_import_blockedd_props.txt'" )
+		print( "Please copy a file with a blocked-props model list into the 'data'-folder of the server with the name: 'pproptect_import_blocked_props.txt'" )
 	else
 		local imp = string.Explode( "\n", file.Read( "pproptect_import_blocked_props.txt", "DATA" ) )
 		table.foreach( imp, function( key, model )
