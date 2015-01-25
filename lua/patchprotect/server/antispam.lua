@@ -217,6 +217,22 @@ net.Receive( "pprotect_save_cent", function( len, pl )
 
 end )
 
+-- IMPORT BLOCKED PROPS LIST
+concommand.Add( "pprotect_import_blocked_props", function( ply, cmd, args )
+
+	if !file.Read( "pproptect_import_blocked_props.txt", "DATA" ) then
+		print( "Please copy a file with a blocked-props model list into the 'data'-folder of the server with the name: 'pproptect_import_blockedd_props.txt'" )
+	else
+		local imp = string.Explode( "\n", file.Read( "pproptect_import_blocked_props.txt", "DATA" ) )
+		table.foreach( imp, function( key, model )
+			if model == "" then table.remove( imp, key ) end
+			sv_PProtect.Blocked.props[ string.lower( model ) ] = string.lower( model )
+		end )
+		print( "[PatchProtect] Imported all blocked props. If there were any errors, then please use the command: 'pprotect_reset blocked_props' to reset the blocked-props list." )
+	end
+
+end )
+
 
 
 --------------------------------

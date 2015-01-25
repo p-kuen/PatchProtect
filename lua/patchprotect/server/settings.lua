@@ -8,21 +8,21 @@ local function resetSettings( ply, cmd, args, auto )
 	local tabs = { "all", "help", "antispam", "propprotection", "blocked_props", "blocked_ents", "blocked_tools", "antispam_tools" }
 
 	-- help for reset command
-	if args[1] == "help" then MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Use all, antispam, propprotection, blocked_props, blocked_ents, blocked_tools or antispam_tools!" ) return end
+	if args[1] == "help" then MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Use all, antispam, propprotection, blocked_props, blocked_ents, blocked_tools or antispam_tools!\n" ) return end
 
 	-- reset all sql-tables
 	if args[1] == "all" then
 		table.foreach( tabs, function( key, value ) sql.Query( "DROP TABLE pprotect_" .. value ) end )
 		if auto == "auto" then return end
-		MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Successfully deleted all sql-settings!\n", Color( 255, 0, 0 ), "[PatchProtect-Reset]", Color( 255, 255, 255 ), " PLEASE RESTART YOUR SERVER!\n\n" ) return
+		MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Successfully deleted all sql-settings!\n", Color( 255, 0, 0 ), "[PatchProtect-Reset]", Color( 255, 255, 255 ), " PLEASE RESTART YOUR SERVER!\n" ) return
 	end
 
 	-- check argument
-	if !table.HasValue( tabs, args[1] ) then MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " " .. args[1] .. " is not a valid sql-table!" ) return end
+	if !table.HasValue( tabs, args[1] ) then MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " " .. args[1] .. " is not a valid sql-table!\n" ) return end
 
 	-- delete sql-table
 	sql.Query( "DROP TABLE pprotect_" .. args[1] )
-	MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Successfully deleted all " .. args[1] .. "-settings!\n", Color( 255, 0, 0 ), "[PatchProtect-Reset]", Color( 255, 255, 255 ), " PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!\n\n" )
+	MsgC( Color( 255, 0, 0 ), "\n[PatchProtect-Reset]", Color( 255, 255, 255 ), " Successfully deleted all " .. args[1] .. "-settings!\n", Color( 255, 0, 0 ), "[PatchProtect-Reset]", Color( 255, 255, 255 ), " PLEASE RESTART THE SERVER WHEN YOU ARE FINISHED WITH ALL RESETS!\n" )
 
 end 
 concommand.Add( "pprotect_reset", resetSettings )
