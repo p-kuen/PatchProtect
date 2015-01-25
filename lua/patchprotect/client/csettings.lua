@@ -2,9 +2,6 @@
 --  CLIENT SETTINGS  --
 -----------------------
 
--- Create CSettings-Table
-cl_PProtect.Settings.CSettings = {}
-
 -- Delete old settings version
 if sql.QueryValue( "SELECT value FROM pprotect_csettings WHERE setting = 'OwnerHUD'" ) == "1" then
 	sql.Query( "DROP TABLE pprotect_csettings" )

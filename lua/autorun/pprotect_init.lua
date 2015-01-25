@@ -32,9 +32,8 @@ if SERVER then
 
 else
 
-	-- Create tables
-	cl_PProtect = {}
-	cl_PProtect.Settings = {}
+	-- Create client-table
+	cl_PProtect = { Settings = { Antispam = {}, Propprotection = {}, CSettings = {} } }
 
 	-- Include client-files
 	include( "patchprotect/client/csettings.lua" )
