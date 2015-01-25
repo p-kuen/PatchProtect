@@ -50,7 +50,7 @@ function cl_PProtect.as_menu( p )
 		p:addsld( 0, 10, "Cooldown (Seconds)", cl_PProtect.Settings.Antispam[ "cooldown" ], "Antispam", "cooldown", 1 )
 		p:addlbl( "Number of props till admins get warned:" )
 		p:addsld( 0, 40, "Amount", cl_PProtect.Settings.Antispam[ "spam" ], "Antispam", "spam", 0 )
-		p:addlbl( "Autotmatic action after spamming:" )
+		p:addlbl( "Automatic action after spamming:" )
 		p:addcmb( { "Nothing", "Cleanup", "Kick", "Ban", "Command" }, "spamaction", cl_PProtect.Settings.Antispam[ "spamaction" ] )
 
 		-- Spamaction
