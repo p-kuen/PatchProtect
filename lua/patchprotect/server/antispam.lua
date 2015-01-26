@@ -220,17 +220,23 @@ end )
 -- IMPORT BLOCKED PROPS LIST
 concommand.Add( "pprotect_import_blocked_props", function( ply, cmd, args )
 
-	if !file.Read( "pprotect_import_blocked_props.txt", "DATA" ) then
-		print( "Please copy a file with a blocked-props model list into the 'data'-folder of the server with the name: 'pprotect_import_blocked_props.txt'" )
-	else
-		local imp = string.Explode( "\n", file.Read( "pprotect_import_blocked_props.txt", "DATA" ) )
-		table.foreach( imp, function( key, model )
-			if model == "" then table.remove( imp, key ) end
-			sv_PProtect.Blocked.props[ string.lower( model ) ] = string.lower( model )
-		end )
-		sv_PProtect.saveBlockedEnts( "blocked_props", sv_PProtect.Blocked.props )
-		print( "[PatchProtect] Imported all blocked props. If there were any errors, then please use the command: 'pprotect_reset blocked_props' to reset the blocked-props list." )
-	end
+	if !file.Read( "pprotect_import_blocked_props.txt", "DATA" ) then print( "Cannot find 'pprotect_import_blocked_props.txt' to import props. Please read the description of patchprotect!" ) return end
+	local imp = string.Explode( ";", file.Read( "pprotect_import_blocked_props.txt", "DATA" ) )
+	table.foreach( imp, function( key, model )
+		if model != "" then sv_PProtect.Blocked.props[ string.lower( model ) ] = string.lower( model ) end
+	end )
+	sv_PProtect.saveBlockedEnts( "props", sv_PProtect.Blocked.props )
+	print( "[PatchProtect] Imported all blocked props. If there were any errors, then please use the command: 'pprotect_reset blocked_props' to reset the blocked-props list." )
+
+end )
+
+-- EXPORT BLOCKED PROPS LIST
+concommand.Add( "pprotect_export_blocked_props", function( ply, cmd, args )
+
+	local cont = ""
+	table.foreach( sv_PProtect.Blocked.props, function( key, value ) cont = cont .. value .. ";" end )
+	file.Write( "pprotect_import_blocked_props.txt", cont )
+	print( "[PatchProtect] Exported all blocked props! You can find it at following path: garrysmod/data/pprotect_import_blocked_props.txt" )
 
 end )
 

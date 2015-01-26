@@ -68,7 +68,7 @@ end
 -- BLOCKED ENTS
 function sv_PProtect.loadBlockedEnts( typ )
 
-	if !sql.TableExists( "pprotect_blocked_" .. typ ) then return {} end
+	if !sql.TableExists( "pprotect_blocked_" .. typ ) or !sql.Query( "SELECT * FROM pprotect_blocked_" .. typ ) then return {} end
 
 	local sql_ents = {}
 	table.foreach( sql.Query( "SELECT * FROM pprotect_blocked_" .. typ ), function( id, ent )
@@ -82,7 +82,7 @@ end
 -- ANTISPAMMED/BLOCKED TOOLS
 function sv_PProtect.loadBlockedTools( typ )
 
-	if !sql.TableExists( "pprotect_" .. typ .. "_tools" ) then return {} end
+	if !sql.TableExists( "pprotect_" .. typ .. "_tools" ) or !sql.Query( "SELECT * FROM pprotect_" .. typ .. "_tools" ) then return {} end
 
 	local sql_tools = {}
 	table.foreach( sql.Query( "SELECT * FROM pprotect_" .. typ .. "_tools" ), function( ind, tool )
