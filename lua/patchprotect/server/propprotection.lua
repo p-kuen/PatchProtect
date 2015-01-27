@@ -79,17 +79,17 @@ function sv_PProtect.CanTouch( ply, ent )
 	if ent:IsPlayer() or !ent:IsValid() or ent:IsWorld() then return false end
 
 	-- Check Admin
-	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
+	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
 
 	-- Check Shared
-	if sv_PProtect.IsShared( ent, "phys" ) then return true end
+	if sv_PProtect.IsShared( ent, "phys" ) then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "physgun" ) then
-		return true
+		return
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to hold this object!" )
 		return false

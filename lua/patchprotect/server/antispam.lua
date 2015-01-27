@@ -223,20 +223,12 @@ concommand.Add( "pprotect_import_blocked_props", function( ply, cmd, args )
 	if !file.Read( "pprotect_import_blocked_props.txt", "DATA" ) then print( "Cannot find 'pprotect_import_blocked_props.txt' to import props. Please read the description of patchprotect!" ) return end
 	local imp = string.Explode( ";", file.Read( "pprotect_import_blocked_props.txt", "DATA" ) )
 	table.foreach( imp, function( key, model )
-		if model != "" then sv_PProtect.Blocked.props[ string.lower( model ) ] = string.lower( model ) end
+		if model == "" then return end
+		model = string.lower( string.sub( model, string.find( model, "models/" ), string.find( model, ";" ) ) )
+		if util.IsValidModel( model ) and !sv_PProtect.Blocked.props[ model ] then sv_PProtect.Blocked.props[ model ] = model end
 	end )
 	sv_PProtect.saveBlockedEnts( "props", sv_PProtect.Blocked.props )
-	print( "[PatchProtect] Imported all blocked props. If there were any errors, then please use the command: 'pprotect_reset blocked_props' to reset the blocked-props list." )
-
-end )
-
--- EXPORT BLOCKED PROPS LIST
-concommand.Add( "pprotect_export_blocked_props", function( ply, cmd, args )
-
-	local cont = ""
-	table.foreach( sv_PProtect.Blocked.props, function( key, value ) cont = cont .. value .. ";" end )
-	file.Write( "pprotect_import_blocked_props.txt", cont )
-	print( "[PatchProtect] Exported all blocked props! You can find it at following path: garrysmod/data/pprotect_import_blocked_props.txt" )
+	print( "\n[PatchProtect] Imported all blocked props. If you experience any errors,\nthen use the command to reset the whole blocked-props-list:\n'pprotect_reset blocked_props'\n" )
 
 end )
 
@@ -279,6 +271,6 @@ net.Receive( "pprotect_save_tools", function( len, pl )
 	sv_PProtect.saveBlockedTools( typ, sv_PProtect.Blocked[ t ] )
 
 	sv_PProtect.Notify( pl, "Saved all " .. typ .. "-tools!", "info" )
-	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved new " .. typ .. "-tools-list!" )
+	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved new " .. typ .. "-tools!" )
 
 end )

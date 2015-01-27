@@ -56,10 +56,9 @@ We offer a nice working <b>AntiSpam-System</b>, so that people are <b>not able t
 - You can <b>enable/disable Toolgun-AntiSpam</b> for each Tool <i>( i.e. you can use the 'remover' as fast as you can, but you are not able to spam 'thrusters' )</i>
 - You can <b>block tools, props and entities</b>, which you don't want to be used on your server
 	- <b>Add blocked prop/entity:</b> Aim on prop/entity and hold <i>c-key</i> to open the <i>context-menu</i> of it. There you will find an entry to <i>add the viewing prop to blocked props/entities</i>. You can remove it again over the <i>q-menu</i>.
-	- <b>You can also import a blocked-props list:</b> Copy the file to the <b>'data'-folder of the server</b> with the name: <b>'pproptect_import_blocked_props.txt'</b>. This textfile should <b>only include ONE LINE</b> with the <b>model-paths</b>, which are seperated with a <b>';'</b>.
-	(e.g.: "models/props_c17/oildrum001_explosive.mdl;models/props_c17/FurnitureWashingmachine001a.mdl;" )
+	- <b>You can also import a blocked-props list:</b> Copy the file to the <b>'data'-folder of the server</b> with the name: <b>'pproptect_import_blocked_props.txt'</b>. This textfile should <b>only include IN EACH LINE ONE PROP</b> with the <b>model-paths</b>, which are seperated with a <b>';'</b>.
+	(e.g.: "models/props_c17/oildrum001_explosive.mdl;" )
 	Now you only need to type into the <b>server-console</b> following command: <b>'pprotect_import_blocked_props'</b>. Finally follow all instructions, which are printed from the console.
-	- You can also export your current blocked-props-list for a later import. Just use following command: <b>'pprotect_export_blocked_props'</b>.
 	- You can also disable it completely if you don't want to use it on your server
 
 <h3>PropProtection:</h3>
