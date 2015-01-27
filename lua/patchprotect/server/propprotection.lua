@@ -76,10 +76,13 @@ end
 function sv_PProtect.CanTouch( ply, ent )
 
 	-- Check Entity
-	if ent:IsPlayer() or !ent:IsValid() or ent:IsWorld() then return false end
+	if !ent:IsValid() or ent:IsWorld() then return false end
 
 	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
+
+	-- Check Entity 2
+	if ent:IsPlayer() then return false end
 
 	-- Check World
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
