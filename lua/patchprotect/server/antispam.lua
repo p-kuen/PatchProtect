@@ -189,13 +189,11 @@ end )
 net.Receive( "pprotect_save_ents", function( len, pl )
 
 	local d = net.ReadTable()
-	local typ = d[1]
+	local typ, key = d[1], d[2]
 
-	sv_PProtect.Blocked[ typ ] = d[2]
+	sv_PProtect.Blocked[ typ ][ key ] = nil
 	sv_PProtect.saveBlockedEnts( typ, sv_PProtect.Blocked[ typ ] )
-
-	sv_PProtect.Notify( pl, "Saved all blocked " .. typ .. "!", "info" )
-	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved a new blocked-" .. typ .. "-list!" )
+	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " removed " .. key .. " from the blocked-" .. typ .. "-list!" )
 
 end )
 
@@ -264,13 +262,11 @@ end )
 net.Receive( "pprotect_save_tools", function( len, pl )
 
 	local d = net.ReadTable()
-	local t = d[1]
-	local typ = "antispam"
-	if t == "btools" then typ = "blocked" end
-	sv_PProtect.Blocked[ t ] = d[2]
-	sv_PProtect.saveBlockedTools( typ, sv_PProtect.Blocked[ t ] )
+	local t1, t2, k, c = d[1], d[2], d[3], d[4]
 
-	sv_PProtect.Notify( pl, "Saved all " .. typ .. "-tools!", "info" )
-	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " saved new " .. typ .. "-tools!" )
+	sv_PProtect.Blocked[ t1 ][ k ] = c
+	sv_PProtect.saveBlockedTools( t2, sv_PProtect.Blocked[ t1 ] )
+
+	print( "[PatchProtect - AntiSpam] " .. pl:Nick() .. " set \"" .. k .. "\" from " .. t2 .. "-tools-list to \"" .. tostring( c ) .. "\"!" )
 
 end )

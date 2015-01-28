@@ -156,7 +156,7 @@ properties.Add( "shareentity", {
 
 } )
 
--- SHARE ENTITY PANEL
+-- SHARED ENTITY
 net.Receive( "pprotect_send_sharedEntity", function( len )
 
 	-- Receive Table
@@ -170,13 +170,19 @@ net.Receive( "pprotect_send_sharedEntity", function( len )
 	end
 
 	-- Frame
-	local frm = cl_PProtect.addfrm( 180, 180, "Share Prop: " .. mdl, false, true, false, "Save", shared_info, "pprotect_save_sharedEntity" )
+	local frm = cl_PProtect.addfrm( 180, 165, "share prop:", false )
+
+	local function SendSharedInfo()
+		net.Start( "pprotect_save_sharedEntity" )
+			net.WriteTable( shared_info )
+		net.SendToServer()
+	end
 
 	-- Checkboxes
-	frm:addchk( "Physgun", nil, shared_info[ "phys" ], function( c ) shared_info[ "phys" ] = c end )
-	frm:addchk( "Toolgun", nil, shared_info[ "tool" ], function( c ) shared_info[ "tool" ] = c end )
-	frm:addchk( "Use", nil, shared_info[ "use" ], function( c ) shared_info[ "use" ] = c end )
-	frm:addchk( "Damage", nil, shared_info[ "dmg" ], function( c ) shared_info[ "dmg" ] = c end )
+	frm:addchk( "Physgun", nil, shared_info[ "phys" ], function( c ) shared_info[ "phys" ] = c SendSharedInfo() end )
+	frm:addchk( "Toolgun", nil, shared_info[ "tool" ], function( c ) shared_info[ "tool" ] = c SendSharedInfo() end )
+	frm:addchk( "Use", nil, shared_info[ "use" ], function( c ) shared_info[ "use" ] = c SendSharedInfo() end )
+	frm:addchk( "Damage", nil, shared_info[ "dmg" ], function( c ) shared_info[ "dmg" ] = c SendSharedInfo() end )
 	
 end )
 

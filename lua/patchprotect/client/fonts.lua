@@ -10,6 +10,14 @@ surface.CreateFont( "pprotect_roboto", {
 	shadow 		= false
 } )
 
+surface.CreateFont( "pprotect_roboto_big", {
+	font 		= "Roboto",
+	size 		= 25,
+	weight 		= 750,
+	antialias 	= true,
+	shadow 		= false
+} )
+
 surface.CreateFont( "pprotect_roboto_small", {
 	font 		= "Roboto",
 	size 		= 14,
@@ -40,4 +48,22 @@ surface.CreateFont( "pprotect_note_big", {
 	weight 		= 1000,
 	antialias 	= true,
 	shadow 		= false
+} )
+
+surface.CreateFont( "pprotect_symbols", {
+	font = "marlett",
+	size = 12,
+	weight = 0,
+	antialias = false,
+	shadow = false,
+	symbol = true
+} )
+
+surface.CreateFont( "pprotect_symbols_big", {
+	font = "marlett",
+	size = 14,
+	weight = 0,
+	antialias = false,
+	shadow = false,
+	symbol = true
 } )

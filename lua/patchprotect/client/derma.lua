@@ -4,107 +4,66 @@ local pan = FindMetaTable( "Panel" )
 --  FRAME  --
 -------------
 
-function cl_PProtect.addfrm( w, h, title, close, category, horizontal, btntext, btnarg, nettext )
+function cl_PProtect.addfrm( w, h, title, hor )
 
 	-- Frame
-	local frm = vgui.Create( "DFrame" )
+	local t = SysTime()
+	local frm = vgui.Create( "DPanel" )
 	frm:SetPos( surface.ScreenWidth() / 2 - ( w / 2 ), surface.ScreenHeight() / 2 - ( h / 2 ) )
 	frm:SetSize( w, h )
-	frm:SetTitle( title )
-	frm:SetVisible( true )
-	frm:SetDraggable( false )
-	frm:ShowCloseButton( false )
-	frm.lblTitle:SetColor( Color( 75, 75, 75 ) )
-	frm.lblTitle:SetFont( "pprotect_roboto" )
 	frm:MakePopup()
-	
+
 	function frm:Paint()
-		draw.RoundedBox( 0, 0, 0, frm:GetWide(), frm:GetTall(), Color( 200, 150, 30 ) )
-		draw.RoundedBox( 0, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 175, 0 ) )
-		draw.RoundedBox( 0, 6, 24, frm:GetWide() - 12, frm:GetTall() - 30, Color( 255, 255, 255 ) )
+		Derma_DrawBackgroundBlur( frm, t )
+		draw.RoundedBox( 4, 0, 0, frm:GetWide(), frm:GetTall(), Color( 0, 0, 0, 127.5 ) )
+		draw.RoundedBox( 4, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 150, 30 ) )
+		draw.RoundedBoxEx( 4, 1, 50, frm:GetWide() - 2, frm:GetTall() - 51, Color( 255, 255, 255 ), false, false, true, true )
 	end
+
+	-- Title
+	frm.title = vgui.Create( "DLabel", frm )
+	frm.title:SetText( title )
+	frm.title:SetPos( 15, 12.5 )
+	frm.title:SetFont( "pprotect_roboto_big" )
+	frm.title:SetColor( Color( 0, 0, 0, 191.25 ) )
+	frm.title:SizeToContents()
 
 	-- Close-Button
-	if close then
+	frm.close = vgui.Create( "DButton", frm )
+	frm.close:SetPos( w - 40, 10 )
+	frm.close:SetSize( 30, 30 )
+	frm.close:SetFont( "pprotect_symbols_big" )
+	frm.close:SetText( "r" )
+	frm.close:SetColor( Color( 255, 255, 255 ) )
+	frm.close.DoClick = function() frm:Remove() end
 
-		local btn = vgui.Create( "DButton", frm )
-		btn:Center()
-		btn:SetPos( w - 51, 0 )
-		btn:SetSize( 45, 20 )
-		btn:SetText( "x" )
-		btn:SetDark( false )
-		btn:SetColor( Color( 255, 255, 255 ) )
-		btn:SetFont( "pprotect_roboto" )
+	function frm.close:Paint()
 
-		function btn:Paint()
-			draw.RoundedBox( 0, 0, 0, 45, 20, Color( 200, 80, 80 ) )
-		end
-
-		function btn:OnMousePressed()
-			frm:Close()
+		if self.Depressed then draw.RoundedBox( 4, 0, 0, 30, 30, Color( 135, 50, 50 ) )
+		elseif self.Hovered then draw.RoundedBox( 4, 0, 0, 30, 30, Color( 200, 60, 60 ) )
+		else draw.RoundedBox( 4, 0, 0, 30, 30, Color( 200, 80, 80 ) )
 		end
 
 	end
 
-	-- Save-Button
-	local btn = vgui.Create( "DButton", frm )
-	btn:Center()
-	btn:SetPos( w - 116, h - 41 )
-	btn:SetSize( 100, 25 )
-	btn:SetText( btntext )
-	btn:SetDark( true )
-	btn:SetFont( "pprotect_roboto_small" )
-	btn:SetColor( Color( 50, 50, 50 ) )
+	frm.list = vgui.Create( "DPanelList", frm )
+	frm.list:SetPos( 10, 60 )
+	frm.list:SetSize( w - 20, h - 70 )
+	frm.list:SetSpacing( 5 )
+	frm.list:EnableHorizontal( hor )
+	frm.list:EnableVerticalScrollbar( true )
+	frm.list.VBar.btnUp:SetVisible( false )
+	frm.list.VBar.btnDown:SetVisible( false )
 
-	function btn:DoClick()
-
-		if btnarg == nil or type( btnarg ) != "table" then return end
-			
-		if type( btnarg ) == "table" then
-				
-			net.Start( nettext )
-				net.WriteTable( btnarg )
-			net.SendToServer()
-
-		end
-
-		frm:Close()
-
+	function frm.list.VBar:Paint()
+		draw.RoundedBox( 0, 0, 0, 20, frm.list.VBar:GetTall(), Color( 255, 255, 255 ) )
 	end
 
-	function btn:Paint()
-		if btn.Depressed then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0 ) )
-		elseif btn.Hovered then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220 ) )
-		else
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200 ) )
-		end
+	function frm.list.VBar.btnGrip:Paint()
+		draw.RoundedBox( 0, 8, 0, 5, frm.list.VBar.btnGrip:GetTall(), Color( 0, 0, 0, 150 ) )
 	end
 
-	-- Category
-	if category then
-
-		local list = vgui.Create( "DPanelList", frm )
-		list:SetPos( 16, 34 )
-		list:SetSize( w - 32, h - 34 - 51 )
-		list:SetSpacing( 5 )
-		list:EnableHorizontal( horizontal )
-		list:EnableVerticalScrollbar( true )
-		list.VBar.btnUp:SetVisible( false )
-		list.VBar.btnDown:SetVisible( false )
-
-		function list.VBar:Paint()
-			draw.RoundedBox( 0, 0, 0, 20, list.VBar:GetTall(), Color( 255, 255, 255 ) )
-		end
-
-		function list.VBar.btnGrip:Paint()
-			draw.RoundedBox( 0, 8, 0, 5, list.VBar.btnGrip:GetTall(), Color( 0, 0, 0, 150 ) )
-		end
-
-		return list
-
-	end
+	return frm.list
 
 end
 
@@ -353,9 +312,16 @@ function pan:addico( model, tip, cb )
 
 	ico.DoClick = function() cb( ico ) end
 
-	function ico:Paint()
-		draw.RoundedBox( 0, 0, 0, ico:GetWide(), ico:GetTall(), Color( 200, 200, 200 ) )
+	function ico:Paint( w, h )
+		if !self.Hovered then
+			draw.RoundedBox( 4, 0, 0, w, h, Color( 200, 200, 200 ) )
+		else
+			draw.RoundedBox( 4, 0, 0, w, h, Color( 255, 150, 0 ) )
+		end
+		if self.Depressed then draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 63.75 ) ) end
 	end
+
+	function ico:PaintOver() end
 
 	self:AddItem( ico )
 

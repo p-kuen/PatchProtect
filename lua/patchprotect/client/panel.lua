@@ -81,13 +81,18 @@ cl_PProtect.Blocked = { props = {}, ents = {}, atools = {}, btools = {} }
 net.Receive( "pprotect_send_tools", function()
 
 	local t = net.ReadString()
-	local typ = "antispamed"
+	local typ = "antispam"
 	if t == "btools" then typ = "blocked" end
 	cl_PProtect.Blocked[ t ] = net.ReadTable()
-	local frm = cl_PProtect.addfrm( 250, 350, "Set " .. typ .. " Tools:", false, true, false, "Save Tools", { t, cl_PProtect.Blocked[ t ] }, "pprotect_save_tools" )
+	local frm = cl_PProtect.addfrm( 250, 350, typ .. " tools:", false )
 
 	for key, value in SortedPairs( cl_PProtect.Blocked[ t ] ) do
-		frm:addchk( key, nil, cl_PProtect.Blocked[ t ][ key ], function( c ) cl_PProtect.Blocked[ t ][ key ] = c end )
+		frm:addchk( key, nil, cl_PProtect.Blocked[ t ][ key ], function( c )
+			net.Start( "pprotect_save_tools" )
+				net.WriteTable( { t, typ, key, c } )
+			net.SendToServer()
+			cl_PProtect.Blocked[ t ][ key ] = c
+		end )
 	end
 
 end )
@@ -97,13 +102,18 @@ net.Receive( "pprotect_send_ents", function()
 
 	local typ = net.ReadString()
 	cl_PProtect.Blocked[ typ ] = net.ReadTable()
-	local frm = cl_PProtect.addfrm( 800, 600, "Set blocked " .. typ .. ":", false, true, true, "Save " .. typ, { typ, cl_PProtect.Blocked[ typ ] }, "pprotect_save_ents" )
+	local frm = cl_PProtect.addfrm( 800, 600, "blocked " .. typ .. ":", true, "Save " .. typ, { typ, cl_PProtect.Blocked[ typ ] }, "pprotect_save_ents" )
 
 	table.foreach( cl_PProtect.Blocked[ typ ], function( name, model )
 
 		frm:addico( model, name, function( icon )
 			local menu = DermaMenu()
-			menu:AddOption( "Remove from Blocked-List", function() cl_PProtect.Blocked[ typ ][ name ] = nil icon:Remove() frm:InvalidateLayout() end )
+			menu:AddOption( "Remove from Blocked-List", function()
+				net.Start( "pprotect_save_ents" )
+					net.WriteTable( { typ, name } )
+				net.SendToServer()
+				icon:Remove()
+			end )
 			menu:Open()
 		end )
 
