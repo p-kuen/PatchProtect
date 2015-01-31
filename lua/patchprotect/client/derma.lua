@@ -13,11 +13,11 @@ function cl_PProtect.addfrm( w, h, title, hor )
 	frm:SetSize( w, h )
 	frm:MakePopup()
 
-	function frm:Paint()
-		Derma_DrawBackgroundBlur( frm, t )
-		draw.RoundedBox( 4, 0, 0, frm:GetWide(), frm:GetTall(), Color( 0, 0, 0, 127.5 ) )
-		draw.RoundedBox( 4, 1, 1, frm:GetWide() - 2, frm:GetTall() - 2, Color( 255, 150, 30 ) )
-		draw.RoundedBoxEx( 4, 1, 50, frm:GetWide() - 2, frm:GetTall() - 51, Color( 255, 255, 255 ), false, false, true, true )
+	function frm:Paint( w, h )
+		Derma_DrawBackgroundBlur( self, t )
+		draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 0, 0, 127.5 ) )
+		draw.RoundedBox( 4, 1, 1, w - 2, h - 2, Color( 255, 150, 30 ) )
+		draw.RoundedBoxEx( 4, 1, 50, w - 2, h - 51, Color( 255, 255, 255 ), false, false, true, true )
 	end
 
 	-- Title
@@ -35,7 +35,7 @@ function cl_PProtect.addfrm( w, h, title, hor )
 	frm.close:SetFont( "pprotect_symbols_big" )
 	frm.close:SetText( "r" )
 	frm.close:SetColor( Color( 255, 255, 255 ) )
-	frm.close.DoClick = function() frm:Remove() end
+	function frm.close.DoClick() frm:Remove() end
 
 	function frm.close:Paint()
 
@@ -179,16 +179,16 @@ function pan:addbtn( text, nettext, args )
 
 	end
 
-	function btn:Paint()
+	function btn:Paint( w, h )
 		if btn:GetDisabled() then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 240, 240, 240 ) )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 240, 240, 240 ) )
 			btn:SetCursor( "arrow" )
 		elseif btn.Depressed then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 250, 150, 0 ) )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 250, 150, 0 ) )
 		elseif btn.Hovered then
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 220, 220, 220 ) )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 220, 220, 220 ) )
 		else
-			draw.RoundedBox( 0, 0, 0, btn:GetWide(), btn:GetTall(), Color( 200, 200, 200 ) )
+			draw.RoundedBox( 0, 0, 0, w, h, Color( 200, 200, 200 ) )
 		end
 	end
 
