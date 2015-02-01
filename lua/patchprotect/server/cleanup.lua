@@ -58,7 +58,7 @@ function sv_PProtect.cleanupMap( len, ply )
 	sv_PProtect.setWorldProps()
 
 	-- recount Ents
-	pprotect_countProps( ply )
+	if len != nil then pprotect_countProps( ply ) end
 
 	sv_PProtect.Notify( ply, "Cleaned Map!", "info" )
 	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props!" )

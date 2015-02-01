@@ -71,7 +71,7 @@ function cl_PProtect.showOwner()
 	else
 
 		-- Background
-		draw.RoundedBox( 4, scr_w * 0.5 - ( w * 0.5 ) - 3, t + 16, w + 6, 20, Color( 0, 0, 0, 150 ) )
+		draw.RoundedBox( 4, scr_w * 0.5 - ( ( w + 2 ) * 0.5 ), t + 16, w + 2, 20, Color( 0, 0, 0, 150 ) )
 		-- Text
 		draw.SimpleText( txt, "pprotect_roboto_small", scr_w * 0.5, t + 20, col, TEXT_ALIGN_CENTER, 0 )
 

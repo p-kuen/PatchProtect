@@ -282,21 +282,19 @@ hook.Add( "CanDrive", "pprotect_drive", sv_PProtect.CanDrive )
 
 function sv_PProtect.CanDamage( ent, info )
 
-	local ply = info:GetAttacker()
+	local ply = info:GetAttacker():CPPIGetOwner() or info:GetAttacker()
 
 	-- Check Entity
-	if !ent:IsValid() then return end
+	if !ent:IsValid() and ply:GetClass() != "player" and ply:GetClass() != "entityflame" then return end
 
 	-- Check Admin
-	if ply:IsPlayer() then
-		if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
-	end
+	if ply:IsPlayer() and sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check Protection
 	if !sv_PProtect.Settings.Propprotection[ "damage" ] then return end
 
 	-- Check Damage from Player in Vehicle
-	if ply:CPPIGetOwner() and ply:CPPIGetOwner():InVehicle() and ent:IsPlayer() and sv_PProtect.Settings.Propprotection[ "damageinvehicle" ] then
+	if ply:IsPlayer() and ply:InVehicle() and sv_PProtect.Settings.Propprotection[ "damageinvehicle" ] then
 		sv_PProtect.Notify( ply, "You are not allowed to damage other players while sitting in a vehicle!" )
 		return true
 	end
