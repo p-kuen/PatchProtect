@@ -205,7 +205,7 @@ function cl_PProtect.b_menu( p )
 
 	table.foreach( player.GetAll(), function( key, ply )
 
-		if ply == me or !cl_PProtect.Buddies then return end
+		if ply == me or cl_PProtect.Buddies == nil then return end
 
 		local new = true
 		table.foreach( cl_PProtect.Buddies, function( key, buddy )

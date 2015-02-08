@@ -5,7 +5,7 @@
 -- LOAD BUDDIES WHEN JOINED THE SERVER
 local function loadBuddies()
 
-	cl_PProtect.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" )
+	cl_PProtect.Buddies = sql.Query( "SELECT * FROM pprotect_buddies" ) or {}
 
 end
 hook.Add( "InitPostEntity", "pprotect_load_buddies", loadBuddies )
