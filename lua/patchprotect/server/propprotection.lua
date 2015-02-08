@@ -8,6 +8,7 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or 
 	ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] or 
 	ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] then
+		if ent != nil and ent:CPPIGetOwner():IsValid() and !ply:IsSuperAdmin() and ent:CPPIGetOwner():IsSuperAdmin() then return false end
 		return true
 	else
 		return false
