@@ -32,9 +32,7 @@ function cl_PProtect.addfrm( w, h, title, hor )
 	frm.close = vgui.Create( "DButton", frm )
 	frm.close:SetPos( w - 40, 10 )
 	frm.close:SetSize( 30, 30 )
-	frm.close:SetFont( "pprotect_symbols_big" )
 	frm.close:SetText( "r" )
-	frm.close:SetColor( Color( 255, 255, 255 ) )
 	function frm.close.DoClick() frm:Remove() end
 
 	function frm.close:Paint()
@@ -43,6 +41,7 @@ function cl_PProtect.addfrm( w, h, title, hor )
 		elseif self.Hovered then draw.RoundedBox( 4, 0, 0, 30, 30, Color( 200, 60, 60 ) )
 		else draw.RoundedBox( 4, 0, 0, 30, 30, Color( 200, 80, 80 ) )
 		end
+		draw.SimpleText( "r", "pprotect_symbols_big", 9, 8, Color( 255, 255, 255 ) )
 
 	end
 
