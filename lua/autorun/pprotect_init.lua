@@ -1,26 +1,11 @@
--------------------------
---  LOAD CLIENT FILES  --
--------------------------
-
-AddCSLuaFile()
-AddCSLuaFile( "patchprotect/client/csettings.lua" )
-AddCSLuaFile( "patchprotect/client/fonts.lua" )
-AddCSLuaFile( "patchprotect/client/hud.lua" )
-AddCSLuaFile( "patchprotect/client/derma.lua" )
-AddCSLuaFile( "patchprotect/client/panel.lua" )
-AddCSLuaFile( "patchprotect/client/buddy.lua" )
-
-
-
 --------------------------------
 --  LOAD SERVER/CLIENT FILES  --
 --------------------------------
 
 if SERVER then
 
-	-- Create tables
-	sv_PProtect = {}
-	sv_PProtect.Settings = {}
+	-- Create server-table
+	sv_PProtect = { Settings = {} }
 
 	-- Include server-files
 	include( "patchprotect/server/config.lua" )
@@ -30,10 +15,19 @@ if SERVER then
 	include( "patchprotect/server/cleanup.lua" )
 	include( "patchprotect/server/buddy.lua" )
 
+	-- Force clients to download all client-files
+	AddCSLuaFile()
+	AddCSLuaFile( "patchprotect/client/csettings.lua" )
+	AddCSLuaFile( "patchprotect/client/fonts.lua" )
+	AddCSLuaFile( "patchprotect/client/hud.lua" )
+	AddCSLuaFile( "patchprotect/client/derma.lua" )
+	AddCSLuaFile( "patchprotect/client/panel.lua" )
+	AddCSLuaFile( "patchprotect/client/buddy.lua" )
+
 else
 
 	-- Create client-table
-	cl_PProtect = { Settings = { Antispam = {}, Propprotection = {}, CSettings = {} } }
+	cl_PProtect = { Settings = { Antispam = {}, Propprotection = {}, CSettings = {} }, Buddies = {} }
 
 	-- Include client-files
 	include( "patchprotect/client/csettings.lua" )

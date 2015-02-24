@@ -1,69 +1,72 @@
 CPPI = CPPI or {}
-CPPI.CPPI_DEFER = 012015 -- January 2015
+CPPI.CPPI_DEFER = 022015 -- January 2015
 CPPI.CPPI_NOTIMPLEMENTED = 8084 -- PT ( Patcher and Ted )
 local PLAYER = FindMetaTable( "Player" )
 local ENTITY = FindMetaTable( "Entity" )
 
--- NAME
+-- Get name
 function CPPI:GetName()
 
 	return "PatchProtect"
 
 end
 
--- VERSION
+-- Get version of CPPI
 function CPPI:GetVersion()
 
-	return "1.2.1"
+	return "1.3"
 
 end
 
--- FACE VERSION
+-- Get interface version of CPPI
 function CPPI:GetInterfaceVersion()
 
 	return 1.1
 
 end
 
--- UID NAME
+-- Get name from UID
 function CPPI:GetNameFromUID( uid )
 
-	return CPPI.CPPI_NOTIMPLEMENTED
+	local ply = player.GetByUniqueID( tostring( uid ) )
+	if !IsValid( ply ) or !ply:IsPlayer() then return end
+	return ply:Nick()
 
 end
 
+-- Get friends from a player
 function PLAYER:CPPIGetFriends()
 
-	return CPPI.CPPI_DEFER
+	return CPPI_NOTIMPLEMENTED
 
 end
 
+-- Get the owner of an entity
 function ENTITY:CPPIGetOwner()
 
-	local Owner = self.pprotect_owner
-
-	if !IsValid( Owner ) or !Owner:IsPlayer() then return Owner, self.pprotect_owner_id end
-	return Owner, Owner:UniqueID()
+	if SERVER then
+		local ply = self.pprotect_owner
+		if !IsValid( ply ) or !ply:IsPlayer() then return nil, self.pprotect_owner_id end
+		return ply, ply:UniqueID()
+	else
+		return CPPI_NOTIMPLEMENTED
+	end
 
 end
 
--- SERVERSIDED THINGS
 if SERVER then
 
-	-- SET OWNER
+	-- Set owner of an entity
 	function ENTITY:CPPISetOwner( ply )
 		
-		if !self then return false end
+		if !self or !IsValid( ply ) or !ply:IsPlayer() then return false end
 
-		self.pprotect_owner = ply
-		self.pprotect_owner_id = ply:SteamID()
+		self.pprotect_owner, self.pprotect_owner_id = ply, ply:UniqueID()
 
 		table.foreach( constraint.GetAllConstrainedEntities( self ), function( _, cent )
 
 			if IsEntity( cent.pprotect_owner ) and cent.pprotect_owner:IsValid() then return end
-
-			cent.pprotect_owner = ply
-			cent.pprotect_owner_id = ply:SteamID()
+			cent.pprotect_owner, cent.pprotect_owner_id = ply, ply:UniqueID()
 
 		end )
 
@@ -71,55 +74,44 @@ if SERVER then
 
 	end
 
-	-- SET OWNER UNIQUE ID
-	function ENTITY:CPPISetOwnerUID( UID )
+	-- Set owner of an entity by UID
+	function ENTITY:CPPISetOwnerUID( uid )
 
-		local ply = player.GetByUniqueID( tostring( UID ) )
-		if !ply:IsValid() then return false end
+		local ply = player.GetByUniqueID( tostring( uid ) )
+		if !IsValid( ply ) or !ply:IsPlayer() then return false end
 
-		if self.pprotect_owner then
+		if !self.pprotect_owner then
 
-			if self.AllowedPlayers then
-				table.insert( self.AllowedPlayers, ply )
-			else
-				self.AllowedPlayers = { ply }
-			end
-
-			return true
-
-		else
-
-			self.pprotect_owner = ply
-			self.pprotect_owner_id = ply:SteamID()
-
-			return true
+			self.pprotect_owner, self.pprotect_owner_id = ply, ply:UniqueID()
 
 		end
 
-	end
-
-	-- CAN TOOL
-	function ENTITY:CPPICanTool( ply, tool )
-
-		return sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool )
+		return true
 
 	end
 
-	-- CAN PHYSGUN
+	-- Can physgun
 	function ENTITY:CPPICanPhysgun( ply )
 
 		return sv_PProtect.CanTouch( ply, self )
 
 	end
 
-	-- CAN PICKUP
+	-- Can tool
+	function ENTITY:CPPICanTool( ply, tool )
+
+		return sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool )
+
+	end
+
+	-- Can pickup
 	function ENTITY:CPPICanPickup( ply )
 
 		return sv_PProtect.CanPickup( ply, self )
 
 	end
 
-	-- CAN PUNT
+	-- Can punt
 	function ENTITY:CPPICanPunt( ply )
 
 		return sv_PProtect.CanGravPunt( ply, self )

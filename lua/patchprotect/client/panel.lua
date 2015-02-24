@@ -187,69 +187,66 @@ end
 --  BUDDY MENU  --
 ------------------
 
+local txt, perms, sply = "", { phys = false, tool = false, use = false, prop = false, dmg = false }, nil
+local function edit_perm( ply, data )
+
+	txt:SetText( "Permissions (" .. ply:Nick() .. "):" )
+	txt:SetVisible( true )
+
+	table.foreach( data, function( key, perm )
+		perms[ key ]:SetChecked( perm )
+		perms[ key ]:SetVisible( true )
+	end )
+
+end
+
 function cl_PProtect.b_menu( p )
 
 	-- clear Panel
 	p:ClearControls()
-	
-	-- Variables and Tables
-	local buddy_permissions, newBuddy = { "Use", "PhysGun", "ToolGun", "Damage", "Property" }, { player = nil, permissions = {} }
-	local selectedBuddy, me, btn_addbuddy, btn_deletebuddy = { nick = nil, uniqueid = nil }, LocalPlayer()
 
-	p:addlbl( "Add a new buddy:", true )
-
-	local list_allplayers = p:addlvw( { "Name" } , function( line )
-		btn_addbuddy:SetDisabled( false )
-		newBuddy.player = line.player
-	end )
+	-- add buddies
+	p:addlbl( "Buddies:", true )
+	p:addlbl( "Click on name -> change permissions!", false )
+	p:addlbl( "Change right box -> add/remove buddy!", false )
 
 	table.foreach( player.GetAll(), function( key, ply )
 
-		if ply == me or cl_PProtect.Buddies == nil then return end
+		if ply == LocalPlayer() then return end
+		local chk = false
+		local id = ply:SteamID()
+		if istable( cl_PProtect.Buddies[ id ] ) then
+			chk = cl_PProtect.Buddies[ id ].bud
+		end
 
-		local new = true
-		table.foreach( cl_PProtect.Buddies, function( key, buddy )
-			if ply:UniqueID() == buddy.uniqueid then new = false end
-		end )
-		if !new then return end
-
-		local newline = list_allplayers:AddLine( ply:Nick() )
-		newline.player = ply
+		p:addplp( ply, chk,
+			function()
+				sply = ply
+				local ps = { phys = false, tool = false, use = false, prop = false, dmg = false }
+				if cl_PProtect.Buddies[ id ] then ps = cl_PProtect.Buddies[ id ].perm end
+				edit_perm( ply, ps )
+			end,
+			function( c )
+				cl_PProtect.setBuddy( ply, c )
+			end
+		)
 
 	end )
 
-	-- Buddy Permissions
-	table.foreach( buddy_permissions, function( key, permission )
-		p:addchk( permission, nil, false, function( c ) newBuddy.permissions[ string.lower( permission ) ] = c end )
-	end )
+	-- add permissions
+	txt = p:addlbl( "THIS IS JUST A PLACEHOLDER TO KEEP THE LABEL LONG", true )
+	perms.phys = p:addchk( "Physgun", nil, false, function( c ) cl_PProtect.setBuddyPerm( sply, "phys", c ) end )
+	perms.tool = p:addchk( "Tool", nil, false, function( c ) cl_PProtect.setBuddyPerm( sply, "tool", c ) end )
+	perms.use = p:addchk( "Use", nil, false, function( c ) cl_PProtect.setBuddyPerm( sply, "use", c ) end )
+	perms.prop = p:addchk( "Property", nil, false, function( c ) cl_PProtect.setBuddyPerm( sply, "prop", c ) end )
+	perms.dmg = p:addchk( "Damage", nil, false, function( c ) cl_PProtect.setBuddyPerm( sply, "dmg", c ) end )
 
-	-- add Buddy
-	btn_addbuddy = p:addbtn( "Add selected buddy" , "", function() cl_PProtect.addBuddy( newBuddy ) end )
-	btn_addbuddy:SetDisabled( true )
-
-	-- Buddy List
-	p:addlbl( "Your Buddies:", true )
-	local list_mybuddies = p:addlvw( { "Name", "Permission" } , function( selectedLine )
-		btn_deletebuddy:SetDisabled( false )
-		selectedBuddy.nick = selectedLine.nick
-		selectedBuddy.uniqueid = selectedLine.uniqueid
-	end )
-
-	if cl_PProtect.Buddies then
-
-		table.foreach( cl_PProtect.Buddies, function( key, buddy )
-
-			local line = list_mybuddies:AddLine( buddy.nick, buddy.permission )
-			line.nick = buddy.nick
-			line.uniqueid = buddy.uniqueid
-
-		end )
-
-	end
-
-	-- delete Buddy
-	btn_deletebuddy = p:addbtn( "Delete selected buddy" , "", function() cl_PProtect.deleteBuddy( selectedBuddy ) end )
-	btn_deletebuddy:SetDisabled( true )
+	txt:SetVisible( false )
+	perms.phys:SetVisible( false )
+	perms.tool:SetVisible( false )
+	perms.use:SetVisible( false )
+	perms.prop:SetVisible( false )
+	perms.dmg:SetVisible( false )
 
 end
 
@@ -266,15 +263,15 @@ function cl_PProtect.cu_menu( p )
 	p:ClearControls()
 
 	p:addlbl( "Cleanup everything:", true )
-	p:addbtn( "Cleanup everything (" .. tostring( o_global ) .. " Props)", "pprotect_cleanup_map" )
+	p:addbtn( "Cleanup everything (" .. tostring( o_global ) .. " Props)", "pprotect_cleanup", { "all" } )
 
 	p:addlbl( "\nCleanup props from disconnected players:", true )
-	p:addbtn( "Cleanup all Props from disc. Players", "pprotect_cleanup_disconnected_player" )
+	p:addbtn( "Cleanup all Props from disc. Players", "pprotect_cleanup", { "disconnected" } )
 
 	if o_global == 0 then return end
 	p:addlbl( "\nCleanup player's props:", true )
 	table.foreach( o_players, function( pl, c )
-		p:addbtn( "Cleanup " .. pl:Nick() .. " (" .. tostring( c ) .. " props)", "pprotect_cleanup_player", { pl, tostring( c ) } )
+		p:addbtn( "Cleanup " .. pl:Nick() .. " (" .. tostring( c ) .. " props)", "pprotect_cleanup", { pl, tostring( c ) } )
 	end )
 
 end

@@ -21,7 +21,7 @@ function cl_PProtect.showOwner()
 
 	if LastID != ent:EntIndex() and ent:IsValid() then
 
-		net.Start( "pprotect_get_owner" )
+		net.Start( "pprotect_owner" )
 			net.WriteEntity( ent )
 		net.SendToServer()
 
@@ -39,7 +39,7 @@ function cl_PProtect.showOwner()
 	else txt = "No Owner" end
 
 	-- Set Variables
-	surface.SetFont( "pprotect_roboto_small" )
+	surface.SetFont( cl_PProtect.setFont( "roboto", 14, 500, true ) )
 	local w = surface.GetTextSize( txt )
 	w = w + 10
 	local l = scr_w - w - 20
@@ -66,14 +66,14 @@ function cl_PProtect.showOwner()
 		draw.RoundedBoxEx( 4, l - 5, t - 12, 5, 24, col, true, false, true, false )
 		draw.RoundedBoxEx( 4, l, t - 12, w, 24, Color( 240, 240, 240, 200 ), false, true, false, true )
 		-- Text
-		draw.SimpleText( txt, "pprotect_roboto_small", l + 5, t - 6, Color( 75, 75, 75 ) )
+		draw.SimpleText( txt, cl_PProtect.setFont( "roboto", 14, 500, true ), l + 5, t - 6, Color( 75, 75, 75 ) )
 
 	else
 
 		-- Background
 		draw.RoundedBox( 4, scr_w * 0.5 - ( ( w + 2 ) * 0.5 ), t + 16, w + 2, 20, Color( 0, 0, 0, 150 ) )
 		-- Text
-		draw.SimpleText( txt, "pprotect_roboto_small", scr_w * 0.5, t + 20, col, TEXT_ALIGN_CENTER, 0 )
+		draw.SimpleText( txt, cl_PProtect.setFont( "roboto", 14, 500, true ), scr_w * 0.5, t + 20, col, TEXT_ALIGN_CENTER, 0 )
 
 	end
 
@@ -205,7 +205,7 @@ local function DrawNote()
 		Note.alpha = math.Clamp( Note.alpha - 10, 0, 255 )
 	end
 
-	surface.SetFont( "pprotect_note" )
+	surface.SetFont( cl_PProtect.setFont( "roboto", 18, 500, true ) )
 	local tw, th = surface.GetTextSize( Note.msg )
 	local w = tw + 20
 	local h = th + 20
@@ -222,7 +222,7 @@ local function DrawNote()
 	end
 	draw.RoundedBox( 0, x - h, y, h, h, bcol )
 	draw.RoundedBox( 0, x, y, w, h, Color( 240, 240, 240, alpha ) )
-	draw.SimpleText( "i", "pprotect_note_big", x - 23, y + 2, Color( 255, 255, 255, alpha ) )
+	draw.SimpleText( "i", cl_PProtect.setFont( "roboto", 36, 1000, true ), x - 23, y + 2, Color( 255, 255, 255, alpha ) )
 
 	local tri = { { x = x, y = y + ( h * 0.5 ) - 6 }, { x = x + 5, y = y + ( h * 0.5 ) }, { x = x, y = y + ( h * 0.5 ) + 6 } }
 	surface.SetDrawColor( bcol )
@@ -230,7 +230,7 @@ local function DrawNote()
 	surface.DrawPoly( tri )
 
 	-- Text
-	draw.SimpleText( Note.msg, "pprotect_note", x + 10, y + 10, Color( 75, 75, 75, alpha ) )
+	draw.SimpleText( Note.msg, cl_PProtect.setFont( "roboto", 18, 500, true ), x + 10, y + 10, Color( 75, 75, 75, alpha ) )
 
 end
 hook.Add( "HUDPaint", "pprotect_drawnote", DrawNote )
@@ -268,7 +268,7 @@ net.Receive( "pprotect_notify", function( len )
 end )
 
 -- OWNER
-net.Receive( "pprotect_send_owner", function( len )
+net.Receive( "pprotect_owner", function( len )
 
 	Owner = net.ReadEntity()
 	local info = net.ReadString()

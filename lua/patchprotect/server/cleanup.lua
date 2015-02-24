@@ -2,7 +2,7 @@
 --  COUNT PROPS  --
 -------------------
 
-function pprotect_countProps( ply, dels )
+local function countProps( ply, dels )
 
 	local result = { global = 0, players = {} }
 
@@ -10,7 +10,7 @@ function pprotect_countProps( ply, dels )
 
 		if !ent:IsValid() or ent.World or ent.pprotect_owner == nil or !ent.pprotect_owner:IsValid() then return end
 
-		-- check deleted Entities
+		-- check deleted entities
 		if istable( dels ) and table.HasValue( dels, ent:EntIndex() ) then return end
 		
 		-- Global-Count
@@ -24,7 +24,7 @@ function pprotect_countProps( ply, dels )
 
 	end )
 
-	-- check Permissions
+	-- check permissions
 	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !ply:IsAdmin() and !ply:IsSuperAdmin() then return
 	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !ply:IsSuperAdmin() then return end
 
@@ -33,66 +33,84 @@ function pprotect_countProps( ply, dels )
 	net.Send( ply )
 
 end
-concommand.Add( "pprotect_request_new_counts", pprotect_countProps )
+concommand.Add( "pprotect_request_new_counts", countProps )
 
 
 
----------------------------------
---  CLEANUP MAP/PLAYERS PROPS  --
----------------------------------
+function sv_PProtect.Cleanup( typ, ply )
 
--- CLEANUP EVERYTHING
-function sv_PProtect.cleanupMap( len, ply )
-
-	-- Check Permissions
-	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] then
-		if !ply:IsAdmin() and !ply:IsSuperAdmin() then sv_PProtect.Notify( ply, "You are not allowed to clean the map!", "normal" ) return end
-	else
-		if !ply:IsSuperAdmin() then sv_PProtect.Notify( ply, "You are not allowed to clean the map!", "normal" ) return end
+	-- check permissions
+	if ( sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and ply:IsAdmin() ) or ply:IsSuperAdmin() then else
+		sv_PProtect.Notify( ply, "You are not allowed to clean the map!" ) return
 	end
 
-	-- Cleanup Map
-	game.CleanUpMap()
+	-- get cleanup-type
+	if !isstring( typ ) then
+		local d = net.ReadTable()
+		typ = d[1]
+	end
 
-	-- Define World-Props again!
-	sv_PProtect.setWorldProps()
+	-- cleanup whole map
+	if typ == "all" then
 
-	-- recount Ents
-	if len != nil then pprotect_countProps( ply ) end
+		-- cleanup map
+		game.CleanUpMap()
 
-	sv_PProtect.Notify( ply, "Cleaned Map!", "info" )
-	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props!" )
+		-- set world props
+		sv_PProtect.setWorldProps()
 
-end
-net.Receive( "pprotect_cleanup_map", sv_PProtect.cleanupMap )
-concommand.Add( "gmod_admin_cleanup", function( ply, cmd, args ) sv_PProtect.cleanupMap( nil, ply ) end )
+		-- count props
+		if d then countProps( ply ) end
 
--- CLEANUP PLAYERS PROPS
-net.Receive( "pprotect_cleanup_player", function( len, pl )
+		sv_PProtect.Notify( ply, "Cleaned Map!", "info" )
+		print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props!" )
+		return
 
-	-- check Permissions
-	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !pl:IsAdmin() and !pl:IsSuperAdmin() then return
-	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !pl:IsSuperAdmin() then return end
+	end
 
-	-- find all props from a special player
-	local owner = net.ReadTable()
-	local del_ents = {}
+	-- cleanup props from a special player
+	if IsEntity( typ ) then
+
+		local del_ents = {}
+		table.foreach( ents.GetAll(), function( key, ent )
+
+			if ent.pprotect_owner == typ then
+
+				-- delete entity
+				ent:Remove()
+
+				-- add it to deleted entities
+				table.insert( del_ents, ent:EntIndex() )
+
+			end
+
+		end )
+
+		countProps( typ, del_ents )
+
+		sv_PProtect.Notify( ply, "Cleaned " .. typ:Nick() .. "'s props! (" .. tostring( d[2] ) .. ")", "info" )
+		print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed " .. tostring( d[2] ) .. " props from " .. typ:Nick() .. "!" )
+		return
+
+	end
+
+	-- cleanup props from disconnected players
 	table.foreach( ents.GetAll(), function( key, ent )
 
-		if ent.pprotect_owner == owner[1] then
-			ent:Remove()
-			table.insert( del_ents, ent:EntIndex() )
+		if IsEntity( typ ) and ent.pprotect_owner == typ then
+
+			if ent.pprotect_cleanup != nil then ent:Remove() end
+
 		end
 
 	end )
 
-	-- recount Ents
-	pprotect_countProps( pl, del_ents )
+	sv_PProtect.Notify( ply, "Removed all props from disconnected players!", "info" )
+	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props from disconnected players!" )
 
-	sv_PProtect.Notify( pl, "Cleaned " .. owner[1]:Nick() .. "'s props! (" .. owner[2] .. ")", "info" )
-	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed " .. owner[2] .. " props from " .. owner[1]:Nick() .. "!" )
-
-end )
+end
+net.Receive( "pprotect_cleanup", sv_PProtect.Cleanup )
+concommand.Add( "gmod_admin_cleanup", function( ply, cmd, args ) sv_PProtect.Cleanup( "all" ) end )
 
 
 
@@ -101,44 +119,44 @@ end )
 ----------------------------------------
 
 -- PLAYER LEFT SERVER
-function sv_PProtect.setCleanupProps( ply )
-	
+local function setCleanup( ply )
+
 	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or !sv_PProtect.Settings.Propprotection[ "propdelete" ] then return end
 	if sv_PProtect.Settings.Propprotection[ "adminprops" ] then
 		if ply:IsAdmin() or ply:IsSuperAdmin() then return end
 	end
-	
-	local cleanupname = ply:Nick()
-	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " left the server. Props will be deleted in " .. tostring( sv_PProtect.Settings.Propprotection[ "delay" ] ) .. " seconds." )
+
+	local nick = ply:Nick()
+	print( "[PatchProtect - Cleanup] " .. nick .. " left the server. Props will be deleted in " .. tostring( sv_PProtect.Settings.Propprotection[ "delay" ] ) .. " seconds." )
 
 	table.foreach( ents.GetAll(), function( k, v )
 		
-		if v.pprotect_owner_id == ply:SteamID() then
-			v.pprotect_cleanup = ply:Nick()
+		if v.pprotect_owner_id == ply:UniqueID() then
+			v.pprotect_cleanup = nick
 		end
 
 	end )
-	
-	--Create Timer
-	timer.Create( "CleanupPropsOf" .. ply:Nick(), sv_PProtect.Settings.Propprotection[ "delay" ], 1, function()
+
+	-- create timer
+	timer.Create( "CleanupPropsOf" .. nick, sv_PProtect.Settings.Propprotection[ "delay" ], 1, function()
 
 		table.foreach( ents.GetAll(), function( k, v )
 
-			if v.pprotect_cleanup == cleanupname then
+			if v.pprotect_cleanup == nick then
 				v:Remove()
 			end
 
 		end )
 
-		print( "[PatchProtect - Cleanup] Removed " .. cleanupname .. "s Props! ( Reason: Left the Server )" )
+		print( "[PatchProtect - Cleanup] Removed " .. nick .. "s Props! ( Reason: Left the Server )" )
 
 	end )
 
 end
-hook.Add( "PlayerDisconnected", "pprotect_playerdisconnected", sv_PProtect.setCleanupProps )
+hook.Add( "PlayerDisconnected", "pprotect_playerdisconnected", setCleanup )
 
 -- PLAYER CAME BACK
-function sv_PProtect.checkComeback( ply )
+local function abortCleanup( ply )
 	
 	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or !sv_PProtect.Settings.Propprotection[ "propdelete" ] then return end
 
@@ -149,7 +167,7 @@ function sv_PProtect.checkComeback( ply )
 
 	table.foreach( ents.GetAll(), function( k, v )
 
-		if v.pprotect_owner_id == ply:SteamID() then
+		if v.pprotect_owner_id == ply:UniqueID() then
 			v.pprotect_cleanup = nil
 			v:CPPISetOwner( ply )
 		end
@@ -157,25 +175,4 @@ function sv_PProtect.checkComeback( ply )
 	end )
 
 end
-hook.Add( "PlayerSpawn", "pprotect_abortcleanup", sv_PProtect.checkComeback )
-
--- CLEAN ALL DISCONNECTED PLAYERS PROPS (BUTTON)
-net.Receive( "pprotect_cleanup_disconnected_player", function( len, pl )
-
-	-- check Permissions
-	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !pl:IsAdmin() and !pl:IsSuperAdmin() then return
-	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !pl:IsSuperAdmin() then return end
-
-	-- Remove all props from disconnected players
-	table.foreach( ents.GetAll(), function( k, v )
-
-		if v.pprotect_cleanup != nil and v.pprotect_cleanup != "" then
-			v:Remove()
-		end
-
-	end )
-
-	sv_PProtect.Notify( pl, "Removed all props from disconnected players!", "info" )
-	print( "[PatchProtect - Cleanup] " .. pl:Nick() .. " removed all props from disconnected players!" )
-
-end )
+hook.Add( "PlayerSpawn", "pprotect_abortcleanup", abortCleanup )

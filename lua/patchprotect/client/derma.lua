@@ -24,7 +24,7 @@ function cl_PProtect.addfrm( w, h, title, hor )
 	frm.title = vgui.Create( "DLabel", frm )
 	frm.title:SetText( title )
 	frm.title:SetPos( 15, 12.5 )
-	frm.title:SetFont( "pprotect_roboto_big" )
+	frm.title:SetFont( cl_PProtect.setFont( "roboto", 25, 750, true ) )
 	frm.title:SetColor( Color( 0, 0, 0, 191.25 ) )
 	frm.title:SizeToContents()
 
@@ -32,7 +32,7 @@ function cl_PProtect.addfrm( w, h, title, hor )
 	frm.close = vgui.Create( "DButton", frm )
 	frm.close:SetPos( w - 40, 10 )
 	frm.close:SetSize( 30, 30 )
-	frm.close:SetText( "r" )
+	frm.close:SetText( "" )
 	function frm.close.DoClick() frm:Remove() end
 
 	function frm.close:Paint()
@@ -41,7 +41,7 @@ function cl_PProtect.addfrm( w, h, title, hor )
 		elseif self.Hovered then draw.RoundedBox( 4, 0, 0, 30, 30, Color( 200, 60, 60 ) )
 		else draw.RoundedBox( 4, 0, 0, 30, 30, Color( 200, 80, 80 ) )
 		end
-		draw.SimpleText( "r", "pprotect_symbols_big", 9, 8, Color( 255, 255, 255 ) )
+		draw.SimpleText( "r", cl_PProtect.setFont( "marlett", 14, 0, false, false, true ), 9, 8, Color( 255, 255, 255 ) )
 
 	end
 
@@ -74,12 +74,15 @@ end
 
 function pan:addlbl( text, header )
 
+	if header then header = 750 else header = 0 end
 	local lbl = vgui.Create( "DLabel" )
 	lbl:SetText( text )
 	lbl:SetDark( true )
-	if !header then lbl:SetFont( "pprotect_roboto_small" ) else lbl:SetFont( "pprotect_roboto_small_bold" ) end
+	lbl:SetFont( cl_PProtect.setFont( "roboto", 14, header, true ) )
 	lbl:SizeToContents()
 	self:AddItem( lbl )
+
+	return lbl
 
 end
 
@@ -96,7 +99,7 @@ function pan:addchk( text, tip, check, cb )
 	chk:SetDark( true )
 	chk:SetChecked( check )
 	if tip then chk:SetTooltip( tip ) end
-	chk.Label:SetFont( "pprotect_roboto_small" )
+	chk.Label:SetFont( cl_PProtect.setFont( "roboto", 14, 500, true ) )
 
 	function chk:OnChange() cb( chk:GetChecked() ) end
 
@@ -151,7 +154,7 @@ function pan:addbtn( text, nettext, args )
 	btn:SetTall( 25 )
 	btn:SetText( text )
 	btn:SetDark( true )
-	btn:SetFont( "pprotect_roboto_small" )
+	btn:SetFont( cl_PProtect.setFont( "roboto", 14, 500, true ) )
 	btn:SetColor( Color( 50, 50, 50 ) )
 
 	function btn:DoClick()
@@ -202,6 +205,7 @@ end
 --------------
 --  SLIDER  --
 --------------
+
 local sldnum = 0
 function pan:addsld( min, max, text, value, t1, t2, decimals )
 
@@ -212,8 +216,8 @@ function pan:addsld( min, max, text, value, t1, t2, decimals )
 	sld:SetText( text )
 	sld:SetDark( true )
 	sld:SetValue( value )
-	sld.TextArea:SetFont( "pprotect_roboto_small" )
-	sld.Label:SetFont( "pprotect_roboto_small" )
+	sld.TextArea:SetFont( cl_PProtect.setFont( "roboto", 14, 500, true ) )
+	sld.Label:SetFont( cl_PProtect.setFont( "roboto", 14, 500, true ) )
 	sld.Scratch:SetVisible( false )
 
 	sld.OnValueChanged = function( self, number )
@@ -256,25 +260,54 @@ end
 ----------------
 --  LISTVIEW  --
 ----------------
+local pressed = {}
+function pan:addplp( ply, bud, cb, cb2 )
 
-function pan:addlvw( cols, cb )
+	local plp = vgui.Create( "DPanel" )
+	plp:SetHeight( 40 )
+	plp:SetCursor( "hand" )
 
-	local lvw = vgui.Create( "DListView" )
-	lvw:SetMultiSelect( false )
-	lvw:SetSize( 150, 200 )
-	table.foreach( cols, function( key, value ) lvw:AddColumn( value ) end )
+	plp.av = vgui.Create( "AvatarImage", plp )
+	plp.av:SetSize( 32, 32 )
+	plp.av:SetPlayer( ply, 32 )
+	plp.av:SetPos( 4, 4 )
 
-	function lvw:OnClickLine( line, selected )
+	plp.lbl = vgui.Create( "DLabel", plp )
+	plp.lbl:SetText( ply:Nick() )
+	plp.lbl:SetFont( cl_PProtect.setFont( "roboto", 25, 750, true ) )
+	plp.lbl:SetPos( 40, 9 )
+	plp.lbl:SetColor( Color( 50, 50, 50 ) )
+	plp.lbl:SetWidth( 230 )
 
-		cb( line )
-		lvw:ClearSelection()
-		line:SetSelected( true )
-		
+	plp.chk = vgui.Create( "DCheckBox", plp )
+	plp.chk:SetPos( 270, 10 )
+	plp.chk:SetSize( 20, 20 )
+	plp.chk:SetChecked( bud )
+
+	function plp:OnMousePressed() cb( ply ) pressed = { plp, ply } end
+	function plp.chk:OnChange( c ) cb2( c ) end
+
+	function plp:Paint( w, h )
+		if pressed[1] == plp then
+			draw.RoundedBox( 4, 0, 0, w, h, Color( 255, 150, 0 ) )
+		else
+			draw.RoundedBox( 4, 0, 0, w, h, Color( 230, 230, 230 ) )
+		end
 	end
-	
-	self:AddItem( lvw )
 
-	return lvw
+	function plp.chk:Paint( w, h )
+		if !self:GetChecked() then
+			draw.RoundedBox( 4, 0, 0, w, h, Color( 255, 50, 0 ) )
+			draw.SimpleText( "r", cl_PProtect.setFont( "marlett", 16, 750, false, false, true ), 2, 3, Color( 255, 255, 255 ) )
+		else
+			draw.RoundedBox( 4, 0, 0, w, h, Color( 0, 200, 75 ) )
+			draw.SimpleText( "b", cl_PProtect.setFont( "marlett", 22, 500, false, false, true ), 0, 0, Color( 255, 255, 255 ) )
+		end
+	end
+
+	self:AddItem( plp )
+
+	return plp
 
 end
 
@@ -288,7 +321,7 @@ function pan:addtxt( text )
 
 	local txt = vgui.Create( "DTextEntry" )
 	txt:SetText( text )
-	txt:SetFont( "pprotect_roboto_small" )
+	txt:SetFont( cl_PProtect.setFont( "roboto", 14, 500, true ) )
 	self:AddItem( txt )
 
 	function txt:OnTextChanged()

@@ -1,69 +1,26 @@
--------------
---  FONTS  --
--------------
+local fonts = {}
+function cl_PProtect.setFont( f, s, b, a, sh, sy )
 
-surface.CreateFont( "pprotect_roboto", {
-	font 		= "Roboto",
-	size 		= 16,
-	weight 		= 750,
-	antialias 	= true,
-	shadow 		= false
-} )
+	b = b or 500
+	a = a or false
+	sh = sh or false
+	sy = sy or false
 
-surface.CreateFont( "pprotect_roboto_big", {
-	font 		= "Roboto",
-	size 		= 25,
-	weight 		= 750,
-	antialias 	= true,
-	shadow 		= false
-} )
+	local fstr = "pprotect_" .. f .. "_" .. tostring( s ) .. "_" .. tostring( b ) .. "_" .. string.sub( tostring( a ), 1, 1 ) .. "_" .. string.sub( tostring( sh ), 1, 1 )
 
-surface.CreateFont( "pprotect_roboto_small", {
-	font 		= "Roboto",
-	size 		= 14,
-	weight 		= 500,
-	antialias 	= true,
-	shadow 		= false
-} )
+	if table.HasValue( fonts, fstr ) then return fstr end
 
-surface.CreateFont( "pprotect_roboto_small_bold", {
-	font 		= "Roboto",
-	size 		= 14,
-	weight 		= 750,
-	antialias 	= true,
-	shadow 		= false
-} )
+	surface.CreateFont( fstr, {
+		font = f,
+		size = s,
+		weight = b,
+		antialias = a,
+		shadow = sh,
+		symbol = sy
+	} )
 
-surface.CreateFont( "pprotect_note", {
-	font 		= "Roboto",
-	size 		= 18,
-	weight 		= 500,
-	antialias 	= true,
-	shadow 		= false
-} )
+	table.insert( fonts, fstr )
 
-surface.CreateFont( "pprotect_note_big", {
-	font 		= "Roboto",
-	size 		= 36,
-	weight 		= 1000,
-	antialias 	= true,
-	shadow 		= false
-} )
+	return fstr
 
-surface.CreateFont( "pprotect_symbols", {
-	font = "marlett",
-	size = 12,
-	weight = 0,
-	antialias = false,
-	shadow = false,
-	symbol = true
-} )
-
-surface.CreateFont( "pprotect_symbols_big", {
-	font = "marlett",
-	size = 14,
-	weight = 0,
-	antialias = false,
-	shadow = false,
-	symbol = true
-} )
+end

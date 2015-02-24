@@ -2,11 +2,9 @@
 	"title"		:	"PatchProtect (PProtect)",
 	"type"		:	"tool",
 	"tags"		:	[ "build" ],
-	"ignore"	:
-	[
+	"ignore"	:	[
 		"*.git*",
 		"*.bat",
-		"*.jpg",
 		"*.md"
 	]
 }

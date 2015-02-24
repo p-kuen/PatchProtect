@@ -7,18 +7,15 @@ util.AddNetworkString( "pprotect_new_settings" )
 util.AddNetworkString( "pprotect_save" )
 
 -- CLEANUP
-util.AddNetworkString( "pprotect_cleanup_map" )
-util.AddNetworkString( "pprotect_cleanup_disconnected_player" )
-util.AddNetworkString( "pprotect_cleanup_player" )
+util.AddNetworkString( "pprotect_cleanup")
 util.AddNetworkString( "pprotect_new_counts" )
 
 -- BUDDY
-util.AddNetworkString( "pprotect_send_buddy" )
-util.AddNetworkString( "pprotect_send_other_buddy" )
+util.AddNetworkString( "pprotect_buddy" )
+util.AddNetworkString( "pprotect_info_buddy" )
 
 -- OWNER
-util.AddNetworkString( "pprotect_get_owner" )
-util.AddNetworkString( "pprotect_send_owner" )
+util.AddNetworkString( "pprotect_owner" )
 
 -- SHARED ENTITY
 util.AddNetworkString( "pprotect_get_sharedEntity" )

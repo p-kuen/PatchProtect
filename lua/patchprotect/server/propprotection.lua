@@ -92,7 +92,7 @@ function sv_PProtect.CanTouch( ply, ent )
 	if sv_PProtect.IsShared( ent, "phys" ) then return end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "physgun" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "phys" ) then
 		return
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to hold this object!" )
@@ -131,7 +131,7 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	if sv_PProtect.IsShared( ent, "tool" ) then return true end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or ent:IsWorld() and ent.World != true or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "toolgun" ) then
+	if ply == ent:CPPIGetOwner() or ent:IsWorld() and ent.World != true or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "tool" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to use " .. tool .. " on this object!" )
@@ -239,7 +239,7 @@ function sv_PProtect.CanProperty( ply, property, ent )
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "property" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "prop" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to change the properties on this object!" )
@@ -265,7 +265,7 @@ function sv_PProtect.CanDrive( ply, ent )
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "property" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "prop" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to drive this object!" )
@@ -307,7 +307,7 @@ function sv_PProtect.CanDamage( ent, info )
 	if sv_PProtect.IsShared( ent, "dmg" ) then return end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "damage" ) or ply:GetClass() == "entityflame" or ent:IsPlayer() then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "dmg" ) or ply:GetClass() == "entityflame" or ent:IsPlayer() then
 		return
 	else
 		if ply:IsPlayer() then sv_PProtect.Notify( ply, "You are not allowed to damage this object!" ) end
@@ -340,7 +340,7 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "physgun" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "phys" ) then
 		return
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to unfreeze this object!" )
@@ -432,22 +432,18 @@ hook.Add( "PersistenceLoad", "pprotect_worldprops", sv_PProtect.setWorldProps )
 ------------------
 
 -- SEND THE OWNER TO THE CLIENT
-net.Receive( "pprotect_get_owner", function( len, pl )
+net.Receive( "pprotect_owner", function( len, pl )
 
 	local ent = net.ReadEntity()
 	local ply = ent:CPPIGetOwner()
 	local info = ""
 
-	if sv_PProtect.IsBuddy( ply, pl, "physgun" ) == true or 
-	sv_PProtect.IsBuddy( ply, pl, "use" ) == true or 
-	sv_PProtect.IsBuddy( ply, pl, "toolgun" ) == true then
-		info = "buddy"
-	end
+	if sv_PProtect.IsBuddy( ply, pl ) == true then info = "buddy" end
 
 	if ent.pprotect_cleanup != nil then info = ent.pprotect_cleanup end
 	if ent.World == true then info = "world" end
 
-	net.Start( "pprotect_send_owner" )
+	net.Start( "pprotect_owner" )
 		net.WriteEntity( ply )
 		net.WriteString( info )
 	net.Send( pl )
