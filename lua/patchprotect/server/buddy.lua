@@ -4,7 +4,7 @@
 
 function sv_PProtect.IsBuddy( ply, bud, mode )
 
-	if !ply.Buddies[ bud:SteamID() ] or !ply.Buddies[ bud:SteamID() ].bud then return false end
+	if !ply or ply == bud or !ply.Buddies or !ply.Buddies[ bud:SteamID() ] or !ply.Buddies[ bud:SteamID() ].bud then return false end
 	if !mode and ply.Buddies[ bud:SteamID() ].bud == true then return true else return false end
 	if ply.Buddies[ bud:SteamID() ].bud == true and ply.Buddies[ bud:SteamID() ].perm[ mode ] == true then return true else return false end
 
