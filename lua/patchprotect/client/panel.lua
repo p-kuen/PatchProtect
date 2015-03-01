@@ -135,7 +135,7 @@ function cl_PProtect.pp_menu( p )
 	-- Main Settings
 	p:addlbl( "General Settings:", true )
 	p:addchk( "Enable PropProtection", nil, cl_PProtect.Settings.Propprotection[ "enabled" ], function( c ) cl_PProtect.Settings.Propprotection[ "enabled" ] = c end )
-	
+
 	if cl_PProtect.Settings.Propprotection[ "enabled" ] then
 
 		-- General
@@ -266,12 +266,12 @@ function cl_PProtect.cu_menu( p )
 	p:addbtn( "Cleanup everything (" .. tostring( o_global ) .. " Props)", "pprotect_cleanup", { "all" } )
 
 	p:addlbl( "\nCleanup props from disconnected players:", true )
-	p:addbtn( "Cleanup all Props from disc. Players", "pprotect_cleanup", { "disconnected" } )
+	p:addbtn( "Cleanup all Props from disc. Players", "pprotect_cleanup", { "disc" } )
 
 	if o_global == 0 then return end
 	p:addlbl( "\nCleanup player's props:", true )
 	table.foreach( o_players, function( pl, c )
-		p:addbtn( "Cleanup " .. pl:Nick() .. " (" .. tostring( c ) .. " props)", "pprotect_cleanup", { pl, tostring( c ) } )
+		p:addbtn( "Cleanup " .. pl:Nick() .. " (" .. tostring( c ) .. " props)", "pprotect_cleanup", { "ply", pl, tostring( c ) } )
 	end )
 
 end
@@ -313,7 +313,7 @@ local function CreateMenus()
 
 	-- Cleanup
 	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPCleanup", "Cleanup", "", "", function( p ) cl_PProtect.UpdateMenus( "cu", p ) end )
-	
+
 	-- Client-Settings
 	spawnmenu.AddToolMenuOption( "Utilities", "PatchProtect", "PPClientSettings", "Client Settings", "", "", function( p ) cl_PProtect.UpdateMenus( "cs", p ) end )
 
@@ -341,11 +341,11 @@ function cl_PProtect.UpdateMenus( p_type, panel )
 	table.foreach( pans, function( t, p )
 
 		if t == "as" or t == "pp" then
-			if LocalPlayer():IsSuperAdmin() then RunConsoleCommand( "pprotect_request_new_settings", t ) else showErrorMessage( pans[ t ], "Sorry, you need to be a Super-Admin to change\nthe settings!" ) end
+			if LocalPlayer():IsSuperAdmin() then RunConsoleCommand( "pprotect_request_new_settings", t )
+			else showErrorMessage( pans[ t ], "Sorry, you need to be a SuperAdmin to change\nthe settings!" ) end
 		elseif t == "cu" then
-			if LocalPlayer():IsSuperAdmin() then RunConsoleCommand( "pprotect_request_new_counts" )
-			elseif LocalPlayer():IsAdmin() and cl_PProtect.Settings.Propprotection[ "adminscleanup" ] then RunConsoleCommand( "pprotect_request_new_counts" )
-			else showErrorMessage( pans[ t ], "Sorry, you need to be a Admin/SuperAdmin to change\nthe settings!" ) end
+			if LocalPlayer():IsSuperAdmin() or ( LocalPlayer():IsAdmin() and cl_PProtect.Settings.Propprotection[ "adminscleanup" ] ) then RunConsoleCommand( "pprotect_request_new_counts" )
+			else showErrorMessage( pans[ t ], "Sorry, you need to be a Admin/SuperAdmin to\nchange the settings!" ) end
 		else
 			cl_PProtect[ t .. "_menu" ]( pans[ t ] )
 		end
@@ -363,7 +363,7 @@ hook.Add( "SpawnMenuOpen", "pprotect_update_menus", cl_PProtect.UpdateMenus )
 
 -- RECEIVE NEW SETTINGS
 net.Receive( "pprotect_new_settings", function()
-	
+
 	local settings = net.ReadTable()
 	local typ = net.ReadString()
 

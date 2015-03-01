@@ -10,7 +10,7 @@ local function countProps( ply, dels )
 
 		if !ent:IsValid() or ent.World or ent.pprotect_owner == nil or !ent.pprotect_owner:IsValid() then return end
 
-		-- check deleted entities
+		-- check deleted entities (which shouldn't be counted, because they shouldn't exist anymore)
 		if istable( dels ) and table.HasValue( dels, ent:EntIndex() ) then return end
 		
 		-- Global-Count
@@ -24,10 +24,6 @@ local function countProps( ply, dels )
 
 	end )
 
-	-- check permissions
-	if sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !ply:IsAdmin() and !ply:IsSuperAdmin() then return
-	elseif !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and !ply:IsSuperAdmin() then return end
-
 	net.Start( "pprotect_new_counts" )
 		net.WriteTable( result )
 	net.Send( ply )
@@ -37,16 +33,21 @@ concommand.Add( "pprotect_request_new_counts", countProps )
 
 
 
+---------------------
+--  CLEANUP PROPS  --
+---------------------
+
 function sv_PProtect.Cleanup( typ, ply )
 
 	-- check permissions
-	if ( sv_PProtect.Settings.Propprotection[ "adminscleanup" ] and ply:IsAdmin() ) or ply:IsSuperAdmin() then else
+	if ( !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] or !ply:IsAdmin() ) and !ply:IsSuperAdmin() then
 		sv_PProtect.Notify( ply, "You are not allowed to clean the map!" ) return
 	end
 
 	-- get cleanup-type
+	local d = {}
 	if !isstring( typ ) then
-		local d = net.ReadTable()
+		d = net.ReadTable()
 		typ = d[1]
 	end
 
@@ -68,45 +69,27 @@ function sv_PProtect.Cleanup( typ, ply )
 
 	end
 
-	-- cleanup props from a special player
-	if IsEntity( typ ) then
-
-		local del_ents = {}
-		table.foreach( ents.GetAll(), function( key, ent )
-
-			if ent.pprotect_owner == typ then
-
-				-- delete entity
-				ent:Remove()
-
-				-- add it to deleted entities
-				table.insert( del_ents, ent:EntIndex() )
-
-			end
-
-		end )
-
-		countProps( typ, del_ents )
-
-		sv_PProtect.Notify( ply, "Cleaned " .. typ:Nick() .. "'s props! (" .. tostring( d[2] ) .. ")", "info" )
-		print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed " .. tostring( d[2] ) .. " props from " .. typ:Nick() .. "!" )
-		return
-
-	end
-
-	-- cleanup props from disconnected players
+	-- cleanup players or disconnected players props
+	local del_ents = {}
 	table.foreach( ents.GetAll(), function( key, ent )
 
-		if IsEntity( typ ) and ent.pprotect_owner == typ then
+		if ( typ == "ply" and ent.pprotect_owner == d[2] ) or ( typ == "disc" and ent.pprotect_cleanup != nil ) then
 
-			if ent.pprotect_cleanup != nil then ent:Remove() end
+			ent:Remove()
+			table.insert( del_ents, ent:EntIndex() )
 
 		end
 
 	end )
 
-	sv_PProtect.Notify( ply, "Removed all props from disconnected players!", "info" )
-	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props from disconnected players!" )
+	if typ == "ply" then
+		sv_PProtect.Notify( ply, "Cleaned " .. d[2]:Nick() .. "'s props! (" .. tostring( d[3] ) .. ")", "info" )
+		print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed " .. tostring( d[3] ) .. " props from " .. d[2]:Nick() .. "!" )
+		countProps( d[2], del_ents )
+	else
+		sv_PProtect.Notify( ply, "Removed all props from disconnected players!", "info" )
+		print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props from disconnected players!" )
+	end
 
 end
 net.Receive( "pprotect_cleanup", sv_PProtect.Cleanup )
@@ -122,9 +105,7 @@ concommand.Add( "gmod_admin_cleanup", function( ply, cmd, args ) sv_PProtect.Cle
 local function setCleanup( ply )
 
 	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or !sv_PProtect.Settings.Propprotection[ "propdelete" ] then return end
-	if sv_PProtect.Settings.Propprotection[ "adminprops" ] then
-		if ply:IsAdmin() or ply:IsSuperAdmin() then return end
-	end
+	if sv_PProtect.Settings.Propprotection[ "adminprops" ] and ( ply:IsSuperAdmin() or ply:IsAdmin() ) then return end
 
 	local nick = ply:Nick()
 	print( "[PatchProtect - Cleanup] " .. nick .. " left the server. Props will be deleted in " .. tostring( sv_PProtect.Settings.Propprotection[ "delay" ] ) .. " seconds." )
