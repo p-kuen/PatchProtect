@@ -1,7 +1,7 @@
 local Owner
-local IsBuddy
 local IsWorld
-local IsDisc
+local IsShared
+local IsBuddy
 local LastID
 local Note = { msg = "", typ = "", time = 0, alpha = 0 }
 local scr_w, scr_h = ScrW(), ScrH()
@@ -17,26 +17,31 @@ function cl_PProtect.showOwner()
 
 	-- Check Entity
 	local ent = LocalPlayer():GetEyeTrace().Entity
-	if !ent or ent:IsPlayer() then return end
+	if !ent or !ent:IsValid() or ent:IsWorld() or ent:IsPlayer() then return end
 
 	if LastID != ent:EntIndex() and ent:IsValid() then
 
-		net.Start( "pprotect_owner" )
-			net.WriteEntity( ent )
-		net.SendToServer()
+		Owner = ent:GetNWEntity( "pprotect_owner" )
+		IsWorld, IsShared, IsBuddy = ent:GetNWBool( "pprotect_world" ), false, false
+		if !Owner:IsPlayer() and !IsWorld then ent:SetNWBool( "pprotect_world", true ) IsWorld = true end
+		if Owner != LocalPlayer() and !IsWorld then RunConsoleCommand( "pprotect_send_buddies", Owner:UniqueID() ) end
+		table.foreach( { "phys", "tool", "use", "dmg" }, function( k, v )
+			if ent:GetNWBool( "pprotect_shared_" .. v ) then IsShared = true end
+		end )
 
 		LastID = ent:EntIndex()
-		
-	end
 
-	-- Check Owner ( Owner is set at the bottom of the file! )
-	if !Owner or IsWorld == nil or !ent:IsValid() then return end
+	end
 
 	local txt = nil
 	if IsWorld then txt = "World"
-	elseif Owner:IsPlayer() and Owner:IsValid() then txt = Owner:Nick()
-	elseif IsDisc then txt = IsDisc .. " (disconnected)"
-	else txt = "No Owner" end
+	elseif Owner:IsPlayer() then
+		txt = Owner:Nick()
+		if !table.HasValue( player.GetAll(), Owner ) then txt = txt .. " (disconnected)"
+		elseif IsBuddy then txt = txt .. " (Buddy)"
+		elseif IsShared then txt = txt .. " (Shared)" end
+	else txt = "No Owner"
+	end
 
 	-- Set Variables
 	surface.SetFont( cl_PProtect.setFont( "roboto", 14, 500, true ) )
@@ -47,14 +52,12 @@ function cl_PProtect.showOwner()
 
 	-- Set color
 	local col
-	if Owner == LocalPlayer() or IsBuddy or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+	if Owner == LocalPlayer() or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() or IsBuddy or IsShared or
+	( IsWorld and cl_PProtect.Settings.Propprotection[ "worldprops" ] ) or
+	( txt == "No Owner" and cl_PProtect.Settings.Propprotection[ "noowner" ] ) then
 		col = Color( 128, 255, 0, 200 )
-	elseif IsWorld and cl_PProtect.Settings.Propprotection[ "worldprops" ] then
-		col = Color( 128, 255, 0, 200 )
-	elseif cl_PProtect.Settings.Propprotection[ "worldbutton" ] and IsWorld then
+	elseif IsWorld and cl_PProtect.Settings.Propprotection[ "worldbutton" ] then
 		col = Color( 0, 161, 222, 200 )
-	elseif txt == "No Owner" and cl_PProtect.Settings.Propprotection[ "noowner" ] then
-		col = Color( 128, 255, 0, 200 )
 	else
 		col = Color( 176, 0, 0, 200 )
 	end
@@ -71,7 +74,7 @@ function cl_PProtect.showOwner()
 	else
 
 		-- Background
-		draw.RoundedBox( 4, scr_w * 0.5 - ( ( w + 2 ) * 0.5 ), t + 16, w + 2, 20, Color( 0, 0, 0, 150 ) )
+		draw.RoundedBox( 4, scr_w * 0.5 - ( w * 0.5 ), t + 16, w, 20, Color( 0, 0, 0, 150 ) )
 		-- Text
 		draw.SimpleText( txt, cl_PProtect.setFont( "roboto", 14, 500, true ), scr_w * 0.5, t + 20, col, TEXT_ALIGN_CENTER, 0 )
 
@@ -128,9 +131,6 @@ properties.Add( "addblockedprop", {
 --  SHARED ENTITY  --
 ---------------------
 
-local shared_ent = nil
-local shared_info = { phys = false, tool = false, use = false, dmg = false }
-
 properties.Add( "shareentity", {
 
 	MenuLabel = "Share entity",
@@ -146,45 +146,23 @@ properties.Add( "shareentity", {
 
 	Action = function( self, ent )
 
-		net.Start( "pprotect_get_sharedEntity" )
-			net.WriteEntity( ent )
-		net.SendToServer()
+		local shared_info = {}
+		table.foreach( { "phys", "tool", "use", "dmg" }, function( k, v )
+			shared_info[ v ] = ent:GetNWBool( "pprotect_shared_" .. v )
+		end )
 
-		shared_ent = ent
+		-- Frame
+		local frm = cl_PProtect.addfrm( 180, 165, "share prop:", false )
+
+		-- Checkboxes
+		frm:addchk( "Physgun", nil, shared_info[ "phys" ], function( c ) ent:SetNWBool( "pprotect_shared_phys", c ) end )
+		frm:addchk( "Toolgun", nil, shared_info[ "tool" ], function( c ) ent:SetNWBool( "pprotect_shared_tool", c ) end )
+		frm:addchk( "Use", nil, shared_info[ "use" ], function( c ) ent:SetNWBool( "pprotect_shared_use", c ) end )
+		frm:addchk( "Damage", nil, shared_info[ "dmg" ], function( c ) ent:SetNWBool( "pprotect_shared_dmg", c ) end )
 
 	end
 
 } )
-
--- SHARED ENTITY
-net.Receive( "pprotect_send_sharedEntity", function( len )
-
-	-- Receive Table
-	local mdl = shared_ent:GetModel()
-	local info = net.ReadTable()
-
-	if table.Count( info ) != 0 then
-		shared_info = info
-	else
-		shared_info = { phys = false, use = false, tool = false, dmg = false }
-	end
-
-	-- Frame
-	local frm = cl_PProtect.addfrm( 180, 165, "share prop:", false )
-
-	local function SendSharedInfo()
-		net.Start( "pprotect_save_sharedEntity" )
-			net.WriteTable( shared_info )
-		net.SendToServer()
-	end
-
-	-- Checkboxes
-	frm:addchk( "Physgun", nil, shared_info[ "phys" ], function( c ) shared_info[ "phys" ] = c SendSharedInfo() end )
-	frm:addchk( "Toolgun", nil, shared_info[ "tool" ], function( c ) shared_info[ "tool" ] = c SendSharedInfo() end )
-	frm:addchk( "Use", nil, shared_info[ "use" ], function( c ) shared_info[ "use" ] = c SendSharedInfo() end )
-	frm:addchk( "Damage", nil, shared_info[ "dmg" ], function( c ) shared_info[ "dmg" ] = c SendSharedInfo() end )
-	
-end )
 
 
 
@@ -267,13 +245,9 @@ net.Receive( "pprotect_notify", function( len )
 
 end )
 
--- OWNER
-net.Receive( "pprotect_owner", function( len )
+-- BUDDIES
+net.Receive( "pprotect_send_buddies", function( len )
 
-	Owner = net.ReadEntity()
-	local info = net.ReadString()
-	if info == "buddy" then IsBuddy = true else IsBuddy = false end
-	if info == "world" then IsWorld = true else IsWorld = false end
-	if info != "" and info != "buddy" and info != "world" then IsDisc = info else IsDisc = nil end
+	IsBuddy = net.ReadBool()
 
 end )

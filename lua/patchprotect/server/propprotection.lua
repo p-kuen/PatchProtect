@@ -16,11 +16,18 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 
 end
 
+-- CHECK WORLD
+function sv_PProtect.CheckWorld( ent )
+
+	if ent:GetNWBool( "pprotect_world" ) and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true else return false end
+
+end
+
 -- CHECK SHARED
 function sv_PProtect.IsShared( ent, mode )
 
-	if ent.share == nil then return false end
-	if ent.share[ mode ] == true then return true else return false end
+	if !ent or !ent:IsValid() or !mode or !isstring( mode ) then return false end
+	return ent:GetNWBool( "pprotect_shared_" .. mode )
 
 end
 
@@ -86,7 +93,7 @@ function sv_PProtect.CanTouch( ply, ent )
 	if ent:IsPlayer() then return false end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
+	if sv_PProtect.CheckWorld( ent ) then return end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "phys" ) then return end
@@ -125,13 +132,13 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
+	if sv_PProtect.CheckWorld( ent ) or ent:IsWorld() then return true end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "tool" ) then return true end
 
 	-- Check Owner
-	if ply == ent:CPPIGetOwner() or ent:IsWorld() and ent.World != true or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "tool" ) then
+	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "tool" ) then
 		return true
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to use " .. tool .. " on this object!" )
@@ -158,10 +165,7 @@ function sv_PProtect.CanUse( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "use" ] or engine.ActiveGamemode() == "prop_hunt" then return true end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldbutton" ] or sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
-
-	-- Check no Owner
-	if !ent.World and !ent:CPPIGetOwner() and sv_PProtect.Settings.Propprotection[ "noowner" ] then return true end
+	if sv_PProtect.CheckWorld( ent ) or sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "use" ) then return true end
@@ -195,10 +199,7 @@ function sv_PProtect.CanPickup( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "proppickup" ] then return true end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldbutton" ] or sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
-
-	-- Check no Owner
-	if !ent.World and !ent:CPPIGetOwner() and sv_PProtect.Settings.Propprotection[ "noowner" ] then return true end
+	if sv_PProtect.CheckWorld( ent ) or sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "use" ) then return true end
@@ -236,7 +237,7 @@ function sv_PProtect.CanProperty( ply, property, ent )
 	end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
+	if sv_PProtect.CheckWorld( ent ) then return true end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "prop" ) then
@@ -262,7 +263,7 @@ function sv_PProtect.CanDrive( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "propdriving" ] then return false end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
+	if sv_PProtect.CheckWorld( ent ) then return true end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "prop" ) then
@@ -301,7 +302,7 @@ function sv_PProtect.CanDamage( ent, info )
 	end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
+	if sv_PProtect.CheckWorld( ent ) then return end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "dmg" ) then return end
@@ -337,7 +338,7 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 	if !sv_PProtect.Settings.Propprotection[ "reload" ] then return end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
+	if sv_PProtect.CheckWorld( ent ) then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "phys" ) then
@@ -368,10 +369,7 @@ function sv_PProtect.CanGravPunt( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "gravgun" ] then return end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
-
-	-- Check no Owner
-	if !ent.World and !ent:CPPIGetOwner() and sv_PProtect.Settings.Propprotection[ "noowner" ] then return end
+	if sv_PProtect.CheckWorld( ent ) then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() then
@@ -396,10 +394,7 @@ function sv_PProtect.CanGravPickup( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "gravgun" ] then return false end
 
 	-- Check World
-	if ent.World and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return end
-
-	-- Check no Owner
-	if !ent.World and !ent:CPPIGetOwner() and sv_PProtect.Settings.Propprotection[ "noowner" ] then return end
+	if sv_PProtect.CheckWorld( ent ) then return end
 
 	-- Check Owner
 	if ply != ent:CPPIGetOwner() then
@@ -419,57 +414,8 @@ hook.Add( "GravGunOnPickedUp", "pprotect_gravpickup", sv_PProtect.CanGravPickup 
 function sv_PProtect.setWorldProps()
 
 	table.foreach( ents:GetAll(), function( id, ent )
-		if string.find( ent:GetClass(), "func_" ) or string.find( ent:GetClass(), "prop_" ) then ent.World = true end
+		if string.find( ent:GetClass(), "func_" ) or string.find( ent:GetClass(), "prop_" ) then ent:SetNWBool( "pprotect_world", true ) end
 	end )
 
 end
 hook.Add( "PersistenceLoad", "pprotect_worldprops", sv_PProtect.setWorldProps )
-
-
-
-------------------
---  NETWORKING  --
-------------------
-
--- SEND THE OWNER TO THE CLIENT
-net.Receive( "pprotect_owner", function( len, pl )
-
-	local ent = net.ReadEntity()
-	local ply = ent:CPPIGetOwner()
-	local info = ""
-
-	if sv_PProtect.IsBuddy( ply, pl ) == true then info = "buddy" end
-
-	if ent.pprotect_cleanup != nil then info = ent.pprotect_cleanup end
-	if ent.World == true then info = "world" end
-
-	net.Start( "pprotect_owner" )
-		net.WriteEntity( ply )
-		net.WriteString( info )
-	net.Send( pl )
-
-end )
-
--- SEND NEW SHARED ENTITY INFORMAITON TO THE CLIENT
-local shared_ent = nil
-net.Receive( "pprotect_get_sharedEntity", function( len, pl )
-
-	shared_ent = net.ReadEntity()
-
-	net.Start( "pprotect_send_sharedEntity" )
-		if istable( shared_ent.share ) then
-			net.WriteTable( shared_ent.share )
-		else
-			net.WriteTable( {} )
-		end
-	net.Send( pl )
-
-end )
-
--- SAVE NEW SHARED ENTITY
-net.Receive( "pprotect_save_sharedEntity", function( len, pl )
-
-	local info = net.ReadTable()
-	if istable( info ) then shared_ent.share = info end
-
-end )

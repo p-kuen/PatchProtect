@@ -13,14 +13,7 @@ util.AddNetworkString( "pprotect_new_counts" )
 -- BUDDY
 util.AddNetworkString( "pprotect_buddy" )
 util.AddNetworkString( "pprotect_info_buddy" )
-
--- OWNER
-util.AddNetworkString( "pprotect_owner" )
-
--- SHARED ENTITY
-util.AddNetworkString( "pprotect_get_sharedEntity" )
-util.AddNetworkString( "pprotect_send_sharedEntity" )
-util.AddNetworkString( "pprotect_save_sharedEntity" )
+util.AddNetworkString( "pprotect_send_buddies" )
 
 -- BLOCKED PROPS/ENTS
 util.AddNetworkString( "pprotect_request_ents" )
@@ -84,7 +77,6 @@ sv_PProtect.Config.Propprotection = {
 	propdriving = false,
 	worldprops = false,
 	worldbutton = true,
-	noowner = false,
 
 	propdelete = true,
 	adminprops = false,

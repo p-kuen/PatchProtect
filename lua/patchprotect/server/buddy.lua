@@ -30,3 +30,14 @@ net.Receive( "pprotect_info_buddy", function( len, ply )
 	sv_PProtect.Notify( bud, ply:Nick() .. " added you as a buddy!", "normal" )
 
 end )
+
+-- SEND BUDDIES TO CLIENT
+concommand.Add( "pprotect_send_buddies", function( ply, cmd, args )
+
+	local bud = player.GetByUniqueID( args[1] )
+	if !bud or !bud.Buddies then return end
+	net.Start( "pprotect_send_buddies" )
+		net.WriteBool( sv_PProtect.IsBuddy( ply, bud ) )
+	net.Send( ply )
+
+end )

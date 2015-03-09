@@ -8,7 +8,9 @@ local function countProps( ply, dels )
 
 	table.foreach( ents.GetAll(), function( key, ent )
 
-		if !ent:IsValid() or ent.World or ent.pprotect_owner == nil or !ent.pprotect_owner:IsValid() then return end
+		if !ent or !ent:IsValid() then return end
+		local o = ent:CPPIGetOwner()
+		if ent:GetNWBool( "pprotect_world" ) or !o or !o:IsValid() then return end
 
 		-- check deleted entities (which shouldn't be counted, because they shouldn't exist anymore)
 		if istable( dels ) and table.HasValue( dels, ent:EntIndex() ) then return end
@@ -17,10 +19,8 @@ local function countProps( ply, dels )
 		result.global = result.global + 1
 
 		-- Player-Count
-		local owner = ent.pprotect_owner
-
-		if !result.players[ owner ] then result.players[ owner ] = 0 end
-		result.players[ owner ] = result.players[ owner ] + 1
+		if !result.players[ o ] then result.players[ o ] = 0 end
+		result.players[ o ] = result.players[ o ] + 1
 
 	end )
 
@@ -73,7 +73,7 @@ function sv_PProtect.Cleanup( typ, ply )
 	local del_ents = {}
 	table.foreach( ents.GetAll(), function( key, ent )
 
-		if ( typ == "ply" and ent.pprotect_owner == d[2] ) or ( typ == "disc" and ent.pprotect_cleanup != nil ) then
+		if ( typ == "ply" and ent:GetNWEntity( "pprotect_owner" ) == d[2] ) or ( typ == "disc" and ent.pprotect_cleanup != nil ) then
 
 			ent:Remove()
 			table.insert( del_ents, ent:EntIndex() )
@@ -112,7 +112,8 @@ local function setCleanup( ply )
 
 	table.foreach( ents.GetAll(), function( k, v )
 		
-		if v.pprotect_owner_id == ply:UniqueID() then
+		local o = v:CPPIGetOwner()
+		if o and o:UniqueID() == ply:UniqueID() then
 			v.pprotect_cleanup = nick
 		end
 
@@ -148,7 +149,8 @@ local function abortCleanup( ply )
 
 	table.foreach( ents.GetAll(), function( k, v )
 
-		if v.pprotect_owner_id == ply:UniqueID() then
+		local o = v:CPPIGetOwner()
+		if o and o:UniqueID() == ply:UniqueID() then
 			v.pprotect_cleanup = nil
 			v:CPPISetOwner( ply )
 		end

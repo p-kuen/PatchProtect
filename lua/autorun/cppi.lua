@@ -44,12 +44,11 @@ end
 -- Get the owner of an entity
 function ENTITY:CPPIGetOwner()
 
-	if SERVER then
-		local ply = self.pprotect_owner
-		if !IsValid( ply ) or !ply:IsPlayer() then return nil, self.pprotect_owner_id end
+	local ply = self:GetNWEntity( "pprotect_owner" )
+	if ply and ply:IsPlayer() then
 		return ply, ply:UniqueID()
 	else
-		return CPPI_NOTIMPLEMENTED
+		return nil
 	end
 
 end
@@ -58,15 +57,15 @@ if SERVER then
 
 	-- Set owner of an entity
 	function ENTITY:CPPISetOwner( ply )
-		
-		if !self or !IsValid( ply ) or !ply:IsPlayer() then return false end
 
-		self.pprotect_owner, self.pprotect_owner_id = ply, ply:UniqueID()
+		if !self or !ply or !ply:IsPlayer() then return false end
+
+		self:SetNWEntity( "pprotect_owner", ply )
 
 		table.foreach( constraint.GetAllConstrainedEntities( self ), function( _, cent )
 
-			if IsEntity( cent.pprotect_owner ) and cent.pprotect_owner:IsValid() then return end
-			cent.pprotect_owner, cent.pprotect_owner_id = ply, ply:UniqueID()
+			if cent:CPPIGetOwner() then return end
+			cent:SetNWEntity( "pprotect_owner", ply )
 
 		end )
 
@@ -77,16 +76,10 @@ if SERVER then
 	-- Set owner of an entity by UID
 	function ENTITY:CPPISetOwnerUID( uid )
 
+		if !uid then return false end
 		local ply = player.GetByUniqueID( tostring( uid ) )
-		if !IsValid( ply ) or !ply:IsPlayer() then return false end
 
-		if !self.pprotect_owner then
-
-			self.pprotect_owner, self.pprotect_owner_id = ply, ply:UniqueID()
-
-		end
-
-		return true
+		return self:CPPISetOwner( ply )
 
 	end
 

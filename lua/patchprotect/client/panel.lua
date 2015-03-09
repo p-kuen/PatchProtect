@@ -163,7 +163,6 @@ function cl_PProtect.pp_menu( p )
 		p:addchk( "Allow Prop-Driving", "Allow users to drive props over the context menu (c-key)", cl_PProtect.Settings.Propprotection[ "propdriving" ], function( c ) cl_PProtect.Settings.Propprotection[ "propdriving" ] = c end )
 		p:addchk( "Allow World-Props", "Allow users to physgun, toolgun, use, ... world props", cl_PProtect.Settings.Propprotection[ "worldprops" ], function( c ) cl_PProtect.Settings.Propprotection[ "worldprops" ] = c end )
 		p:addchk( "Allow World-Buttons/Doors", "Allow users to press World-Buttons/Doors", cl_PProtect.Settings.Propprotection[ "worldbutton" ], function( c ) cl_PProtect.Settings.Propprotection[ "worldbutton" ] = c end )
-		p:addchk( "Allow No-Owner-Props", "Allow users to use/pickup/gravgun props with no owner", cl_PProtect.Settings.Propprotection[ "noowner" ], function( c ) cl_PProtect.Settings.Propprotection[ "noowner" ] = c end )
 
 		p:addlbl( "\nProp-Delete on Disconnect:", true )
 		p:addchk( "Use Prop-Delete", nil, cl_PProtect.Settings.Propprotection[ "propdelete" ], function( c ) cl_PProtect.Settings.Propprotection[ "propdelete" ] = c end )
