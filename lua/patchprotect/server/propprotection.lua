@@ -65,8 +65,7 @@ function sv_PProtect.SetOwner( ply, typ, ent )
 		if ply.duplicate or !sv_PProtect.Settings.Antispam[ "propinprop" ] or sv_PProtect.CheckPPAdmin( ply ) or e:GetClass() != "prop_physics" then return end
 
 		-- PropInProp-Protection
-		local te = util.TraceLine( { start = e:LocalToWorld( e:OBBMins() ), endpos = e:LocalToWorld( e:OBBMaxs() ), filter = e } )
-		if IsValid( te.Entity ) and !te.Entity:IsPlayer() then
+		if e:GetPhysicsObject():IsPenetrating() then
 			sv_PProtect.Notify( ply, "You are not allowed to spawn a prop in an other prop!" )
 			e:Remove()
 		end
