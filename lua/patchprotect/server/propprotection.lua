@@ -165,7 +165,7 @@ function sv_PProtect.CanUse( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "use" ] or engine.ActiveGamemode() == "prop_hunt" then return true end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) or sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
+	if sv_PProtect.CheckWorld( ent ) or sv_PProtect.Settings.Propprotection[ "worldbutton" ] then return true end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "use" ) then return true end
@@ -199,7 +199,7 @@ function sv_PProtect.CanPickup( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "proppickup" ] then return true end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) or sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true end
+	if sv_PProtect.CheckWorld( ent ) or sv_PProtect.Settings.Propprotection[ "worldbutton" ] then return true end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "use" ) then return true end
