@@ -107,30 +107,27 @@ local function setCleanup( ply )
 	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or !sv_PProtect.Settings.Propprotection[ "propdelete" ] then return end
 	if sv_PProtect.Settings.Propprotection[ "adminprops" ] and ( ply:IsSuperAdmin() or ply:IsAdmin() ) then return end
 
-	local nick = ply:Nick()
-	print( "[PatchProtect - Cleanup] " .. nick .. " left the server. Props will be deleted in " .. tostring( sv_PProtect.Settings.Propprotection[ "delay" ] ) .. " seconds." )
+	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " left the server. Props will be deleted in " .. tostring( sv_PProtect.Settings.Propprotection[ "delay" ] ) .. " seconds." )
 
 	table.foreach( ents.GetAll(), function( k, v )
 		
-		local o = v:CPPIGetOwner()
-		if o and o:UniqueID() == ply:UniqueID() then
-			v.pprotect_cleanup = nick
+		if v:CPPIGetOwner() and v:CPPIGetOwner():UniqueID() == ply:UniqueID() then
+			v.pprotect_cleanup = ply:Nick()
 		end
 
 	end )
 
-	-- create timer
-	timer.Create( "CleanupPropsOf" .. nick, sv_PProtect.Settings.Propprotection[ "delay" ], 1, function()
+	timer.Create( "pprotect_cleanup_" .. ply:Nick(), sv_PProtect.Settings.Propprotection[ "delay" ], 1, function()
 
 		table.foreach( ents.GetAll(), function( k, v )
 
-			if v.pprotect_cleanup == nick then
+			if v.pprotect_cleanup == ply:Nick() then
 				v:Remove()
 			end
 
 		end )
 
-		print( "[PatchProtect - Cleanup] Removed " .. nick .. "s Props! ( Reason: Left the Server )" )
+		print( "[PatchProtect - Cleanup] Removed " .. ply:Nick() .. "s Props! ( Reason: Left the Server )" )
 
 	end )
 
@@ -139,18 +136,15 @@ hook.Add( "PlayerDisconnected", "pprotect_playerdisconnected", setCleanup )
 
 -- PLAYER CAME BACK
 local function abortCleanup( ply )
-	
-	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or !sv_PProtect.Settings.Propprotection[ "propdelete" ] then return end
 
-	if timer.Exists( "CleanupPropsOf" .. ply:Nick() ) then
-		print( "[PatchProtect - Cleanup] Aborded Cleanup! " .. ply:Nick() .. " came back!" )
-		timer.Destroy( "CleanupPropsOf" .. ply:Nick() )
-	end
+	if !timer.Exists( "pprotect_cleanup_" .. ply:Nick() ) then return end
+
+	print( "[PatchProtect - Cleanup] Aborded Cleanup! " .. ply:Nick() .. " came back!" )
+	timer.Destroy( "pprotect_cleanup_" .. ply:Nick() )
 
 	table.foreach( ents.GetAll(), function( k, v )
 
-		local o = v:CPPIGetOwner()
-		if o and o:UniqueID() == ply:UniqueID() then
+		if v:CPPIGetOwner() and v:CPPIGetOwner():UniqueID() == ply:UniqueID() then
 			v.pprotect_cleanup = nil
 			v:CPPISetOwner( ply )
 		end

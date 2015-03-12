@@ -7,7 +7,7 @@ util.AddNetworkString( "pprotect_new_settings" )
 util.AddNetworkString( "pprotect_save" )
 
 -- CLEANUP
-util.AddNetworkString( "pprotect_cleanup")
+util.AddNetworkString( "pprotect_cleanup" )
 util.AddNetworkString( "pprotect_new_counts" )
 
 -- BUDDY
