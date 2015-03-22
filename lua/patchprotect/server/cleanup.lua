@@ -117,17 +117,18 @@ local function setCleanup( ply )
 
 	end )
 
-	timer.Create( "pprotect_cleanup_" .. ply:Nick(), sv_PProtect.Settings.Propprotection[ "delay" ], 1, function()
+	local nick = ply:Nick()
+	timer.Create( "pprotect_cleanup_" .. nick, sv_PProtect.Settings.Propprotection[ "delay" ], 1, function()
 
 		table.foreach( ents.GetAll(), function( k, v )
 
-			if v.pprotect_cleanup == ply:Nick() then
+			if v.pprotect_cleanup == nick then
 				v:Remove()
 			end
 
 		end )
 
-		print( "[PatchProtect - Cleanup] Removed " .. ply:Nick() .. "s Props! ( Reason: Left the Server )" )
+		print( "[PatchProtect - Cleanup] Removed " .. nick .. "s Props! ( Reason: Left the Server )" )
 
 	end )
 
