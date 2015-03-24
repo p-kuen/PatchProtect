@@ -50,7 +50,7 @@ function sv_PProtect.SetOwner( ply, typ, ent )
 	if !ent or !ply:IsPlayer() then return end
 
 	-- Duplicator-Exception
-	if ply.duplicate == true and typ != "Duplicator" and typ != "AdvDupe (pasting...)" and typ != "AdvDupe2_Paste" then ply.duplicate = false end
+	if ply.duplicate == true and typ != "Duplicator" and !string.find( typ, "AdvDupe" ) then ply.duplicate = false end
 
 	-- Set Owner Of Ents
 	table.foreach( ent, function( k, e )
