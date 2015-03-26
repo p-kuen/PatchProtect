@@ -5,6 +5,8 @@
 -- CHECK ADMIN
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
+	if ent != nil and !ent:CPPIGetOwner() and !sv_PProtect.CheckWorld( ent ) then ent:SetNWBool( "pprotect_world", true ) end
+
 	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or 
 	ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] or 
 	ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] then

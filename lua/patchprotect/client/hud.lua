@@ -19,12 +19,10 @@ function cl_PProtect.showOwner()
 	local ent = LocalPlayer():GetEyeTrace().Entity
 	if !ent or !ent:IsValid() or ent:IsWorld() or ent:IsPlayer() then return end
 
-	if LastID != ent:EntIndex() and ent:IsValid() then
+	if LastID != ent:EntIndex() or ( !Owner and !IsWorld ) then
 
-		Owner = ent:GetNWEntity( "pprotect_owner" )
-		IsWorld, IsShared, IsBuddy = ent:GetNWBool( "pprotect_world" ), false, false
-		if !Owner:IsPlayer() and !IsWorld then ent:SetNWBool( "pprotect_world", true ) IsWorld = true end
-		if Owner != LocalPlayer() and !IsWorld then RunConsoleCommand( "pprotect_send_buddies", Owner:UniqueID() ) end
+		Owner, IsWorld, IsShared, IsBuddy = ent:CPPIGetOwner(), ent:GetNWBool( "pprotect_world" ), false, false
+		if Owner != nil and Owner != LocalPlayer() and !IsWorld then RunConsoleCommand( "pprotect_send_buddies", Owner:UniqueID() ) end
 		table.foreach( { "phys", "tool", "use", "dmg" }, function( k, v )
 			if ent:GetNWBool( "pprotect_shared_" .. v ) then IsShared = true end
 		end )
@@ -35,7 +33,7 @@ function cl_PProtect.showOwner()
 
 	local txt = nil
 	if IsWorld then txt = "World"
-	elseif Owner:IsPlayer() then
+	elseif Owner != nil and Owner:IsPlayer() then
 		txt = Owner:Nick()
 		if !table.HasValue( player.GetAll(), Owner ) then txt = txt .. " (disconnected)"
 		elseif IsBuddy then txt = txt .. " (Buddy)"
