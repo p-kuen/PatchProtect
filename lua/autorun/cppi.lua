@@ -45,7 +45,7 @@ end
 function ENTITY:CPPIGetOwner()
 
 	local ply = self:GetNWEntity( "pprotect_owner" )
-	if ply and ply:IsPlayer() then
+	if ply != nil and ply:IsPlayer() then
 		return ply, ply:UniqueID()
 	else
 		return nil
