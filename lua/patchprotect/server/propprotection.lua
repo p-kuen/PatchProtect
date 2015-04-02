@@ -5,12 +5,12 @@
 -- CHECK ADMIN
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
-	if ent != nil and !ent:CPPIGetOwner() and !sv_PProtect.CheckWorld( ent ) then ent:SetNWBool( "pprotect_world", true ) end
+	if ent != nil and ent:IsValid() and !ent:CPPIGetOwner() and !sv_PProtect.CheckWorld( ent ) then ent:SetNWBool( "pprotect_world", true ) end
 
 	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or 
 	ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] or 
 	ply:IsAdmin() and sv_PProtect.Settings.Propprotection[ "admins" ] then
-		if ent != nil and ent:CPPIGetOwner() != nil and ent:CPPIGetOwner():IsValid() and !ply:IsSuperAdmin() and ent:CPPIGetOwner():IsSuperAdmin() then return false end
+		if ent != nil and ent:IsValid() and ent:CPPIGetOwner() != nil and !ply:IsSuperAdmin() and ent:CPPIGetOwner():IsSuperAdmin() then return false end
 		return true
 	else
 		return false
@@ -19,9 +19,13 @@ function sv_PProtect.CheckPPAdmin( ply, ent )
 end
 
 -- CHECK WORLD
-function sv_PProtect.CheckWorld( ent )
+function sv_PProtect.CheckWorld( ent, sett )
 
-	if ent:GetNWBool( "pprotect_world" ) and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true else return false end
+	if sett != true then
+		if ent:GetNWBool( "pprotect_world" ) and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true else return false end
+	else
+		return ent:GetNWBool( "pprotect_world" )
+	end
 
 end
 

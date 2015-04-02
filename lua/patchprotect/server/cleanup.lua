@@ -37,6 +37,77 @@ concommand.Add( "pprotect_request_new_counts", countProps )
 --  CLEANUP PROPS  --
 ---------------------
 
+-- Cleanup Map
+local function cleanupMap( typ, ply )
+
+	-- cleanup map
+	game.CleanUpMap()
+
+	-- set world props
+	sv_PProtect.setWorldProps()
+
+	-- count props
+	if typ then countProps( ply ) end
+
+	sv_PProtect.Notify( ply, "Cleaned Map!", "info" )
+	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props!" )
+
+end
+
+-- Cleanup Disconnected Players Props
+local function cleanupDisc( ply )
+
+	local del_ents = {}
+	table.foreach( ents.GetAll(), function( key, ent )
+
+		if ent.pprotect_cleanup != nil then
+			ent:Remove()
+			table.insert( del_ents, ent:EntIndex() )
+		end
+
+	end )
+
+	sv_PProtect.Notify( ply, "Removed all props from disconnected players!", "info" )
+	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props from disconnected players!" )
+
+end
+
+-- Cleanup Players Props
+local function cleanupPly( pl, c, ply )
+
+	local del_ents = {}
+	table.foreach( ents.GetAll(), function( key, ent )
+
+		if ent:GetNWEntity( "pprotect_owner" ) == pl then
+			ent:Remove()
+			table.insert( del_ents, ent:EntIndex() )
+		end
+
+	end )
+
+	sv_PProtect.Notify( ply, "Cleaned " .. pl:Nick() .. "'s props! (" .. tostring( c ) .. ")", "info" )
+	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed " .. tostring( c ) .. " props from " .. pl:Nick() .. "!" )
+	countProps( pl, del_ents )
+
+end
+
+-- Cleanup Unowned Props
+local function cleanupUnowned( ply )
+
+	table.foreach( ents.GetAll(), function( key, ent )
+
+		if ent:IsValid() and !ent:CPPIGetOwner() and !sv_PProtect.CheckWorld( ent, true ) and string.find( ent:GetClass(), "prop_" ) then
+			ent:Remove()
+		end
+
+	end )
+
+	sv_PProtect.Notify( ply, "Removed all unowned props!", "info" )
+	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all unowned props!" )
+
+end
+
+-- General Cleanup-Function
 function sv_PProtect.Cleanup( typ, ply )
 
 	-- check permissions
@@ -51,44 +122,23 @@ function sv_PProtect.Cleanup( typ, ply )
 		typ = d[1]
 	end
 
-	-- cleanup whole map
 	if typ == "all" then
-
-		-- cleanup map
-		game.CleanUpMap()
-
-		-- set world props
-		sv_PProtect.setWorldProps()
-
-		-- count props
-		if d then countProps( ply ) end
-
-		sv_PProtect.Notify( ply, "Cleaned Map!", "info" )
-		print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props!" )
+		cleanupMap( d[1], ply )
 		return
-
 	end
 
-	-- cleanup players or disconnected players props
-	local del_ents = {}
-	table.foreach( ents.GetAll(), function( key, ent )
-
-		if ( typ == "ply" and ent:GetNWEntity( "pprotect_owner" ) == d[2] ) or ( typ == "disc" and ent.pprotect_cleanup != nil ) then
-
-			ent:Remove()
-			table.insert( del_ents, ent:EntIndex() )
-
-		end
-
-	end )
+	if typ == "disc" then
+		cleanupDisc( ply )
+		return
+	end
 
 	if typ == "ply" then
-		sv_PProtect.Notify( ply, "Cleaned " .. d[2]:Nick() .. "'s props! (" .. tostring( d[3] ) .. ")", "info" )
-		print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed " .. tostring( d[3] ) .. " props from " .. d[2]:Nick() .. "!" )
-		countProps( d[2], del_ents )
-	else
-		sv_PProtect.Notify( ply, "Removed all props from disconnected players!", "info" )
-		print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props from disconnected players!" )
+		cleanupPly( d[2], d[3], ply )
+		return
+	end
+
+	if typ == "unowned" then
+		cleanupUnowned( ply )
 	end
 
 end

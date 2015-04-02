@@ -265,7 +265,10 @@ function cl_PProtect.cu_menu( p )
 	p:addbtn( "Cleanup everything (" .. tostring( o_global ) .. " Props)", "pprotect_cleanup", { "all" } )
 
 	p:addlbl( "\nCleanup props from disconnected players:", true )
-	p:addbtn( "Cleanup all Props from disc. Players", "pprotect_cleanup", { "disc" } )
+	p:addbtn( "Cleanup all props from disc. players", "pprotect_cleanup", { "disc" } )
+
+	p:addlbl( "\nCleanup unowned props:", true )
+	p:addbtn( "Cleanup all unowned props", "pprotect_cleanup", { "unowned" } )
 
 	if o_global == 0 then return end
 	p:addlbl( "\nCleanup player's props:", true )
