@@ -49,6 +49,12 @@ local function cleanupMap( typ, ply )
 	-- count props
 	if typ then countProps( ply ) end
 
+	-- console exception
+	if !ply:IsValid() then
+		print( "[PatchProtect - Cleanup] Removed all props!" )
+		return
+	end
+
 	sv_PProtect.Notify( ply, "Cleaned Map!", "info" )
 	print( "[PatchProtect - Cleanup] " .. ply:Nick() .. " removed all props!" )
 
@@ -111,7 +117,7 @@ end
 function sv_PProtect.Cleanup( typ, ply )
 
 	-- check permissions
-	if ( !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] or !ply:IsAdmin() ) and !ply:IsSuperAdmin() then
+	if ply:IsValid() and ( !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] or !ply:IsAdmin() ) and !ply:IsSuperAdmin() then
 		sv_PProtect.Notify( ply, "You are not allowed to clean the map!" ) return
 	end
 
