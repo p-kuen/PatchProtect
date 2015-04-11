@@ -161,7 +161,7 @@ end
 function sv_PProtect.CanUse( ply, ent )
 
 	-- Check Entity
-	if !ent:IsValid() or ent:GetClass() == "prop_physics" then return end
+	if !ent:IsValid() then return false end
 
 	-- Check Admin
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
