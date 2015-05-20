@@ -1,5 +1,5 @@
 CPPI = CPPI or {}
-CPPI.CPPI_DEFER = 022015 -- January 2015
+CPPI.CPPI_DEFER = 042015
 CPPI.CPPI_NOTIMPLEMENTED = 8084 -- PT ( Patcher and Ted )
 local PLAYER = FindMetaTable( "Player" )
 local ENTITY = FindMetaTable( "Entity" )
@@ -53,62 +53,60 @@ function ENTITY:CPPIGetOwner()
 
 end
 
-if SERVER then
+if CLIENT then return end
 
-	-- Set owner of an entity
-	function ENTITY:CPPISetOwner( ply )
+-- Set owner of an entity
+function ENTITY:CPPISetOwner( ply )
 
-		if !self or !ply or !ply:IsPlayer() then return false end
+	if !self or !ply or !ply:IsPlayer() then return false end
 
-		self:SetNWEntity( "pprotect_owner", ply )
+	self:SetNWEntity( "pprotect_owner", ply )
 
-		table.foreach( constraint.GetAllConstrainedEntities( self ), function( _, cent )
+	table.foreach( constraint.GetAllConstrainedEntities( self ), function( _, cent )
 
-			if cent:CPPIGetOwner() then return end
-			cent:SetNWEntity( "pprotect_owner", ply )
+		if cent:CPPIGetOwner() then return end
+		cent:SetNWEntity( "pprotect_owner", ply )
 
-		end )
+	end )
 
-		return true
+	return true
 
-	end
+end
 
-	-- Set owner of an entity by UID
-	function ENTITY:CPPISetOwnerUID( uid )
+-- Set owner of an entity by UID
+function ENTITY:CPPISetOwnerUID( uid )
 
-		if !uid then return false end
-		local ply = player.GetByUniqueID( tostring( uid ) )
+	if !uid then return false end
+	local ply = player.GetByUniqueID( tostring( uid ) )
 
-		return self:CPPISetOwner( ply )
+	return self:CPPISetOwner( ply )
 
-	end
+end
 
-	-- Can physgun
-	function ENTITY:CPPICanPhysgun( ply )
+-- Can physgun
+function ENTITY:CPPICanPhysgun( ply )
 
-		return sv_PProtect.CanTouch( ply, self )
+	return sv_PProtect.CanTouch( ply, self )
 
-	end
+end
 
-	-- Can tool
-	function ENTITY:CPPICanTool( ply, tool )
+-- Can tool
+function ENTITY:CPPICanTool( ply, tool )
 
-		return sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool )
+	return sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool )
 
-	end
+end
 
-	-- Can pickup
-	function ENTITY:CPPICanPickup( ply )
+-- Can pickup
+function ENTITY:CPPICanPickup( ply )
 
-		return sv_PProtect.CanPickup( ply, self )
+	return sv_PProtect.CanPickup( ply, self )
 
-	end
+end
 
-	-- Can punt
-	function ENTITY:CPPICanPunt( ply )
+-- Can punt
+function ENTITY:CPPICanPunt( ply )
 
-		return sv_PProtect.CanGravPunt( ply, self )
-
-	end
+	return sv_PProtect.CanGravPunt( ply, self )
 
 end

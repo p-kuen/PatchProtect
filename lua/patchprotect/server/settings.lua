@@ -113,6 +113,8 @@ MsgC( Color( 255, 255, 0 ), "\n[PatchProtect]", Color( 255, 255, 255 ), " Succes
 -- SAVE ANTISPAM/PROP PROTECTION
 net.Receive( "pprotect_save", function( len, pl )
 
+	if !pl:IsSuperAdmin() then return end
+
 	local data = net.ReadTable()
 	sv_PProtect.Settings[ data[1] ] = data[2]
 	sv_PProtect.sendSettings()
