@@ -51,9 +51,9 @@ function cl_PProtect.showOwner()
 	-- Set color
 	local col
 	if Owner == LocalPlayer() or LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() or IsBuddy or IsShared or
-	( IsWorld and cl_PProtect.Settings.Propprotection[ "worldprops" ] ) or txt == "No Owner" then
+	( IsWorld and cl_PProtect.Settings.Propprotection[ "worldpick" ] ) or txt == "No Owner" then
 		col = Color( 128, 255, 0, 200 )
-	elseif IsWorld and cl_PProtect.Settings.Propprotection[ "worldbutton" ] then
+	elseif IsWorld and ( cl_PProtect.Settings.Propprotection[ "worlduse" ] or cl_PProtect.Settings.Propprotection[ "worldtool" ] )then
 		col = Color( 0, 161, 222, 200 )
 	else
 		col = Color( 176, 0, 0, 200 )

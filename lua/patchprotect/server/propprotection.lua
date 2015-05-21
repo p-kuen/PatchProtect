@@ -5,7 +5,7 @@
 -- CHECK ADMIN
 function sv_PProtect.CheckPPAdmin( ply, ent )
 
-	if ent != nil and ent:IsValid() and !ent:CPPIGetOwner() and !sv_PProtect.CheckWorld( ent ) then ent:SetNWBool( "pprotect_world", true ) end
+	if ent != nil and ent:IsValid() and !ent:CPPIGetOwner() and !ent:GetNWBool( "pprotect_world" ) then ent:SetNWBool( "pprotect_world", true ) end
 
 	if !sv_PProtect.Settings.Propprotection[ "enabled" ] or 
 	ply:IsSuperAdmin() and sv_PProtect.Settings.Propprotection[ "superadmins" ] or 
@@ -21,10 +21,10 @@ end
 -- CHECK WORLD
 function sv_PProtect.CheckWorld( ent, sett )
 
-	if sett != true then
-		if ent:GetNWBool( "pprotect_world" ) and sv_PProtect.Settings.Propprotection[ "worldprops" ] then return true else return false end
+	if ent:GetNWBool( "pprotect_world" ) and sv_PProtect.Settings.Propprotection[ "world" .. sett ] then
+		return true
 	else
-		return ent:GetNWBool( "pprotect_world" )
+		return false
 	end
 
 end
@@ -98,7 +98,7 @@ function sv_PProtect.CanTouch( ply, ent )
 	if ent:IsPlayer() then return false end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) then return end
+	if sv_PProtect.CheckWorld( ent, "pick" ) then return end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "phys" ) then return end
@@ -137,7 +137,7 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) or ent:IsWorld() then return true end
+	if sv_PProtect.CheckWorld( ent, "tool" ) or ent:IsWorld() then return true end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "tool" ) then return true end
@@ -170,7 +170,7 @@ function sv_PProtect.CanUse( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "use" ] or engine.ActiveGamemode() == "prop_hunt" then return true end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) or sv_PProtect.Settings.Propprotection[ "worldbutton" ] then return true end
+	if sv_PProtect.CheckWorld( ent, "use" ) then return true end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "use" ) then return true end
@@ -204,7 +204,7 @@ function sv_PProtect.CanPickup( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "proppickup" ] then return true end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) or sv_PProtect.Settings.Propprotection[ "worldbutton" ] then return true end
+	if sv_PProtect.CheckWorld( ent, "use" ) then return true end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "use" ) then return true end
@@ -242,7 +242,7 @@ function sv_PProtect.CanProperty( ply, property, ent )
 	end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) then return true end
+	if sv_PProtect.CheckWorld( ent, "pick" ) then return true end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "prop" ) then
@@ -268,7 +268,7 @@ function sv_PProtect.CanDrive( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "propdriving" ] then return false end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) then return true end
+	if sv_PProtect.CheckWorld( ent, "pick" ) then return true end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "prop" ) then
@@ -307,7 +307,7 @@ function sv_PProtect.CanDamage( ent, info )
 	end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) then return end
+	if sv_PProtect.CheckWorld( ent, "pick" ) then return end
 
 	-- Check Shared
 	if sv_PProtect.IsShared( ent, "dmg" ) then return end
@@ -343,7 +343,7 @@ function sv_PProtect.CanPhysReload( weapon, ply )
 	if !sv_PProtect.Settings.Propprotection[ "reload" ] then return end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) then return end
+	if sv_PProtect.CheckWorld( ent, "pick" ) then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "phys" ) then
@@ -374,7 +374,7 @@ function sv_PProtect.CanGravPunt( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "gravgun" ] then return end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) then return end
+	if sv_PProtect.CheckWorld( ent, "pick" ) then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() then
@@ -399,7 +399,7 @@ function sv_PProtect.CanGravPickup( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "gravgun" ] then return false end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent ) then return end
+	if sv_PProtect.CheckWorld( ent, "pick" ) then return end
 
 	-- Check Owner
 	if ply != ent:CPPIGetOwner() then

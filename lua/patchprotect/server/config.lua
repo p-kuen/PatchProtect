@@ -75,8 +75,9 @@ sv_PProtect.Config.Propprotection = {
 
 	creator = false,
 	propdriving = false,
-	worldprops = false,
-	worldbutton = true,
+	worldpick = false,
+	worlduse = true,
+	worldtool = false,
 
 	propdelete = true,
 	adminprops = false,

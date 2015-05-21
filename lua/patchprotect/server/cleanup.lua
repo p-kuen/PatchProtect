@@ -102,7 +102,7 @@ local function cleanupUnowned( ply )
 
 	table.foreach( ents.GetAll(), function( key, ent )
 
-		if ent:IsValid() and !ent:CPPIGetOwner() and !sv_PProtect.CheckWorld( ent, true ) and string.find( ent:GetClass(), "prop_" ) then
+		if ent:IsValid() and !ent:CPPIGetOwner() and !ent:GetNWBool( "pprotect_world" ) and string.find( ent:GetClass(), "prop_" ) then
 			ent:Remove()
 		end
 
