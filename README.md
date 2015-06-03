@@ -7,45 +7,61 @@ You can control the settings in the **Q-Menu -> Utilities**. There you can **cha
 
 ## Advantages of Patchprotect:
 
-1. **Lagfree and highest performance:** Everybody hates lags and we too, so it is very important for us, to offer a prop-protection, which saves resources from the Server-CPU.
-2. **Simple but functional:** Also we are pleased to keep the code as simple as possible. On the other hand we keep adding new features to give you more freedom to control your server.
+1. **Lagfree and highest performance:** Everybody hates lags and we too, so it is very important for us, to offer a prop-protection, which is fast and saves CPU-resources.
+2. **Simple and functional:** We try to keep PatchProtect easy to understand. Also we are adding new features to give you more freedom to control your server.
 3. **5 Panels for a good overview:** The Panels are *AntiSpam, Prop Protection, Buddy, Cleanup and Client-Settings*.
-	Every Panel has Labels to split features into categories. This helps to keep a good overview over all controls:
-	* *AntiSpam* ( general settings, antispam features, cooldown settings )
-	* *PropProtection* ( general settings, propportection features, special user-restrictions, propdelete on disconnect )
-	* *Buddy* ( add buddy, remove buddy )
-	* *Cleanup* ( cleanup everything, cleaning all disconnected player's props and cleanup player's props )
-	* *Client Settings* ( use owner-hud, fppmode, enable notifications )
-4. **Modern Design:** Patchprotect is not just a fast, simple and functional addon. It also looks pretty! We gave PatchProtect a nice modern design, which makes it easy to see, what you can do or not.
-5. **Bug fixing:** After 1 year of development, we can say that PatchProtect works almost bugfree. But if someone posts an error on GitHub or on Workshop, we try to fix the problem as soon as possible. But please have in mind, that we are students, so it could happen that the bugfix would take some time.
+4. **Modern Design:** Patchprotect is not just fast, simple and functional. It also looks pretty! We gave PatchProtect a nice modern design, which makes it easy to see, what you can do or not.
+5. **Bug fixing:** After 1 year of development, we can say that PatchProtect works almost bugfree. But if found an error, you could inform us on GitHub or Workshop about it. We try to fix it as soon as possible. But please have in mind, that we are students, so it could happen that the bugfix would take some time.
 
 
-## Features of PatchProtect:
+## Features and Instructions of PatchProtect:
 
-**PatchProtect offers a nice range of features. To give you an overview of all features, we created a list with the most important ones:**
+**PatchProtect offers a nice range of features. To give you an overview and some help of all features, we created a list with the most important ones:**
 
 ### AntiSpam:
 We offer a nice working **AntiSpam-System**, so that people are **not able to spam your server to death**:
 
-* Prevents that players **spawn props too fast**:
-	If you use a **duplicator, like the default one or AdvancedDuplicator 1/2**, there is an **exception**. *So you can still spawn dupes!*
-* Prevents that people **fire the toolgun too fast**
-* You can set the **length of the 'cooldown'**
-* Players, who try to spam will get an information, **how long they have to wait** till the next prop spawn/tool fire
-* Admins get **informed if someone is spamming** ( There is also a little sound, which should make attention to the message )
-* You can change the **spam-action**:
-	What should happen, if someone is spamming *( nothing, message, kick, ban, custom console command )*
-* You can **enable/disable Toolgun-AntiSpam** for each Tool:
-	( i.e. you can use the 'remover' as fast as you can, but you are not able with 'thrusters' )
-* You can **block tools, props and entities**, which you don't want to be used on your server:
-	* **Add blocked prop/entity**:
-		Hold **c-key**, aim on **prop/entity** and then **right-click** to open the context-menu. There you will find an entry: **Add to blocked list**. You can remove it again inside of the *spawnmenu*.
-	* You can also **import a blocked-props list**:
-		* Copy the txt-file to the **'data'-folder of the server** with the name: **'pproptect_import_blocked_props.txt'**. This textfile should **ONLY INCLUDE IN EACH LINE ONE PROP** with the **model-paths**, which are seperated with a **';'**.
-		(e.g.: "models/props_c17/oildrum001_explosive.mdl;" )
-		* Now you only need to type into the **server-console** following command: **'pprotect_import_blocked_props'**.
-		* Follow all instructions, which are printed from the console.
-	* You can also disable it completely if you don't want to use it on your server
+* You can prevent players from **spaming props, tools and entities**! *(Duplicator exception is included)*
+* You can set the **'cooldown-time'** *(How long you have to wait till the next prop-spawn, tool-fire, entity-spawn)*
+* Players will get informed about the cooldown-time on the right-bottom corner
+* Admins will get **informed if someone is spamming** *(If enabled, there is also a short alert sound, so the admin takes attention to it)*
+* You can change the **spam-action** *(What automatically happens, if someone is spaming)*
+	* nothing
+	* message
+	* kick or ban
+	* custom console command
+
+### Tool Block:
+You are able to **block each tool**, which is available on your server.
+#### Add/Remove a blocked tool:
+* Navigate to ´´´Spawn-Menu -> Utilities -> PatchProtect -> AntiSpam´´´
+* Click on ´´´Set blocked tools´´´
+* Check a tool to block it, Uncheck a tool to allow it
+
+### Tool Antispam:
+You are able to **set the antispam-function on each tool**, which is available on your server.
+**e.g.:** You are able to allow to spam balloons but not thrusters.
+#### Add/Remove an antispammed tool:
+* Navigate to ´´´Spawn-Menu -> Utilities -> PatchProtect -> AntiSpam´´´
+* Click on ´´´Set antispamed tools´´´
+* Check a tool to enable antispam on it, Uncheck a tool to disable antispam on it
+
+### Prop/Entity Block:
+You are able to **block each prop/entity**, which is available on your server.
+#### Add a new blocked prop:
+* Be sure that you are a **SuperAdmin** on your server
+* Spawn the prop/entity once, which you want to block
+* Hold the ´´´c-key´´´ and ´´´right-click´´´ on the prop/entity
+* Click on ´´´Add to Blocked-List´´´
+#### Remove a blocked prop:
+* Navigate to ´´´Spawn-Menu -> Utilities -> PatchProtect -> AntiSpam´´´
+* Click on ´´´Set blocked props´´´ OR ´´´Set blocked entities´´´
+* Click on the ´´´icon of the prop/entity´´´
+* Select ´´´Remove from Blocked-List´´´
+#### Import a file with a list of blocked props:
+* Save the txt-file to the ´´´data-folder of the server´´´ with the name ´´´pproptect_import_blocked_props.txt´´´. This textfile should **ONLY INCLUDE IN EACH LINE ONE PROP** with the **model-paths**, which are seperated with a **';'**. (e.g.: ´´´models/props_c17/oildrum001_explosive.mdl;´´´ )
+* Open the server-console and type: ´´´pprotect_import_blocked_props´´´
+* Follow all instructions, which are printed to the console.
 
 ### PropProtection:
 **The main part of PatchProtect. Here are all features of our PropProtection**:
@@ -57,17 +73,19 @@ We offer a nice working **AntiSpam-System**, so that people are **not able to sp
 	* Damage-Protection
 	* GravGun-Protection
 	* PropPickup-Protection *( prevents to pick up props with 'use'-key )*
-	* You can ignore some of those features, if the other player is in your **Buddy-List**
-	* You are also allowed to **share permissions ( like use, touch, tool, damage )** of just one specific prop to all other players *( hold 'c'-key to share permissions of the viewing prop )*
-* You can **enable/disable a world protection**:
-	It prevents people from interacting with world props *( if you are looking on a world prop, you will get informed about it )*
-	* You can also allow them to **use** world-props (especially for doors and other stuff) **but not moving** them
-* A smart **HUD shows the Owner** of the currently viewing prop
+* You can prevent players from **interacting with world-objects**:
+	* You can allow players that they can move world-objects
+	* You can allow players that they can use world-doors and buttons
+	* You can allow players to use tools on world props
+* A smart **HUD prints the Owner** of the currently viewing prop:
 	* You can **switch between two HUD-Modes**:
-		* First, there is our **own design** *( little white box with on the right-middle position of the screen )*
-		* Secondly you can change in the **Client-Settings** to the **'FPP-Mode'** *( little box with the owner in it under the crosshair )*
-		* The color shows you, if you are allowed to interact with the viewing prop or not *( green = yes, red = no, blue = yes on using a world-prop )*
-* If you **disconnect**, your props will be on the server, but if you **enalbed prop-cleanup**, your **props will be deleted after a configured time** ( If you rejoin between this time, your props won't get deleted )
+		* **PatchProtect-Design** *( little white box with on the right side of the screen )*
+		* **FPP-Design** *( little box with the owner in it under the crosshair )* You can enable it in the client-settings.
+		* The color showes you, if you are allowed to interact with the viewing prop or not *( green = yes, red = no, blue = partly )*
+* Auto-Cleanup:
+	* If you disconnect, you could enable that props are getting removed when ´´´Use Prop-Delete´´´ is ´´´checked´´´
+	* You can set the time, after how many seconds the props are getting cleaned-up
+	* If you rejoin between this time, your props won't get deleted (So client-crashes are not that bad)
 
 ### Cleanup:
 **We have added some **Cleanup-Features** to allow SuperAdmins ( or probably Admins ) to clear props very fast**:
@@ -78,17 +96,26 @@ We offer a nice working **AntiSpam-System**, so that people are **not able to sp
 * Cleanup **disconnected player's props**
 
 ### Buddy:
-**We also added a nice buddy-system wich allowes you to share your props with some friends**:
+**We also added a nice buddy-system wich allowes you to share props with some friends**:
 
-* **add buddies to a buddy list**
-* Set **specific rights for other players**:
-	( i.e.: another player can use it but he is not able to pick it up with the physgun )
+* You can set specific rights to each buddy *(pickup, tool, use, damage)*
+#### Add/Remove a Friend to the Buddy-List:
+* Navigate to ´´´Spawn-Menu -> Utilities -> PatchProtect -> Buddy´´´
+* Follow the instructions on the top of the panel
+
+### Share Props:
+* You are also allowed to **share props ( like pickup, tool, use and damage )** of just one specific prop to all other players
+#### Add/Remove share-permissions of a prop:
+* Be sure that you are owning the prop
+* Hold the ´´´c-key´´´ and ´´´right-click´´´ on the prop/entity
+* Click on ´´´Share entity´´´
+* Check/Uncheck all permissions, which you want to allow to all other players on the server
 
 ### Client Settings:
-**You can set some settings, which are only affecting you. There you have different possibilities to personalize your own experience with PatchProtect**:
+**You can set some settings, which are only affecting you. We offer some possibilities to personalize your own experience with PatchProtect**:
 
 * Enable/Disable the **Owner-HUD**
-* Enable/Disable the **FPPMode of the Owner-HUD** ( it looks similar to the Owner-HUD from FPP )
+* Enable/Disable the **FPP-Design**
 * Enable/Disable all **incoming notifications**
 
 ### CPPI:
@@ -98,13 +125,13 @@ We implemented CPPI, so you are able to **use PatchProtect with other Addons/Pug
 **Here is a list of all server/client - commands, which are not used quite often**:
 
 * **Serverside:** ( type them into the server-console )
-	* **pprotect_reset [arg]**
+	* ´´´pprotect_reset [arg]´´´
 		* This resets Serverside-Settings. Please follow all printed intstructions, if you ran this command.
-		* For *[arg]* you can use *help, all, antispam, propprotection, blocked_props, blocked_ents, blocked_tools or antispam_tools*
+		* For ´´´[arg]´´´ you can use ´´´help, all, antispam, propprotection, blocked_props, blocked_ents, blocked_tools´´´ or ´´´antispam_tools´´´
 * **Clientside:** ( type them into the client-console )
-	* **pprotect_reset_csettings**
+	* ´´´pprotect_reset_csettings´´´
 		* This resets all client settings. Just follow all instructions, which will be printed into the console.
-	* **pprotect_reset_buddies**
+	* ´´´pprotect_reset_buddies´´´
 		* This resets all buddies.
 
 <br>
