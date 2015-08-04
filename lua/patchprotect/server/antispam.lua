@@ -66,7 +66,7 @@ function sv_PProtect.spamaction( ply )
 	elseif action == "Command" then
 
 		if sv_PProtect.Settings.Antispam[ "concommand" ] == sv_PProtect.Config.Antispam[ "concommand" ] then return end
-		local rep = string.Replace( sv_PProtect.Settings.Antispam[ "concommand" ], "<player>", name )
+		local rep = string.Replace( sv_PProtect.Settings.Antispam[ "concommand" ], "<player>", ply:SteamID() )
 		local cmd = string.Explode( " ", rep )
 		RunConsoleCommand( cmd[1], unpack( cmd, 2 ) )
 		print( "[PatchProtect - AntiSpam] Ran console command '" .. rep .. "'! ( Reason: reached spam limit )" )
