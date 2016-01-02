@@ -110,8 +110,6 @@ function sv_PProtect.CanSpawn( ply, mdl )
 		print( "[PatchProtect - AntiSpam] " .. ply:Nick() .. " is spamming!" )
 	end
 
-	return false
-
 end
 hook.Add( "PlayerSpawnProp", "pprotect_spawnprop", sv_PProtect.CanSpawn )
 hook.Add( "PlayerSpawnEffect", "pprotect_spawneffect", sv_PProtect.CanSpawn )
