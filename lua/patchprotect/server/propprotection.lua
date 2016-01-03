@@ -128,7 +128,7 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	if !ent:IsValid() and !ent:IsWorld() then return false end
 
 	-- Check Admin
-	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check Protection
 	if tool == "creator" and !sv_PProtect.Settings.Propprotection[ "creator" ] then
@@ -137,14 +137,14 @@ function sv_PProtect.CanToolProtection( ply, trace, tool )
 	end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent, "tool" ) or ent:IsWorld() then return true end
+	if sv_PProtect.CheckWorld( ent, "tool" ) or ent:IsWorld() then return end
 
 	-- Check Shared
-	if sv_PProtect.IsShared( ent, "tool" ) then return true end
+	if sv_PProtect.IsShared( ent, "tool" ) then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "tool" ) then
-		return true
+		return
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to use " .. tool .. " on this object!" )
 		return false
@@ -164,20 +164,20 @@ function sv_PProtect.CanUse( ply, ent )
 	if !ent:IsValid() then return false end
 
 	-- Check Admin
-	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check Protection / Gamemode
 	if !sv_PProtect.Settings.Propprotection[ "use" ] or engine.ActiveGamemode() == "prop_hunt" then return true end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent, "use" ) then return true end
+	if sv_PProtect.CheckWorld( ent, "use" ) then return end
 
 	-- Check Shared
-	if sv_PProtect.IsShared( ent, "use" ) then return true end
+	if sv_PProtect.IsShared( ent, "use" ) then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "use" ) then
-		return true
+		return
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to use this object!" )
 		return false
@@ -198,20 +198,20 @@ function sv_PProtect.CanPickup( ply, ent )
 	if !ent:IsValid() then return false end
 
 	-- Check Admin
-	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check Protection
-	if !sv_PProtect.Settings.Propprotection[ "proppickup" ] then return true end
+	if !sv_PProtect.Settings.Propprotection[ "proppickup" ] then return end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent, "use" ) then return true end
+	if sv_PProtect.CheckWorld( ent, "use" ) then return end
 
 	-- Check Shared
-	if sv_PProtect.IsShared( ent, "use" ) then return true end
+	if sv_PProtect.IsShared( ent, "use" ) then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "use" ) then
-		return true
+		return
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to pick up this object!" )
 		return false
@@ -233,7 +233,7 @@ function sv_PProtect.CanProperty( ply, property, ent )
 	if !ent:IsValid() then return false end
 
 	-- Check Admin
-	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check Persist
 	if property == "persist" then
@@ -242,11 +242,11 @@ function sv_PProtect.CanProperty( ply, property, ent )
 	end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent, "pick" ) then return true end
+	if sv_PProtect.CheckWorld( ent, "pick" ) then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "prop" ) then
-		return true
+		return
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to change the properties on this object!" )
 		return false
@@ -262,17 +262,17 @@ function sv_PProtect.CanDrive( ply, ent )
 	if !ent:IsValid() then return false end
 
 	-- Check Admin
-	if sv_PProtect.CheckPPAdmin( ply, ent ) then return true end
+	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check Protection
 	if !sv_PProtect.Settings.Propprotection[ "propdriving" ] then return false end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent, "pick" ) then return true end
+	if sv_PProtect.CheckWorld( ent, "pick" ) then return end
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() or sv_PProtect.IsBuddy( ent:CPPIGetOwner(), ply, "prop" ) then
-		return true
+		return
 	else
 		sv_PProtect.Notify( ply, "You are not allowed to drive this object!" )
 		return false
