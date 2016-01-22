@@ -8,7 +8,7 @@ local function countProps( ply, dels )
 
 	table.foreach( ents.GetAll(), function( key, ent )
 
-		if !ent or !ent:IsValid() then return end
+		if !ent or !ent:IsValid() or isnumber( ent ) then return end
 		local o = ent:CPPIGetOwner()
 		if ent:GetNWBool( "pprotect_world" ) or !o or !o:IsValid() then return end
 
