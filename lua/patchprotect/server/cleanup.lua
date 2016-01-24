@@ -8,9 +8,9 @@ local function countProps( ply, dels )
 
 	table.foreach( ents.GetAll(), function( key, ent )
 
-		if !ent or !ent:IsValid() or isnumber( ent ) then return end
+		if !ent or !ent:IsValid() then return end
 		local o = ent:CPPIGetOwner()
-		if ent:GetNWBool( "pprotect_world" ) or !o or !o:IsValid() then return end
+		if ent:GetNWBool( "pprotect_world" ) or !o or isnumber(o) or !o:IsValid() then return end
 
 		-- check deleted entities (which shouldn't be counted, because they shouldn't exist anymore)
 		if istable( dels ) and table.HasValue( dels, ent:EntIndex() ) then return end
