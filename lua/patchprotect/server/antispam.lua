@@ -22,6 +22,7 @@ hook.Add( "PlayerInitialSpawn", "pprotect_initialspawn", sv_PProtect.Setup )
 -- CHECK ANTISPAM ADMIN
 function sv_PProtect.CheckASAdmin( ply )
 
+	if not IsValid(ply) then return false end
 	if !sv_PProtect.Settings.Antispam[ "enabled" ] or ply:IsSuperAdmin() then return true end
 	if ply:IsAdmin() and sv_PProtect.Settings.Antispam[ "admins" ] then return true end
 	return false
