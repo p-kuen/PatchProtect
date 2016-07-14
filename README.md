@@ -67,11 +67,8 @@ You can control the settings in the **Q-Menu -> Utilities**. There you can **cha
 * Open the server-console and type: `pprotect_import_blocked_props`
 * Follow all instructions, which are printed to the console.
 
-<<<<<<< HEAD
 > Included with PatchProtect is a list of default props that you may want to block. It includes every model in the `rails` build category aswell as many other large props. Just copy the `pproptect_import_blocked_props.txt` file located in this repository and follow the instructions above.
 
-=======
->>>>>>> d29cb733b32b037699eaaa445253906131f8fffb
 ### PropProtection:
 > The main part of PatchProtect. Here are all features of our PropProtection
 
