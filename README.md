@@ -74,11 +74,11 @@ We decided to have a simple rank-management in PatchProtect.
 * Select `Remove from Blocked-List`
 
 #### Import a file with a list of blocked props:
-* Save the txt-file to the `data-folder of the server` with the name `pproptect_import_blocked_props.txt`. This txt-file should include **one model-path in each line**, which are seperated with a **';'** _(semicolon)_. _(e.g.: `models/props_c17/oildrum001_explosive.mdl;`)_
+* Save the txt-file to the `data-folder of the server` with the name `pprotect_import_blocked_props.txt`. This txt-file should include **one model-path in each line**, which are seperated with a **';'** _(semicolon)_. _(e.g.: `models/props_c17/oildrum001_explosive.mdl;`)_
 * Open the server-console and type: `pprotect_import_blocked_props`
 * Follow the instructions, which are printed to the console.
 
-> Included with PatchProtect is a list of default props that you may want to block. It includes every model in the `rails` build category aswell as many other large props. Just copy the `pproptect_import_blocked_props.txt`-file, which is located in this repository and follow the instructions above.
+> Included with PatchProtect is a list of default props that you may want to block. It includes every model in the `rails` build category aswell as many other large props. Just copy the `pprotect_import_blocked_props.txt`-file, which is located in this repository and follow the instructions above.
 
 ### PropProtection:
 > protect your stuff
