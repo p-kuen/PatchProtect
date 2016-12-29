@@ -21,7 +21,7 @@ end
 -- Get interface version of CPPI
 function CPPI:GetInterfaceVersion()
 
-	return 1.1
+	return 1.3
 
 end
 
@@ -48,7 +48,7 @@ function ENTITY:CPPIGetOwner()
 	if ply != nil and ply:IsValid() and ply:IsPlayer() then
 		return ply, ply:UniqueID()
 	else
-		return nil
+		return nil, nil
 	end
 
 end
@@ -86,27 +86,27 @@ end
 -- Can physgun
 function ENTITY:CPPICanPhysgun( ply )
 
-	return sv_PProtect.CanTouch( ply, self )
+	return sv_PProtect.CanTouch( ply, self ) == false ? false : true
 
 end
 
 -- Can tool
 function ENTITY:CPPICanTool( ply, tool )
 
-	return sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool )
+	return sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool ) == false ? false : true
 
 end
 
 -- Can pickup
 function ENTITY:CPPICanPickup( ply )
 
-	return sv_PProtect.CanPickup( ply, self )
+	return sv_PProtect.CanPickup( ply, self ) == false ? false : true
 
 end
 
 -- Can punt
 function ENTITY:CPPICanPunt( ply )
 
-	return sv_PProtect.CanGravPunt( ply, self )
+	return sv_PProtect.CanGravPunt( ply, self ) == false ? false : true
 
 end
