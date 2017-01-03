@@ -85,11 +85,13 @@ end
 
 -- Can physgun
 function ENTITY:CPPICanPhysgun( ply )
+
     if sv_PProtect.CanTouch( ply, self ) == false then
         return false
     else
         return true
     end
+
 end
 
 -- Can tool
@@ -111,6 +113,7 @@ function ENTITY:CPPICanPickup( ply )
     else
         return true
     end
+
 end
 
 -- Can punt
