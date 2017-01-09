@@ -167,7 +167,7 @@ function sv_PProtect.CanUse( ply, ent )
 	if sv_PProtect.CheckPPAdmin( ply, ent ) then return end
 
 	-- Check Protection / Gamemode
-	if !sv_PProtect.Settings.Propprotection[ "use" ] or engine.ActiveGamemode() == "prop_hunt" then return true end
+	if !sv_PProtect.Settings.Propprotection[ "use" ] or engine.ActiveGamemode() == "prop_hunt" then return end
 
 	-- Check World
 	if sv_PProtect.CheckWorld( ent, "use" ) then return end
