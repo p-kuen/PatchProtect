@@ -116,6 +116,8 @@ end
 -- General Cleanup-Function
 function sv_PProtect.Cleanup( typ, ply )
 
+	if !ply or !ply:IsValid() then return end -- There is no valid ply when executing from server console (as server)
+
 	-- check permissions
 	if ply:IsValid() and ( !sv_PProtect.Settings.Propprotection[ "adminscleanup" ] or !ply:IsAdmin() ) and !ply:IsSuperAdmin() then
 		sv_PProtect.Notify( ply, "You are not allowed to clean the map!" ) return
