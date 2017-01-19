@@ -86,27 +86,43 @@ end
 -- Can physgun
 function ENTITY:CPPICanPhysgun( ply )
 
-	return sv_PProtect.CanTouch( ply, self ) == false ? false : true
+    if sv_PProtect.CanTouch( ply, self ) == false then
+        return false
+    else
+        return true
+    end
 
 end
 
 -- Can tool
 function ENTITY:CPPICanTool( ply, tool )
 
-	return sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool ) == false ? false : true
+    if sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool ) == false then
+        return false
+    else
+        return true
+    end
 
 end
 
 -- Can pickup
 function ENTITY:CPPICanPickup( ply )
-
-	return sv_PProtect.CanPickup( ply, self ) == false ? false : true
+	
+    if sv_PProtect.CanPickup( ply, self ) == false then
+        return false
+    else
+        return true
+    end
 
 end
 
 -- Can punt
 function ENTITY:CPPICanPunt( ply )
 
-	return sv_PProtect.CanGravPunt( ply, self ) == false ? false : true
+    if sv_PProtect.CanGravPunt( ply, self ) == false then
+        return false
+    else
+        return true
+    end
 
 end
