@@ -162,6 +162,7 @@ function cl_PProtect.pp_menu( p )
 		p:addchk( "Allow Creator-Tool", "ie. spawning weapons with the toolgun", cl_PProtect.Settings.Propprotection[ "creator" ], function( c ) cl_PProtect.Settings.Propprotection[ "creator" ] = c end )
 		p:addchk( "Allow Prop-Driving", "Allow users to drive props over the context menu (c-key)", cl_PProtect.Settings.Propprotection[ "propdriving" ], function( c ) cl_PProtect.Settings.Propprotection[ "propdriving" ] = c end )
 		p:addchk( "Allow World-Pickup", "Allow users to pickup world props", cl_PProtect.Settings.Propprotection[ "worldpick" ], function( c ) cl_PProtect.Settings.Propprotection[ "worldpick" ] = c end )
+		p:addchk( "Allow World-GravPick", "Allow users to pickup world props using gravity gun", cl_PProtect.Settings.Propprotection[ "worldgrav" ], function( c ) cl_PProtect.Settings.Propprotection[ "worldgrav" ] = c end )
 		p:addchk( "Allow World-Use", "Allow users to use World-Buttons/Doors", cl_PProtect.Settings.Propprotection[ "worlduse" ], function( c ) cl_PProtect.Settings.Propprotection[ "worlduse" ] = c end )
 		p:addchk( "Allow World-Tooling", "Allow users to use the toolgun on World-Objects", cl_PProtect.Settings.Propprotection[ "worldtool" ], function( c ) cl_PProtect.Settings.Propprotection[ "worldtool" ] = c end )
 

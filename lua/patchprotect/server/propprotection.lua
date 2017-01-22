@@ -374,7 +374,8 @@ function sv_PProtect.CanGravPunt( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "gravgun" ] then return end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent, "pick" ) then return end
+	if sv_PProtect.CheckWorld( ent, "pick" ) then return end 
+	-- I assume people don't want to allow both grabing and throwing props using gravity gun
 
 	-- Check Owner
 	if ply == ent:CPPIGetOwner() then
@@ -399,7 +400,7 @@ function sv_PProtect.CanGravPickup( ply, ent )
 	if !sv_PProtect.Settings.Propprotection[ "gravgun" ] then return false end
 
 	-- Check World
-	if sv_PProtect.CheckWorld( ent, "pick" ) then return end
+	if sv_PProtect.CheckWorld( ent, "grav" ) then return end
 
 	-- Check Owner
 	if ply != ent:CPPIGetOwner() then
