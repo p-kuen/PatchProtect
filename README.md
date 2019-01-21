@@ -22,8 +22,15 @@ You can control the settings in the `Spawn-Menu -> Utilities`. There you can **c
 
 We decided to have a simple rank-management in PatchProtect.
 
-- SuperAdmins can do everything. _ they are not affected by the antispam- and prop-protection feature _ (almost) only SuperAdmins can change settings of PatchProtect \* each SuperAdmin can interact with props/entities from an other SuperAmdin
-- Admins can do some things _ they can be freed from any antispam- and prop-protection feature _ they can change some settings _ they can not interact with SuperAdmin-owned props/entites as long as they have no special permissions to do it _ every Admin can interact with props/entites from an other Admin
+- SuperAdmins can do everything.
+  - they are not affected by the antispam- and prop-protection feature
+  - (almost) only SuperAdmins can change settings of PatchProtect
+  - each SuperAdmin can interact with props/entities from an other SuperAmdin
+- Admins can do some things
+  - they can be freed from any antispam- and prop-protection feature
+  - they can change some settings
+  - they can not interact with SuperAdmin-owned props/entites as long as they have no special permissions to do it
+  - every Admin can interact with props/entites from an other Admin
 
 ### AntiSpam:
 
@@ -33,7 +40,11 @@ We decided to have a simple rank-management in PatchProtect.
 - You can set the **'cooldown-time'** _(how long you have to wait till the next prop-spawn, tool-fire, entity-spawn)_
 - Players will get informed about the current cooldown-time on the right-bottom corner
 - Admins will get **informed if someone is spamming** _(if enabled, there is also a short alert sound, so the admin takes attention to it)_
-- You can change the **spam-action** _(what automatically happens, if someone is spamming)_ _ nothing _ message _ kick or ban _ custom console command
+- You can change the **spam-action** _(what automatically happens, if someone is spamming)_
+  - nothing
+  - message
+  - kick or ban
+  - custom console command
 
 ### Tool Block:
 
@@ -47,7 +58,8 @@ We decided to have a simple rank-management in PatchProtect.
 
 ### Tool Antispam:
 
-> prevent people to use tools too fast<br> > **e.g.:** you are able to allow to spam balloons but not thrusters.
+> prevent people to use tools too fast
+> **e.g.:** you are able to allow to spam balloons but not thrusters.
 
 #### Add/Remove an antispammed tool:
 
@@ -84,10 +96,26 @@ We decided to have a simple rank-management in PatchProtect.
 
 > protect your stuff
 
-- You can **enable/disable many PropProtection-Features**: _ PhysGun-Protection _ Use-Protection _ Reload-Protection *(prevent use of the 'r'-key when using the PhysGun)* _ Damage-Protection _ GravGun-Protection _ PropPickup-Protection _(prevent pick-up of props with 'use'-key)_
-- You can prevent players from **interacting with world-objects**: _ You can allow players that they can move world-objects _ You can allow players that they can use world-doors and buttons \* You can allow players to use tools on world props
-- A smart **HUD prints the owner** of the currently viewing prop: _ You can **switch between two HUDs**: _ **PatchProtect-design** _(little white box with the owner in it on the right-middle of the screen)_ _ **FPP-design** *(little box with the owner in it under the crosshair)* You can enable it in the client-settings. _ The color shows you, if you are allowed to interact with the viewing prop or not _(green = yes, red = no, blue = partly)_
-- Auto-Cleanup: _ If somebody disconnects, you can enable that props are getting removed when `Use Prop-Delete` is `checked` _ You can set the time, after how many seconds the props are getting cleaned-up \* If you rejoin before the deadline, your props won't get deleted _(so no need to rage on client-crashes)_
+- You can **enable/disable many PropProtection-Features**:
+  - PhysGun-Protection
+  - Use-Protection
+  - Reload-Protection _(prevent use of the 'r'-key when using the PhysGun)_
+  - Damage-Protection
+  - GravGun-Protection
+  - PropPickup-Protection _(prevent pick-up of props with 'use'-key)_
+- You can prevent players from **interacting with world-objects**:
+  - You can allow players that they can move world-objects
+  - You can allow players that they can use world-doors and buttons
+  - You can allow players to use tools on world props
+- A smart **HUD prints the owner** of the currently viewing prop:
+  - You can **switch between two HUDs**:
+    - **PatchProtect-design** _(little white box with the owner in it on the right-middle of the screen)_
+    - **FPP-design** _(little box with the owner in it under the crosshair)_ You can enable it in the client-settings.
+    - The color shows you, if you are allowed to interact with the viewing prop or not *(green = yes, red = no, blue = partly)*
+- Auto-Cleanup:
+  - If somebody disconnects, you can enable that props are getting removed when `Use Prop-Delete` is `checked`
+  - You can set the time, after how many seconds the props are getting cleaned-up
+  - If you rejoin before the deadline, your props won't get deleted _(so no need to rage on client-crashes)_
 
 ### Cleanup:
 
@@ -139,10 +167,16 @@ We implemented CPPI, so you are able to **use PatchProtect with other Addons/Pug
 
 > some commands, which you (hopefully) won't use that often
 
-- **Serverside:** ( type them into the server-console ) _ `pprotect_reset [arg]` _ This resets serverside-settings. Please follow all printed intstructions, after executing this command. \* For `[arg]` you can use `help, all, antispam, propprotection, blocked_props, blocked_ents, blocked_tools` or `antispam_tools`
-- **Clientside:** ( type them into the client-console ) _ `pprotect_reset_csettings` _ This resets all client settings. Please follow all printed instructions, after executing this command. _ `pprotect_reset_buddies` _ This resets all buddies.
+- **Serverside:** ( type them into the server-console )
+  - `pprotect_reset [arg]`
+    - This resets serverside-settings. Please follow all printed intstructions, after executing this command.
+    - For `[arg]` you can use `help, all, antispam, propprotection, blocked_props, blocked_ents, blocked_tools` or `antispam_tools`
+- **Clientside:** ( type them into the client-console )
+  - `pprotect_reset_csettings`
+    - This resets all client settings. Please follow all printed instructions, after executing this command.
+  - `pprotect_reset_buddies`
+    - This resets all buddies.
 
-<br>
 Ok, that was pretty much information for now. This is only a list of the most important things of PatchProtect. There are also many background-features which are really important for all above mentioned features.
 
 We hope, that you enjoy **PatchProtect** on your server! ;)
