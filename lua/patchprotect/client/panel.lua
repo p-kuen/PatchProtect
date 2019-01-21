@@ -169,6 +169,12 @@ function cl_PProtect.pp_menu(p)
     p:addchk('Damage-Protection', nil, cl_PProtect.Settings.Propprotection['damage'], function(c)
       cl_PProtect.Settings.Propprotection['damage'] = c
     end)
+    p:addchk('GravGun-Protection', nil, cl_PProtect.Settings.Propprotection['gravgun'], function(c)
+      cl_PProtect.Settings.Propprotection['gravgun'] = c
+    end)
+    p:addchk('PropPickup-Protection', "Pick up props with 'use'-key", cl_PProtect.Settings.Propprotection['proppickup'], function(c)
+      cl_PProtect.Settings.Propprotection['proppickup'] = c
+    end)
 
     -- Special damage protection
     if cl_PProtect.Settings.Propprotection['damage'] then
@@ -176,13 +182,6 @@ function cl_PProtect.pp_menu(p)
         cl_PProtect.Settings.Propprotection['damageinvehicle'] = c
       end)
     end
-
-    p:addchk('GravGun-Protection', nil, cl_PProtect.Settings.Propprotection['gravgun'], function(c)
-      cl_PProtect.Settings.Propprotection['gravgun'] = c
-    end)
-    p:addchk('PropPickup-Protection', "Pick up props with 'use'-key", cl_PProtect.Settings.Propprotection['proppickup'], function(c)
-      cl_PProtect.Settings.Propprotection['proppickup'] = c
-    end)
 
     -- Restrictions
     p:addlbl('\nSpecial User-Restrictions:', true)

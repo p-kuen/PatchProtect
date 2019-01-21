@@ -2,13 +2,19 @@
 --  LOAD SERVER/CLIENT FILES  --
 --------------------------------
 
+-- Create shared table
+sh_PProtect = {}
+
+-- Include shared files
+include('patchprotect/shared/patchprotect.lua')
+
 if SERVER then
-  -- Create server-table
+  -- Create server table
   sv_PProtect = {
     Settings = {}
   }
 
-  -- Include server-files
+  -- Include server files
   include('patchprotect/server/config.lua')
   include('patchprotect/server/settings.lua')
   include('patchprotect/server/antispam.lua')
@@ -16,7 +22,7 @@ if SERVER then
   include('patchprotect/server/cleanup.lua')
   include('patchprotect/server/buddy.lua')
 
-  -- Force clients to download all client-files
+  -- Force clients to download all client files
   AddCSLuaFile()
   AddCSLuaFile('patchprotect/client/csettings.lua')
   AddCSLuaFile('patchprotect/client/fonts.lua')
@@ -24,8 +30,11 @@ if SERVER then
   AddCSLuaFile('patchprotect/client/derma.lua')
   AddCSLuaFile('patchprotect/client/panel.lua')
   AddCSLuaFile('patchprotect/client/buddy.lua')
+
+  -- Force clients to download all shared files
+  AddCSLuaFile('patchprotect/shared/patchprotect.lua')
 else
-  -- Create client-table
+  -- Create client table
   cl_PProtect = {
     Settings = {
       Antispam = {},
@@ -35,7 +44,7 @@ else
     Buddies = {}
   }
 
-  -- Include client-files
+  -- Include client files
   include('patchprotect/client/csettings.lua')
   include('patchprotect/client/fonts.lua')
   include('patchprotect/client/hud.lua')

@@ -38,8 +38,8 @@ end
 
 -- Get the owner of an entity
 function ENTITY:CPPIGetOwner()
-  local ply = self:GetNWEntity('pprotect_owner')
-  if ply == nil or !ply:IsPlayer() then return nil, nil end
+  local ply = sh_PProtect.GetOwner(self)
+  if !ply or !ply:IsPlayer() then return nil, nil end
   return ply, ply:UniqueID()
 end
 
@@ -47,23 +47,27 @@ if CLIENT then return end
 
 -- Set owner of an entity
 function ENTITY:CPPISetOwner(ply)
-  if ply == nil or !ply:IsPlayer() then return false end
-
-  if hook.Run('CPPIAssignOwnership', ply, self, ply:UniqueID()) == false then return false end
-
-  self:SetNWEntity('pprotect_owner', ply)
-
-  table.foreach(constraint.GetAllConstrainedEntities(self), function(_, cent)
-    if cent:CPPIGetOwner() then return end
-    cent:SetNWEntity('pprotect_owner', ply)
-  end)
-
-  return true
+  return sv_PProtect.SetOwner(self, ply)
 end
 
 -- Set owner of an entity by UID
 function ENTITY:CPPISetOwnerUID(uid)
   return self:CPPISetOwner(player.GetByUniqueID(uid) or nil)
+end
+
+-- Set entity to no world (true) or not even world (false)
+-- It is not officially documented, but some addons seem to require this.
+function ENTITY:CPPISetOwnerless(bool)
+  if !IsValid(self) then return false end
+
+  if bool then
+    self:SetNWBool('pprotect_owner', nil)
+    self:SetNWBool('pprotect_world', true)
+  else
+    self:SetNWBool('pprotect_owner', nil)
+  end
+
+  return true
 end
 
 -- Can tool

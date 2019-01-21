@@ -10,7 +10,7 @@ local function countProps(ply, dels)
 
   table.foreach(ents.GetAll(), function(key, ent)
     if !ent or !ent:IsValid() then return end
-    local o = ent:CPPIGetOwner()
+    local o = sh_PProtect.GetOwner(ent)
     if ent:GetNWBool('pprotect_world') or !o or isnumber(o) or !o:IsValid() then return end
 
     -- check deleted entities (which shouldn't be counted, because they shouldn't exist anymore)
@@ -91,7 +91,7 @@ end
 -- Cleanup Unowned Props
 local function cleanupUnowned(ply)
   table.foreach(ents.GetAll(), function(key, ent)
-    if ent:IsValid() and !ent:CPPIGetOwner() and !ent:GetNWBool('pprotect_world') and string.find(ent:GetClass(), 'prop_') then
+    if ent:IsValid() and !sh_PProtect.GetOwner(ent) and !ent:GetNWBool('pprotect_world') and string.find(ent:GetClass(), 'prop_') then
       ent:Remove()
     end
   end)

@@ -23,7 +23,7 @@ function cl_PProtect.showOwner()
   if !ent or !ent:IsValid() or ent:IsWorld() or ent:IsPlayer() then return end
 
   if LastID != ent:EntIndex() or (!Owner and !IsWorld) then
-    Owner, IsWorld, IsShared, IsBuddy = ent:CPPIGetOwner(), ent:GetNWBool('pprotect_world'), false, false
+    Owner, IsWorld, IsShared, IsBuddy = ent:GetNWBool('pprotect_owner'), ent:GetNWBool('pprotect_world'), false, false
     if Owner and Owner:IsValid() and Owner != LocalPlayer() and !IsWorld then
       RunConsoleCommand('pprotect_send_buddies', Owner:UniqueID())
     end
