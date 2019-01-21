@@ -1,128 +1,112 @@
+-- http://ulyssesmod.net/archive/CPPI_v1-3.pdf
+
 CPPI = CPPI or {}
-CPPI.CPPI_DEFER = 042015
-CPPI.CPPI_NOTIMPLEMENTED = 8084 -- PT ( Patcher and Ted )
-local PLAYER = FindMetaTable( "Player" )
-local ENTITY = FindMetaTable( "Entity" )
 
--- Get name
+CPPI.CPPI_DEFER = 8080 -- PP (PathProtect)
+CPPI.CPPI_NOTIMPLEMENTED = 012019 -- month/year of newest version
+
+local PLAYER = FindMetaTable('Player')
+local ENTITY = FindMetaTable('Entity')
+
+-- Get name of prop protection
 function CPPI:GetName()
-
-	return "PatchProtect"
-
+  return 'PatchProtect'
 end
 
--- Get version of CPPI
+-- Get version of prop protection
 function CPPI:GetVersion()
-
-	return "1.3"
-
+  return '1.4.0'
 end
 
 -- Get interface version of CPPI
 function CPPI:GetInterfaceVersion()
-
-	return 1.3
-
+  return 1.3
 end
 
--- Get name from UID
-function CPPI:GetNameFromUID( uid )
-
-	local ply = player.GetByUniqueID( tostring( uid ) )
-	if !IsValid( ply ) or !ply:IsPlayer() then return end
-	return ply:Nick()
-
+-- Get name of player from UID
+function CPPI:GetNameFromUID(uid)
+  local ply = player.GetByUniqueID(uid)
+  if !ply then return end
+  return ply:Nick()
 end
 
 -- Get friends from a player
 function PLAYER:CPPIGetFriends()
-
-	return CPPI_NOTIMPLEMENTED
-
+  if CLIENT then return CPPI.CPPI_NOTIMPLEMENTED end -- TODO add this for client side (maybe only for local player)
+  return self.Buddies
 end
 
 -- Get the owner of an entity
 function ENTITY:CPPIGetOwner()
-
-	local ply = self:GetNWEntity( "pprotect_owner" )
-	if ply != nil and ply:IsValid() and ply:IsPlayer() then
-		return ply, ply:UniqueID()
-	else
-		return nil, nil
-	end
-
+  local ply = self:GetNWEntity('pprotect_owner')
+  if ply == nil or !ply:IsPlayer() then return nil, nil end
+  return ply, ply:UniqueID()
 end
 
 if CLIENT then return end
 
 -- Set owner of an entity
-function ENTITY:CPPISetOwner( ply )
+function ENTITY:CPPISetOwner(ply)
+  if ply == nil or !ply:IsPlayer() then return false end
 
-	if !self or !ply or !ply:IsPlayer() then return false end
+  if hook.Run('CPPIAssignOwnership', ply, self, ply:UniqueID()) == false then return false end
 
-	self:SetNWEntity( "pprotect_owner", ply )
+  self:SetNWEntity('pprotect_owner', ply)
 
-	table.foreach( constraint.GetAllConstrainedEntities( self ), function( _, cent )
+  table.foreach(constraint.GetAllConstrainedEntities(self), function(_, cent)
+    if cent:CPPIGetOwner() then return end
+    cent:SetNWEntity('pprotect_owner', ply)
+  end)
 
-		if cent:CPPIGetOwner() then return end
-		cent:SetNWEntity( "pprotect_owner", ply )
-
-	end )
-
-	return true
-
+  return true
 end
 
 -- Set owner of an entity by UID
-function ENTITY:CPPISetOwnerUID( uid )
-
-	if !uid then return false end
-	local ply = player.GetByUniqueID( tostring( uid ) )
-
-	return self:CPPISetOwner( ply )
-
-end
-
--- Can physgun
-function ENTITY:CPPICanPhysgun( ply )
-
-    if sv_PProtect.CanTouch( ply, self ) == false then
-        return false
-    else
-        return true
-    end
-
+function ENTITY:CPPISetOwnerUID(uid)
+  return self:CPPISetOwner(player.GetByUniqueID(uid) or nil)
 end
 
 -- Can tool
-function ENTITY:CPPICanTool( ply, tool )
+function ENTITY:CPPICanTool(ply, tool)
+  return sv_PProtect.CanTool(ply, self, tool)
+end
 
-    if sv_PProtect.CanToolProtection( ply, ply:GetEyeTrace(), tool ) == false then
-        return false
-    else
-        return true
-    end
-
+-- Can physgun
+function ENTITY:CPPICanPhysgun(ply)
+  return sv_PProtect.CanPhysgun(ply, self)
 end
 
 -- Can pickup
-function ENTITY:CPPICanPickup( ply )
-	
-    if sv_PProtect.CanPickup( ply, self ) == false then
-        return false
-    else
-        return true
-    end
-
+function ENTITY:CPPICanPickup(ply)
+  return sv_PProtect.CanPickup(ply, self)
 end
 
 -- Can punt
-function ENTITY:CPPICanPunt( ply )
+function ENTITY:CPPICanPunt(ply)
+  return sv_PProtect.CanGravPunt(ply, self)
+end
 
-    if sv_PProtect.CanGravPunt( ply, self ) == false then
-        return false
-    else
-        return true
-    end
+-- Can use
+function ENTITY:CPPICanUse(ply)
+  return sv_PProtect.CanUse(ply, self)
+end
 
+-- Can damage
+function ENTITY:CPPICanDamage(ply)
+  return sv_PProtect.CanDamage(ply, self)
+end
+
+-- Can drive
+function ENTITY:CPPICanDrive(ply)
+  return sv_PProtect.CanDrive(ply, self)
+end
+
+-- Can property
+function ENTITY:CPPICanProperty(ply, property)
+  return sv_PProtect.CanProperty(ply, property, self)
+end
+
+-- Can edit variable
+function ENTITY:CPPICanEditVariable(ply, key, val, edit)
+  return CPPI.CPPI_NOTIMPLEMENTED -- TODO
 end
