@@ -1,10 +1,6 @@
 {
-	"title"		:	"PatchProtect (PProtect)",
-	"type"		:	"tool",
-	"tags"		:	[ "build" ],
-	"ignore"	:	[
-		"*.git*",
-		"*.bat",
-		"*.md"
-	]
+  "title": "PatchProtect (PProtect)",
+  "type": "tool",
+  "tags": ["build"],
+  "ignore": ["*.git*", "*.bat", "*.md"]
 }

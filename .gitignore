@@ -1,1 +1,3 @@
 *.bat
+.DS_Store
+._*
