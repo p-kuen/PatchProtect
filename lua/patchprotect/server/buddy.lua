@@ -6,14 +6,10 @@ function sv_PProtect.IsBuddy(ply, bud, mode)
   if !ply or !ply.Buddies or !bud:IsPlayer() or !ply.Buddies[bud:SteamID()] or !ply.Buddies[bud:SteamID()].bud then
     return false
   end
-  if !mode and ply.Buddies[bud:SteamID()].bud == true then
+  if (!mode and ply.Buddies[bud:SteamID()].bud == true) or (ply.Buddies[bud:SteamID()].bud == true and ply.Buddies[bud:SteamID()].perm[mode] == true) then
     return true
   end
-  if ply.Buddies[bud:SteamID()].bud == true and ply.Buddies[bud:SteamID()].perm[mode] == true then
-    return true
-  else
-    return false
-  end
+  return false
 end
 
 --------------------
@@ -36,6 +32,6 @@ concommand.Add('pprotect_send_buddies', function(ply, cmd, args)
   local bud = player.GetByUniqueID(args[1])
   if !bud or !bud.Buddies then return end
   net.Start('pprotect_send_buddies')
-  net.WriteBool(sv_PProtect.IsBuddy(ply, bud))
+    net.WriteBool(sv_PProtect.IsBuddy(ply, bud))
   net.Send(ply)
 end)
