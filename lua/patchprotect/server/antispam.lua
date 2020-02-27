@@ -135,16 +135,16 @@ function sv_PProtect.CanUseTool(ply, trace, tool)
     ply.duplicate = false
   end
 
-  -- Antispamed Tool
-  if !sv_PProtect.Blocked.atools[tool] then
-    return sv_PProtect.CanTool(ply, trace, tool)
+  -- If tool AntiSpam is not enabled or the tool is not AntiSpam protected, continue.
+  if !sv_PProtect.Settings.Antispam['tool'] or !sv_PProtect.Blocked.atools[tool] then
+    return
   end
 
   -- Cooldown
   if CurTime() > ply.toolcooldown then
     ply.tools = 0
     ply.toolcooldown = CurTime() + sv_PProtect.Settings.Antispam['cooldown']
-    return sv_PProtect.CanTool(ply, trace, tool)
+    return
   end
 
   ply.tools = ply.tools + 1
@@ -160,7 +160,7 @@ function sv_PProtect.CanUseTool(ply, trace, tool)
 
   return false
 end
-hook.Add('CanTool', 'pprotect_toolgun', sv_PProtect.CanUseTool)
+hook.Add('CanTool', 'pprotect_tool_antispam', sv_PProtect.CanUseTool)
 
 --------------------------
 --  BLOCKED PROPS/ENTS  --

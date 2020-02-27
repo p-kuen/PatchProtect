@@ -166,7 +166,7 @@ end
 function sv_PProtect.CanToolTrace(ply, trace, tool)
   return sv_PProtect.CanTool(ply, trace.Entity, tool)
 end
-hook.Add('CanTool', 'pprotect_toolgun', sv_PProtect.CanToolTrace)
+hook.Add('CanTool', 'pprotect_tool', sv_PProtect.CanToolTrace)
 
 ---------------------------
 --  USE PROP PROTECTION  --
