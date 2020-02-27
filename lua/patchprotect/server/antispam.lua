@@ -74,9 +74,15 @@ function sv_PProtect.CanSpawn(ply, mdl)
   if sv_PProtect.CheckASAdmin(ply) then return end
   if ply.duplicate then return end
 
-  -- Prop/Entity-Block
-  if sv_PProtect.Settings.Antispam['propblock'] and sv_PProtect.Blocked.props[string.lower(mdl)] or string.find(string.lower(mdl), '/../') or sv_PProtect.Settings.Antispam['entblock'] and sv_PProtect.Blocked.ents[string.lower(mdl)] then
-    sv_PProtect.Notify(ply, 'This object is in the blacklist.')
+  -- Block Prop/Entity with /../
+  if string.find(mdl, '/../') then return false end
+
+  mdl = string.lower(mdl)
+
+  -- Check if Prop/Entity is blocked
+  if (sv_PProtect.Settings.Antispam['propblock'] and sv_PProtect.Blocked.props[mdl]) or
+     (sv_PProtect.Settings.Antispam['entblock']  and sv_PProtect.Blocked.ents[mdl]) then
+    sv_PProtect.Notify(ply, 'This object is not allowed.')
     return false
   end
 
