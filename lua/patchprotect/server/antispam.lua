@@ -162,6 +162,8 @@ hook.Add('CanTool', 'pprotect_toolgun', sv_PProtect.CanUseTool)
 
 -- SEND BLOCKED PROPS/ENTS TABLE
 net.Receive('pprotect_request_ents', function(len, pl)
+  if !pl:IsSuperAdmin() then return end
+
   local typ = net.ReadTable()[1]
 
   net.Start('pprotect_send_ents')
@@ -172,6 +174,8 @@ end)
 
 -- SAVE BLOCKED PROPS/ENTS TABLE
 net.Receive('pprotect_save_ents', function(len, pl)
+  if !pl:IsSuperAdmin() then return end
+
   local d = net.ReadTable()
   local typ, key = d[1], d[2]
 
@@ -182,6 +186,8 @@ end)
 
 -- SAVE BLOCKED PROP/ENT FROM CPANEL
 net.Receive('pprotect_save_cent', function(len, pl)
+  if !pl:IsSuperAdmin() then return end
+
   local ent = net.ReadTable()
 
   if sv_PProtect.Blocked[ent.typ][ent.name] then
@@ -198,10 +204,13 @@ end)
 
 -- IMPORT BLOCKED PROPS LIST
 concommand.Add('pprotect_import_blocked_props', function(ply, cmd, args)
+  if !pl:IsSuperAdmin() then return end
+
   if !file.Read('pprotect_import_blocked_props.txt', 'DATA') then
     print("Cannot find 'pprotect_import_blocked_props.txt' to import props. Please read the description of patchprotect.")
     return
   end
+
   local imp = string.Explode(';', file.Read('pprotect_import_blocked_props.txt', 'DATA'))
   table.foreach(imp, function(key, model)
     if model == '' then return end
@@ -210,7 +219,9 @@ concommand.Add('pprotect_import_blocked_props', function(ply, cmd, args)
       sv_PProtect.Blocked.props[model] = model
     end
   end)
+
   sv_PProtect.saveBlockedEnts('props', sv_PProtect.Blocked.props)
+
   print("\n[PatchProtect] Imported all blocked props. If you experience any errors,\nthen use the command to reset the whole blocked-props-list:\n'pprotect_reset blocked_props'\n")
 end)
 
@@ -220,6 +231,8 @@ end)
 
 -- SEND ANTISPAMED/BLOCKED TOOLS TABLE
 net.Receive('pprotect_request_tools', function(len, pl)
+  if !pl:IsSuperAdmin() then return end
+
   local t = string.sub(net.ReadTable()[1], 1, 1) .. 'tools'
   local tools = {}
 
@@ -244,6 +257,8 @@ end)
 
 -- SAVE BLOCKED/ANTISPAMED TOOLS
 net.Receive('pprotect_save_tools', function(len, pl)
+  if !pl:IsSuperAdmin() then return end
+
   local d = net.ReadTable()
   local t1, t2, k, c = d[1], d[2], d[3], d[4]
 
