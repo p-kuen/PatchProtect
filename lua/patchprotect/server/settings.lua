@@ -41,9 +41,6 @@ concommand.Add('pprotect_reset', resetSettings)
 -- ANTISPAM AND PROP PROTECTION
 function sv_PProtect.loadSettings(name)
   local sqltable = 'pprotect_' .. string.lower(name)
-  if !sql.TableExists(sqltable) then
-    sql.Query('DROP TABLE ' .. sqltable)
-  end
   sql.Query('CREATE TABLE IF NOT EXISTS ' .. sqltable .. ' (setting TEXT, value TEXT)')
 
   local sql_settings = {}
