@@ -40,6 +40,7 @@ sv_PProtect.Config.Antispam = {
   enabled = true,
   admins = false,
   alert = true,
+  prop = true,
   tool = true,
   toolblock = true,
   propblock = true,

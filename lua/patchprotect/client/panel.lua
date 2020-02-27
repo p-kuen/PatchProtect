@@ -23,6 +23,9 @@ function cl_PProtect.as_menu(p)
 
     -- Anti-Spam features
     p:addlbl('\nEnable/Disable antispam features:', true)
+    p:addchk('Prop-AntiSpam', nil, cl_PProtect.Settings.Antispam['prop'], function(c)
+      cl_PProtect.Settings.Antispam['prop'] = c
+    end)
     p:addchk('Tool-AntiSpam', nil, cl_PProtect.Settings.Antispam['tool'], function(c)
       cl_PProtect.Settings.Antispam['tool'] = c
     end)
@@ -200,7 +203,7 @@ function cl_PProtect.pp_menu(p)
     p:addchk('Allow World-Use', 'Allow users to use World-Buttons/Doors', cl_PProtect.Settings.Propprotection['worlduse'], function(c)
       cl_PProtect.Settings.Propprotection['worlduse'] = c
     end)
-    p:addchk('Allow World-Tooling', 'Allow users to use the toolgun on World-Objects', cl_PProtect.Settings.Propprotection['worldtool'], function(c)
+    p:addchk('Allow World-Tooling', 'Allow users to use tools on World-Objects', cl_PProtect.Settings.Propprotection['worldtool'], function(c)
       cl_PProtect.Settings.Propprotection['worldtool'] = c
     end)
 

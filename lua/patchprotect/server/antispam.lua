@@ -86,6 +86,11 @@ function sv_PProtect.CanSpawn(ply, mdl)
     return false
   end
 
+  -- If prop AntiSpam is not enabled, continue.
+  if !sv_PProtect.Settings.Antispam['prop'] then
+    return
+  end
+
   -- Cooldown
   if CurTime() > ply.propcooldown then
     ply.props = 0
