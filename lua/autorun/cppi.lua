@@ -61,7 +61,7 @@ function ENTITY:CPPISetOwnerless(bool)
   if !IsValid(self) then return false end
 
   if bool then
-    self:SetNWBool('pprotect_owner', nil)
+    self:SetNWEntity('pprotect_owner', nil)
     self:SetNWBool('pprotect_world', true)
   else
     self:SetNWBool('pprotect_owner', nil)
