@@ -1,4 +1,4 @@
-## What Patchprotect is:
+# PatchProtect
 
 **PatchProtect** is a **fast**, **simple** and **stable prop protection** for **Garry's Mod 13**.
 
